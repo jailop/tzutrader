@@ -1,0 +1,57 @@
+# Nim build artifacts
+nimcache/
+nimblecache/
+
+# Compiled binaries
+tests/test_core
+tests/test_data
+tests/test_indicators
+tests/test_strategy
+tests/test_portfolio
+tests/test_trader
+examples/*
+!examples/*.nim
+benchmarks/indicator_perf
+
+# Generated documentation
+docs/*.html
+docs/*.idx
+docs/*.js
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test outputs
+*.log
+test_results/
+
+# Python (for pybottrader comparison)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Local configuration
+.env
+config.local.nim
