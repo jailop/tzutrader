@@ -10,14 +10,14 @@
 
 import std/[parseopt, strutils, strformat, os, tables, json]
 
-include src/tzutrader/core
-include src/tzutrader/data
-include src/tzutrader/indicators
-include src/tzutrader/strategy
-include src/tzutrader/portfolio
-include src/tzutrader/trader
-include src/tzutrader/scanner
-include src/tzutrader/exports
+include tzutrader/core
+include tzutrader/data
+include tzutrader/indicators
+include tzutrader/strategy
+include tzutrader/portfolio
+include tzutrader/trader
+include tzutrader/scanner
+include tzutrader/exports
 
 const
   Version = "0.7.0"

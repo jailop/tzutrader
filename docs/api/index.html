@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TzuTrader API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.2.6">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,600,900' rel='stylesheet' type='text/css'/>
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
+</head>
+<body>
+<div class="document" id="documentId">
+  <div class="container">
+    <h1 class="title">TzuTrader API Documentation</h1>
+    
+    <div id="content">
+      <p>Complete API reference for TzuTrader v0.7.0 - auto-generated from source code.</p>
+      
+      <h2>Overview</h2>
+      <p>This API documentation provides exhaustive function signatures, types, and implementation details. For conceptual understanding and usage patterns, see the <a href="../user_guide/">User Guide</a> and <a href="../reference_guide/">Reference Guide</a>.</p>
+      
+      <h2>Core Modules</h2>
+      
+      <h3><a href="tzutrader.html">tzutrader</a></h3>
+      <p>Main module that exports all public APIs. Import this module to access all TzuTrader functionality.</p>
+      
+      <h3><a href="core.html">tzutrader/core</a></h3>
+      <p>Core data types: OHLCV bars, intervals, signals, and trade logs. Fundamental types used throughout the library.</p>
+      
+      <h3><a href="data.html">tzutrader/data</a></h3>
+      <p>Data loading and management: CSV I/O, mock data generation, and data streaming for large datasets.</p>
+      
+      <h3><a href="indicators.html">tzutrader/indicators</a></h3>
+      <p>Technical indicators: SMA, EMA, RSI, MACD, Bollinger Bands, ATR, and more. All indicators operate on OHLCV sequences.</p>
+      
+      <h3><a href="strategy.html">tzutrader/strategy</a></h3>
+      <p>Strategy framework: Base strategy types and built-in strategies including RSI, MA Crossover, MACD, and Bollinger Bands.</p>
+      
+      <h3><a href="portfolio.html">tzutrader/portfolio</a></h3>
+      <p>Portfolio management: Position tracking, order execution, commission calculation, and accounting.</p>
+      
+      <h3><a href="trader.html">tzutrader/trader</a></h3>
+      <p>Backtesting engine: Execute strategies on historical data, generate performance reports, and analyze results.</p>
+      
+      <h3><a href="scanner.html">tzutrader/scanner</a></h3>
+      <p>Multi-symbol scanning: Test strategies across multiple symbols, rank results, and identify opportunities.</p>
+      
+      <h3><a href="exports.html">tzutrader/exports</a></h3>
+      <p>Export functionality: Convert backtest reports and scan results to JSON or CSV formats for analysis.</p>
+      
+      <hr/>
+      
+      <h2>Documentation Organization</h2>
+      
+      <p>TzuTrader provides three levels of documentation:</p>
+      
+      <ol>
+        <li><strong>API Documentation</strong> (this site): Exhaustive function reference auto-generated from source code</li>
+        <li><strong><a href="../reference_guide/">Reference Guide</a></strong>: Complete technical specifications with context and working examples</li>
+        <li><strong><a href="../user_guide/">User Guide</a></strong>: Conceptual introductions focused on learning and understanding</li>
+      </ol>
+      
+      <p>Start with the User Guide to learn concepts, use the Reference Guide for detailed specifications, and consult this API Documentation for exact function signatures and implementation details.</p>
+      
+      <h2>Quick Links</h2>
+      <ul>
+        <li><a href="../README.md">Main Documentation Index</a></li>
+        <li><a href="../user_guide/01_getting_started.md">Getting Started</a></li>
+        <li><a href="https://github.com/tzutrader/tzutrader">GitHub Repository</a></li>
+      </ul>
+      
+      <p style="margin-top: 40px; font-size: 0.9em; color: #666;">
+        Generated from TzuTrader v0.7.0 source code using Nim's built-in documentation generator.
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
