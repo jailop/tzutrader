@@ -7,10 +7,112 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 6 - Trading Engine & Backtesting (Next)
-- Backtesting framework
-- Transaction costs and slippage
-- Performance reporting
+## [0.6.0] - 2026-01-30
+
+### Added - Phase 6: Trading Engine & Backtesting ✓
+
+#### Trader Module (`src/tzutrader/trader.nim`)
+- **Core Types**
+  - `BacktestReport` - Comprehensive performance report with 20+ metrics
+    - Symbol, start/end time, initial/final values
+    - Total and annualized returns
+    - Sharpe ratio, max drawdown, drawdown duration
+    - Win rate, profit factor, trade statistics
+    - Best/worst trades, average returns
+    - Total commission tracking
+  - `TradeLog` - Individual trade event logging
+    - Timestamp, symbol, action, quantity, price
+    - Cash and equity snapshots
+  - `Backtester` - Main backtesting engine
+    - Strategy integration
+    - Portfolio management
+    - Trade execution and logging
+    - Equity curve tracking
+
+- **Backtesting Operations**
+  - `newBacktester()` - Create backtester with strategy
+  - `run()` - Execute backtest on historical data
+  - `executeSignal()` - Convert strategy signals to portfolio orders
+  - Automatic position sizing (95% of available cash)
+  - Final position auto-close at end of backtest
+
+- **Convenience API**
+  - `quickBacktest()` - Simple backtest function
+  - `quickBacktestCSV()` - Backtest directly from CSV file
+  - Single-function backtesting for rapid testing
+
+- **Performance Analytics**
+  - Annualized return calculation with compound growth
+  - Sharpe ratio from transaction-based returns
+  - Max drawdown tracked through equity curve
+  - Win rate and profit factor calculations
+  - Best/worst trade tracking
+  - Average win/loss statistics
+
+- **Report Formatting**
+  - Detailed multi-line report with `$` operator
+  - Compact one-line summary with `formatCompact()`
+  - Human-readable performance metrics
+
+#### Tests (`tests/test_trader.nim`)
+- 30 comprehensive unit tests covering:
+  - Backtester construction (3 tests)
+  - Backtest execution (5 tests)
+  - Signal execution (2 tests)
+  - Commission handling (1 test)
+  - Report generation (4 tests)
+  - Convenience API (2 tests)
+  - Performance metrics (4 tests)
+  - Trade logging (2 tests)
+  - Strategy integration with RSI, Crossover, MACD, Bollinger (4 tests)
+  - Edge cases (2 tests)
+
+#### Examples
+- `examples/backtest_example.nim` - Comprehensive backtesting demonstration
+  - Quick backtest with RSI strategy
+  - Full backtest with MA crossover
+  - Multi-strategy comparison (6 strategies)
+  - CSV-based backtesting
+  - Performance metrics analysis
+  - Trade log examination
+  - Strategy comparison tables
+
+#### Documentation
+- Trader module fully documented
+- Backtesting workflow explained
+- Performance metrics definitions
+- Report format documentation
+
+### Changed
+- Updated main module to export trader module
+- Version bumped to 0.6.0
+- Test suite now includes trader tests (180 total tests)
+- Nimble file updated with trader tasks and examples
+- README updated with backtesting examples
+
+### Features
+- **Signal Execution Logic**
+  - Buy signals: Calculate quantity from available cash
+  - Sell signals: Close entire position
+  - Stay signals: No action
+  - All trades logged with full context
+
+- **Position Sizing**
+  - Uses 95% of available cash per trade (5% buffer)
+  - Floor quantity to avoid fractional shares
+  - Automatic quantity calculation
+
+- **Performance Metrics**
+  - 20+ comprehensive metrics in BacktestReport
+  - Equity curve for drawdown analysis
+  - Transaction-based return calculations
+  - Risk-adjusted performance measures
+
+### Integration
+- Works seamlessly with Phase 4 strategies
+- Uses Phase 5 portfolio for trade execution
+- Integrates with Phase 2 CSV data
+- Generates comprehensive performance reports
 
 ## [0.5.0] - 2026-01-30
 
@@ -344,26 +446,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Future Releases
 
-### [0.5.0] - Phase 5: Portfolio Management
-- Portfolio tracking and valuation
-- Transaction management
-- Performance metrics (returns, Sharpe ratio)
-- Risk management features
-
-### [0.6.0] - Phase 6: Trading Engine
-- Backtesting engine
-- Live trading support
-- Signal execution
-- Performance reporting
+### [0.7.0] - Phase 7: Utilities & Tools (Optional)
+- Multi-symbol scanners
+- Advanced reporting (JSON/CSV export)
+- CLI tool
+- Live trading mode
 
 ### [1.0.0] - Production Release
 - Complete feature set
 - Stable API
 - Performance optimizations
 - Comprehensive documentation
-- CLI tools
 
-[Unreleased]: https://github.com/yourusername/tzutrader/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/yourusername/tzutrader/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.6.0
+[0.5.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.5.0
 [0.4.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.4.0
 [0.3.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.3.0
 [0.2.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.2.0

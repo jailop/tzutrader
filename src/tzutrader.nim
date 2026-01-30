@@ -45,18 +45,23 @@
 ## - `strategy <tzutrader/strategy.html>`_: Strategy framework and pre-built strategies
 ## - `portfolio <tzutrader/portfolio.html>`_: Portfolio management
 ## - `trader <tzutrader/trader.html>`_: Trading engine and backtesting
+## - `scanner <tzutrader/scanner.html>`_: Multi-symbol scanning and ranking
+## - `exports <tzutrader/exports.html>`_: Export to JSON/CSV formats
 
 import tzutrader/core
 import tzutrader/data
 import tzutrader/indicators
 import tzutrader/strategy
 import tzutrader/portfolio
+import tzutrader/trader
+import tzutrader/scanner
+import tzutrader/exports
 
 # Re-export core types for convenience
-export core, data, indicators, strategy, portfolio
+export core, data, indicators, strategy, portfolio, trader, scanner, exports
 
 # Version information
 const
-  TzuTraderVersion* = "0.5.0"
+  TzuTraderVersion* = "0.7.0"
   TzuTraderAuthor* = "tzutrader contributors"
   TzuTraderLicense* = "MIT"

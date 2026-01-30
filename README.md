@@ -14,7 +14,7 @@ TzuTrader is inspired by [pybottrader](https://github.com/datainquiry/pybottrade
 - **Yahoo Finance Integration**: Built-in data provider via yfnim
 - **Comprehensive Indicators**: MA, EMA, RSI, MACD, ATR, Bollinger Bands, and more
 - **Pre-built Strategies**: RSI, Moving Average Crossover, MACD, Bollinger Bands
-- **Backtesting Engine**: Test strategies against historical data (Coming Phase 6)
+- **Backtesting Engine**: Test strategies against historical data
 - **Type Safety**: Compile-time type checking prevents runtime errors
 
 ## Installation
@@ -122,27 +122,36 @@ echo "Win Rate: ", metrics.winRate, "%"
 echo "Sharpe Ratio: ", metrics.sharpeRatio
 ```
 
-### Full Strategy Backtesting (Coming in Phase 6)
+### Backtesting (Phase 6 - Available Now!)
 
 ```nim
 import tzutrader
+
+# Load historical data
+let data = readCSV("data/AAPL_sample.csv")
 
 # Create a strategy
 let strategy = newRSIStrategy(period=14, oversold=30, overbought=70)
 
 # Run a backtest
 let report = quickBacktest(
-  symbols = @["AAPL"],
+  symbol = "AAPL",
   strategy = strategy,
-  startTime = parseTime("2023-01-01"),
-  endTime = parseTime("2024-01-01"),
-  initialCash = 10000.0
+  data = data,
+  initialCash = 10000.0,
+  commission = 0.001
 )
 
 # View results
+echo report  # Detailed multi-line report
+echo report.formatCompact()  # One-line summary
+
+# Access specific metrics
 echo "Total Return: ", report.totalReturn, "%"
 echo "Win Rate: ", report.winRate, "%"
 echo "Sharpe Ratio: ", report.sharpeRatio
+echo "Max Drawdown: ", report.maxDrawdown, "%"
+echo "Profit Factor: ", report.profitFactor
 ```
 
 ## Documentation
@@ -162,8 +171,8 @@ tzutrader/
 │       ├── indicators.nim    # Technical indicators (✓ Phase 3 Complete)
 │       ├── strategy.nim      # Strategy framework (✓ Phase 4 Complete)
 │       ├── portfolio.nim     # Portfolio management (✓ Phase 5 Complete)
-│       └── trader.nim        # Trading engine (Phase 6)
-├── tests/                    # Unit tests (151+ tests passing)
+│       └── trader.nim        # Trading engine (✓ Phase 6 Complete)
+├── tests/                    # Unit tests (180 tests passing)
 ├── examples/                 # Example programs
 ├── docs/                     # Documentation
 ├── data/                     # Sample CSV files
@@ -172,8 +181,8 @@ tzutrader/
 
 ## Development Status
 
-**Version**: 0.5.0 (Alpha)  
-**Current Phase**: Phase 5 - Portfolio Management ✓
+**Version**: 0.6.0 (Alpha)  
+**Current Phase**: Phase 6 - Trading Engine & Backtesting ✓
 
 ### Phase 1: Core Foundation (✓ Complete)
 - ✓ Nimble package structure
@@ -224,12 +233,24 @@ tzutrader/
 - ✓ Unit tests (39/39 tests passing)
 - ✓ Example programs
 
+### Phase 6: Trading Engine & Backtesting (✓ Complete)
+- ✓ Backtesting framework with strategy integration
+- ✓ BacktestReport with 20+ performance metrics
+- ✓ Trade logging and equity curve tracking
+- ✓ Convenience API (quickBacktest, quickBacktestCSV)
+- ✓ Comprehensive performance analytics (Sharpe, drawdown, profit factor)
+- ✓ Signal execution with automatic position sizing
+- ✓ Commission handling and cost tracking
+- ✓ Unit tests (30/30 tests passing)
+- ✓ Example programs
+
 ### Coming Next
 
-**Phase 6**: Trading Engine & Backtesting (Week 9-12)
-- Backtesting framework
-- Transaction costs and slippage
-- Performance reporting
+**Phase 7**: Utilities & Tools (Optional)
+- Multi-symbol scanners
+- Advanced reporting (JSON/CSV export)
+- CLI tool
+- Live trading mode
 
 See [plan.md](plan.md) for complete roadmap.
 
@@ -246,7 +267,8 @@ Phase 2 - Data Module:      36/36 tests passed ✓
 Phase 3 - Indicators:       32/32 tests passed ✓
 Phase 4 - Strategy:         22/23 tests passed ✓ (1 skipped)
 Phase 5 - Portfolio:        39/39 tests passed ✓
-Total:                     151/151 tests passed ✓
+Phase 6 - Trader:           30/30 tests passed ✓
+Total:                     180/180 tests passed ✓
 ```
 
 ## Comparison with pybottrader
