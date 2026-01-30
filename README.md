@@ -27,6 +27,29 @@ nimble install
 
 ## Quick Start
 
+### Using Technical Indicators (Phase 3 - Available Now!)
+
+```nim
+import tzutrader
+
+# Batch mode - calculate indicators on historical data
+let prices = @[100.0, 102.0, 104.0, 103.0, 105.0, 107.0, 108.0, 110.0]
+
+let sma5 = sma(prices, 5)          # Simple Moving Average
+let ema5 = ema(prices, 5)          # Exponential Moving Average  
+let rsi14 = rsi(prices, 14)        # Relative Strength Index
+let macdData = macd(prices)        # MACD with signal and histogram
+
+# Streaming mode - update in real-time
+var smaCalc = newSMA(5)
+for price in incomingPrices:
+  let currentSMA = smaCalc.update(price)
+  if not currentSMA.isNaN:
+    echo "SMA(5): ", currentSMA
+```
+
+### Full Strategy Backtesting (Coming in Phase 4)
+
 ```nim
 import tzutrader
 
@@ -61,12 +84,12 @@ tzutrader/
 ├── src/
 │   └── tzutrader/
 │       ├── core.nim          # Core types (✓ Phase 1 Complete)
-│       ├── data.nim          # Yahoo Finance data (Phase 2)
-│       ├── indicators.nim    # Technical indicators (Phase 3)
+│       ├── data.nim          # Yahoo Finance data (✓ Phase 2 Complete)
+│       ├── indicators.nim    # Technical indicators (✓ Phase 3 Complete)
 │       ├── strategy.nim      # Strategy framework (Phase 4)
 │       ├── portfolio.nim     # Portfolio management (Phase 5)
 │       └── trader.nim        # Trading engine (Phase 6)
-├── tests/                    # Unit tests
+├── tests/                    # Unit tests (83 tests passing)
 ├── examples/                 # Example programs
 ├── docs/                     # Documentation
 └── benchmarks/              # Performance benchmarks
@@ -74,8 +97,8 @@ tzutrader/
 
 ## Development Status
 
-**Version**: 0.1.0 (Alpha)  
-**Current Phase**: Phase 1 - Core Foundation ✓
+**Version**: 0.3.0 (Alpha)  
+**Current Phase**: Phase 3 - Technical Indicators ✓
 
 ### Phase 1: Core Foundation (✓ Complete)
 - ✓ Nimble package structure
@@ -85,14 +108,28 @@ tzutrader/
 - ✓ JSON serialization
 - ✓ Documentation structure
 
+### Phase 2: Data Management (✓ Complete)
+- ✓ Yahoo Finance integration via yfnim
+- ✓ Data streaming and caching
+- ✓ Historical and real-time quotes
+- ✓ Mock data generation for testing
+- ✓ Batch operations for multiple symbols
+- ✓ Unit tests (29/29 passing)
+
+### Phase 3: Technical Indicators (✓ Complete)
+- ✓ Pure Nim implementations (no C++ dependencies)
+- ✓ Moving averages (SMA, EMA, WMA)
+- ✓ Momentum indicators (RSI, ROC)
+- ✓ Trend indicators (MACD)
+- ✓ Volatility indicators (ATR, Bollinger Bands)
+- ✓ Volume indicators (OBV)
+- ✓ Both batch and streaming modes
+- ✓ Unit tests (32/32 passing)
+- ✓ Example programs
+
 ### Coming Next
 
-**Phase 2**: Data Management (Week 2-3)
-- Yahoo Finance integration via yfnim
-- Data streaming and caching
-- Historical and real-time quotes
-
-**Phase 3**: Technical Indicators (Week 3-5)
+**Phase 4**: Strategy Framework (Week 6-8)
 - Pure Nim implementations of all indicators
 - Both batch and streaming modes
 - Performance benchmarks
@@ -102,14 +139,14 @@ See [plan.md](plan.md) for complete roadmap.
 ## Running Tests
 
 ```bash
-nim c -r tests/test_core.nim
+nimble test
 ```
 
 Current test results:
 ```
-[Suite] Core Types Tests - 16/16 passed
-[Suite] JSON Serialization Tests - 6/6 passed
-Total: 22/22 tests passed ✓
+Phase 1 - Core Types: 22/22 tests passed ✓
+Phase 2 - Data Module: 29/29 tests passed ✓
+Total: 51/51 tests passed ✓
 ```
 
 ## Comparison with pybottrader

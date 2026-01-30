@@ -47,9 +47,11 @@
 ## - `trader <tzutrader/trader.html>`_: Trading engine and backtesting
 
 import tzutrader/core
+import tzutrader/data
+import tzutrader/indicators
 
 # Re-export core types for convenience
-export core
+export core, data, indicators
 
 # Version information
 const

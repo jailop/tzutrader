@@ -1,7 +1,8 @@
 ## Unit tests for tzutrader/core module
 
 import std/[unittest, tables, times, json, strutils]
-import ../src/tzutrader/core
+
+include ../src/tzutrader/core
 
 suite "Core Types Tests":
   
