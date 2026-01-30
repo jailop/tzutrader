@@ -13,10 +13,10 @@ examples/*
 !examples/*.nim
 benchmarks/indicator_perf
 
-# Generated documentation
-docs/*.html
-docs/*.idx
-docs/*.js
+# Generated documentation (keep generated HTML for GitHub Pages)
+docs/*
+!docs/.gitkeep
+!docs/CNAME
 
 # IDE and editor files
 .vscode/

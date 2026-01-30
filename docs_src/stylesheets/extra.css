@@ -1,0 +1,58 @@
+/* Custom CSS for TzuTrader Documentation */
+
+/* Improve code block readability */
+.highlight {
+  margin: 1em 0;
+}
+
+/* Better spacing for admonitions (callout blocks) */
+.admonition {
+  margin: 1.5em 0;
+}
+
+/* Table styling */
+table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+/* Ensure inline code stands out */
+code {
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Navigation adjustments */
+.md-nav__item--active > .md-nav__link {
+  font-weight: 500;
+}
+
+/* Improve formula rendering spacing */
+.arithmatex {
+  margin: 1em 0;
+}
+
+/* Better heading spacing */
+h2 {
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+}
+
+h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+}
+
+/* Definition list styling for parameters */
+dl dt {
+  font-weight: 600;
+  margin-top: 1em;
+}
+
+dl dd {
+  margin-left: 2em;
+  margin-bottom: 0.5em;
+}

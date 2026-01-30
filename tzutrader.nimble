@@ -27,18 +27,25 @@ task test, "Run the test suite":
   echo "========================="
   echo "All tests passed!"
 
-task docs, "Generate documentation":
-  echo "Generating documentation..."
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/core.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/data.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/indicators.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/strategy.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/portfolio.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/trader.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/scanner.nim"
-  exec "nim doc --project --index:on --outdir:docs src/tzutrader/exports.nim"
-  echo "Documentation generated in docs/"
+task docs, "Build complete HTML documentation":
+  echo "Building TzuTrader documentation..."
+  exec "bash scripts/build_docs.sh"
+
+task docserve, "Serve documentation locally":
+  echo "Starting documentation server..."
+  exec "bash scripts/serve_docs.sh"
+
+task docclean, "Clean generated documentation":
+  echo "Cleaning documentation build..."
+  exec "rm -rf docs/*"
+  exec "touch docs/.gitkeep"
+  echo "Documentation cleaned"
+
+task docapi, "Generate API documentation only":
+  echo "Generating API documentation..."
+  exec "mkdir -p docs/api"
+  exec "nim doc --project --index:on --outdir:docs/api src/tzutrader.nim"
+  echo "API documentation generated in docs/api/"
 
 task benchmark, "Run performance benchmarks":
   exec "nim c -d:release --opt:speed -r benchmarks/indicator_perf.nim"

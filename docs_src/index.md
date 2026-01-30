@@ -61,7 +61,7 @@ The **API Documentation** is auto-generated from source code comments. It provid
 
 1. Read [Getting Started](user_guide/01_getting_started.md)
 2. Follow the [first backtest example](user_guide/01_getting_started.md#your-first-backtest)
-3. Explore the [examples directory](../examples/)
+3. Explore the examples in the repository
 
 ### Looking for Specific Information?
 
@@ -208,6 +208,40 @@ MIT License - see LICENSE file for details
 ## Acknowledgments
 
 Inspired by [pybottrader](https://github.com/datainquiry/pybottrader) from the DataInquiry team.
+
+## Limitations
+
+TzuTrader is designed specifically for price-based technical analysis using OHLCV (Open, High, Low, Close, Volume) data. All indicators and strategies in the library operate on this standardized market data format.
+
+**Current scope:**
+- Technical indicators calculate from OHLCV bars
+- Pre-built strategies generate signals from price and volume patterns
+- Backtesting simulates trading based on historical OHLCV data
+
+**Not currently supported:**
+- Order book data and market microstructure analysis
+- Level 2 data or bid-ask spreads
+- Alternative data sources (news sentiment, social media, economic indicators)
+- Cross-asset correlation strategies requiring synchronized multi-market data
+- Tick-level or sub-bar execution modeling
+
+This focused scope allows TzuTrader to maintain its streaming architecture with constant memory usage. For most retail traders working with daily, hourly, or minute bars, OHLCV data provides sufficient information for technical analysis strategies. The library can be extended with custom indicators and strategies that work within this data framework.
+
+## About the Name
+
+TzuTrader takes its name from Sun Tzu (孫子), the ancient Chinese military strategist and author of *The Art of War*. Written around the 5th century BC, this treatise on military strategy has found application far beyond warfare, particularly in business and trading.
+
+Several principles from *The Art of War* apply directly to algorithmic trading:
+
+**"Know the enemy and know yourself; in a hundred battles you will never be in peril."** This translates to understanding both market conditions and your strategy's behavior through rigorous backtesting before risking capital.
+
+**"The general who wins the battle makes many calculations in his temple before the battle is fought."** Systematic backtesting and strategy validation embody this preparation, allowing traders to test ideas thoroughly before deployment.
+
+**"In war, numbers alone confer no advantage."** Similarly in trading, simply having more indicators or complex strategies does not guarantee success. What matters is disciplined execution of well-tested approaches.
+
+**"To secure ourselves against defeat lies in our own hands."** Risk management and position sizing—core features of TzuTrader—are tools traders control directly, protecting capital regardless of market outcomes.
+
+The name reflects the library's emphasis on preparation through backtesting, disciplined strategy development, and systematic decision-making based on tested rules rather than emotion or speculation.
 
 ## Next Steps
 
