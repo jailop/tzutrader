@@ -14,10 +14,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Phase 4 - Strategy Framework (Next)
-- Strategy base class and interface
-- Pre-built strategies (RSI, Crossover, MACD, Bollinger)
-- Strategy composition support
+### Phase 5 - Portfolio Management (Next)
+- Portfolio class with position tracking
+- Order execution simulation
+- Performance metrics (returns, Sharpe ratio)
+
+### Phase 6 - Trading Engine & Backtesting (Future)
+- Backtesting framework
+- Transaction costs and slippage
+- Performance reporting
+
+## [0.4.0] - 2026-01-30
+
+### Added - Phase 4: Strategy Framework ✓
+
+#### Strategy Module (`src/tzutrader/strategy.nim`)
+- **Base Strategy Class**
+  - `Strategy` base type with virtual methods
+  - `analyze()` - Batch mode processing for historical data
+  - `onBar()` - Streaming mode for real-time processing
+  - `reset()` - Clear internal state for reuse
+  - Protected `history` field for bar storage
+
+- **Pre-built Strategies**
+  - `RSIStrategy` - Relative Strength Index strategy
+    - Buy when RSI < oversold threshold
+    - Sell when RSI > overbought threshold
+    - Configurable period, oversold, overbought parameters
+    - `newRSIStrategy()` constructor
+  - `CrossoverStrategy` - Moving Average Crossover
+    - Buy on golden cross (fast MA crosses above slow MA)
+    - Sell on death cross (fast MA crosses below slow MA)
+    - Configurable fast and slow periods
+    - `newCrossoverStrategy()` constructor
+  - `MACDStrategy` - MACD Line Crossover
+    - Buy when MACD line crosses above signal line
+    - Sell when MACD line crosses below signal line
+    - Configurable fast, slow, signal periods
+    - `newMACDStrategy()` constructor
+  - `BollingerStrategy` - Bollinger Bands Mean Reversion
+    - Buy when price touches lower band
+    - Sell when price touches upper band
+    - Configurable period and standard deviation
+    - `newBollingerStrategy()` constructor
+
+#### Features
+- **Dual API**: All strategies support both batch and streaming modes
+- **Consistent Interface**: All strategies inherit from base `Strategy` class
+- **Signal Generation**: Returns `Signal` objects with position, timestamp, and price
+- **Stateful Processing**: Maintains internal state for streaming mode
+- **Reset Capability**: All strategies can be reset for reuse
+- **Type Safety**: Compile-time polymorphism via method dispatch
+
+#### Testing
+- Comprehensive test suite (27 tests, all passing)
+- Tests for all 4 strategies in batch and streaming modes
+- Signal generation validation
+- Reset functionality tests
+- Batch vs streaming consistency tests
+- Multi-strategy comparison tests
+- Real CSV data integration tests
+- `tests/test_strategy.nim` with full coverage
+
+#### Examples
+- `examples/strategy_example.nim` - Complete demonstration
+- Batch mode analysis on historical data
+- Streaming mode for real-time simulation
+- Multi-strategy comparison
+- Multi-symbol analysis
+- Parameter tuning examples
+- CSV data integration
+
+#### Documentation
+- Full API documentation in module comments
+- Usage examples for each strategy
+- Strategy design patterns
+- Batch vs streaming mode guidelines
+
+### Design Decisions
+- Base class with virtual methods for extensibility
+- Dual API (batch + streaming) for flexibility
+- Strategies maintain minimal state (just history)
+- Signal objects for clean separation of concerns
+- Reset method for strategy reuse across datasets
+- Consistent constructor naming (`new*Strategy`)
+
+### Integration
+- Works seamlessly with Phase 3 indicators
+- Uses Phase 2 CSV data streaming
+- Generates Phase 1 Signal objects
+- Ready for Phase 5 portfolio integration
 
 ## [0.3.0] - 2026-01-30
 
@@ -187,24 +273,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Future Releases
 
-### [0.2.0] - Phase 2: Data Management
-- Yahoo Finance data integration
-- Data streaming and caching mechanisms
-- Support for multiple timeframes
-
-### [0.3.0] - Phase 3: Technical Indicators  
-- Pure Nim implementations of 15+ indicators
-- Moving averages (SMA, EMA, WMA)
-- Momentum indicators (RSI, Stochastic, ROC)
-- Trend indicators (MACD, ADX)
-- Volatility indicators (ATR, Bollinger Bands)
-- Volume indicators (OBV)
-
-### [0.4.0] - Phase 4: Strategy Framework
-- Strategy base class and interface
-- Pre-built strategies (RSI, Crossover, MACD, Bollinger)
-- Strategy composition support
-
 ### [0.5.0] - Phase 5: Portfolio Management
 - Portfolio tracking and valuation
 - Transaction management
@@ -224,5 +292,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive documentation
 - CLI tools
 
-[Unreleased]: https://github.com/yourusername/tzutrader/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/yourusername/tzutrader/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.4.0
+[0.3.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.3.0
+[0.2.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.2.0
 [0.1.0]: https://github.com/yourusername/tzutrader/releases/tag/v0.1.0

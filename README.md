@@ -13,8 +13,8 @@ TzuTrader is inspired by [pybottrader](https://github.com/datainquiry/pybottrade
 - **High Performance**: 10-100x faster than Python equivalents
 - **Yahoo Finance Integration**: Built-in data provider via yfnim
 - **Comprehensive Indicators**: MA, EMA, RSI, MACD, ATR, Bollinger Bands, and more
-- **Pre-built Strategies**: RSI, Moving Average Crossover, MACD
-- **Backtesting Engine**: Test strategies against historical data
+- **Pre-built Strategies**: RSI, Moving Average Crossover, MACD, Bollinger Bands
+- **Backtesting Engine**: Test strategies against historical data (Coming Phase 6)
 - **Type Safety**: Compile-time type checking prevents runtime errors
 
 ## Installation
@@ -26,6 +26,26 @@ nimble install
 ```
 
 ## Quick Start
+
+### Reading CSV Data (Phase 2 - Available Now!)
+
+```nim
+import tzutrader
+
+# Load historical data from CSV
+let csvStream = newCSVDataStream("data/AAPL.csv")
+echo "Loaded ", csvStream.len(), " bars"
+
+# Stream through data
+for bar in csvStream.items():
+  echo "Close: $", bar.close, " Volume: ", bar.volume
+
+# Or use sequential processing
+csvStream.reset()
+while csvStream.hasNext():
+  let bar = csvStream.next()
+  # Process each bar...
+```
 
 ### Using Technical Indicators (Phase 3 - Available Now!)
 
@@ -48,7 +68,29 @@ for price in incomingPrices:
     echo "SMA(5): ", currentSMA
 ```
 
-### Full Strategy Backtesting (Coming in Phase 4)
+### Using Strategies (Phase 4 - Available Now!)
+
+```nim
+import tzutrader
+
+# Load CSV data
+let data = readCSV("data/AAPL_sample.csv")
+
+# Create and run RSI strategy
+let rsiStrategy = newRSIStrategy(period=14, oversold=30.0, overbought=70.0)
+let signals = rsiStrategy.analyze(data)  # Batch mode
+
+# Or use streaming mode
+let streamStrategy = newCrossoverStrategy(fastPeriod=10, slowPeriod=20)
+for bar in data:
+  let signal = streamStrategy.onBar(bar)
+  if signal.position == Position.Buy:
+    echo "Buy signal at $", signal.price
+  elif signal.position == Position.Sell:
+    echo "Sell signal at $", signal.price
+```
+
+### Full Strategy Backtesting (Coming in Phase 6)
 
 ```nim
 import tzutrader
@@ -86,19 +128,20 @@ tzutrader/
 │       ├── core.nim          # Core types (✓ Phase 1 Complete)
 │       ├── data.nim          # Yahoo Finance data (✓ Phase 2 Complete)
 │       ├── indicators.nim    # Technical indicators (✓ Phase 3 Complete)
-│       ├── strategy.nim      # Strategy framework (Phase 4)
+│       ├── strategy.nim      # Strategy framework (✓ Phase 4 Complete)
 │       ├── portfolio.nim     # Portfolio management (Phase 5)
 │       └── trader.nim        # Trading engine (Phase 6)
-├── tests/                    # Unit tests (83 tests passing)
+├── tests/                    # Unit tests (117+ tests passing)
 ├── examples/                 # Example programs
 ├── docs/                     # Documentation
+├── data/                     # Sample CSV files
 └── benchmarks/              # Performance benchmarks
 ```
 
 ## Development Status
 
-**Version**: 0.3.0 (Alpha)  
-**Current Phase**: Phase 3 - Technical Indicators ✓
+**Version**: 0.4.0 (Alpha)  
+**Current Phase**: Phase 4 - Strategy Framework ✓
 
 ### Phase 1: Core Foundation (✓ Complete)
 - ✓ Nimble package structure
@@ -114,7 +157,9 @@ tzutrader/
 - ✓ Historical and real-time quotes
 - ✓ Mock data generation for testing
 - ✓ Batch operations for multiple symbols
-- ✓ Unit tests (29/29 passing)
+- ✓ **CSV file reading/writing**
+- ✓ **CSV data streaming**
+- ✓ Unit tests (36/36 passing)
 
 ### Phase 3: Technical Indicators (✓ Complete)
 - ✓ Pure Nim implementations (no C++ dependencies)
@@ -127,12 +172,27 @@ tzutrader/
 - ✓ Unit tests (32/32 passing)
 - ✓ Example programs
 
+### Phase 4: Strategy Framework (✓ Complete)
+- ✓ Base Strategy class with analyze() and onBar() methods
+- ✓ RSI Strategy (oversold/overbought signals)
+- ✓ Moving Average Crossover Strategy (golden/death cross)
+- ✓ MACD Strategy (MACD line crossover)
+- ✓ Bollinger Bands Strategy (mean reversion)
+- ✓ Both batch and streaming modes for all strategies
+- ✓ Unit tests (27+ tests passing)
+- ✓ Example programs
+
 ### Coming Next
 
-**Phase 4**: Strategy Framework (Week 6-8)
-- Pure Nim implementations of all indicators
-- Both batch and streaming modes
-- Performance benchmarks
+**Phase 5**: Portfolio Management (Week 6-8)
+- Portfolio class with position tracking
+- Order execution simulation
+- Performance metrics (returns, Sharpe ratio)
+
+**Phase 6**: Trading Engine & Backtesting (Week 9-12)
+- Backtesting framework
+- Transaction costs and slippage
+- Performance reporting
 
 See [plan.md](plan.md) for complete roadmap.
 
@@ -144,9 +204,11 @@ nimble test
 
 Current test results:
 ```
-Phase 1 - Core Types: 22/22 tests passed ✓
-Phase 2 - Data Module: 29/29 tests passed ✓
-Total: 51/51 tests passed ✓
+Phase 1 - Core Types:       22/22 tests passed ✓
+Phase 2 - Data Module:      36/36 tests passed ✓
+Phase 3 - Indicators:       32/32 tests passed ✓
+Phase 4 - Strategy:         27/27 tests passed ✓
+Total:                     117/117 tests passed ✓
 ```
 
 ## Comparison with pybottrader

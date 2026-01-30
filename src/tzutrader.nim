@@ -49,12 +49,13 @@
 import tzutrader/core
 import tzutrader/data
 import tzutrader/indicators
+import tzutrader/strategy
 
 # Re-export core types for convenience
-export core, data, indicators
+export core, data, indicators, strategy
 
 # Version information
 const
-  TzuTraderVersion* = "0.1.0"
+  TzuTraderVersion* = "0.4.0"
   TzuTraderAuthor* = "tzutrader contributors"
   TzuTraderLicense* = "MIT"

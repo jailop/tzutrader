@@ -1,6 +1,6 @@
 ## Unit tests for tzutrader/data module
 
-import std/[unittest, times, tables, sequtils, strutils]
+import std/[unittest, times, tables, sequtils, strutils, os]
 
 include ../src/tzutrader/core
 include ../src/tzutrader/data
@@ -307,6 +307,126 @@ suite "Quote String Representation Tests":
     check "$295" in str
     check "-5" in str
     check "-1.67%" in str
+
+suite "CSV File I/O Tests":
+  
+  test "Write and read CSV file":
+    let testData = @[
+      OHLCV(timestamp: 1000, open: 100.0, high: 105.0, low: 95.0, close: 102.0, volume: 1000000.0),
+      OHLCV(timestamp: 2000, open: 102.0, high: 107.0, low: 100.0, close: 104.0, volume: 1500000.0),
+      OHLCV(timestamp: 3000, open: 104.0, high: 109.0, low: 102.0, close: 106.0, volume: 2000000.0)
+    ]
+    
+    let filename = "test_temp.csv"
+    writeCSV(testData, filename)
+    let readData = readCSV(filename)
+    
+    check readData.len == 3
+    check readData[0].timestamp == 1000
+    check readData[0].close == 102.0
+    check readData[2].volume == 2000000.0
+    
+    # Cleanup
+    removeFile(filename)
+  
+  test "CSV with no header":
+    let testData = @[
+      OHLCV(timestamp: 1000, open: 100.0, high: 105.0, low: 95.0, close: 102.0, volume: 1000000.0)
+    ]
+    
+    let filename = "test_noheader.csv"
+    writeCSV(testData, filename, includeHeader = false)
+    let readData = readCSV(filename, hasHeader = false)
+    
+    check readData.len == 1
+    check readData[0].close == 102.0
+    
+    removeFile(filename)
+  
+  test "CSV error handling - invalid format":
+    let filename = "test_invalid.csv"
+    var file = open(filename, fmWrite)
+    file.writeLine("timestamp,open,high,low,close,volume")
+    file.writeLine("invalid,data,here")
+    file.close()
+    
+    expect(DataError):
+      discard readCSV(filename)
+    
+    removeFile(filename)
+
+suite "CSV DataStream Tests":
+  
+  test "Create CSV data stream":
+    # Use one of the generated CSV files
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    
+    check csvStream.len() > 0
+    check csvStream.symbol == "TEST"
+    check csvStream.hasNext()
+  
+  test "CSV stream iteration":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    let originalLen = csvStream.len()
+    
+    var count = 0
+    csvStream.reset()
+    while csvStream.hasNext():
+      discard csvStream.next()
+      count.inc
+    
+    check count == originalLen
+    check not csvStream.hasNext()
+  
+  test "CSV stream reset":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    
+    # Advance a few bars
+    discard csvStream.next()
+    discard csvStream.next()
+    check csvStream.index == 2
+    
+    # Reset
+    csvStream.reset()
+    check csvStream.index == 0
+    check csvStream.hasNext()
+  
+  test "CSV stream peek":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    csvStream.reset()
+    
+    let first = csvStream.peek()
+    let second = csvStream.next()
+    
+    check first.timestamp == second.timestamp
+    check first.close == second.close
+  
+  test "CSV stream remaining":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    let total = csvStream.len()
+    
+    csvStream.reset()
+    check csvStream.remaining() == total
+    
+    discard csvStream.next()
+    check csvStream.remaining() == total - 1
+  
+  test "CSV stream iterator":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    var count = 0
+    
+    for bar in csvStream.items():
+      count.inc
+      check bar.timestamp > 0
+    
+    check count == csvStream.len()
+  
+  test "CSV stream string representation":
+    let csvStream = newCSVDataStream("data/TEST.csv")
+    let str = $csvStream
+    
+    check "TEST" in str
+    check "bars" in str
 
 when isMainModule:
   echo "Running data module tests..."

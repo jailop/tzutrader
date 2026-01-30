@@ -11,7 +11,7 @@
 ## - Iterator interface for streaming data
 ## - Mock data generation for testing
 
-import std/[times, tables, sequtils, strutils, math, random, algorithm]
+import std/[times, tables, sequtils, strutils, math, random, algorithm, os]
 import core
 
 type
@@ -338,3 +338,151 @@ proc `$`*(ds: DataStream): string =
   result = "DataStream(" & ds.symbol & 
            ", " & $ds.interval & 
            ", cached: " & $ds.cache.len & " bars)"
+
+# ============================================================================
+# CSV File I/O
+# ============================================================================
+
+proc writeCSV*(data: seq[OHLCV], filename: string, includeHeader: bool = true) =
+  ## Write OHLCV data to CSV file
+  ## 
+  ## CSV Format:
+  ##   timestamp,open,high,low,close,volume
+  ##   1609459200,100.0,105.0,95.0,102.0,1000000.0
+  ## 
+  ## Args:
+  ##   data: OHLCV data to write
+  ##   filename: Output CSV file path
+  ##   includeHeader: Include column headers (default true)
+  var file = open(filename, fmWrite)
+  defer: file.close()
+  
+  if includeHeader:
+    file.writeLine("timestamp,open,high,low,close,volume")
+  
+  for bar in data:
+    file.writeLine($bar.timestamp & "," &
+                  $bar.open & "," &
+                  $bar.high & "," &
+                  $bar.low & "," &
+                  $bar.close & "," &
+                  $bar.volume)
+
+proc readCSV*(filename: string, hasHeader: bool = true): seq[OHLCV] =
+  ## Read OHLCV data from CSV file
+  ## 
+  ## CSV Format:
+  ##   timestamp,open,high,low,close,volume
+  ##   1609459200,100.0,105.0,95.0,102.0,1000000.0
+  ## 
+  ## Args:
+  ##   filename: Input CSV file path
+  ##   hasHeader: Skip first line if true (default true)
+  ## 
+  ## Returns:
+  ##   Sequence of OHLCV bars
+  result = @[]
+  var file = open(filename, fmRead)
+  defer: file.close()
+  
+  var lineNum = 0
+  for line in file.lines:
+    lineNum.inc
+    
+    # Skip header if present
+    if hasHeader and lineNum == 1:
+      continue
+    
+    # Skip empty lines
+    if line.strip().len == 0:
+      continue
+    
+    # Parse CSV line
+    let parts = line.split(',')
+    if parts.len < 6:
+      raise newException(DataError, 
+        "Invalid CSV format at line " & $lineNum & ": expected 6 columns, got " & $parts.len)
+    
+    try:
+      let bar = OHLCV(
+        timestamp: parseBiggestInt(parts[0].strip()),
+        open: parseFloat(parts[1].strip()),
+        high: parseFloat(parts[2].strip()),
+        low: parseFloat(parts[3].strip()),
+        close: parseFloat(parts[4].strip()),
+        volume: parseFloat(parts[5].strip())
+      )
+      result.add(bar)
+    except ValueError as e:
+      raise newException(DataError,
+        "Failed to parse CSV at line " & $lineNum & ": " & e.msg)
+
+type
+  CSVDataStream* = ref object
+    ## CSV-based data stream for backtesting
+    ## Reads OHLCV data from CSV files
+    filename*: string
+    data*: seq[OHLCV]
+    index*: int
+    symbol*: string
+
+proc newCSVDataStream*(filename: string, symbol: string = ""): CSVDataStream =
+  ## Create a new CSV data stream
+  ## 
+  ## Args:
+  ##   filename: Path to CSV file
+  ##   symbol: Optional symbol name (extracted from filename if not provided)
+  ## 
+  ## Example:
+  ##   let stream = newCSVDataStream("data/AAPL.csv")
+  ##   for bar in stream.items():
+  ##     echo bar
+  result = CSVDataStream(
+    filename: filename,
+    data: readCSV(filename),
+    index: 0,
+    symbol: if symbol.len > 0: symbol else: filename.splitFile().name
+  )
+
+proc reset*(stream: CSVDataStream) =
+  ## Reset the stream to the beginning
+  stream.index = 0
+
+proc next*(stream: CSVDataStream): OHLCV =
+  ## Get next bar from stream
+  ## Raises IndexDefect if at end of stream
+  if stream.index >= stream.data.len:
+    raise newException(IndexDefect, "CSV stream exhausted")
+  result = stream.data[stream.index]
+  stream.index.inc
+
+proc hasNext*(stream: CSVDataStream): bool =
+  ## Check if stream has more data
+  stream.index < stream.data.len
+
+proc peek*(stream: CSVDataStream): OHLCV =
+  ## Get current bar without advancing
+  ## Raises IndexDefect if at end of stream
+  if stream.index >= stream.data.len:
+    raise newException(IndexDefect, "CSV stream exhausted")
+  result = stream.data[stream.index]
+
+proc len*(stream: CSVDataStream): int =
+  ## Get total number of bars in stream
+  stream.data.len
+
+proc remaining*(stream: CSVDataStream): int =
+  ## Get number of remaining bars
+  max(0, stream.data.len - stream.index)
+
+iterator items*(stream: CSVDataStream): OHLCV =
+  ## Iterate over all bars in stream
+  stream.reset()
+  while stream.hasNext():
+    yield stream.next()
+
+proc `$`*(stream: CSVDataStream): string =
+  ## String representation of CSV stream
+  result = "CSVDataStream(" & stream.symbol & 
+           ", " & $stream.data.len & " bars" &
+           ", pos: " & $stream.index & ")"
