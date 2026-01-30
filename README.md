@@ -1,21 +1,14 @@
 # TzuTrader
 
-A high-performance trading bot library in Nim for backtesting algorithmic trading strategies.
+A high-performance trading bot library in Nim for backtesting algorithmic trading strategies. It is a re-write of the Python's [pybottrader](https://github.com/datainquiry/pybottrader) library.
 
-## Features
-
-- **Pure Nim Implementation** - No C++ dependencies, simple installation
-- **Fast** - 10-100x faster than equivalent Python libraries
-- **Comprehensive** - Technical indicators, pre-built strategies, backtesting engine
-- **Type Safe** - Compile-time checking prevents runtime errors
-- **Well Documented** - User guide, reference guide, and API documentation
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/tzutrader.git
+git clone https://codeberg.org/jailop/tzutrader.git
 cd tzutrader
 nimble install -y
 ```
@@ -189,18 +182,6 @@ Backtest reports include comprehensive performance analytics:
 ```bash
 nimble test
 ```
-
-**Test Coverage:**
-- Core Types: 22/22 ✓
-- Data Management: 36/36 ✓
-- Technical Indicators: 32/32 ✓
-- Strategies: 22/23 ✓
-- Portfolio: 39/39 ✓
-- Backtesting: 30/30 ✓
-- Scanner: 18/18 ✓
-- Exports: 8/8 ✓
-
-**Total: 207/208 tests passing (99.5%)**
 
 ## Examples
 
