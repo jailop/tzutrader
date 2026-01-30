@@ -17,19 +17,23 @@ A high-performance trading library in Nim for **backtesting strategies** and **b
 - **Type-Safe**: Leverages Nim's strong type system for compile-time safety
 - **Zero Dependencies**: Pure Nim implementation (except optional Yahoo Finance data fetching)
 
-### Technical Indicators (25 Total)
+### Technical Indicators (26 Total)
 - **8 Moving Averages**: SMA, EMA, WMA, TRIMA, DEMA, TEMA, KAMA
 - **6 Momentum Oscillators**: RSI, ROC, Stochastic, StochRSI, CMO, MOM
-- **4 Trend Indicators**: MACD, ADX, PPO, AROON
+- **5 Trend Indicators**: MACD, ADX, PPO, AROON, Parabolic SAR
 - **5 Volatility Measures**: ATR, Bollinger Bands, StdDev, True Range, NATR
 - **3 Volume Indicators**: OBV, MFI, Accumulation/Distribution
 
 All indicators use circular buffers for constant memory usage and support historical access.
 
 ### Strategy Development
-- **Pre-Built Strategies**: RSI, MACD, Moving Average Crossover, Bollinger Bands
+- **16 Pre-Built Strategies**: Comprehensive collection covering all major trading approaches
+  - **Mean Reversion** (6): RSI, Bollinger Bands, Stochastic, MFI, CCI, Filtered Mean Reversion
+  - **Trend Following** (7): MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, ADX Trend
+  - **Volatility** (1): Keltner Channel (breakout/reversion modes)
+  - **Hybrid/Combination** (2): Volume Breakout, Dual Momentum
 - **Custom Strategy Framework**: Simple API for building your own strategies
-- **Advanced Multi-Indicator Strategies**: Trend filters, momentum rotation, divergence detection
+- **Multi-Indicator Strategies**: Combine indicators for more sophisticated approaches
 - **Position Sizing**: Volatility-adjusted and risk-based position sizing support
 
 ### Backtesting & Live Trading
@@ -325,18 +329,67 @@ See `examples/` directory for complete working implementations of these advanced
 
 ### Pre-Built Strategies
 
+TzuTrader includes 16 professional-grade strategies covering all major trading approaches:
+
+**Mean Reversion Strategies:**
 ```nim
-# RSI Strategy - Mean reversion
+# RSI Strategy - Classic overbought/oversold
 let rsi = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
 
-# Moving Average Crossover - Trend following
-let crossover = newCrossoverStrategy(fastPeriod = 10, slowPeriod = 20)
+# Bollinger Bands - Volatility mean reversion
+let bb = newBollingerStrategy(period = 20, stdDev = 2.0)
 
-# MACD Strategy - Momentum
+# Stochastic - %K/%D crossovers in extreme zones
+let stoch = newStochasticStrategy(kPeriod = 14, dPeriod = 3, oversold = 20, overbought = 80)
+
+# Money Flow Index - Volume-weighted momentum
+let mfi = newMFIStrategy(period = 14, oversold = 20, overbought = 80)
+
+# Commodity Channel Index - Mean reversion with volatility
+let cci = newCCIStrategy(period = 20)
+
+# Filtered Mean Reversion - RSI with trend filter
+let filtered = newFilteredMeanReversionStrategy(rsiPeriod = 14, trendPeriod = 200)
+```
+
+**Trend Following Strategies:**
+```nim
+# Moving Average Crossover - Classic golden/death cross
+let crossover = newCrossoverStrategy(fastPeriod = 50, slowPeriod = 200)
+
+# MACD Strategy - Momentum shifts
 let macdStrat = newMACDStrategy(fast = 12, slow = 26, signal = 9)
 
-# Bollinger Bands - Volatility breakout
-let bb = newBollingerStrategy(period = 20, stdDev = 2.0)
+# KAMA - Adaptive moving average
+let kama = newKAMAStrategy(period = 10, fastPeriod = 2, slowPeriod = 30)
+
+# Aroon - Trend strength and direction
+let aroon = newAroonStrategy(period = 25, upThreshold = 70, downThreshold = 30)
+
+# Parabolic SAR - Dynamic trailing stops
+let psar = newParabolicSARStrategy(acceleration = 0.02, maximum = 0.20)
+
+# Triple MA - Three moving average confirmation
+let tripleMa = newTripleMAStrategy(fastPeriod = 20, mediumPeriod = 50, slowPeriod = 200)
+
+# ADX Trend - Strength-filtered trend following
+let adxTrend = newADXTrendStrategy(period = 14, adxThreshold = 25.0)
+```
+
+**Volatility Strategies:**
+```nim
+# Keltner Channel - Breakout or reversion (dual mode)
+let keltnerBreakout = newKeltnerChannelStrategy(emaPeriod = 20, atrPeriod = 10, multiplier = 2.0, mode = Breakout)
+let keltnerReversion = newKeltnerChannelStrategy(emaPeriod = 20, atrPeriod = 10, multiplier = 2.0, mode = Reversion)
+```
+
+**Hybrid/Combination Strategies:**
+```nim
+# Volume Breakout - Price breakout with volume confirmation
+let volBreakout = newVolumeBreakoutStrategy(period = 20, volumeMultiplier = 1.5)
+
+# Dual Momentum - ROC momentum with trend confirmation
+let dualMom = newDualMomentumStrategy(rocPeriod = 12, smaPeriod = 50)
 ```
 
 ### Custom Strategies

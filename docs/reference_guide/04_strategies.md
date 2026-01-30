@@ -2,11 +2,45 @@
 
 ## Overview
 
-Strategies in TzuTrader analyze market data and generate trading signals. The framework provides a base `Strategy` class for building custom strategies and includes four pre-built strategies for common trading approaches.
+Strategies in TzuTrader analyze market data and generate trading signals. The framework provides a base `Strategy` class for building custom strategies and includes 16 pre-built strategies for common trading approaches.
 
 A strategy's core responsibility is simple: given market data, decide whether to buy, sell, or stay out. TzuTrader handles everything else—executing trades, managing positions, tracking performance.
 
 **Module:** `tzutrader/strategy.nim`
+
+## Strategy Categories
+
+TzuTrader's 16 pre-built strategies are organized into categories. Each category has its own detailed reference guide:
+
+### [Mean Reversion Strategies](04a_strategies_mean_reversion.md) (6 strategies)
+
+Strategies that trade price extremes, assuming reversion to average:
+- **RSI Strategy** - Classic overbought/oversold (documented below)
+- **Bollinger Bands Strategy** - Volatility-adjusted extremes (documented below)
+- **Stochastic Strategy** - Position within recent range
+- **MFI Strategy** - Volume-weighted momentum
+- **CCI Strategy** - Statistical deviation from mean
+- **Filtered Mean Reversion** - RSI with trend filter
+
+### [Trend Following Strategies](04b_strategies_trend.md) (7 strategies)
+
+Strategies that ride sustained directional moves:
+- **Moving Average Crossover** - Golden/death crosses (documented below)
+- **MACD Strategy** - Momentum-based trend detection (documented below)
+- **KAMA Strategy** - Adaptive moving average
+- **Aroon Strategy** - Time-based trend identification
+- **Parabolic SAR** - Trailing stop trend follower
+- **Triple MA Strategy** - Multi-timeframe confirmation
+- **ADX Trend Strategy** - Strength-filtered trends
+
+### [Hybrid & Volatility Strategies](04c_strategies_hybrid.md) (3 strategies)
+
+Strategies combining multiple confirmations or trading volatility:
+- **Keltner Channel Strategy** - ATR-based (dual mode: breakout/reversion)
+- **Volume Breakout Strategy** - Price + volume confirmation
+- **Dual Momentum Strategy** - ROC + trend filter
+
+This document covers the strategy interface and the original 4 strategies. See the linked category guides for documentation on the additional 12 strategies.
 
 ## Strategy Fundamentals
 
@@ -91,9 +125,11 @@ method reset*(s: Strategy)
 - Last signal tracking
 - Any accumulated state
 
-## Pre-Built Strategies
+## Pre-Built Strategies (Original Four)
 
-TzuTrader includes four battle-tested strategies covering the main trading approaches: mean reversion, trend following, momentum, and volatility-based trading.
+This section documents the original four strategies in detail. For the additional 12 strategies added in recent versions, see the category-specific guides linked above.
+
+The original four strategies cover the fundamental trading approaches:
 
 ### RSI Strategy
 
@@ -572,6 +608,14 @@ if lastSignal != Buy and rsiVal < oversold:
 ```
 
 ## See Also
+
+### Strategy Category Guides
+
+- **[Mean Reversion Strategies](04a_strategies_mean_reversion.md)** - Complete reference for RSI, Bollinger, Stochastic, MFI, CCI, and Filtered Mean Reversion strategies
+- **[Trend Following Strategies](04b_strategies_trend.md)** - Complete reference for MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, and ADX Trend strategies
+- **[Hybrid & Volatility Strategies](04c_strategies_hybrid.md)** - Complete reference for Keltner Channel, Volume Breakout, and Dual Momentum strategies
+
+### Other References
 
 - [Indicators Reference](03_indicators.md) - Using technical indicators
 - [Backtesting Reference](06_backtesting.md) - Testing strategies

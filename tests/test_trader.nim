@@ -1,13 +1,7 @@
 ## Unit tests for trader module (backtesting)
 
 import std/[unittest, times, tables, math, strutils]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
-include ../src/tzutrader/portfolio
-include ../src/tzutrader/trader
+import ../src/tzutrader/[core, data, indicators, strategy, portfolio, trader]
 
 # Helper to create test data
 proc createTestData(bars: int, startPrice: float64 = 100.0, trend: float64 = 0.0): seq[OHLCV] =

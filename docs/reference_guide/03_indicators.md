@@ -265,6 +265,147 @@ The histogram visualizes the distance between the lines. Growing histogram value
 
 MACD works well in trending markets but generates numerous false signals in sideways markets. The standard 12/26/9 parameters were chosen decades ago for daily charts and may not be optimal for all timeframes or markets.
 
+### Parabolic Stop and Reverse (PSAR)
+
+PSAR provides both trend direction and trailing stop levels. The indicator "stops and reverses" when price crosses the PSAR level, flipping to the opposite side of price.
+
+**Formulas:**
+
+The PSAR calculation is iterative and depends on whether in an uptrend or downtrend:
+
+**Uptrend (PSAR below price):**
+
+$$\text{PSAR}_{t+1} = \text{PSAR}_t + AF \times (EP - \text{PSAR}_t)$$
+
+**Downtrend (PSAR above price):**
+
+$$\text{PSAR}_{t+1} = \text{PSAR}_t - AF \times (\text{PSAR}_t - EP)$$
+
+where:
+- $AF$ = Acceleration Factor (starts at initial value, increases each time a new extreme is reached)
+- $EP$ = Extreme Point (highest high in uptrend, lowest low in downtrend)
+
+**API:**
+
+```nim
+type
+  PSARResult* = object
+    sar*: float64       # Current PSAR value
+    isLong*: bool       # True if in uptrend, false if in downtrend
+    ep*: float64        # Current extreme point
+    af*: float64        # Current acceleration factor
+
+  PSAR* = ref object of Indicator[PSARResult]
+
+proc newPSAR*(acceleration: float64 = 0.02, maxAcceleration: float64 = 0.2, 
+              memSize: int = 1): PSAR
+proc update*(psar: PSAR, high, low: float64): PSARResult
+```
+
+**Parameters:**
+- `acceleration`: Initial and increment value for AF (default 0.02)
+- `maxAcceleration`: Maximum AF value (default 0.2)
+- `memSize`: Size of circular buffer for historical access (default 1)
+- `high, low`: High and low prices for the bar
+
+**Returns:** `PSARResult` with fields:
+- `sar`: The SAR value (stop level)
+- `isLong`: True if currently in uptrend (PSAR below price)
+- `ep`: Current extreme point tracked
+- `af`: Current acceleration factor
+
+**Interpretation:**
+
+PSAR serves two purposes:
+1. **Trend direction**: PSAR below price = uptrend; PSAR above price = downtrend
+2. **Stop placement**: PSAR value provides a trailing stop level
+
+**Trading Signals:**
+- Price crosses above PSAR → Enter long (or exit short)
+- Price crosses below PSAR → Enter short (or exit long)
+
+**Acceleration Mechanism:**
+
+The AF starts at the initial value (typically 0.02) and increases by the same amount each time a new extreme is reached:
+- **Uptrend**: AF increases when price makes a new high
+- **Downtrend**: AF increases when price makes a new low
+- AF caps at maxAcceleration (typically 0.2)
+
+This causes PSAR to accelerate toward price as the trend matures, tightening the trailing stop.
+
+**Usage Characteristics:**
+
+PSAR excels in trending markets but generates excessive whipsaws in ranging markets. It's always in the market (either bullish or bearish), making it suitable for:
+- Trailing stop placement
+- Trend identification
+- Always-in-market strategies
+
+The indicator handles gaps properly by adjusting the SAR calculation to prevent it from appearing inside the price bar.
+
+**Example:**
+
+```nim
+import tzutrader/indicators
+
+var psar = newPSAR(acceleration = 0.02, maxAcceleration = 0.2)
+
+for bar in data:
+  let result = psar.update(bar.high, bar.low)
+  
+  echo "SAR: ", result.sar
+  echo "Trend: ", if result.isLong: "Uptrend" else: "Downtrend"
+  echo "Extreme Point: ", result.ep
+  echo "Acceleration: ", result.af
+  
+  # Check for SAR flip (trend reversal)
+  if result.isLong and bar.low < result.sar:
+    echo "Trend flipped to downtrend"
+  elif not result.isLong and bar.high > result.sar:
+    echo "Trend flipped to uptrend"
+```
+
+**Parameter Selection:**
+
+- **Lower acceleration** (0.01): Slower tightening, wider stops, longer trades
+- **Standard acceleration** (0.02): Balanced approach (Wilder's original)
+- **Higher acceleration** (0.03-0.05): Faster tightening, tighter stops, shorter trades
+- **Lower maxAcceleration** (0.1): More conservative maximum tightening
+- **Higher maxAcceleration** (0.3): More aggressive trailing
+
+**Using as Trailing Stop:**
+
+```nim
+var position = "none"
+var entry_price = 0.0
+var stop_level = 0.0
+
+for bar in data:
+  let result = psar.update(bar.high, bar.low)
+  
+  if position == "none":
+    if bar.close > result.sar:  # PSAR flipped bullish
+      position = "long"
+      entry_price = bar.close
+      echo "Enter long at ", entry_price
+  elif position == "long":
+    stop_level = result.sar
+    echo "Trailing stop at ", stop_level
+    
+    if bar.low < stop_level:  # Stop hit
+      echo "Exit long at ", stop_level
+      echo "Profit: ", stop_level - entry_price
+      position = "none"
+```
+
+**Comparison with Fixed Stops:**
+
+Traditional fixed stops (e.g., -2% from entry) don't adapt to:
+- Market volatility
+- Trend strength
+- Time in trade
+
+PSAR stops adapt to all three, tightening as the trend ages and volatility changes.
+
 ## Volatility Indicators
 
 Volatility indicators measure the magnitude of price fluctuations, helping traders assess risk and adjust position sizing accordingly.
@@ -1255,10 +1396,10 @@ Despite its simplicity, MOM effectively captures momentum direction and magnitud
 
 ## Complete Indicator Summary
 
-TzuTrader now provides 25 technical indicators across five categories:
+TzuTrader now provides 26 technical indicators across five categories:
 
 **Trend Indicators:**
-- MA (SMA), EMA, WMA, TRIMA, DEMA, TEMA, KAMA, MACD
+- MA (SMA), EMA, WMA, TRIMA, DEMA, TEMA, KAMA, MACD, PSAR
 
 **Momentum Indicators:**
 - RSI, ROC, STOCH, CMO, MOM, STOCHRSI

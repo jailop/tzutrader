@@ -1919,6 +1919,178 @@ proc update*(mom: MOM, price: float64): float64 =
   result = mom[0]
 
 # ============================================================================
+# Parabolic SAR (PSAR)
+# ============================================================================
+
+type
+  PSARResult* = object
+    ## Parabolic SAR result
+    sar*: float64      ## SAR value (stop and reverse level)
+    isUptrend*: bool   ## True if in uptrend, False if in downtrend
+    af*: float64       ## Current acceleration factor
+
+type
+  PSAR* = ref object of Indicator[PSARResult]
+    ## Parabolic SAR (Stop and Reverse)
+    ## 
+    ## Provides dynamic trailing stop levels that follow price trends.
+    ## SAR dots appear below price during uptrends and above during downtrends.
+    ## 
+    ## Interpretation:
+    ## - When price crosses above SAR: Buy signal (trend reversal to uptrend)
+    ## - When price crosses below SAR: Sell signal (trend reversal to downtrend)
+    ## - Distance between price and SAR indicates trend strength
+    ## - SAR accelerates toward price as trend continues
+    acceleration: float64   ## Acceleration factor step (default 0.02)
+    maximum: float64        ## Maximum acceleration factor (default 0.20)
+    sar: float64            ## Current SAR value
+    extreme: float64        ## Extreme point in current trend
+    af: float64             ## Current acceleration factor
+    isUptrend: bool         ## Current trend direction
+    initialized: bool       ## Whether indicator has been initialized
+    initHigh: float64       ## Initial high for first 2 bars
+    initLow: float64        ## Initial low for first 2 bars
+    barCount: int           ## Number of bars processed
+
+proc newPSAR*(acceleration: float64 = 0.02, maximum: float64 = 0.20, memSize: int = 1): PSAR =
+  ## Create new Parabolic SAR indicator
+  ## 
+  ## Args:
+  ##   acceleration: Acceleration factor step (default 0.02)
+  ##   maximum: Maximum acceleration factor (default 0.20)
+  ##   memSize: Size of circular buffer for storing computed values (default 1)
+  ## 
+  ## Example:
+  ## .. code-block:: nim
+  ##    var psar = newPSAR(acceleration = 0.02, maximum = 0.20, memSize = 10)
+  ##    for bar in data:
+  ##      let result = psar.update(bar.high, bar.low, bar.close)
+  ##      if result.isUptrend:
+  ##        echo "SAR (uptrend): ", result.sar
+  ##      else:
+  ##        echo "SAR (downtrend): ", result.sar
+  var memData = newSeq[PSARResult](memSize)
+  # Initialize with NaN values
+  for i in 0..<memSize:
+    memData[i] = PSARResult(sar: NaN, isUptrend: true, af: acceleration)
+  
+  result = PSAR(
+    memData: memData,
+    memPos: 0,
+    memSize: memSize,
+    acceleration: acceleration,
+    maximum: maximum,
+    sar: NaN,
+    extreme: NaN,
+    af: acceleration,
+    isUptrend: true,
+    initialized: false,
+    initHigh: -Inf,
+    initLow: Inf,
+    barCount: 0
+  )
+
+proc update*(psar: PSAR, high, low, close: float64): PSARResult =
+  ## Update Parabolic SAR with new bar
+  ## 
+  ## Args:
+  ##   high: High price of the bar
+  ##   low: Low price of the bar
+  ##   close: Close price of the bar
+  ## 
+  ## Returns:
+  ##   PSARResult with SAR value, trend direction, and acceleration factor
+  psar.barCount += 1
+  
+  # Need at least 2 bars to initialize
+  if psar.barCount == 1:
+    psar.initHigh = high
+    psar.initLow = low
+    let psarResult = PSARResult(sar: NaN, isUptrend: true, af: psar.acceleration)
+    psar.push(psarResult)
+    return psarResult
+  
+  if not psar.initialized:
+    # Initialize on second bar
+    # Assume uptrend if close > open, otherwise downtrend
+    # Use first two bars to determine initial trend
+    if close > psar.initLow:
+      # Start in uptrend
+      psar.isUptrend = true
+      psar.sar = psar.initLow  # SAR starts at the low
+      psar.extreme = max(psar.initHigh, high)  # EP is the highest high
+    else:
+      # Start in downtrend
+      psar.isUptrend = false
+      psar.sar = psar.initHigh  # SAR starts at the high
+      psar.extreme = min(psar.initLow, low)  # EP is the lowest low
+    
+    psar.af = psar.acceleration
+    psar.initialized = true
+    
+    let psarResult = PSARResult(sar: psar.sar, isUptrend: psar.isUptrend, af: psar.af)
+    psar.push(psarResult)
+    return psarResult
+  
+  # Calculate new SAR value
+  let prevSAR = psar.sar
+  let prevExtreme = psar.extreme
+  let prevAF = psar.af
+  let wasUptrend = psar.isUptrend
+  
+  # Update SAR using formula: SAR = prior SAR + prior AF * (prior EP - prior SAR)
+  psar.sar = prevSAR + prevAF * (prevExtreme - prevSAR)
+  
+  # Check for trend reversal
+  var reversal = false
+  
+  if wasUptrend:
+    # In uptrend: SAR should be below price
+    # Reversal if SAR crosses above the low
+    if psar.sar > low:
+      reversal = true
+      psar.isUptrend = false
+      psar.sar = prevExtreme  # SAR becomes the extreme point of previous trend
+      psar.extreme = low      # New extreme is current low
+      psar.af = psar.acceleration  # Reset AF
+    else:
+      # Continue uptrend
+      # Ensure SAR doesn't exceed the low of previous 2 bars
+      # (This prevents SAR from being too close to price)
+      if psar.sar > low:
+        psar.sar = low
+      
+      # Update extreme point if new high
+      if high > psar.extreme:
+        psar.extreme = high
+        # Increase acceleration factor
+        psar.af = min(psar.af + psar.acceleration, psar.maximum)
+  else:
+    # In downtrend: SAR should be above price
+    # Reversal if SAR crosses below the high
+    if psar.sar < high:
+      reversal = true
+      psar.isUptrend = true
+      psar.sar = prevExtreme  # SAR becomes the extreme point of previous trend
+      psar.extreme = high     # New extreme is current high
+      psar.af = psar.acceleration  # Reset AF
+    else:
+      # Continue downtrend
+      # Ensure SAR doesn't go below the high of previous 2 bars
+      if psar.sar < high:
+        psar.sar = high
+      
+      # Update extreme point if new low
+      if low < psar.extreme:
+        psar.extreme = low
+        # Increase acceleration factor
+        psar.af = min(psar.af + psar.acceleration, psar.maximum)
+  
+  let psarResult = PSARResult(sar: psar.sar, isUptrend: psar.isUptrend, af: psar.af)
+  psar.push(psarResult)
+  result = psarResult
+
+# ============================================================================
 # Convenience Aliases
 # ============================================================================
 

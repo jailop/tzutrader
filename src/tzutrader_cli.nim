@@ -9,15 +9,7 @@
 ##   tzutrader scan data/ AAPL,MSFT,GOOG --strategy=macd --export=results.json
 
 import std/[parseopt, strutils, strformat, os, tables, json]
-
-include tzutrader/core
-include tzutrader/data
-include tzutrader/indicators
-include tzutrader/strategy
-include tzutrader/portfolio
-include tzutrader/trader
-include tzutrader/scanner
-include tzutrader/exports
+import tzutrader/[core, data, indicators, strategy, portfolio, trader, scanner, exports]
 
 const
   Version = "0.7.0"

@@ -29,7 +29,35 @@ Signal(Buy AAPL @$150.25 at 2024-01-15 - RSI oversold: 28.5 < 30.0)
 
 ## Using Pre-built Strategies
 
-TzuTrader includes four pre-built strategies that cover common trading approaches:
+TzuTrader includes 16 pre-built strategies covering all major trading approaches:
+
+**Mean Reversion Strategies (6):**
+- RSI Strategy - Classic overbought/oversold
+- Bollinger Bands Strategy - Volatility-based mean reversion
+- Stochastic Strategy - Momentum oscillator crossovers
+- MFI Strategy - Volume-weighted momentum
+- CCI Strategy - Statistical deviation from mean
+- Filtered Mean Reversion - RSI with trend filter
+
+**Trend Following Strategies (7):**
+- Moving Average Crossover - Golden/death crosses
+- MACD Strategy - Momentum-based trend detection
+- KAMA Strategy - Adaptive moving average
+- Aroon Strategy - Time-based trend identification
+- Parabolic SAR - Trailing stop trend follower
+- Triple MA Strategy - Multi-timeframe confirmation
+- ADX Trend Strategy - Strength-filtered trends
+
+**Volatility Strategies (1):**
+- Keltner Channel Strategy - ATR-based breakout/reversion
+
+**Hybrid Strategies (2):**
+- Volume Breakout Strategy - Price + volume confirmation
+- Dual Momentum Strategy - ROC + trend filter
+
+Let's explore each of these strategies in detail:
+
+### Original Four Strategies
 
 ### RSI Strategy (Mean Reversion)
 
@@ -170,31 +198,88 @@ let strategy = newBollingerStrategy(period = 20, stdDev = 2.0)
 let report = quickBacktest("AAPL", strategy, data, 100000.0, 0.001)
 ```
 
+### Additional Pre-Built Strategies
+
+TzuTrader provides 12 additional strategies beyond the original four. Here's a quick overview:
+
+**Mean Reversion Strategies:**
+
+- **Stochastic Strategy** - Uses %K/%D crossovers in overbought/oversold zones. More sensitive than RSI for short-term trading.
+- **MFI Strategy** - Volume-weighted RSI. Best for liquid markets where volume confirms price action.
+- **CCI Strategy** - Statistical deviation-based. Originally designed for commodities, works well for cyclical patterns.
+- **Filtered Mean Reversion** - RSI with trend filter. Only buys dips in uptrends, sells rallies in downtrends.
+
+**Trend Following Strategies:**
+
+- **Aroon Strategy** - Time-based trend detection. Catches trend starts early by measuring time since highs/lows.
+- **KAMA Strategy** - Adaptive moving average. Automatically adjusts to market conditions - fast in trends, slow in ranges.
+- **Parabolic SAR** - Provides both signals and trailing stops. Always in the market, accelerates as trends mature.
+- **Triple MA Strategy** - Requires alignment of three MAs. Fewer but higher-quality signals for position trading.
+- **ADX Trend Strategy** - Filters trades by trend strength. Only trades when ADX shows strong trending conditions.
+
+**Hybrid/Volatility Strategies:**
+
+- **Keltner Channel** - ATR-based bands with dual modes. Trade breakouts in low volatility or reversions in high volatility.
+- **Volume Breakout** - Requires price breakout AND volume confirmation. Reduces false breakout signals significantly.
+- **Dual Momentum** - Combines ROC momentum with MA trend filter. Only trades momentum moves aligned with the trend.
+
+For complete documentation including parameters, examples, and detailed trading logic, see:
+- [Mean Reversion Strategies Reference](../reference_guide/04a_strategies_mean_reversion.md)
+- [Trend Following Strategies Reference](../reference_guide/04b_strategies_trend.md)
+- [Hybrid Strategies Reference](../reference_guide/04c_strategies_hybrid.md)
+
 ## Choosing the Right Strategy
 
 Different market conditions favor different strategies:
 
 ### Trending Markets
-- **Best**: Moving Average Crossover, MACD
+- **Best**: Moving Average Crossover, MACD, Triple MA, ADX Trend, Parabolic SAR, KAMA
 - **Why**: These strategies ride trends and filter out noise
-- **Avoid**: RSI, Bollinger Bands (give premature exit signals)
+- **Consider**: ADX Trend filters weak trends; Triple MA requires strong alignment
+- **Avoid**: RSI, Bollinger Bands, CCI, Stochastic (give premature exit signals)
 
 ### Range-Bound Markets
-- **Best**: RSI, Bollinger Bands
+- **Best**: RSI, Bollinger Bands, Stochastic, MFI, CCI, Keltner (reversion mode)
 - **Why**: These strategies profit from price oscillations
-- **Avoid**: Moving Average Crossover (generates false signals)
+- **Consider**: MFI adds volume confirmation; Stochastic catches short-term swings
+- **Avoid**: Moving Average Crossover, MACD, Aroon (generate false signals)
 
 ### High Volatility
-- **Best**: Bollinger Bands, ATR-based strategies
-- **Why**: These adapt to volatility
+- **Best**: Bollinger Bands, Keltner Channel, Parabolic SAR
+- **Why**: These adapt to volatility automatically
+- **Consider**: Wider bands/stops in volatile conditions
 - **Considerations**: Wider stops, smaller positions
 
 ### Low Volatility
-- **Best**: Breakout strategies, momentum indicators
+- **Best**: Volume Breakout, Keltner (breakout mode), Aroon
 - **Why**: Low volatility often precedes significant moves
+- **Consider**: Volume Breakout waits for volume confirmation
 - **Considerations**: May need patience for signals
 
-No strategy works in all conditions. The market environment determines which approach is likely to succeed.
+### Mixed/Uncertain Conditions
+- **Best**: KAMA, Filtered Mean Reversion, Dual Momentum, ADX Trend
+- **Why**: These adapt to conditions or use multiple filters
+- **Consider**: KAMA adjusts automatically; ADX only trades strong trends
+- **Avoid**: Single-indicator strategies without filters
+
+### By Trading Style
+
+**Day Trading (Short Timeframes):**
+- Stochastic, MFI, CCI (fast oscillators)
+- Volume Breakout (intraday momentum)
+- Keltner Channel breakout mode
+
+**Swing Trading (Medium Timeframes):**
+- RSI, MACD, Bollinger Bands
+- Dual Momentum, Filtered Mean Reversion
+- Aroon, KAMA
+
+**Position Trading (Long Timeframes):**
+- Moving Average Crossover (50/200)
+- Triple MA Strategy
+- ADX Trend, Parabolic SAR
+
+No strategy works in all conditions. The market environment, timeframe, and your trading style determine which approach is likely to succeed.
 
 ## Creating Custom Strategies
 
@@ -362,8 +447,14 @@ Now that you understand how to build strategies, the next chapter covers portfol
 ## Key Takeaways
 
 - A trading strategy defines rules for when to buy, sell, or hold
-- TzuTrader includes four pre-built strategies: RSI, MA Crossover, MACD, and Bollinger Bands
-- Choose strategies that match market conditions (trending vs ranging)
+- TzuTrader includes 16 pre-built strategies across 4 categories:
+  - **6 Mean Reversion strategies**: RSI, Bollinger, Stochastic, MFI, CCI, Filtered Mean Reversion
+  - **7 Trend Following strategies**: MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, ADX Trend
+  - **1 Volatility strategy**: Keltner Channel (dual mode)
+  - **2 Hybrid strategies**: Volume Breakout, Dual Momentum
+- Choose strategies that match market conditions and your trading style
+- Trending markets favor trend-following; ranging markets favor mean reversion
+- Strategies with filters (ADX Trend, Dual Momentum, Filtered Mean Reversion) reduce false signals
 - TzuTrader uses streaming architecture - same code for backtesting and live trading
 - Create custom strategies by inheriting from the Strategy base class and implementing `onBar()`
 - Start simple and add complexity only when justified

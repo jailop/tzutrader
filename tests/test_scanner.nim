@@ -1,14 +1,7 @@
 ## Tests for Scanner Module
 
-import std/[unittest, tables, times, math, os]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data  
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
-include ../src/tzutrader/portfolio
-include ../src/tzutrader/trader
-include ../src/tzutrader/scanner
+import std/[unittest, tables, times, math, os, strformat, strutils]
+import ../src/tzutrader/[core, data, indicators, strategy, portfolio, trader, scanner]
 
 # Helper: Generate test data
 proc generateTestData(symbol: string, bars: int, trend: float = 0.001): seq[OHLCV] =

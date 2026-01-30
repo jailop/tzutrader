@@ -1,9 +1,5 @@
 import std/[unittest, times, sequtils, strformat]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import ../src/tzutrader/[core, data, indicators, strategy]
 
 suite "Strategy Tests":
   

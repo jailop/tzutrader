@@ -1,15 +1,7 @@
 ## Tests for Export Module
 
-import std/[unittest, json, os, times]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
-include ../src/tzutrader/portfolio
-include ../src/tzutrader/trader
-include ../src/tzutrader/scanner
-include ../src/tzutrader/exports
+import std/[unittest, json, os, times, strutils]
+import ../src/tzutrader/[core, data, indicators, strategy, portfolio, trader, scanner, exports]
 
 # Helper: Generate test data
 proc generateTestData(bars: int): seq[OHLCV] =
