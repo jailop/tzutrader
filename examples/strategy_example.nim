@@ -27,12 +27,12 @@ proc printSignalSummary(name: string, signals: seq[Signal]) =
   echo &"  Stay signals:  {staySignals.len}"
   
   if buySignals.len > 0:
-    echo &"  First Buy:  {buySignals[0].timestamp.format(\"yyyy-MM-dd\")} @ ${buySignals[0].price:.2f}"
-    echo &"  Last Buy:   {buySignals[^1].timestamp.format(\"yyyy-MM-dd\")} @ ${buySignals[^1].price:.2f}"
+    echo &"  First Buy:  {buySignals[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${buySignals[0].price:.2f}"
+    echo &"  Last Buy:   {buySignals[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${buySignals[^1].price:.2f}"
   
   if sellSignals.len > 0:
-    echo &"  First Sell: {sellSignals[0].timestamp.format(\"yyyy-MM-dd\")} @ ${sellSignals[0].price:.2f}"
-    echo &"  Last Sell:  {sellSignals[^1].timestamp.format(\"yyyy-MM-dd\")} @ ${sellSignals[^1].price:.2f}"
+    echo &"  First Sell: {sellSignals[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${sellSignals[0].price:.2f}"
+    echo &"  Last Sell:  {sellSignals[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${sellSignals[^1].price:.2f}"
 
 proc main() =
   echo "="
@@ -44,7 +44,7 @@ proc main() =
   echo "Loading AAPL sample data from CSV..."
   let data = readCSV("data/AAPL_sample.csv")
   echo &"Loaded {data.len} bars"
-  echo &"Date range: {data[0].timestamp.format(\"yyyy-MM-dd\")} to {data[^1].timestamp.format(\"yyyy-MM-dd\")}"
+  echo &"Date range: {data[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} to {data[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")}"
   
   # ============================================================================
   # BATCH MODE EXAMPLES
@@ -74,7 +74,7 @@ proc main() =
   
   # 4. Bollinger Bands Strategy
   echo "\n4. Bollinger Bands Strategy (Period: 20, StdDev: 2.0)"
-  let bbStrat = newBollingerStrategy(period = 20, numStdDev = 2.0)
+  let bbStrat = newBollingerStrategy(period = 20, stdDev = 2.0)
   let bbSignals = bbStrat.analyze(data)
   printSignalSummary("Bollinger Bands Strategy", bbSignals)
   
@@ -99,7 +99,7 @@ proc main() =
     
     # Print only when signal changes
     if signal.position != lastSignalPos and signal.position != Position.Stay:
-      echo &"  [{i+1}/{data.len}] {bar.timestamp.format(\"yyyy-MM-dd\")}: {signal.position} @ ${signal.price:.2f}"
+      echo &"  [{i+1}/{data.len}] {bar.timestamp.fromUnix.format(\"yyyy-MM-dd\")}: {signal.position} @ ${signal.price:.2f}"
       lastSignalPos = signal.position
   
   printSignalSummary("Streaming RSI Strategy", streamSignals)

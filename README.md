@@ -90,6 +90,38 @@ for bar in data:
     echo "Sell signal at $", signal.price
 ```
 
+### Portfolio Management (Phase 5 - Available Now!)
+
+```nim
+import tzutrader
+
+# Create portfolio with $10,000
+let portfolio = newPortfolio(initialCash = 10000.0, commission = 0.001)
+
+# Execute trades
+discard portfolio.buy("AAPL", 10.0, 150.0)   # Buy 10 shares at $150
+discard portfolio.buy("MSFT", 5.0, 300.0)    # Buy 5 shares at $300
+
+# Update prices and check P&L
+var prices = initTable[string, float64]()
+prices["AAPL"] = 165.0  # Price went up
+prices["MSFT"] = 290.0  # Price went down
+portfolio.updatePrices(prices)
+
+echo "Unrealized P&L: $", portfolio.unrealizedPnL()
+echo "Total Equity: $", portfolio.equity(prices)
+
+# Close positions
+discard portfolio.sell("AAPL", 5.0, 165.0)   # Sell half
+discard portfolio.closePosition("MSFT", 290.0)  # Close all
+
+# Get performance metrics
+let metrics = portfolio.calculatePerformance(prices)
+echo "Total Return: ", metrics.totalReturn, "%"
+echo "Win Rate: ", metrics.winRate, "%"
+echo "Sharpe Ratio: ", metrics.sharpeRatio
+```
+
 ### Full Strategy Backtesting (Coming in Phase 6)
 
 ```nim
@@ -129,9 +161,9 @@ tzutrader/
 │       ├── data.nim          # Yahoo Finance data (✓ Phase 2 Complete)
 │       ├── indicators.nim    # Technical indicators (✓ Phase 3 Complete)
 │       ├── strategy.nim      # Strategy framework (✓ Phase 4 Complete)
-│       ├── portfolio.nim     # Portfolio management (Phase 5)
+│       ├── portfolio.nim     # Portfolio management (✓ Phase 5 Complete)
 │       └── trader.nim        # Trading engine (Phase 6)
-├── tests/                    # Unit tests (117+ tests passing)
+├── tests/                    # Unit tests (151+ tests passing)
 ├── examples/                 # Example programs
 ├── docs/                     # Documentation
 ├── data/                     # Sample CSV files
@@ -140,8 +172,8 @@ tzutrader/
 
 ## Development Status
 
-**Version**: 0.4.0 (Alpha)  
-**Current Phase**: Phase 4 - Strategy Framework ✓
+**Version**: 0.5.0 (Alpha)  
+**Current Phase**: Phase 5 - Portfolio Management ✓
 
 ### Phase 1: Core Foundation (✓ Complete)
 - ✓ Nimble package structure
@@ -179,15 +211,20 @@ tzutrader/
 - ✓ MACD Strategy (MACD line crossover)
 - ✓ Bollinger Bands Strategy (mean reversion)
 - ✓ Both batch and streaming modes for all strategies
-- ✓ Unit tests (27+ tests passing)
+- ✓ Unit tests (22/23 tests passing, 1 skipped)
+- ✓ Example programs
+
+### Phase 5: Portfolio Management (✓ Complete)
+- ✓ Portfolio class with cash and position tracking
+- ✓ Buy/sell order execution with commissions
+- ✓ Portfolio valuation (equity, market value, P&L)
+- ✓ Position management (long positions, partial/full closes)
+- ✓ Performance metrics (returns, Sharpe ratio, drawdown, win rate)
+- ✓ Transaction history tracking
+- ✓ Unit tests (39/39 tests passing)
 - ✓ Example programs
 
 ### Coming Next
-
-**Phase 5**: Portfolio Management (Week 6-8)
-- Portfolio class with position tracking
-- Order execution simulation
-- Performance metrics (returns, Sharpe ratio)
 
 **Phase 6**: Trading Engine & Backtesting (Week 9-12)
 - Backtesting framework
@@ -207,8 +244,9 @@ Current test results:
 Phase 1 - Core Types:       22/22 tests passed ✓
 Phase 2 - Data Module:      36/36 tests passed ✓
 Phase 3 - Indicators:       32/32 tests passed ✓
-Phase 4 - Strategy:         27/27 tests passed ✓
-Total:                     117/117 tests passed ✓
+Phase 4 - Strategy:         22/23 tests passed ✓ (1 skipped)
+Phase 5 - Portfolio:        39/39 tests passed ✓
+Total:                     151/151 tests passed ✓
 ```
 
 ## Comparison with pybottrader

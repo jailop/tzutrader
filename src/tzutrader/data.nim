@@ -179,6 +179,13 @@ proc generateMockQuote*(symbol: string, price: float64 = 100.0): Quote =
   randomize()
   let change = (rand(1.0) - 0.5) * 2.0 * price * 0.02
   let previousClose = price - change
+  let openPrice = previousClose * (1.0 + rand(0.01) - 0.005)
+  
+  # Generate high and low ensuring high >= low
+  let maxPrice = max(openPrice, price)
+  let minPrice = min(openPrice, price)
+  let dayHigh = maxPrice * (1.0 + rand(0.01))
+  let dayLow = minPrice * (1.0 - rand(0.01))
   
   result = Quote(
     symbol: symbol,
@@ -187,9 +194,9 @@ proc generateMockQuote*(symbol: string, price: float64 = 100.0): Quote =
     regularMarketChange: change,
     regularMarketChangePercent: (change / previousClose) * 100.0,
     regularMarketVolume: rand(1000000.0) + 500000.0,
-    regularMarketOpen: previousClose * (1.0 + rand(0.01) - 0.005),
-    regularMarketDayHigh: price * (1.0 + rand(0.01)),
-    regularMarketDayLow: previousClose * (1.0 - rand(0.01)),
+    regularMarketOpen: openPrice,
+    regularMarketDayHigh: dayHigh,
+    regularMarketDayLow: dayLow,
     regularMarketPreviousClose: previousClose
   )
 

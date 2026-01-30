@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.4.0"
+version       = "0.5.0"
 author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"
@@ -14,11 +14,13 @@ requires "https://codeberg.org/jailop/yfnim.git"
 # Tasks
 
 task test, "Run the test suite":
-  echo "Running Phase 1, 2, 3 & 4 tests..."
+  echo "Running Phase 1-5 tests..."
   exec "nim c -r tests/test_core.nim"
   exec "nim c -r tests/test_data.nim"
   exec "nim c -r tests/test_indicators.nim"
   exec "nim c -r tests/test_strategy.nim"
+  exec "nim c -r tests/test_portfolio.nim"
+  echo "========================="
   echo "All tests passed!"
 
 task docs, "Generate documentation":
@@ -28,6 +30,7 @@ task docs, "Generate documentation":
   exec "nim doc --project --index:on --outdir:docs src/tzutrader/data.nim"
   exec "nim doc --project --index:on --outdir:docs src/tzutrader/indicators.nim"
   exec "nim doc --project --index:on --outdir:docs src/tzutrader/strategy.nim"
+  exec "nim doc --project --index:on --outdir:docs src/tzutrader/portfolio.nim"
   echo "Documentation generated in docs/"
 
 task benchmark, "Run performance benchmarks":
@@ -43,6 +46,7 @@ task examples, "Compile all examples":
   exec "nim c examples/crossover_strategy_example.nim"
   exec "nim c examples/macd_strategy_example.nim"
   exec "nim c examples/bollinger_strategy_example.nim"
+  exec "nim c examples/portfolio_example.nim"
   echo "Examples compiled successfully!"
   echo ""
   echo "Run examples with:"
@@ -54,3 +58,4 @@ task examples, "Compile all examples":
   echo "  ./examples/crossover_strategy_example  # MA Crossover only"
   echo "  ./examples/macd_strategy_example    # MACD only"
   echo "  ./examples/bollinger_strategy_example  # Bollinger Bands only"
+  echo "  ./examples/portfolio_example        # Portfolio management"

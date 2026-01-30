@@ -5,24 +5,95 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ## [Unreleased]
 
-### Phase 5 - Portfolio Management (Next)
-- Portfolio class with position tracking
-- Order execution simulation
-- Performance metrics (returns, Sharpe ratio)
-
-### Phase 6 - Trading Engine & Backtesting (Future)
+### Phase 6 - Trading Engine & Backtesting (Next)
 - Backtesting framework
 - Transaction costs and slippage
 - Performance reporting
+
+## [0.5.0] - 2026-01-30
+
+### Added - Phase 5: Portfolio Management ✓
+
+#### Portfolio Module (`src/tzutrader/portfolio.nim`)
+- **Core Types**
+  - `PositionSide` enum - Long, Short, Flat position types
+  - `PositionInfo` - Position tracking with P&L calculation
+    - Symbol, side, quantity, entry price/time
+    - Current price and unrealized P&L
+    - Realized P&L from partial closes
+  - `Portfolio` - Main portfolio management class
+    - Cash and position tracking
+    - Commission support (rate + minimum)
+    - Transaction history
+    - Total realized P&L tracking
+  - `PerformanceMetrics` - Comprehensive performance analytics
+    - Total and annualized returns
+    - Sharpe ratio, max drawdown
+    - Win rate, profit factor
+    - Trade statistics (wins, losses, averages)
+
+- **Portfolio Operations**
+  - `newPortfolio()` - Create portfolio with initial cash
+  - `buy()` - Execute buy orders with commission
+  - `sell()` - Execute sell orders (full or partial)
+  - `closePosition()` - Close entire position
+  - `hasPosition()` - Check for open positions
+  - `getPosition()` - Query position details
+  - `updatePrices()` - Update all positions with market prices
+
+- **Valuation & Analytics**
+  - `equity()` - Total portfolio value (cash + positions)
+  - `marketValue()` - Total market value of positions
+  - `unrealizedPnL()` - Unrealized profit/loss
+  - `realizedPnL()` - Realized profit/loss
+  - `totalPnL()` - Combined P&L
+  - `calculatePerformance()` - Full performance metrics
+  - Commission calculation with min/max support
+
+- **Position Management**
+  - Average entry price calculation for multiple buys
+  - Automatic P&L tracking (realized + unrealized)
+  - Position lifecycle management (open/partial/close)
+  - Market value and P&L updates
+
+#### Tests (`tests/test_portfolio.nim`)
+- 39 comprehensive unit tests covering:
+  - Portfolio construction (3 tests)
+  - Position management (10 tests)
+  - Commission calculations (4 tests)
+  - Valuation and P&L (6 tests)
+  - Transaction history (3 tests)
+  - Performance metrics (5 tests)
+  - Position updates (2 tests)
+  - Edge cases (4 tests)
+  - String representations (3 tests)
+
+#### Examples
+- `examples/portfolio_example.nim` - Comprehensive portfolio demonstration
+  - Basic operations (create, buy, sell)
+  - Price updates and P&L tracking
+  - Position closing
+  - Transaction history
+  - Performance metrics
+  - Commission handling
+  - Simulated trading strategy
+
+#### Documentation
+- Portfolio module fully documented
+- Performance metrics explained
+- Commission structure documented
+
+### Changed
+- Updated main module to export portfolio
+- Version bumped to 0.5.0
+- Test suite now includes portfolio tests (151 total tests)
+- Nimble file updated with portfolio tasks
+
+### Fixed
+- Realized P&L now correctly tracked when positions fully close
+- Portfolio total realized P&L properly accumulated
 
 ## [0.4.0] - 2026-01-30
 
