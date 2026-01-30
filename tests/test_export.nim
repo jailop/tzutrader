@@ -53,7 +53,12 @@ suite "JSON Export Tests":
     let strategy = newRSIStrategy(14, 30.0, 70.0)
     let data = generateTestData(100)
     let report = quickBacktest("AAPL", strategy, data, 10000.0)
-    let signals = strategy.analyze(data)
+    
+    # Use streaming mode for signals
+    strategy.reset()
+    var signals: seq[Signal] = @[]
+    for bar in data:
+      signals.add(strategy.onBar(bar))
     
     let scanResult = ScanResult(
       symbol: "AAPL",

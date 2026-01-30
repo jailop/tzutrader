@@ -25,16 +25,19 @@ proc main() =
   
   # Create Bollinger Bands strategy
   echo "Creating Bollinger Bands Strategy (Period: 20, StdDev: 2.0)"
-  let strategy = newBollingerStrategy(period = 20, stdDev = 2.0)
+  var strategy = newBollingerStrategy(period = 20, stdDev = 2.0)
+  strategy.symbol = "AAPL"
   
-  # Batch mode analysis
-  echo "\n=== BATCH MODE ==="
-  let signals = strategy.analyze(data)
-  
+  # Streaming mode analysis
+  echo "\n=== STREAMING MODE ==="
   var buySignals: seq[Signal] = @[]
   var sellSignals: seq[Signal] = @[]
+  var allSignals: seq[Signal] = @[]
   
-  for signal in signals:
+  for bar in data:
+    let signal = strategy.onBar(bar)
+    allSignals.add(signal)
+    
     case signal.position
     of Position.Buy:
       buySignals.add(signal)
@@ -48,36 +51,39 @@ proc main() =
       discard
   
   echo &"\nSummary:"
-  echo &"  Total bars:       {signals.len}"
+  echo &"  Total bars:       {allSignals.len}"
   echo &"  Lower band touch: {buySignals.len} (oversold - buy)"
   echo &"  Upper band touch: {sellSignals.len} (overbought - sell)"
   
-  # Calculate Bollinger Bands for visualization
+  # Show Bollinger Bands values for last 10 bars
   echo "\n=== BOLLINGER BANDS VALUES ==="
-  let prices = data.mapIt(it.close)
-  let bb = bollinger(prices, 20, 2.0)
-  
-  echo "Last 10 bars with Bollinger Bands:"
+  echo "Recalculating with streaming to show last 10 bars:"
   echo "Date         | Price   | Lower   | Middle  | Upper"
   echo "-".repeat(60)
+  
+  # Reset and process again, saving last 10 BB values
+  strategy.reset()
+  var bbValues: seq[BollingerResult] = @[]
+  
+  for bar in data:
+    discard strategy.onBar(bar)
+    bbValues.add(strategy.bbIndicator[0])  # Save current BB value
   
   for i in max(0, data.len - 10)..<data.len:
     let bar = data[i]
     let date = bar.timestamp.fromUnix().format("yyyy-MM-dd")
     let price = bar.close
-    let lower = bb.lower[i]
-    let middle = bb.middle[i]
-    let upper = bb.upper[i]
+    let bb = bbValues[i]
     
     var indicator = ""
-    if not lower.isNaN:
-      if price <= lower:
+    if not bb.lower.isNaN:
+      if price <= bb.lower:
         indicator = " <- BUY"
-      elif price >= upper:
+      elif price >= bb.upper:
         indicator = " <- SELL"
     
-    if not lower.isNaN:
-      echo &"{date} | ${price:>6.2f} | ${lower:>6.2f} | ${middle:>6.2f} | ${upper:>6.2f}{indicator}"
+    if not bb.lower.isNaN:
+      echo &"{date} | ${price:>6.2f} | ${bb.lower:>6.2f} | ${bb.middle:>6.2f} | ${bb.upper:>6.2f}{indicator}"
   
   # Parameter tuning
   echo "\n=== PARAMETER TUNING ==="

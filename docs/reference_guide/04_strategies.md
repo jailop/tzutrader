@@ -12,20 +12,17 @@ A strategy's core responsibility is simple: given market data, decide whether to
 
 ### The Strategy Interface
 
-All strategies inherit from the base `Strategy` class and implement three key methods:
+All strategies inherit from the base `Strategy` class and implement the streaming interface:
 
 ```nim
-method analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal]
 method onBar*(s: Strategy, bar: OHLCV): Signal
-method reset*(s: Strategy)
 ```
 
-**Two execution modes:**
-
-- **Batch mode** (`analyze`): Process entire historical dataset at once
-- **Streaming mode** (`onBar`): Process bars one at a time as they arrive
-
-Most backtesting uses batch mode. Streaming mode is for live trading or when simulating real-time conditions where future bars aren't available.
+**Streaming-only design:**
+- Strategies process bars one at a time as they arrive
+- Same code works for backtesting and live trading
+- O(1) memory usage - never grows with data size
+- Indicators maintain state internally
 
 ### Base Strategy Type
 
@@ -34,75 +31,44 @@ type
   Strategy* = ref object of RootObj
     name*: string
     symbol*: string
-    history*: seq[OHLCV]
 ```
 
 **Fields:**
 - `name`: Human-readable strategy identifier
 - `symbol`: Target symbol (optional, can trade multiple symbols)
-- `history`: Bar history maintained by streaming mode
 
-### Method Specifications
+### Method Specification
 
-#### analyze (Batch Mode)
-
-```nim
-method analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal]
-```
-
-**Purpose:** Analyze complete historical data and generate signals for all bars.
-
-**Parameters:**
-- `data`: Full OHLCV sequence in chronological order
-
-**Returns:** Signal sequence with one entry per bar (same length as input)
-
-**Use cases:**
-- Historical backtesting
-- Parameter optimization (faster than streaming)
-- Analyzing completed data
-
-**Example:**
-
-```nim
-let strategy = newRSIStrategy()
-let data = readCSV("data/AAPL.csv")
-let signals = strategy.analyze(data)
-
-for signal in signals:
-  if signal.position != Stay:
-    echo signal.timestamp.fromUnix.format("yyyy-MM-dd"), ": ", signal.reason
-```
-
-#### onBar (Streaming Mode)
+#### onBar (Streaming)
 
 ```nim
 method onBar*(s: Strategy, bar: OHLCV): Signal
 ```
 
-**Purpose:** Process a single bar and generate a signal without knowing future bars.
+**Purpose:** Process a single bar and generate a trading signal.
 
 **Parameters:**
-- `bar`: Current OHLCV bar
+- `bar`: Single OHLCV bar to process
 
-**Returns:** Single signal for the bar
+**Returns:** Signal with position recommendation (Buy, Sell, or Stay)
 
 **Use cases:**
-- Live trading
-- Real-time simulation
-- Testing strategy behavior bar-by-bar
+- Backtesting (process historical data sequentially)
+- Live trading (process real-time data)
+- Strategy development and testing
 
-**State management:** Strategies maintain internal state (indicator values, last signals, etc.) across `onBar` calls. Call `reset()` before starting a new sequence.
+**State management:** Strategies maintain internal state (indicator values, last signals, etc.) across `onBar()` calls.
 
 **Example:**
 
 ```nim
-let strategy = newMACDStrategy()
-strategy.reset()
+let strategy = newRSIStrategy()
 
 for bar in data:
   let signal = strategy.onBar(bar)
-  if signal.position == Buy:
+  if signal.position != Stay:
+    echo signal.timestamp.fromUnix.format("yyyy-MM-dd"), ": ", signal.reason
+```
     echo "BUY signal at ", bar.close
 ```
 
@@ -399,10 +365,6 @@ With 2 standard deviations, approximately 95% of price observations should fall 
 
 Unlike RSI thresholds (which are fixed numbers), Bollinger Bands adapt to the stock's current volatility. A volatile stock gets wider bands, a stable stock gets narrower bands. This makes the strategy work across different assets without parameter tuning.
 
-**Streaming Limitation:**
-
-The current implementation works best in batch mode because standard deviation requires a full window of data. The `onBar` method returns a stay signal and recommends using `analyze` instead.
-
 **Example:**
 
 ```nim
@@ -446,35 +408,24 @@ proc newMyStrategy*(myParameter: float64): MyStrategy =
     myIndicator: newSMA(20)
   )
 
-method analyze*(s: MyStrategy, data: seq[OHLCV]): seq[Signal] =
-  # Implement batch mode analysis
-  result = @[]
-  for bar in data:
-    # Your logic here
-    let signal = Signal(
-      position: Stay,  # or Buy/Sell based on logic
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: "Your reasoning"
-    )
-    result.add(signal)
-
 method onBar*(s: MyStrategy, bar: OHLCV): Signal =
-  # Implement streaming mode
-  # Update indicators, check conditions, return signal
+  # Update indicators and check conditions
+  let smaVal = s.myIndicator.update(bar.close)
+  
+  var position = Stay
+  if not smaVal.isNaN:
+    if bar.close > smaVal * 1.02:
+      position = Buy
+    elif bar.close < smaVal * 0.98:
+      position = Sell
+  
   result = Signal(
-    position: Stay,
+    position: position,
     symbol: s.symbol,
     timestamp: bar.timestamp,
     price: bar.close,
-    reason: "Your reasoning"
+    reason: "Price vs SMA"
   )
-
-method reset*(s: MyStrategy) =
-  # Reset strategy state
-  s.myIndicator = newSMA(20)
-  s.history = @[]
 ```
 
 ### Example: Dual RSI Strategy
@@ -486,8 +437,8 @@ import tzutrader
 
 type
   DualRSIStrategy* = ref object of Strategy
-    shortPeriod*: int
-    longPeriod*: int
+    shortRSI*: RSI
+    longRSI*: RSI
     oversold*: float64
     overbought*: float64
 
@@ -496,62 +447,46 @@ proc newDualRSIStrategy*(shortPeriod: int = 7, longPeriod: int = 21,
                          overbought: float64 = 70.0): DualRSIStrategy =
   result = DualRSIStrategy(
     name: "Dual RSI Strategy",
-    shortPeriod: shortPeriod,
-    longPeriod: longPeriod,
+    shortRSI: newRSI(shortPeriod),
+    longRSI: newRSI(longPeriod),
     oversold: oversold,
     overbought: overbought
   )
 
-method analyze*(s: DualRSIStrategy, data: seq[OHLCV]): seq[Signal] =
-  let closes = data.mapIt(it.close)
-  let shortRSI = rsi(closes, s.shortPeriod)
-  let longRSI = rsi(closes, s.longPeriod)
-  
-  result = @[]
-  for i, bar in data:
-    var position = Stay
-    var reason = ""
-    
-    let shortVal = shortRSI[i]
-    let longVal = longRSI[i]
-    
-    if not shortVal.isNaN and not longVal.isNaN:
-      # Buy when BOTH RSIs are oversold
-      if shortVal < s.oversold and longVal < s.oversold:
-        position = Buy
-        reason = &"Both RSIs oversold: {shortVal:.1f}, {longVal:.1f}"
-      # Sell when BOTH RSIs are overbought
-      elif shortVal > s.overbought and longVal > s.overbought:
-        position = Sell
-        reason = &"Both RSIs overbought: {shortVal:.1f}, {longVal:.1f}"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
-
 method onBar*(s: DualRSIStrategy, bar: OHLCV): Signal =
-  # For simplicity, just return Stay in streaming mode
-  # Full implementation would maintain streaming RSI indicators
+  # Update both RSI indicators
+  let shortVal = s.shortRSI.update(bar.open, bar.close)
+  let longVal = s.longRSI.update(bar.open, bar.close)
+  
+  var position = Stay
+  var reason = ""
+  
+  if not shortVal.isNaN and not longVal.isNaN:
+    # Buy when BOTH RSIs are oversold
+    if shortVal < s.oversold and longVal < s.oversold:
+      position = Buy
+      reason = &"Both RSIs oversold: {shortVal:.1f}, {longVal:.1f}"
+    # Sell when BOTH RSIs are overbought
+    elif shortVal > s.overbought and longVal > s.overbought:
+      position = Sell
+      reason = &"Both RSIs overbought: {shortVal:.1f}, {longVal:.1f}"
+  
   result = Signal(
-    position: Stay,
+    position: position,
     symbol: s.symbol,
     timestamp: bar.timestamp,
     price: bar.close,
-    reason: "Dual RSI requires batch mode"
+    reason: reason
   )
-
-method reset*(s: DualRSIStrategy) =
-  s.history = @[]
 
 # Usage
 let strategy = newDualRSIStrategy()
 let data = readCSV("data/AAPL.csv")
-let report = quickBacktest("AAPL", strategy, data)
-echo report
+
+for bar in data:
+  let signal = strategy.onBar(bar)
+  if signal.position != Stay:
+    echo signal.reason
 ```
 
 ### Custom Strategy Guidelines
@@ -562,11 +497,9 @@ echo report
 
 **Provide reasons:** The `reason` field helps debug strategy behavior and understand why signals were generated.
 
-**Test both modes:** Implement both `analyze` and `onBar` if you plan to use the strategy in live trading. If batch mode is sufficient, `onBar` can return a neutral signal.
+**Use streaming indicators:** Create indicator instances in your strategy and update them in `onBar()`. Don't reimplement indicator logic.
 
-**Use the indicator module:** Don't reimplement indicators. Use the tested implementations from `tzutrader/indicators`.
-
-**State management:** Streaming mode requires careful state management. Reset clears all state.
+**State management:** Indicators maintain their own state internally. No manual state management needed.
 
 ## Signal Objects
 
@@ -592,18 +525,17 @@ See [Core Types Reference](01_core.md) for complete Signal specification.
 
 ## Performance Considerations
 
-**Batch vs streaming performance:**
+**Streaming architecture benefits:**
 
-Batch mode (`analyze`) is faster for backtesting because:
-- Indicators process entire arrays at once
-- No repeated state management overhead
-- Better CPU cache utilization
-
-Streaming mode adds overhead from maintaining state and processing bars individually. Use streaming only when necessary (live trading, real-time simulation).
+The streaming-only design provides:
+- **O(1) memory**: Constant memory usage regardless of data size
+- **O(1) updates**: Each bar processed in constant time
+- **Live trading ready**: Same code for backtesting and production
+- **No reprocessing**: State maintained across updates
 
 **Memory usage:**
 
-Strategies maintain history in streaming mode. For memory-constrained environments, implement custom history management or use batch mode with data streaming.
+Indicators use fixed-size circular buffers. Total memory per strategy is typically < 10KB regardless of how much data is processed.
 
 ## Common Strategy Patterns
 

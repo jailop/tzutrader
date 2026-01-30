@@ -17,7 +17,7 @@ nimble install
 ### Requirements
 
 - Nim >= 2.0.0
-- yfnim (for Yahoo Finance data) - to be added in Phase 2
+- yfnim (for Yahoo Finance data)
 
 ## Your First Strategy
 
@@ -100,15 +100,19 @@ let signal = newSignal(
 
 ## Project Status
 
-**Current Phase**: Phase 1 - Core Foundation ✓
+TzuTrader is in active development with all core features complete and tested:
 
 Completed:
 - ✓ Core types and data structures
 - ✓ Testing framework
 - ✓ JSON serialization
-- ✓ Basic documentation
-
-Coming Next (Phase 2):
-- Data module with Yahoo Finance integration
-- Historical and real-time data fetching
-- Data caching and streaming
+- ✓ Data module with Yahoo Finance integration
+- ✓ Historical data fetching and CSV support
+- ✓ 25 technical indicators
+- ✓ Pre-built and custom strategies
+- ✓ Portfolio management
+- ✓ Backtesting engine
+- ✓ Multi-symbol scanning
+- ✓ Export capabilities (CSV/JSON)
+- ✓ CLI tool
+- ✓ Comprehensive documentation

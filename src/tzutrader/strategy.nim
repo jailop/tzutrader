@@ -7,8 +7,9 @@
 ## - Base Strategy class with common interface
 ## - Pre-built strategies (RSI, MA Crossover, MACD, Bollinger Bands)
 ## - Easy custom strategy creation
-## - Batch and streaming modes
+## - Streaming-only architecture (processes one bar at a time)
 ## - Signal generation for Buy/Sell/Stay decisions
+## - Minimal state maintenance (no historical data accumulation)
 
 import std/[strformat, sequtils, times]
 import core
@@ -22,9 +23,9 @@ type
   Strategy* = ref object of RootObj
     ## Base strategy class
     ## All strategies should inherit from this
+    ## Strategies are streaming-only and maintain minimal state
     name*: string
     symbol*: string
-    history*: seq[OHLCV]  ## For strategies that need bar history
 
 # Base methods that all strategies must implement
 
@@ -35,12 +36,17 @@ method name*(s: Strategy): string {.base.} =
 method analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal] {.base.} =
   ## Analyze historical data and generate signals for each bar (batch mode)
   ## 
+  ## **DEPRECATED**: Batch mode is deprecated. Use streaming onBar() instead.
+  ## 
+  ## This method processes all historical data at once. For real-time trading
+  ## or more memory-efficient processing, use the onBar() method with streaming data.
+  ## 
   ## Args:
   ##   data: Historical OHLCV data
   ## 
   ## Returns:
   ##   Sequence of signals, one for each bar
-  raise newException(StrategyError, "analyze() not implemented for " & s.name)
+  raise newException(StrategyError, "analyze() batch mode is deprecated. Use onBar() for streaming mode.")
 
 method onBar*(s: Strategy, bar: OHLCV): Signal {.base.} =
   ## Process a single bar and generate signal (streaming mode)
@@ -93,41 +99,22 @@ proc newRSIStrategy*(period: int = 14, oversold: float64 = 30.0,
   )
 
 method analyze*(s: RSIStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## Analyze data using RSI, generating a signal for each bar
-  let prices = data.mapIt(it.close)
-  let rsiValues = rsi(prices, s.period)
-  
-  result = @[]
-  for i, bar in data:
-    let rsiVal = rsiValues[i]
-    var position = Position.Stay
-    var reason = ""
-    
-    if not rsiVal.isNaN:
-      if rsiVal < s.oversold:
-        position = Position.Buy
-        reason = &"RSI oversold: {rsiVal:.2f} < {s.oversold:.2f}"
-      elif rsiVal > s.overbought:
-        position = Position.Sell
-        reason = &"RSI overbought: {rsiVal:.2f} > {s.overbought:.2f}"
-      else:
-        position = Position.Stay
-        reason = &"RSI neutral: {rsiVal:.2f}"
-    else:
-      reason = "Insufficient data for RSI"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
+  ## **DEPRECATED**: Use onBar() for streaming mode instead.
+  ## 
+  ## Batch analyze() requires batch indicator functions which have been removed
+  ## in favor of streaming-only design. Use the onBar() method instead:
+  ##
+  ## .. code-block:: nim
+  ##    var strategy = newRSIStrategy()
+  ##    for bar in data:
+  ##      let signal = strategy.onBar(bar)
+  ##      # Process signal...
+  raise newException(StrategyError, "RSI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
 method onBar*(s: RSIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming RSI
-  s.history.add(bar)
-  let rsiVal = s.rsiIndicator.update(bar.close)
+  # RSI needs open and close prices
+  let rsiVal = s.rsiIndicator.update(bar.open, bar.close)
   
   var position = Position.Stay
   var reason = ""
@@ -159,7 +146,6 @@ method reset*(s: RSIStrategy) =
   ## Reset RSI strategy state
   s.rsiIndicator = newRSI(s.period)
   s.lastSignal = Position.Stay
-  s.history = @[]
 
 # ============================================================================
 # Moving Average Crossover Strategy
@@ -197,51 +183,11 @@ proc newCrossoverStrategy*(fastPeriod: int = 50, slowPeriod: int = 200,
   )
 
 method analyze*(s: CrossoverStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## Analyze data using MA crossover, generating a signal for each bar
-  let prices = data.mapIt(it.close)
-  let fastMA = sma(prices, s.fastPeriod)
-  let slowMA = sma(prices, s.slowPeriod)
-  
-  result = @[]
-  for i, bar in data:
-    let currentFast = fastMA[i]
-    let currentSlow = slowMA[i]
-    
-    var position = Position.Stay
-    var reason = ""
-    
-    if not currentFast.isNaN and not currentSlow.isNaN and i > 0:
-      let prevFast = fastMA[i-1]
-      let prevSlow = slowMA[i-1]
-      
-      # Golden cross: fast crosses above slow
-      if not prevFast.isNaN and not prevSlow.isNaN:
-        if prevFast <= prevSlow and currentFast > currentSlow:
-          position = Position.Buy
-          reason = &"Golden cross: Fast MA ({currentFast:.2f}) > Slow MA ({currentSlow:.2f})"
-        # Death cross: fast crosses below slow
-        elif prevFast >= prevSlow and currentFast < currentSlow:
-          position = Position.Sell
-          reason = &"Death cross: Fast MA ({currentFast:.2f}) < Slow MA ({currentSlow:.2f})"
-        else:
-          position = Position.Stay
-          reason = &"No crossover: Fast={currentFast:.2f}, Slow={currentSlow:.2f}"
-      else:
-        reason = "Insufficient data for crossover detection"
-    else:
-      reason = "Insufficient data for moving averages"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
+  ## **DEPRECATED**: Use onBar() for streaming mode instead.
+  raise newException(StrategyError, "Crossover analyze() batch mode deprecated. Use onBar() streaming mode.")
 
 method onBar*(s: CrossoverStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MAs
-  s.history.add(bar)
   let fastVal = s.fastMA.update(bar.close)
   let slowVal = s.slowMA.update(bar.close)
   
@@ -281,7 +227,6 @@ method reset*(s: CrossoverStrategy) =
   s.fastMA = newSMA(s.fastPeriod)
   s.slowMA = newSMA(s.slowPeriod)
   s.lastFastAbove = false
-  s.history = @[]
 
 # ============================================================================
 # MACD Strategy
@@ -320,51 +265,11 @@ proc newMACDStrategy*(fastPeriod: int = 12, slowPeriod: int = 26,
   )
 
 method analyze*(s: MACDStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## Analyze data using MACD, generating a signal for each bar
-  let prices = data.mapIt(it.close)
-  let macdData = macd(prices, s.fastPeriod, s.slowPeriod, s.signalPeriod)
-  
-  result = @[]
-  for i, bar in data:
-    let currentMACD = macdData.macd[i]
-    let currentSignal = macdData.signal[i]
-    let currentHist = macdData.histogram[i]
-    
-    var position = Position.Stay
-    var reason = ""
-    
-    if not currentMACD.isNaN and not currentSignal.isNaN and i > 0:
-      let prevMACD = macdData.macd[i-1]
-      let prevSignal = macdData.signal[i-1]
-      
-      if not prevMACD.isNaN and not prevSignal.isNaN:
-        # Bullish crossover: MACD crosses above signal
-        if prevMACD <= prevSignal and currentMACD > currentSignal:
-          position = Position.Buy
-          reason = &"MACD bullish crossover: MACD ({currentMACD:.3f}) > Signal ({currentSignal:.3f})"
-        # Bearish crossover: MACD crosses below signal
-        elif prevMACD >= prevSignal and currentMACD < currentSignal:
-          position = Position.Sell
-          reason = &"MACD bearish crossover: MACD ({currentMACD:.3f}) < Signal ({currentSignal:.3f})"
-        else:
-          position = Position.Stay
-          reason = &"No MACD crossover: Histogram={currentHist:.3f}"
-      else:
-        reason = "Insufficient data for MACD crossover"
-    else:
-      reason = "Insufficient data for MACD"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
+  ## **DEPRECATED**: Use onBar() for streaming mode instead.
+  raise newException(StrategyError, "MACD analyze() batch mode deprecated. Use onBar() streaming mode.")
 
 method onBar*(s: MACDStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MACD
-  s.history.add(bar)
   let macdResult = s.macdIndicator.update(bar.close)
   
   var position = Position.Stay
@@ -384,7 +289,7 @@ method onBar*(s: MACDStrategy, bar: OHLCV): Signal =
       reason = &"MACD bearish crossover: MACD ({macdResult.macd:.3f}) < Signal ({macdResult.signal:.3f})"
     else:
       position = Position.Stay
-      reason = &"No MACD crossover: Histogram={macdResult.histogram:.3f}"
+      reason = &"No MACD crossover: Histogram={macdResult.hist:.3f}"
     
     s.lastMACDAbove = currentMACDAbove
   else:
@@ -402,7 +307,6 @@ method reset*(s: MACDStrategy) =
   ## Reset MACD strategy state
   s.macdIndicator = newMACD(s.fastPeriod, s.slowPeriod, s.signalPeriod)
   s.lastMACDAbove = false
-  s.history = @[]
 
 # ============================================================================
 # Bollinger Bands Strategy
@@ -414,6 +318,7 @@ type
     ## Buy when price touches lower band, sell when price touches upper band
     period*: int
     stdDev*: float64
+    bbIndicator*: BollingerBands
     lastPosition*: Position
 
 proc newBollingerStrategy*(period: int = 20, stdDev: float64 = 2.0,
@@ -432,64 +337,51 @@ proc newBollingerStrategy*(period: int = 20, stdDev: float64 = 2.0,
     symbol: symbol,
     period: period,
     stdDev: stdDev,
+    bbIndicator: newBollingerBands(period, stdDev),
     lastPosition: Position.Stay
   )
 
 method analyze*(s: BollingerStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## Analyze data using Bollinger Bands, generating a signal for each bar
-  let prices = data.mapIt(it.close)
-  let bb = bollinger(prices, s.period, s.stdDev)
-  
-  result = @[]
-  for i, bar in data:
-    let currentPrice = bar.close
-    let currentUpper = bb.upper[i]
-    let currentMiddle = bb.middle[i]
-    let currentLower = bb.lower[i]
-    
-    var position = Position.Stay
-    var reason = ""
-    
-    if not currentUpper.isNaN and not currentLower.isNaN:
-      # Buy when price is at or below lower band (oversold)
-      if currentPrice <= currentLower:
-        position = Position.Buy
-        reason = &"Price at lower band: ${currentPrice:.2f} <= ${currentLower:.2f}"
-      # Sell when price is at or above upper band (overbought)
-      elif currentPrice >= currentUpper:
-        position = Position.Sell
-        reason = &"Price at upper band: ${currentPrice:.2f} >= ${currentUpper:.2f}"
-      # Exit when price returns to middle
-      elif abs(currentPrice - currentMiddle) < (currentUpper - currentMiddle) * 0.3:
-        position = Position.Stay
-        reason = &"Price near middle band: ${currentPrice:.2f} ≈ ${currentMiddle:.2f}"
-      else:
-        position = Position.Stay
-        reason = &"Price within bands: ${currentLower:.2f} < ${currentPrice:.2f} < ${currentUpper:.2f}"
-    else:
-      reason = "Insufficient data for Bollinger Bands"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
+  ## **DEPRECATED**: Use onBar() for streaming mode instead.
+  raise newException(StrategyError, "Bollinger analyze() batch mode deprecated. Use onBar() streaming mode.")
 
 method onBar*(s: BollingerStrategy, bar: OHLCV): Signal =
-  ## Bollinger Bands strategy doesn't have a good streaming implementation
-  ## because it needs full history for standard deviation calculation.
-  ## We'll just delegate to analyze with a single bar.
+  ## Process single bar using streaming Bollinger Bands
+  let bb = s.bbIndicator.update(bar.close)
+  
+  var position = Position.Stay
+  var reason = ""
+  
+  if not bb.upper.isNaN and not bb.lower.isNaN:
+    let currentPrice = bar.close
+    
+    # Buy when price is at or below lower band (oversold)
+    if currentPrice <= bb.lower:
+      position = Position.Buy
+      reason = &"Price at lower band: ${currentPrice:.2f} <= ${bb.lower:.2f}"
+    # Sell when price is at or above upper band (overbought)
+    elif currentPrice >= bb.upper:
+      position = Position.Sell
+      reason = &"Price at upper band: ${currentPrice:.2f} >= ${bb.upper:.2f}"
+    # Exit when price returns to middle
+    elif abs(currentPrice - bb.middle) < (bb.upper - bb.middle) * 0.3:
+      position = Position.Stay
+      reason = &"Price near middle band: ${currentPrice:.2f} ≈ ${bb.middle:.2f}"
+    else:
+      position = Position.Stay
+      reason = &"Price within bands: ${bb.lower:.2f} < ${currentPrice:.2f} < ${bb.upper:.2f}"
+  else:
+    reason = "Insufficient data for Bollinger Bands"
+  
   result = Signal(
-    position: Position.Stay,
+    position: position,
     symbol: s.symbol,
     timestamp: bar.timestamp,
     price: bar.close,
-    reason: "Bollinger Bands requires batch mode (use analyze())"
+    reason: reason
   )
 
 method reset*(s: BollingerStrategy) =
   ## Reset Bollinger strategy state
+  s.bbIndicator = newBollingerBands(s.period, s.stdDev)
   s.lastPosition = Position.Stay
-  s.history = @[]

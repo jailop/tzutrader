@@ -164,8 +164,6 @@ let strategy = newBollingerStrategy(
 - Works best in ranging markets
 - Can generate false signals during breakouts
 
-**Note:** Bollinger strategy uses batch mode internally because it needs the full history to calculate standard deviations properly.
-
 **Example:**
 ```nim
 let strategy = newBollingerStrategy(period = 20, stdDev = 2.0)
@@ -198,56 +196,9 @@ Different market conditions favor different strategies:
 
 No strategy works in all conditions. The market environment determines which approach is likely to succeed.
 
-## Strategy Modes: Batch vs Streaming
-
-Strategies can operate in two modes:
-
-### Batch Mode (analyze method)
-
-Process all historical data at once:
-
-```nim
-let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
-let data = readCSV("data/AAPL.csv")
-
-# Analyze all bars, get all signals
-let signals = strategy.analyze(data)
-
-for i, signal in signals:
-  if signal.position != Stay:
-    echo "Bar ", i, ": ", signal.position, " at $", signal.price
-```
-
-**Use for:**
-- Backtesting
-- Research and analysis
-- Batch processing
-
-### Streaming Mode (onBar method)
-
-Process data one bar at a time:
-
-```nim
-let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
-
-for bar in dataStream:
-  let signal = strategy.onBar(bar)
-  if signal.position == Buy:
-    echo "Buy signal at $", bar.close
-  elif signal.position == Sell:
-    echo "Sell signal at $", bar.close
-```
-
-**Use for:**
-- Live trading bots
-- Real-time monitoring
-- Processing data as it arrives
-
-Both modes should produce the same signals for the same data. Use batch mode for backtesting simplicity, streaming mode for live trading realism.
-
 ## Creating Custom Strategies
 
-To create a custom strategy, inherit from the base `Strategy` class and implement the required methods:
+To create a custom strategy, inherit from the base `Strategy` class and implement the `onBar()` method:
 
 ```nim
 import tzutrader
@@ -257,52 +208,31 @@ type
   MyCustomStrategy* = ref object of Strategy
     # Add your strategy's state here
     threshold*: float64
+    ma*: MA
 
-proc newMyCustomStrategy*(threshold: float64): MyCustomStrategy =
+proc newMyCustomStrategy*(threshold: float64, maPeriod: int = 20): MyCustomStrategy =
   result = MyCustomStrategy(
     name: "My Custom Strategy",
     threshold: threshold,
-    history: @[]
+    ma: newMA(maPeriod)
   )
 
-method analyze*(s: MyCustomStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## Batch mode: analyze all data
-  result = @[]
-  
-  for bar in data:
-    var position = Position.Stay
-    var reason = ""
-    
-    # Your trading logic here
-    if bar.close > s.threshold:
-      position = Position.Buy
-      reason = &"Price ${bar.close} above threshold ${s.threshold}"
-    elif bar.close < s.threshold:
-      position = Position.Sell
-      reason = &"Price ${bar.close} below threshold ${s.threshold}"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
-
 method onBar*(s: MyCustomStrategy, bar: OHLCV): Signal =
-  ## Streaming mode: process one bar
-  s.history.add(bar)
+  ## Process one bar and generate signal
+  # Update indicators
+  let maVal = s.ma.update(bar.close)
   
   var position = Position.Stay
   var reason = ""
   
   # Your trading logic here
-  if bar.close > s.threshold:
-    position = Position.Buy
-    reason = &"Price ${bar.close} above threshold ${s.threshold}"
-  elif bar.close < s.threshold:
-    position = Position.Sell
-    reason = &"Price ${bar.close} below threshold ${s.threshold}"
+  if not maVal.isNaN:
+    if bar.close > s.threshold and bar.close > maVal:
+      position = Position.Buy
+      reason = &"Price ${bar.close} above threshold ${s.threshold} and MA ${maVal}"
+    elif bar.close < s.threshold or bar.close < maVal:
+      position = Position.Sell
+      reason = &"Price ${bar.close} below threshold ${s.threshold} or MA ${maVal}"
   
   result = Signal(
     position: position,
@@ -311,19 +241,14 @@ method onBar*(s: MyCustomStrategy, bar: OHLCV): Signal =
     price: bar.close,
     reason: reason
   )
-
-method reset*(s: MyCustomStrategy) =
-  ## Reset strategy state
-  s.history = @[]
 ```
 
 **Key points:**
-- Store strategy parameters in the type definition
-- Implement `analyze()` for batch mode
-- Implement `onBar()` for streaming mode
-- Use `reset()` to clear state between runs
-- Store historical bars in `history` if needed
+- Store strategy parameters and indicators in the type definition
+- Implement `onBar()` to process each bar
+- Update indicators inside `onBar()` as data arrives
 - Always return a `Signal` with position, price, and reason
+- Use streaming indicators (newMA, newRSI, etc.)
 
 ### Example: Dual RSI Strategy
 
@@ -346,41 +271,10 @@ proc newDualRSIStrategy*(shortPeriod: int = 7, longPeriod: int = 21): DualRSIStr
     shortPeriod: shortPeriod,
     longPeriod: longPeriod,
     shortRSI: newRSI(shortPeriod),
-    longRSI: newRSI(longPeriod),
-    history: @[]
+    longRSI: newRSI(longPeriod)
   )
 
-method analyze*(s: DualRSIStrategy, data: seq[OHLCV]): seq[Signal] =
-  let prices = data.mapIt(it.close)
-  let shortRSI = rsi(prices, s.shortPeriod)
-  let longRSI = rsi(prices, s.longPeriod)
-  
-  result = @[]
-  for i, bar in data:
-    var position = Position.Stay
-    var reason = ""
-    
-    if not shortRSI[i].isNaN and not longRSI[i].isNaN:
-      # Buy when both RSIs are oversold
-      if shortRSI[i] < 30.0 and longRSI[i] < 40.0:
-        position = Position.Buy
-        reason = &"Both RSIs oversold: short={shortRSI[i]:.1f}, long={longRSI[i]:.1f}"
-      # Sell when both RSIs are overbought
-      elif shortRSI[i] > 70.0 and longRSI[i] > 60.0:
-        position = Position.Sell
-        reason = &"Both RSIs overbought: short={shortRSI[i]:.1f}, long={longRSI[i]:.1f}"
-    
-    result.add(Signal(
-      position: position,
-      symbol: s.symbol,
-      timestamp: bar.timestamp,
-      price: bar.close,
-      reason: reason
-    ))
-
 method onBar*(s: DualRSIStrategy, bar: OHLCV): Signal =
-  s.history.add(bar)
-  
   let shortVal = s.shortRSI.update(bar.close)
   let longVal = s.longRSI.update(bar.close)
   
@@ -470,8 +364,8 @@ Now that you understand how to build strategies, the next chapter covers portfol
 - A trading strategy defines rules for when to buy, sell, or hold
 - TzuTrader includes four pre-built strategies: RSI, MA Crossover, MACD, and Bollinger Bands
 - Choose strategies that match market conditions (trending vs ranging)
-- Use batch mode for backtesting, streaming mode for live trading
-- Create custom strategies by inheriting from the Strategy base class
+- TzuTrader uses streaming architecture - same code for backtesting and live trading
+- Create custom strategies by inheriting from the Strategy base class and implementing `onBar()`
 - Start simple and add complexity only when justified
 - Test incrementally and handle edge cases properly
 - Avoid look-ahead bias in your trading logic

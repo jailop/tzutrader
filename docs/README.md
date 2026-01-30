@@ -115,7 +115,7 @@ TzuTrader calculates comprehensive performance metrics:
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/tzutrader.git
+git clone https://codeberg.org/jailop/tzutrader.git
 cd tzutrader
 nimble install -y
 ```
@@ -200,8 +200,6 @@ Contributions are welcome. When contributing documentation:
 **Current Version:** 0.7.0
 
 TzuTrader is in active development. All core features are complete and tested. The library currently focuses on backtesting; live trading infrastructure is not included.
-
-**Test Coverage:** 207/208 tests passing
 
 ## License
 

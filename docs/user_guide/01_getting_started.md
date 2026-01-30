@@ -41,7 +41,7 @@ You need Nim version 2.0.0 or later installed on your system. If you don't have 
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/yourusername/tzutrader.git
+git clone https://codeberg.org/jailop/tzutrader.git
 cd tzutrader
 nimble install -y
 ```

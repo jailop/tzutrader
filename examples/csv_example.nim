@@ -57,7 +57,7 @@ while aaplStream.hasNext():
   # Update indicators
   let smaVal = sma20.update(bar.close)
   let emaVal = ema20.update(bar.close)
-  let rsiVal = rsi14.update(bar.close)
+  let rsiVal = rsi14.update(bar.open, bar.close)
   
   # Show last 5 bars with indicators
   if bars > aaplStream.len() - 5:
@@ -100,81 +100,10 @@ for symbol in symbols:
   echo &"{symbol:<10} {data.len:<8} ${startPrice:<9.2f} ${endPrice:<9.2f} {change:+.2f}%"
 
 # ============================================================================
-# Example 4: Calculating Technical Indicators on CSV Data
+# Example 4: Streaming Pattern - Simulated Real-time Processing
 # ============================================================================
 
-echo "\n\nExample 4: Technical Analysis on CSV Data"
-echo "-" .repeat(70)
-
-# Load cyclical data (good for oscillator testing)
-let cycleData = readCSV("data/CYCLE.csv")
-let prices = cycleData.mapIt(it.close)
-
-# Calculate indicators
-let sma50 = sma(prices, 50)
-let rsi14batch = rsi(prices, 14)
-let macdData = macd(prices)
-
-# Find interesting signals
-echo "\nCYCLE.csv Analysis:"
-echo &"  Total bars: {cycleData.len}"
-echo &"  Price range: ${prices.min:.2f} - ${prices.max:.2f}"
-
-# Count RSI signals
-var oversold = 0
-var overbought = 0
-for val in rsi14batch:
-  if not val.isNaN:
-    if val < 30: oversold.inc
-    elif val > 70: overbought.inc
-
-echo &"  RSI oversold signals: {oversold}"
-echo &"  RSI overbought signals: {overbought}"
-
-# Find MACD crossovers
-var bullishCrossovers = 0
-var bearishCrossovers = 0
-for i in 1..<macdData.macd.len:
-  if not macdData.macd[i].isNaN and not macdData.signal[i].isNaN:
-    let prevMacdAbove = macdData.macd[i-1] > macdData.signal[i-1]
-    let currMacdAbove = macdData.macd[i] > macdData.signal[i]
-    
-    if not prevMacdAbove and currMacdAbove:
-      bullishCrossovers.inc
-    elif prevMacdAbove and not currMacdAbove:
-      bearishCrossovers.inc
-
-echo &"  MACD bullish crossovers: {bullishCrossovers}"
-echo &"  MACD bearish crossovers: {bearishCrossovers}"
-
-# ============================================================================
-# Example 5: Writing Results to CSV
-# ============================================================================
-
-echo "\n\nExample 5: Writing Analysis Results to CSV"
-echo "-" .repeat(70)
-
-# Analyze and save with indicators
-let testData = readCSV("data/TEST.csv")
-var enrichedData = newSeq[OHLCV]()
-
-# Add SMA to the data (in practice you'd extend OHLCV or use a table)
-let testPrices = testData.mapIt(it.close)
-let testSMA = sma(testPrices, 10)
-
-echo "Processing TEST.csv with SMA(10)..."
-echo &"  Original bars: {testData.len}"
-
-# For this example, we'll just write the original data
-# In a real scenario, you might create an enriched format
-writeCSV(testData, "data/TEST_output.csv")
-echo "  Wrote output to: data/TEST_output.csv"
-
-# ============================================================================
-# Example 6: Streaming Pattern - Simulated Real-time Processing
-# ============================================================================
-
-echo "\n\nExample 6: Simulated Real-time Processing"
+echo "\n\nExample 4: Simulated Real-time Processing"
 echo "-" .repeat(70)
 
 echo "\nSimulating real-time bar processing..."
@@ -189,7 +118,7 @@ while rtStream.hasNext():
   let bar = rtStream.next()
   barCount.inc
   
-  let rsiVal = rsiStream.update(bar.close)
+  let rsiVal = rsiStream.update(bar.open, bar.close)
   
   # Simple RSI strategy
   if not rsiVal.isNaN:
@@ -219,8 +148,6 @@ echo "  ✓ Reading CSV files into OHLCV data"
 echo "  ✓ CSV streaming for sequential processing"
 echo "  ✓ Real-time indicator updates from CSV"
 echo "  ✓ Batch processing multiple files"
-echo "  ✓ Technical analysis on CSV data"
-echo "  ✓ Writing results back to CSV"
 echo "  ✓ Simulated real-time trading from CSV"
 echo "\nAvailable CSV files in data/:"
 echo "  - AAPL.csv, MSFT.csv, BEAR.csv"

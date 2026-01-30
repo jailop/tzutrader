@@ -2,19 +2,21 @@
 
 ## Overview
 
-Technical indicators are mathematical calculations applied to price and volume data to identify patterns and potential trading opportunities. TzuTrader provides pure Nim implementations of commonly used indicators, offering both batch processing for historical analysis and streaming calculation for real-time applications.
+Technical indicators are mathematical calculations applied to price and volume data to identify patterns and potential trading opportunities. TzuTrader provides pure Nim implementations of commonly used indicators using a **streaming-only architecture**.
 
 **Module:** `tzutrader/indicators.nim`
 
-## Understanding Indicator Modes
+## Streaming Architecture
 
-TzuTrader implements indicators in two complementary ways:
+TzuTrader uses a streaming-only design where indicators update incrementally as new data arrives:
 
-**Batch Functions:** Process entire sequences at once. These are useful during backtesting when you have complete historical data and need to calculate an indicator across all periods. They return a sequence of values with NaN for periods where insufficient data exists.
+**Streaming Objects:** All indicators maintain internal state and update one data point at a time. This design provides:
+- **O(1) Memory**: Constant memory usage regardless of data size
+- **O(1) Updates**: Each new data point is processed in constant time
+- **Unified API**: Same code works for backtesting and live trading
+- **Historical Access**: Circular buffers allow access to previous values via `indicator[0]` (current), `indicator[-1]` (previous), etc.
 
-**Streaming Objects:** Update incrementally as new data arrives. These maintain internal state and are suitable for live trading applications or memory-constrained environments where storing full sequences is impractical.
-
-Most traders will use batch functions for backtesting and streaming objects when moving to live trading. The calculations are identical—only the execution model differs.
+This architecture is ideal for both backtesting historical data and running live trading bots, as the same indicator instance can process data indefinitely without memory growth.
 
 ## Moving Averages
 
@@ -30,27 +32,22 @@ $$\text{SMA}_t = \frac{1}{n} \sum_{i=0}^{n-1} P_{t-i}$$
 
 where $P_t$ is the price at time $t$ and $n$ is the period length.
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc sma*(data: seq[float64], period: int): seq[float64]
+type MA* = ref object of Indicator[float64]
+
+proc newMA*(period: int, memSize: int = 1): MA
+proc update*(ma: MA, value: float64): float64
 ```
 
 **Parameters:**
-- `data`: Price series (typically close prices)
 - `period`: Number of periods to average
+- `memSize`: Size of circular buffer for historical access (default 1)
 
-**Returns:** Sequence of SMA values, NaN for first `period - 1` values
+**Returns:** Current SMA value (NaN until `period` values received)
 
-**Streaming Type:**
-
-```nim
-type SMA* = ref object of IndicatorBase
-
-proc newSMA*(period: int): SMA
-proc update*(sma: SMA, value: float64): float64
-proc current*(sma: SMA): float64
-```
+**Access:** Use `ma[0]` for current value, `ma[-1]` for previous, etc.
 
 **Usage Characteristics:**
 
@@ -61,11 +58,17 @@ SMAs respond slowly to price changes because all values in the window have equal
 ```nim
 import tzutrader/indicators
 
-let closes = @[100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0]
-let sma5 = sma(closes, 5)
+var ma = newMA(period = 5)
 
-# First 4 values are NaN (insufficient data)
-# sma5[4] = (100 + 102 + 101 + 103 + 105) / 5 = 102.2
+# Update with new prices as they arrive
+for price in [100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0]:
+  let smaVal = ma.update(price)
+  if not smaVal.isNaN:
+    echo "SMA: ", smaVal
+
+# Access historical values if memSize > 1
+# ma[0]  = current SMA
+# ma[-1] = previous SMA
 ```
 
 ### Exponential Moving Average (EMA)
@@ -82,21 +85,19 @@ $$k = \frac{2}{n + 1}$$
 
 The initial EMA value is calculated as an SMA.
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc ema*(data: seq[float64], period: int): seq[float64]
-```
+type EMA* = ref object of Indicator[float64]
 
-**Streaming Type:**
-
-```nim
-type EMA* = ref object of IndicatorBase
-
-proc newEMA*(period: int): EMA
+proc newEMA*(period: int, alpha: float64 = 2.0, memSize: int = 1): EMA
 proc update*(ema: EMA, value: float64): float64
-proc current*(ema: EMA): float64
 ```
+
+**Parameters:**
+- `period`: Number of periods
+- `alpha`: Smoothing factor coefficient (default 2.0, used in k calculation)
+- `memSize`: Size of circular buffer for historical access (default 1)
 
 **Usage Characteristics:**
 
@@ -114,11 +115,18 @@ $$\text{WMA}_t = \frac{\sum_{i=0}^{n-1} P_{t-i} \cdot (n - i)}{\sum_{i=1}^{n} i}
 
 The denominator simplifies to $\frac{n(n+1)}{2}$.
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc wma*(data: seq[float64], period: int): seq[float64]
+type WMA* = ref object of Indicator[float64]
+
+proc newWMA*(period: int, memSize: int = 1): WMA
+proc update*(wma: WMA, value: float64): float64
 ```
+
+**Parameters:**
+- `period`: Number of periods for weighted average
+- `memSize`: Size of circular buffer (default 1)
 
 **Usage Characteristics:**
 
@@ -149,21 +157,20 @@ $$
 \end{align}
 $$
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc rsi*(data: seq[float64], period: int = 14): seq[float64]
+type RSI* = ref object of Indicator[float64]
+
+proc newRSI*(period: int = 14, memSize: int = 1): RSI
+proc update*(rsi: RSI, open, close: float64): float64
 ```
 
-**Streaming Type:**
-
-```nim
-type RSI* = ref object of IndicatorBase
-
-proc newRSI*(period: int = 14): RSI
-proc update*(rsi: RSI, price: float64): float64
-proc current*(rsi: RSI): float64
-```
+**Parameters:**
+- `period`: Lookback period (default 14)
+- `memSize`: Size of circular buffer (default 1)
+- `open`: Opening price for the bar
+- `close`: Closing price for the bar
 
 **Interpretation:**
 
@@ -176,9 +183,13 @@ RSI works better for identifying divergences—when price makes a new high but R
 ```nim
 import tzutrader/indicators
 
-let closes = @[44.0, 44.5, 45.0, 45.5, 45.0, 44.5, 44.0, 43.5, 43.0,
-               42.5, 43.0, 43.5, 44.0, 44.5, 45.0, 45.5]
-let rsi14 = rsi(closes, 14)
+var rsi = newRSI(period = 14)
+
+for bar in data:
+  let rsiVal = rsi.update(bar.open, bar.close)
+  if not rsiVal.isNaN:
+    echo "RSI: ", rsiVal
+```
 
 # Values are NaN until sufficient data accumulates
 # RSI ranges from 0 to 100
@@ -192,13 +203,18 @@ ROC measures the percentage change in price over a specified period. It's one of
 
 $$\text{ROC}_t = \frac{P_t - P_{t-n}}{P_{t-n}} \times 100$$
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc roc*(data: seq[float64], period: int = 12): seq[float64]
+type ROC* = ref object of Indicator[float64]
+
+proc newROC*(period: int = 12, memSize: int = 1): ROC
+proc update*(roc: ROC, value: float64): float64
 ```
 
-**Returns:** Percentage change values, NaN for first `period` values
+**Parameters:**
+- `period`: Lookback period (default 12)
+- `memSize`: Size of circular buffer (default 1)
 
 **Usage Characteristics:**
 
@@ -222,23 +238,22 @@ $$\text{Signal Line} = \text{EMA}_9(\text{MACD Line})$$
 
 $$\text{Histogram} = \text{MACD Line} - \text{Signal Line}$$
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc macd*(data: seq[float64], fastPeriod: int = 12, slowPeriod: int = 26, 
-          signalPeriod: int = 9): tuple[macd, signal, histogram: seq[float64]]
+type MACD* = ref object of Indicator[MACDResult]
+
+proc newMACD*(fast: int = 12, slow: int = 26, signal: int = 9, memSize: int = 1): MACD
+proc update*(macd: MACD, value: float64): MACDResult
 ```
 
-**Streaming Type:**
+**Parameters:**
+- `fast`: Fast EMA period (default 12)
+- `slow`: Slow EMA period (default 26)
+- `signal`: Signal line period (default 9)
+- `memSize`: Size of circular buffer (default 1)
 
-```nim
-type MACD* = ref object of IndicatorBase
-
-proc newMACD*(fastPeriod: int = 12, slowPeriod: int = 26, 
-              signalPeriod: int = 9): MACD
-proc update*(macd: MACD, price: float64): tuple[macd, signal, histogram: float64]
-proc current*(macd: MACD): tuple[macd, signal, histogram: float64]
-```
+**Returns:** `MACDResult` tuple with `(macd, signal, histogram)` fields
 
 **Interpretation:**
 
@@ -278,21 +293,19 @@ ATR is an exponential moving average of the true range:
 
 $$\text{ATR}_t = \frac{\text{ATR}_{t-1} \cdot (n-1) + \text{TR}_t}{n}$$
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc atr*(high, low, close: seq[float64], period: int = 14): seq[float64]
-```
+type ATR* = ref object of Indicator[float64]
 
-**Streaming Type:**
-
-```nim
-type ATR* = ref object of IndicatorBase
-
-proc newATR*(period: int = 14): ATR
+proc newATR*(period: int = 14, memSize: int = 1): ATR
 proc update*(atr: ATR, high, low, close: float64): float64
-proc current*(atr: ATR): float64
 ```
+
+**Parameters:**
+- `period`: Smoothing period (default 14)
+- `memSize`: Size of circular buffer (default 1)
+- `high, low, close`: OHLC values for the bar
 
 **Usage Characteristics:**
 
@@ -303,6 +316,13 @@ Traders use ATR primarily for position sizing and stop-loss placement. Higher AT
 **Example:**
 
 ```nim
+var atr = newATR(period = 14)
+
+for bar in data:
+  let atrVal = atr.update(bar.high, bar.low, bar.close)
+  if not atrVal.isNaN:
+    echo "ATR: ", atrVal
+```
 import tzutrader/indicators
 
 let highs = @[102.0, 104.0, 103.0, 105.0, 107.0]
@@ -326,12 +346,21 @@ $$\text{Lower Band} = \text{SMA}_n(P) - k \cdot \sigma_n$$
 
 where $\sigma_n$ is the standard deviation over $n$ periods and $k$ is typically 2.
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc bollinger*(data: seq[float64], period: int = 20, stdDev: float64 = 2.0): 
-    tuple[upper, middle, lower: seq[float64]]
+type BollingerBands* = ref object of Indicator[BBResult]
+
+proc newBollingerBands*(period: int = 20, stdDev: float64 = 2.0, memSize: int = 1): BollingerBands
+proc update*(bb: BollingerBands, value: float64): BBResult
 ```
+
+**Parameters:**
+- `period`: SMA period (default 20)
+- `stdDev`: Number of standard deviations for bands (default 2.0)
+- `memSize`: Size of circular buffer (default 1)
+
+**Returns:** `BBResult` tuple with `(upper, middle, lower)` fields
 
 **Usage Characteristics:**
 
@@ -344,12 +373,12 @@ Prices touching or exceeding the bands doesn't automatically signal reversal. In
 ```nim
 import tzutrader/indicators
 
-let closes = @[100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0, 
-               108.0, 107.0, 109.0, 111.0, 110.0, 112.0]
-let (upper, middle, lower) = bollinger(closes, period = 10, stdDev = 2.0)
+var bb = newBollingerBands(period = 20, stdDev = 2.0)
 
-# middle is the 10-period SMA
-# upper and lower are 2 standard deviations away
+for price in prices:
+  let bands = bb.update(price)
+  if not bands.middle.isNaN:
+    echo "Upper: ", bands.upper, " Middle: ", bands.middle, " Lower: ", bands.lower
 ```
 
 ### Standard Deviation
@@ -362,11 +391,18 @@ $$\sigma_t = \sqrt{\frac{1}{n} \sum_{i=0}^{n-1} (P_{t-i} - \bar{P})^2}$$
 
 where $\bar{P}$ is the mean price over the period.
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc stddev*(data: seq[float64], period: int): seq[float64]
+type STDDEV* = ref object of Indicator[float64]
+
+proc newSTDDEV*(period: int, memSize: int = 1): STDDEV
+proc update*(sd: STDDEV, value: float64): float64
 ```
+
+**Parameters:**
+- `period`: Lookback period
+- `memSize`: Size of circular buffer (default 1)
 
 **Usage Characteristics:**
 
@@ -392,21 +428,19 @@ $$
 \end{cases}
 $$
 
-**Batch Function:**
+**API:**
 
 ```nim
-proc obv*(close, volume: seq[float64]): seq[float64]
-```
+type OBV* = ref object of Indicator[float64]
 
-**Streaming Type:**
-
-```nim
-type OBV* = ref object of IndicatorBase
-
-proc newOBV*(): OBV
+proc newOBV*(memSize: int = 1): OBV
 proc update*(obv: OBV, close, volume: float64): float64
-proc current*(obv: OBV): float64
 ```
+
+**Parameters:**
+- `close`: Closing price
+- `volume`: Trading volume
+- `memSize`: Size of circular buffer (default 1)
 
 **Interpretation:**
 
@@ -416,6 +450,13 @@ OBV's absolute value is meaningless—what matters is its direction and divergen
 
 ```nim
 import tzutrader/indicators
+
+var obv = newOBV()
+
+for bar in data:
+  let obvVal = obv.update(bar.close, bar.volume)
+  echo "OBV: ", obvVal
+```
 
 let closes = @[100.0, 102.0, 101.0, 103.0, 105.0]
 let volumes = @[1000.0, 1200.0, 900.0, 1500.0, 1300.0]
@@ -495,22 +536,747 @@ These methods manage the rolling window of values. User code typically doesn't n
 ## Performance Considerations
 
 **Memory Usage:**
-- Batch functions allocate full result sequences
-- Streaming indicators maintain only the rolling window (typically 10-100 values)
-- Use streaming for memory-constrained environments
+- All indicators use fixed-size circular buffers
+- Memory usage is O(1) - constant regardless of data stream length
+- Typical memory per indicator: 100-1000 bytes
 
 **Computational Speed:**
-- Batch functions are vectorized where possible
-- Streaming calculations are incremental and efficient
-- Both approaches are suitable for production use
+- Each update() call is O(1) - constant time
+- Incremental calculations are highly efficient
+- Suitable for both backtesting and live trading
 
-**Choosing Between Modes:**
-- Use batch mode for backtesting with historical data
-- Use streaming mode for live trading or when processing very large datasets incrementally
-- Results are numerically identical (within floating-point precision)
+**Streaming Architecture Benefits:**
+- Same code for backtesting and live trading
+- No memory growth over time
+- Fast indicator updates
+- Can run indefinitely
+
+## Advanced Momentum & Trend Indicators
+
+### Stochastic Oscillator
+
+The Stochastic Oscillator compares the closing price to the price range over a period. It generates two lines: %K (fast) and %D (slow signal line). Values range from 0 to 100.
+
+**Formula:**
+
+$$\%K = 100 \times \frac{\text{Close} - \text{Lowest Low}}{\text{Highest High} - \text{Lowest Low}}$$
+
+$$\%D = \text{SMA}(\%K, d)$$
+
+**API:**
+
+```nim
+type STOCH* = ref object of Indicator[STOCHResult]
+
+proc newSTOCH*(period: int = 14, kSmooth: int = 3, dSmooth: int = 3, memSize: int = 1): STOCH
+proc update*(stoch: STOCH, high, low, close: float64): STOCHResult
+```
+
+**Parameters:**
+- `period`: Lookback period for %K (default 14)
+- `kSmooth`: Smoothing for %K (default 3)
+- `dSmooth`: Smoothing for %D signal line (default 3)
+- `memSize`: Size of circular buffer (default 1)
+- `high, low, close`: OHLC values
+
+**Returns:** `STOCHResult` tuple with `(k, d)` fields
+
+**Interpretation:**
+
+- **Overbought:** %K > 80 suggests selling pressure may emerge
+- **Oversold:** %K < 20 suggests buying pressure may emerge
+- **Crossovers:** %K crossing above %D signals potential buy, crossing below signals potential sell
+- **Divergence:** Price makes new high but %K doesn't confirm → potential reversal
+
+**Example:**
+
+```nim
+import tzutrader
+
+let data = readCSV("data/AAPL.csv")
+let high = data.mapIt(it.high)
+let low = data.mapIt(it.low)
+let close = data.mapIt(it.close)
+
+let (k, d) = stochastic(high, low, close, kPeriod = 14, dPeriod = 3)
+
+# Check for oversold condition
+if k[^1] < 20 and k[^1] > k[^2]:  # %K below 20 and rising
+  echo "Potential buy signal"
+```
+
+**Characteristics:**
+
+The Stochastic is a momentum oscillator that works best in ranging markets. In strong trends, it can remain overbought or oversold for extended periods. Many traders use it for timing entries in established trends rather than as a standalone signal.
+
+### Commodity Channel Index (CCI)
+
+CCI measures how far the typical price deviates from its average. Positive values indicate prices above average; negative values indicate below average.
+
+**Formula:**
+
+$$\text{Typical Price} = \frac{\text{High} + \text{Low} + \text{Close}}{3}$$
+
+$$\text{CCI} = \frac{\text{TP} - \text{SMA}(\text{TP})}{0.015 \times \text{Mean Deviation}}$$
+
+where Mean Deviation is the average absolute deviation from the SMA.
+
+**API:**
+
+```nim
+type CCI* = ref object of Indicator[float64]
+
+proc newCCI*(period: int = 20, memSize: int = 1): CCI
+proc update*(cci: CCI, high, low, close: float64): float64
+```
+
+**Parameters:**
+- `period`: Lookback period (default 20)
+- `memSize`: Size of circular buffer (default 1)
+- `high, low, close`: OHLC values
+
+**Interpretation:**
+
+- **Overbought:** CCI > +100 suggests overextension
+- **Oversold:** CCI < -100 suggests oversold conditions
+- **Trend:** CCI crossing above 0 signals potential uptrend, below 0 signals downtrend
+- **Extremes:** CCI beyond ±200 indicates very strong moves
+
+**Example:**
+
+```nim
+import tzutrader
+
+var cci = newCCI(period = 20)
+
+for bar in data:
+  let cciVal = cci.update(bar.high, bar.low, bar.close)
+  if not cciVal.isNaN:
+    echo "CCI: ", cciVal
+```
+let high = data.mapIt(it.high)
+let low = data.mapIt(it.low)
+let close = data.mapIt(it.close)
+
+let cciValues = cci(high, low, close, period = 20)
+
+# Mean reversion strategy
+if cciValues[^1] < -100:
+  echo "Oversold - potential bounce"
+elif cciValues[^1] > 100:
+  echo "Overbought - potential pullback"
+```
+
+**Characteristics:**
+
+CCI is unbounded and can reach extreme values. The 0.015 constant in the formula is chosen so that approximately 70-80% of CCI values fall between -100 and +100. CCI works well for identifying cyclical turns in commodities and stocks.
+
+### Money Flow Index (MFI)
+
+MFI combines price and volume to measure buying and selling pressure. It's often called "volume-weighted RSI" because it applies RSI logic to money flow rather than just price.
+
+**Formula:**
+
+$$\text{Typical Price} = \frac{\text{High} + \text{Low} + \text{Close}}{3}$$
+
+$$\text{Money Flow} = \text{Typical Price} \times \text{Volume}$$
+
+$$\text{Positive MF} = \sum \text{MF when price rises}$$
+
+$$\text{Negative MF} = \sum \text{MF when price falls}$$
+
+$$\text{Money Ratio} = \frac{\text{Positive MF}}{\text{Negative MF}}$$
+
+$$\text{MFI} = 100 - \frac{100}{1 + \text{Money Ratio}}$$
+
+**API:**
+
+```nim
+type MFI* = ref object of Indicator[float64]
+
+proc newMFI*(period: int = 14, memSize: int = 1): MFI
+proc update*(mfi: MFI, high, low, close, volume: float64): float64
+```
+
+**Parameters:**
+- `period`: Lookback period (default 14)
+- `memSize`: Size of circular buffer (default 1)
+- `high, low, close`: OHLC values
+- `volume`: Trading volume
+
+**Returns:** MFI value (0-100)
+
+**Interpretation:**
+
+- **Overbought:** MFI > 80 suggests distribution (selling)
+- **Oversold:** MFI < 20 suggests accumulation (buying)
+- **Divergence:** Price makes new high but MFI doesn't → bearish; price makes new low but MFI doesn't → bullish
+- **Failure Swings:** MFI crosses 80 or 20 but fails to confirm trend → potential reversal
+
+**Example:**
+
+```nim
+import tzutrader
+
+var mfi = newMFI(period = 14)
+
+for bar in data:
+  let mfiVal = mfi.update(bar.high, bar.low, bar.close, bar.volume)
+  if not mfiVal.isNaN:
+    echo "MFI: ", mfiVal
+```
+let low = data.mapIt(it.low)
+let close = data.mapIt(it.close)
+let volume = data.mapIt(it.volume)
+
+let mfiValues = mfi(high, low, close, volume, period = 14)
+
+# Volume confirmation strategy
+if mfiValues[^1] < 20 and close[^1] > close[^2]:
+  echo "Strong buying on low MFI - bullish"
+elif mfiValues[^1] > 80 and close[^1] < close[^2]:
+  echo "Selling pressure confirmed - bearish"
+```
+
+**Characteristics:**
+
+MFI is particularly useful for identifying when volume confirms or contradicts price action. High prices with low MFI suggest weak uptrends (few buyers); low prices with high MFI suggest strong underlying demand.
+
+### Average Directional Movement Index (ADX)
+
+ADX measures trend strength without indicating direction. It's part of the Directional Movement system that includes +DI and -DI to show trend direction.
+
+**Formula:**
+
+The calculation is complex, involving multiple steps:
+
+1. Calculate True Range (TR) as covered in ATR
+2. Calculate directional movements:
+   - $+DM = \text{High}_t - \text{High}_{t-1}$ (if positive and greater than $-DM$, else 0)
+   - $-DM = \text{Low}_{t-1} - \text{Low}_t$ (if positive and greater than $+DM$, else 0)
+3. Smooth DM values over period
+4. Calculate directional indicators:
+   - $+DI = 100 \times \frac{\text{Smoothed }+DM}{ATR}$
+   - $-DI = 100 \times \frac{\text{Smoothed }-DM}{ATR}$
+5. Calculate DX:
+   - $DX = 100 \times \frac{|+DI - -DI|}{+DI + -DI}$
+6. ADX is the smoothed average of DX
+
+**API:**
+
+```nim
+type ADX* = ref object of Indicator[ADXResult]
+
+proc newADX*(period: int = 14, memSize: int = 1): ADX
+proc update*(adx: ADX, high, low, close: float64): ADXResult
+```
+
+**Parameters:**
+- `period`: Lookback period (default 14)
+- `memSize`: Size of circular buffer (default 1)
+- `high, low, close`: OHLC values
+
+**Returns:** `ADXResult` tuple with `(adx, plusDI, minusDI)` fields
+
+**Interpretation:**
+
+**ADX (Trend Strength):**
+- **ADX < 20:** Weak or absent trend, range-bound market
+- **ADX 20-25:** Trend developing
+- **ADX 25-50:** Strong trend
+- **ADX > 50:** Very strong trend (rare)
+
+**Directional Indicators:**
+- **+DI > -DI:** Uptrend
+- **+DI < -DI:** Downtrend
+- **+DI and -DI crossing:** Potential trend reversal
+
+**Example:**
+
+```nim
+import tzutrader
+
+var adx = newADX(period = 14)
+
+for bar in data:
+  let adxResult = adx.update(bar.high, bar.low, bar.close)
+  if not adxResult.adx.isNaN:
+    echo "ADX: ", adxResult.adx, " +DI: ", adxResult.plusDI, " -DI: ", adxResult.minusDI
+```
+let lastIdx = adxValues.len - 1
+if adxValues[lastIdx] > 25:
+  if plusDI[lastIdx] > minusDI[lastIdx]:
+    echo "Strong uptrend - consider long positions"
+  else:
+    echo "Strong downtrend - consider short positions"
+else:
+  echo "Weak trend - avoid trend-following strategies"
+```
+
+**Characteristics:**
+
+ADX is a lagging indicator that excels at identifying when a trend exists but not predicting reversals. Rising ADX indicates strengthening trend (regardless of direction); falling ADX indicates weakening trend or consolidation. Many traders use ADX > 25 as a filter to avoid ranging markets.
+
+**Usage Notes:**
+
+- ADX values above 25 suggest trending conditions where trend-following strategies work well
+- ADX below 20 suggests mean-reversion strategies may perform better
+- ADX doesn't predict trend direction—use +DI/-DI for that
+- Extreme ADX readings (>50) often precede trend exhaustion
+
+## Advanced Moving Averages
+
+This section covers specialized moving averages that reduce lag or adapt to market conditions.
+
+### Triangular Moving Average (TRIMA)
+
+TRIMA applies double smoothing, creating a moving average of a moving average. This produces exceptionally smooth output with minimal noise.
+
+**Formula:**
+
+TRIMA is the SMA of an SMA. For period N:
+- First, calculate SMA with period ceil((N+1)/2)
+- Then, calculate SMA of those values with period floor((N+1)/2) + 1
+
+**Streaming Type:**
+
+```nim
+type TRIMA* = ref object of Indicator[float64]
+
+proc newTRIMA*(period: int, memSize: int = 1): TRIMA
+proc update*(trima: TRIMA, value: float64): float64
+```
+
+**Characteristics:**
+
+TRIMA is the smoothest of the moving averages but also the laggiest. The double smoothing eliminates most noise but makes it slow to react to price changes. Use TRIMA when smoothness is more important than responsiveness.
+
+**Use cases:**
+- Long-term trend identification
+- Noise reduction in volatile markets
+- Baseline for other calculations requiring stable values
+
+### Double Exponential Moving Average (DEMA)
+
+DEMA reduces lag compared to a standard EMA by using a combination of single and double-smoothed EMAs.
+
+**Formula:**
+
+$$\text{DEMA} = 2 \times \text{EMA}_1 - \text{EMA}_2$$
+
+where EMA₁ is the EMA of price and EMA₂ is the EMA of EMA₁.
+
+**Streaming Type:**
+
+```nim
+type DEMA* = ref object of Indicator[float64]
+
+proc newDEMA*(period: int, memSize: int = 1): DEMA
+proc update*(dema: DEMA, value: float64): float64
+```
+
+**Characteristics:**
+
+DEMA responds faster than EMA while maintaining reasonable smoothness. It's not twice as fast as EMA despite the name—the improvement is more modest but noticeable.
+
+**Use cases:**
+- Short to medium-term trend following
+- Crossover strategies requiring faster signals
+- Dynamic support/resistance levels
+
+### Triple Exponential Moving Average (TEMA)
+
+TEMA extends the DEMA concept with triple smoothing for even less lag.
+
+**Formula:**
+
+$$\text{TEMA} = 3 \times \text{EMA}_1 - 3 \times \text{EMA}_2 + \text{EMA}_3$$
+
+where each EMA is calculated from the previous one.
+
+**Streaming Type:**
+
+```nim
+type TEMA* = ref object of Indicator[float64]
+
+proc newTEMA*(period: int, memSize: int = 1): TEMA
+proc update*(tema: TEMA, value: float64): float64
+```
+
+**Characteristics:**
+
+TEMA provides the fastest response of the exponential moving averages while maintaining smooth output. However, the faster response means it generates more whipsaw signals in choppy markets.
+
+**Use cases:**
+- Short-term trading where timing is critical
+- Fast-moving markets
+- When lag reduction is paramount
+
+**EMA vs DEMA vs TEMA:**
+- EMA: Standard responsiveness, good for most situations
+- DEMA: 30-40% less lag than EMA, good balance
+- TEMA: 50-60% less lag than EMA, very responsive
+
+### Kaufman Adaptive Moving Average (KAMA)
+
+KAMA automatically adjusts its smoothing constant based on market volatility. During trending periods, it becomes more responsive. During choppy periods, it smooths more aggressively.
+
+**Formula:**
+
+$$\text{KAMA}_t = \text{KAMA}_{t-1} + SC \times (P_t - \text{KAMA}_{t-1})$$
+
+where SC (smoothing constant) is calculated based on the Efficiency Ratio (ER):
+
+$$\text{ER} = \frac{|\text{Change}|}{|\text{Volatility}|}$$
+
+**Streaming Type:**
+
+```nim
+type KAMA* = ref object of Indicator[float64]
+
+proc newKAMA*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 30, memSize: int = 1): KAMA
+proc update*(kama: KAMA, value: float64): float64
+```
+
+**Parameters:**
+- `period`: Lookback for efficiency ratio calculation
+- `fastPeriod`: Fastest smoothing constant
+- `slowPeriod`: Slowest smoothing constant
+
+**Characteristics:**
+
+KAMA's adaptive nature makes it effective across different market conditions. In trends, it hugs price closely. In ranges, it flattens out, producing fewer false signals. This adaptability comes at the cost of complexity and requires more historical data for stable results.
+
+**Use cases:**
+- Multi-market strategies (one MA for all conditions)
+- Reducing whipsaws in ranging markets
+- When market regime changes frequently
+
+## Volume & Volatility Indicators
+
+This section covers indicators that analyze volatility and volume flow.
+
+### True Range (TRANGE)
+
+True Range measures the full extent of price movement, including gaps between bars.
+
+**Formula:**
+
+$$\text{TR} = \max(H - L, |H - C_{prev}|, |L - C_{prev}|)$$
+
+where H is current high, L is current low, and C_prev is previous close.
+
+**Streaming Type:**
+
+```nim
+type TRANGE* = ref object of Indicator[float64]
+
+proc newTRANGE*(): TRANGE
+proc update*(tr: TRANGE, high, low, close: float64): float64
+```
+
+**Characteristics:**
+
+True Range is the foundation for ATR and other volatility indicators. Unlike simple range (high - low), TR captures overnight gaps and intraday volatility, providing a complete picture of price movement.
+
+**Use cases:**
+- Component for ATR calculation
+- Volatility spikes detection
+- Understanding full price range per bar
+
+### Normalized Average True Range (NATR)
+
+NATR expresses ATR as a percentage of current price, enabling volatility comparison across different assets and price levels.
+
+**Formula:**
+
+$$\text{NATR} = \frac{\text{ATR}}{\text{Close}} \times 100$$
+
+**Streaming Type:**
+
+```nim
+type NATR* = ref object of Indicator[float64]
+
+proc newNATR*(period: int = 14, memSize: int = 1): NATR
+proc update*(natr: NATR, high, low, close: float64): float64
+```
+
+**Characteristics:**
+
+NATR solves the problem of comparing volatility across assets with different price levels. A $5 move in a $50 stock is much more significant than a $5 move in a $500 stock. NATR captures this by expressing volatility in percentage terms.
+
+**Use cases:**
+- Portfolio risk management
+- Position sizing across multiple assets
+- Volatility filters for multi-asset strategies
+- Comparing trading opportunities across price levels
+
+**Interpretation:**
+- NATR < 2%: Low volatility
+- NATR 2-5%: Normal volatility
+- NATR > 5%: High volatility
+
+### Accumulation/Distribution (AD)
+
+AD measures buying and selling pressure by examining where prices close within the daily range and weighting by volume.
+
+**Formula:**
+
+$$\text{CLV} = \frac{(C - L) - (H - C)}{H - L}$$
+
+$$\text{AD}_t = \text{AD}_{t-1} + \text{CLV} \times V$$
+
+where CLV is the Close Location Value and V is volume.
+
+**Streaming Type:**
+
+```nim
+type AD* = ref object of Indicator[float64]
+
+proc newAD*(): AD
+proc update*(ad: AD, high, low, close, volume: float64): float64
+```
+
+**Characteristics:**
+
+AD is a cumulative indicator that tracks the flow of volume. When prices close near the high of the day, it adds to AD (accumulation). When prices close near the low, it subtracts from AD (distribution). The absolute value matters less than the trend direction.
+
+**Use cases:**
+- Confirming price trends (AD rises with price in uptrend)
+- Detecting divergences (price rises but AD falls = warning)
+- Identifying accumulation vs distribution phases
+- Volume-based trend confirmation
+
+**Interpretation:**
+- AD rising: Accumulation (buying pressure)
+- AD falling: Distribution (selling pressure)
+- AD flat while price moves: Weak trend
+- Divergence between AD and price: Potential reversal
+
+### Aroon Indicator
+
+Aroon measures time elapsed since the highest high and lowest low, identifying trend strength and potential reversals.
+
+**Formula:**
+
+$$\text{Aroon Up} = \frac{n - \text{periods since high}}{n} \times 100$$
+
+$$\text{Aroon Down} = \frac{n - \text{periods since low}}{n} \times 100$$
+
+$$\text{Aroon Oscillator} = \text{Aroon Up} - \text{Aroon Down}$$
+
+**Streaming Type:**
+
+```nim
+type
+  AroonResult* = object
+    up*: float64
+    down*: float64
+    oscillator*: float64
+
+  AROON* = ref object of Indicator[AroonResult]
+
+proc newAROON*(period: int = 25, memSize: int = 1): AROON
+proc update*(aroon: AROON, high, low: float64): AroonResult
+```
+
+**Characteristics:**
+
+Aroon is unique in measuring time rather than price. A value of 100 means a new high/low just occurred. A value of 0 means the high/low occurred N periods ago. This time-based approach makes Aroon effective at identifying trend starts and exhaustion.
+
+**Use cases:**
+- Identifying trend strength (Aroon Up > 70 = strong uptrend)
+- Detecting consolidation (both Aroon Up and Down < 50)
+- Spotting reversals (Aroon Down crosses above 70 after uptrend)
+- Trend confirmation
+
+**Interpretation:**
+- **Aroon Up > 70:** Strong uptrend (recent new highs)
+- **Aroon Down > 70:** Strong downtrend (recent new lows)
+- **Both < 50:** Ranging market, no clear trend
+- **Oscillator > 0:** Bullish bias
+- **Oscillator < 0:** Bearish bias
+
+## Additional Momentum Indicators
+
+This section covers additional advanced momentum measurements.
+
+### Stochastic RSI (STOCHRSI)
+
+STOCHRSI applies the Stochastic oscillator formula to RSI values, creating a more sensitive momentum indicator.
+
+**Formula:**
+
+First calculate RSI, then:
+
+$$\text{StochRSI} = \frac{\text{RSI} - \text{RSI}_{\text{low}}}{\text{RSI}_{\text{high}} - \text{RSI}_{\text{low}}}$$
+
+The result is smoothed with moving averages to produce %K and %D lines.
+
+**Streaming Type:**
+
+```nim
+type STOCHRSI* = ref object of Indicator[StochResult]
+
+proc newSTOCHRSI*(rsiPeriod: int = 14, period: int = 14, kPeriod: int = 3, dPeriod: int = 3, memSize: int = 1): STOCHRSI
+proc update*(stochRsi: STOCHRSI, openPrice, closePrice: float64): StochResult
+```
+
+**Parameters:**
+- `rsiPeriod`: Period for RSI calculation
+- `period`: Lookback for Stochastic calculation
+- `kPeriod`: Smoothing period for %K
+- `dPeriod`: Smoothing period for %D
+
+**Characteristics:**
+
+STOCHRSI oscillates between 0 and 100 but moves faster than standard RSI. This sensitivity makes it useful for catching pullbacks in strong trends but also generates more false signals. It's particularly effective when RSI remains elevated (>50) during uptrends—STOCHRSI can still identify oversold conditions for entry.
+
+**Use cases:**
+- Finding entries during strong trends
+- More sensitive overbought/oversold signals
+- Short-term momentum trading
+- Identifying pullbacks in trends
+
+**Interpretation:**
+- **%K < 20:** Oversold, potential buy
+- **%K > 80:** Overbought, potential sell
+- **%K crosses above %D:** Bullish signal
+- **%K crosses below %D:** Bearish signal
+
+### Percentage Price Oscillator (PPO)
+
+PPO expresses MACD as a percentage, enabling comparison across assets with different price levels.
+
+**Formula:**
+
+$$\text{PPO} = \frac{\text{EMA}_{\text{fast}} - \text{EMA}_{\text{slow}}}{\text{EMA}_{\text{slow}}} \times 100$$
+
+**Streaming Type:**
+
+```nim
+type
+  PPOResult* = object
+    ppo*: float64
+    signal*: float64
+    histogram*: float64
+
+  PPO* = ref object of Indicator[PPOResult]
+
+proc newPPO*(fastPeriod: int = 12, slowPeriod: int = 26, signalPeriod: int = 9, memSize: int = 1): PPO
+proc update*(ppo: PPO, value: float64): PPOResult
+```
+
+**Characteristics:**
+
+PPO works identically to MACD but normalizes values to percentages. This makes PPO more suitable for portfolio-level strategies or comparing momentum across different assets. A 2% PPO means roughly the same thing for a $10 stock and a $1000 stock.
+
+**Use cases:**
+- Multi-asset momentum strategies
+- Portfolio-level momentum signals
+- Comparing relative momentum across assets
+- When MACD's absolute values aren't comparable
+
+**Interpretation:**
+- **PPO > 0:** Bullish momentum (fast EMA above slow)
+- **PPO < 0:** Bearish momentum
+- **PPO crosses above signal:** Buy signal
+- **PPO crosses below signal:** Sell signal
+- **Histogram expanding:** Momentum strengthening
+
+### Chande Momentum Oscillator (CMO)
+
+CMO measures momentum using the sum of gains versus losses rather than averages, providing a different perspective than RSI.
+
+**Formula:**
+
+$$\text{CMO} = \frac{\text{Sum of Gains} - \text{Sum of Losses}}{\text{Sum of Gains} + \text{Sum of Losses}} \times 100$$
+
+**Streaming Type:**
+
+```nim
+type CMO* = ref object of Indicator[float64]
+
+proc newCMO*(period: int = 14, memSize: int = 1): CMO
+proc update*(cmo: CMO, close: float64): float64
+```
+
+**Characteristics:**
+
+CMO ranges from -100 to +100, with zero as neutral. Unlike RSI which uses averages (smoothing the calculation), CMO uses raw sums, making it more responsive to momentum changes. The symmetric range around zero also makes interpretation intuitive—positive values are bullish, negative are bearish.
+
+**Use cases:**
+- Alternative to RSI with less smoothing
+- Momentum extremes detection
+- Mean reversion strategies
+- Divergence analysis
+
+**Interpretation:**
+- **CMO > +50:** Strong upward momentum
+- **CMO < -50:** Strong downward momentum
+- **CMO between -20 and +20:** Weak momentum
+- **Extreme readings (±80):** Potential exhaustion
+
+### Momentum (MOM)
+
+MOM is the simplest momentum indicator: current price minus price N periods ago.
+
+**Formula:**
+
+$$\text{MOM}_t = P_t - P_{t-n}$$
+
+**Streaming Type:**
+
+```nim
+type MOM* = ref object of Indicator[float64]
+
+proc newMOM*(period: int = 10, memSize: int = 1): MOM
+proc update*(mom: MOM, price: float64): float64
+```
+
+**Characteristics:**
+
+Despite its simplicity, MOM effectively captures momentum direction and magnitude. Positive values indicate upward momentum; negative indicate downward. The absolute value shows momentum strength. MOM forms the basis for more complex indicators like ROC (which expresses MOM as a percentage).
+
+**Use cases:**
+- Simple momentum confirmation
+- Foundation for custom indicators
+- Straightforward trend strength measurement
+- When simplicity and transparency are priorities
+
+**Interpretation:**
+- **MOM > 0:** Upward momentum
+- **MOM < 0:** Downward momentum
+- **MOM increasing:** Accelerating momentum
+- **MOM decreasing:** Decelerating momentum
+- **MOM crossing zero:** Potential trend change
+
+**MOM vs ROC:** MOM shows absolute point change while ROC shows percentage change. Use MOM when comparing the same asset over time. Use ROC when comparing different assets or the same asset at different price levels.
+
+## Complete Indicator Summary
+
+TzuTrader now provides 25 technical indicators across five categories:
+
+**Trend Indicators:**
+- MA (SMA), EMA, WMA, TRIMA, DEMA, TEMA, KAMA, MACD
+
+**Momentum Indicators:**
+- RSI, ROC, STOCH, CMO, MOM, STOCHRSI
+
+**Volatility Indicators:**
+- ATR, STDEV, BB, TRANGE, NATR
+
+**Volume Indicators:**
+- OBV, MFI, AD
+
+**Trend Strength:**
+- CCI, ADX, AROON, PPO
+
+All indicators follow the streaming-only architecture for O(1) memory usage and support real-time applications.
 
 ## See Also
 
 - [Strategy Reference](04_strategies.md) - Using indicators in strategies
 - [User Guide: Technical Indicators](../user_guide/03_indicators.md) - Conceptual introduction
+- [Backtesting Engine](06_backtesting.md) - Testing indicator-based strategies
 - [User Guide: Creating Strategies](../user_guide/04_strategies.md) - Practical indicator usage

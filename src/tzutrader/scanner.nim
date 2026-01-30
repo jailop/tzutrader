@@ -90,8 +90,11 @@ proc scan*(scanner: Scanner, dataMap: Table[string, seq[OHLCV]]): seq[ScanResult
       verbose = false
     )
     
-    # Get signals for analysis
-    let signals = scanner.strategy.analyze(data)
+    # Get signals using streaming mode
+    scanner.strategy.reset()  # Reset strategy state for new symbol
+    var signals: seq[Signal] = @[]
+    for bar in data:
+      signals.add(scanner.strategy.onBar(bar))
     
     result.add(ScanResult(
       symbol: symbol,

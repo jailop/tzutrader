@@ -58,56 +58,69 @@ Volume indicators analyze trading activity. They help confirm price movements an
 
 **Examples:**
 - OBV (On-Balance Volume)
+- AD (Accumulation/Distribution)
+- MFI (Money Flow Index)
 
 **Use cases:**
 - Confirming price trends
 - Detecting divergences
 - Identifying accumulation/distribution
 
-## Batch Mode vs Streaming Mode
+### Additional Indicators
 
-TzuTrader provides two ways to calculate indicators:
+TzuTrader includes 25 technical indicators across all major categories:
 
-### Batch Mode
+**Advanced Moving Averages:**
+- TRIMA (Triangular MA) - Double-smoothed for minimal noise
+- DEMA (Double Exponential MA) - Reduced lag
+- TEMA (Triple Exponential MA) - Minimal lag
+- KAMA (Kaufman Adaptive MA) - Adapts to market conditions
 
-Batch mode calculates indicators for an entire historical dataset at once:
+**Advanced Momentum:**
+- STOCH (Stochastic Oscillator)
+- CCI (Commodity Channel Index)
+- CMO (Chande Momentum Oscillator)
+- STOCHRSI (Stochastic RSI)
+- MOM (Simple Momentum)
 
-```nim
-import tzutrader
+**Volatility & Volume:**
+- TRANGE (True Range)
+- NATR (Normalized ATR)
+- AROON (Aroon Indicator)
 
-let prices = @[100.0, 102.0, 104.0, 103.0, 105.0, 107.0, 108.0, 110.0]
-let smaValues = sma(prices, period = 5)
+**Trend Analysis:**
+- ADX (Average Directional Index)
+- PPO (Percentage Price Oscillator)
 
-# Result is a sequence with one value per input price
-for i, value in smaValues:
-  if not value.isNaN:
-    echo "Bar ", i, ": SMA = ", value
-```
+For complete details on all indicators, see the [Indicators Reference Guide](../reference_guide/03_indicators.md).
 
-**When to use:**
-- Backtesting (processing all historical data)
-- Analysis and charting
-- Strategy development and testing
+## Streaming Architecture
 
-**Advantages:**
-- Simple to use
-- Complete data available immediately
-- Easy to implement complex logic
-
-### Streaming Mode
-
-Streaming mode updates indicators one data point at a time:
+TzuTrader uses a **streaming-only architecture** where indicators update one data point at a time:
 
 ```nim
 import tzutrader
 
-var smaCalc = newSMA(period = 5)
+var sma = newMA(period = 5)
 
-# Process prices one at a time
+# Process prices one at a time as they arrive
 for price in incomingPrices:
-  let currentSMA = smaCalc.update(price)
+  let currentSMA = sma.update(price)
   if not currentSMA.isNaN:
     echo "Current SMA: ", currentSMA
+```
+
+**When to use (always!):**
+- Backtesting (process historical data sequentially)
+- Live trading (process real-time data as it arrives)
+- Analysis and research
+
+**Advantages:**
+- **O(1) Memory**: Constant memory usage, never grows
+- **O(1) Updates**: Each new data point processed in constant time
+- **Unified API**: Same code for backtesting and live trading
+- **Historical Access**: Access previous values via `sma[-1]`, `sma[-2]`, etc.
+- **Production Ready**: Can run indefinitely without memory issues
 ```
 
 **When to use:**
@@ -123,6 +136,8 @@ for price in incomingPrices:
 
 ## Common Indicators Explained
 
+This section explains the most fundamental indicators. TzuTrader provides 25 indicators in total—this section covers the essential ones to understand first. For complete coverage of all indicators, see the [Reference Guide](../reference_guide/03_indicators.md).
+
 ### Moving Averages
 
 Moving averages smooth price data by calculating the average price over a specified period. As new prices arrive, old prices drop off, creating a "moving" average.
@@ -134,10 +149,15 @@ The arithmetic mean of the last N prices:
 ```nim
 import tzutrader
 
-let prices = @[100.0, 102.0, 104.0, 106.0, 108.0, 110.0]
-let sma5 = sma(prices, period = 5)
+var ma = newMA(period = 5)
 
-# SMA calculation: (100 + 102 + 104 + 106 + 108) / 5 = 104.0
+# Update with prices as they arrive
+for price in [100.0, 102.0, 104.0, 106.0, 108.0, 110.0]:
+  let smaVal = ma.update(price)
+  if not smaVal.isNaN:
+    echo "SMA: ", smaVal
+
+# After 5th price: SMA = (100 + 102 + 104 + 106 + 108) / 5 = 104.0
 ```
 
 **Characteristics:**
@@ -155,7 +175,12 @@ let sma5 = sma(prices, period = 5)
 Gives more weight to recent prices:
 
 ```nim
-let ema5 = ema(prices, period = 5)
+var ema = newEMA(period = 5)
+
+for price in prices:
+  let emaVal = ema.update(price)
+  if not emaVal.isNaN:
+    echo "EMA: ", emaVal
 ```
 
 **Characteristics:**
@@ -177,8 +202,13 @@ RSI measures momentum on a scale of 0 to 100. It compares the magnitude of recen
 ```nim
 import tzutrader
 
-let prices = @[100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0, 108.0]
-let rsiValues = rsi(prices, period = 14)
+var rsi = newRSI(period = 14)
+
+# Update with prices as they arrive
+for price in [100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0, 108.0]:
+  let rsiVal = rsi.update(open = price, close = price)
+  if not rsiVal.isNaN:
+    echo "RSI: ", rsiVal
 ```
 
 **Interpretation:**
@@ -212,13 +242,14 @@ MACD shows the relationship between two moving averages. It consists of three co
 ```nim
 import tzutrader
 
-let prices = @[/* ... */]
-let (macdLine, signalLine, histogram) = macd(
-  prices,
-  fastPeriod = 12,
-  slowPeriod = 26,
-  signalPeriod = 9
-)
+var macd = newMACD(fast = 12, slow = 26, signal = 9)
+
+for price in prices:
+  let macdResult = macd.update(price)
+  if not macdResult.macd.isNaN:
+    echo "MACD: ", macdResult.macd
+    echo "Signal: ", macdResult.signal
+    echo "Histogram: ", macdResult.histogram
 ```
 
 **Interpretation:**
@@ -360,7 +391,7 @@ Now that you understand how indicators work, the next chapter covers building tr
 
 - Technical indicators transform price data into actionable signals
 - Different indicator categories measure trends, momentum, volatility, and volume
-- Use batch mode for backtesting, streaming mode for live trading
+- TzuTrader uses a streaming architecture - same code for backtesting and live trading
 - Moving averages identify trends, RSI measures momentum, MACD combines both
 - Bollinger Bands adapt to volatility, ATR measures it directly
 - Start with conventional indicator periods and avoid over-optimization
