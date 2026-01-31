@@ -79,7 +79,7 @@ proc newFilteredMeanReversionStrategy*(rsiPeriod: int = 14, trendPeriod: int = 2
   )
   result.symbol = symbol
 
-method onBar*(s: FilteredMeanReversionStrategy, bar: OHLCV): Signal =
+method on*(s: FilteredMeanReversionStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming filtered mean reversion logic
   let rsiValue = s.rsiIndicator.update(bar.open, bar.close)
   let emaValue = s.trendEMA.update(bar.close)

@@ -16,6 +16,11 @@
 import std/[times, tables, strutils, math, random, algorithm, os, httpclient, json, options]
 import core
 
+# Conditionally import yfnim at top level
+when defined(useYfnim):
+  import yfnim/[types as yfTypes, retriever, quote_retriever]
+  import yfnim/quote_types as yfQuoteTypes
+
 type
   Interval* = enum
     ## Time intervals for data fetching
@@ -215,30 +220,29 @@ proc generateMockQuote*(symbol: string, price: float64 = 100.0): Quote =
 
 when defined(useYfnim):
   # This section will be enabled when yfnim is properly installed
-  import yfnim
   
-  proc convertYfnimToOHLCV(yfData: yfnim.HistoricalData): seq[OHLCV] =
+  proc convertYfnimToOHLCV(yfData: yfTypes.History): seq[OHLCV] =
     ## Convert yfnim historical data to our OHLCV format
     result = @[]
     for bar in yfData.data:
       result.add(OHLCV(
-        timestamp: bar.date,
+        timestamp: bar.time,
         open: bar.open,
         high: bar.high,
         low: bar.low,
         close: bar.close,
-        volume: bar.volume
+        volume: bar.volume.float64
       ))
   
-  proc convertYfnimToQuote(yfQuote: yfnim.Quote): Quote =
+  proc convertYfnimToQuote(yfQuote: yfQuoteTypes.Quote): Quote =
     ## Convert yfnim quote to our Quote format
     result = Quote(
       symbol: yfQuote.symbol,
-      timestamp: getTime().toUnix(),
+      timestamp: yfQuote.regularMarketTime,
       regularMarketPrice: yfQuote.regularMarketPrice,
       regularMarketChange: yfQuote.regularMarketChange,
       regularMarketChangePercent: yfQuote.regularMarketChangePercent,
-      regularMarketVolume: yfQuote.regularMarketVolume,
+      regularMarketVolume: yfQuote.regularMarketVolume.float64,
       regularMarketOpen: yfQuote.regularMarketOpen,
       regularMarketDayHigh: yfQuote.regularMarketDayHigh,
       regularMarketDayLow: yfQuote.regularMarketDayLow,
@@ -247,13 +251,23 @@ when defined(useYfnim):
   
   proc fetchHistoryYfnim*(ds: DataStream, startTime, endTime: int64): seq[OHLCV] =
     ## Fetch historical data using yfnim
-    let intervalStr = $ds.interval
-    let history = yfnim.getHistory(ds.symbol, intervalStr, startTime, endTime)
+    # Convert our Interval to yfnim Interval
+    let interval = case ds.interval
+      of Int1m: yfTypes.Int1m
+      of Int5m: yfTypes.Int5m
+      of Int15m: yfTypes.Int15m
+      of Int30m: yfTypes.Int30m
+      of Int1h: yfTypes.Int1h
+      of Int1d: yfTypes.Int1d
+      of Int1wk: yfTypes.Int1wk
+      of Int1mo: yfTypes.Int1mo
+    
+    let history = getHistory(ds.symbol, interval, startTime, endTime)
     result = convertYfnimToOHLCV(history)
   
   proc fetchQuoteYfnim*(symbol: string): Quote =
     ## Fetch current quote using yfnim
-    let yfQuote = yfnim.getQuote(symbol)
+    let yfQuote = getQuote(symbol)
     result = convertYfnimToQuote(yfQuote)
 
 else:

@@ -61,7 +61,7 @@ proc newParabolicSARStrategy*(acceleration: float64 = 0.02, maximum: float64 = 0
   )
   result.symbol = symbol
 
-method onBar*(s: ParabolicSARStrategy, bar: OHLCV): Signal =
+method on*(s: ParabolicSARStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Parabolic SAR
   let psarResult = s.psarIndicator.update(bar.high, bar.low, bar.close)
   

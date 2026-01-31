@@ -68,7 +68,7 @@ proc newDualMomentumStrategy*(rocPeriod: int = 12, smaPeriod: int = 50,
   )
   result.symbol = symbol
 
-method onBar*(s: DualMomentumStrategy, bar: OHLCV): Signal =
+method on*(s: DualMomentumStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming dual momentum logic
   let rocValue = s.rocIndicator.update(bar.close)
   let smaValue = s.smaIndicator.update(bar.close)

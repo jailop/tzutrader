@@ -77,7 +77,7 @@ method analyze*(s: StochasticStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Stochastic analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method onBar*(s: StochasticStrategy, bar: OHLCV): Signal =
+method on*(s: StochasticStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Stochastic Oscillator
   let stochResult = s.stochIndicator.update(bar.high, bar.low, bar.close)
   

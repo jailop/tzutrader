@@ -5,7 +5,7 @@ author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["tzu"]
+bin           = @["tzu", "tzu2"]
 
 # Dependencies
 
@@ -65,6 +65,16 @@ task cli, "Build the CLI tool (alias for 'nimble build')":
   echo "  ./tzu rsi -s AAPL --start=2023-01-01  # Yahoo Finance (default)"
   echo "  ./tzu rsi --csvFile=data/AAPL.csv     # CSV file"
   echo "  ./tzu macd --coinbase=BTC-USD --start=2024-01-01  # Coinbase"
+
+task buildReal, "Build with real Yahoo Finance data support":
+  echo "Building with REAL Yahoo Finance data support..."
+  exec "nim c -d:useYfnim -d:ssl -d:release src/tzu2.nim"
+  echo ""
+  echo "tzu2 built with REAL Yahoo Finance support"
+  echo "Note: This build includes SSL support for HTTPS requests to Yahoo Finance"
+  echo ""
+  echo "Usage:"
+  echo "  ./src/tzu2 --run-strat=rsi --symbol=AAPL --start=2024-01-01 --end=2024-01-31"
 
 task examples, "Compile all examples":
   echo "Compiling examples..."

@@ -64,7 +64,7 @@ proc newADXTrendStrategy*(period: int = 14, adxThreshold: float64 = 25.0,
   )
   result.symbol = symbol
 
-method onBar*(s: ADXTrendStrategy, bar: OHLCV): Signal =
+method on*(s: ADXTrendStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming ADX
   let adxResult = s.adxIndicator.update(bar.low, bar.high, bar.close)
   

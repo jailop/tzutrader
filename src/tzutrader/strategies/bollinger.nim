@@ -65,7 +65,7 @@ method analyze*(s: BollingerStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Bollinger analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method onBar*(s: BollingerStrategy, bar: OHLCV): Signal =
+method on*(s: BollingerStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Bollinger Bands
   let bb = s.bbIndicator.update(bar.close)
   

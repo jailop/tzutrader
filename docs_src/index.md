@@ -3,6 +3,10 @@
 TzuTrader is a trading bot library for Nim that provides tools for
 building and testing algorithmic trading strategies.
 
+
+**This software is not stable yet. Don't use in production. The API is
+still evolving**
+
 ## Documentation Structure
 
 TzuTrader provides three types of documentation, each serving a

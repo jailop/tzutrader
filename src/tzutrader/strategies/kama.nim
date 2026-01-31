@@ -73,7 +73,7 @@ method analyze*(s: KAMAStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "KAMA analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method onBar*(s: KAMAStrategy, bar: OHLCV): Signal =
+method on*(s: KAMAStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming KAMA
   let kamaVal = s.kamaIndicator.update(bar.close)
   

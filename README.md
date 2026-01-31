@@ -1,10 +1,15 @@
 # TzuTrader
 
-A high-performance Nim library for **backtesting trading strategies** and **building live trading bots**. Rewrite of Python's [pybottrader](https://github.com/datainquiry/pybottrader).
+A Nim library for **backtesting trading strategies** and **building live
+trading bots**. Rewrite of Python's
+[pybottrader](https://github.com/datainquiry/pybottrader).
 
 [Documentation](https://jailop.codeberg.page/tzutrader/docs/)
 
 ## ⚠️ Disclaimer
+
+**This software is not stable yet. Don't use in production. The API is
+still evolving**
 
 **This software is provided for educational and research purposes
 only.**

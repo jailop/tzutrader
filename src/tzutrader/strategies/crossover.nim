@@ -67,7 +67,7 @@ method analyze*(s: CrossoverStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Crossover analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method onBar*(s: CrossoverStrategy, bar: OHLCV): Signal =
+method on*(s: CrossoverStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MAs
   let fastVal = s.fastMA.update(bar.close)
   let slowVal = s.slowMA.update(bar.close)

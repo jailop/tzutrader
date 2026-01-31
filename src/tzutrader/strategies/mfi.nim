@@ -69,7 +69,7 @@ method analyze*(s: MFIStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "MFI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method onBar*(s: MFIStrategy, bar: OHLCV): Signal =
+method on*(s: MFIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MFI
   let mfiVal = s.mfiIndicator.update(bar.high, bar.low, bar.close, bar.volume)
   
