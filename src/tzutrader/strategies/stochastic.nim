@@ -73,11 +73,11 @@ proc newStochasticStrategy*(kPeriod: int = 14, dPeriod: int = 3,
     lastInOverbought: false
   )
 
-method analyze*(s: StochasticStrategy, data: seq[OHLCV]): seq[Signal] =
+proc analyze*(s: StochasticStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Stochastic analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method on*(s: StochasticStrategy, bar: OHLCV): Signal =
+proc on*(s: StochasticStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Stochastic Oscillator
   let stochResult = s.stochIndicator.update(bar.high, bar.low, bar.close)
   
@@ -124,7 +124,7 @@ method on*(s: StochasticStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-method reset*(s: StochasticStrategy) =
+proc reset*(s: StochasticStrategy) =
   ## Reset Stochastic strategy state
   s.stochIndicator = newSTOCH(s.kPeriod, s.dPeriod)
   s.lastKAboveD = false

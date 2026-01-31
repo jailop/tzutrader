@@ -143,27 +143,27 @@ proc getQuote*(ctx: DataContext): Quote =
     raise newException(ValueError, "Expected Quote data")
   return value.quote
 
-# Base methods that all strategies must implement
+# Base procs that all strategies must implement
 
-method name*(s: Strategy): string {.base.} =
+proc name*(s: Strategy): string =
   ## Get strategy name
   s.name
 
-method getDataRequirements*(s: Strategy): seq[DataRequirement] {.base.} =
+proc getDataRequirements*(s: Strategy): seq[DataRequirement] =
   ## Declare data requirements for this strategy
   ## 
   ## Default: Returns single OHLCV requirement for backward compatibility
   ## Override this in strategies that need multiple data types
   ## 
   ## Example:
-  ##   method getDataRequirements*(s: MyStrategy): seq[DataRequirement] =
+  ##   proc getDataRequirements*(s: MyStrategy): seq[DataRequirement] =
   ##     @[
   ##       newDataRequirement(dkOHLCV, required = true, frequency = dfDaily),
   ##       newDataRequirement(dkQuote, required = false, frequency = dfRealtime)
   ##     ]
   @[newDataRequirement(dkOHLCV, required = true, frequency = dfDaily)]
 
-method on*(s: Strategy, bar: OHLCV): Signal {.base.} =
+proc on*(s: Strategy, bar: OHLCV): Signal =
   ## Callback for OHLCV data (new pattern)
   ## 
   ## This is the primary callback for strategies that work with OHLCV bars.
@@ -175,14 +175,14 @@ method on*(s: Strategy, bar: OHLCV): Signal {.base.} =
   ##   Signal with position recommendation
   ## 
   ## Example:
-  ##   method on*(s: RSIStrategy, bar: OHLCV): Signal =
+  ##   proc on*(s: RSIStrategy, bar: OHLCV): Signal =
   ##     s.rsi.update(bar.close)
   ##     if s.rsi.value < 30: return newSignal(Buy, s.symbol, bar.close)
   ##     elif s.rsi.value > 70: return newSignal(Sell, s.symbol, bar.close)
   ##     else: return newSignal(Stay, s.symbol, bar.close)
   raise newException(StrategyError, "on(OHLCV) not implemented for " & s.name)
 
-method on*(s: Strategy, quote: Quote): Signal {.base.} =
+proc on*(s: Strategy, quote: Quote): Signal =
   ## Callback for Quote data (new pattern)
   ## 
   ## This is the primary callback for strategies that work with real-time quotes.
@@ -194,7 +194,7 @@ method on*(s: Strategy, quote: Quote): Signal {.base.} =
   ##   Signal with position recommendation
   ## 
   ## Example:
-  ##   method on*(s: ScalpStrategy, quote: Quote): Signal =
+  ##   proc on*(s: ScalpStrategy, quote: Quote): Signal =
   ##     let spread = quote.regularMarketDayHigh - quote.regularMarketDayLow
   ##     if spread > s.threshold:
   ##       return newSignal(Buy, s.symbol, quote.regularMarketPrice)
@@ -202,7 +202,7 @@ method on*(s: Strategy, quote: Quote): Signal {.base.} =
   ##       return newSignal(Stay, s.symbol, quote.regularMarketPrice)
   raise newException(StrategyError, "on(Quote) not implemented for " & s.name)
 
-method onData*(s: Strategy, ctx: DataContext): Signal {.base.} =
+proc onData*(s: Strategy, ctx: DataContext): Signal =
   ## Process synchronized multi-data context (new pattern)
   ## 
   ## This callback is for advanced strategies that need multiple data types
@@ -215,7 +215,7 @@ method onData*(s: Strategy, ctx: DataContext): Signal {.base.} =
   ##   Signal with position recommendation
   ## 
   ## Example:
-  ##   method onData*(s: ArbitrageStrategy, ctx: DataContext): Signal =
+  ##   proc onData*(s: ArbitrageStrategy, ctx: DataContext): Signal =
   ##     let bar = ctx.getOHLCV()
   ##     let quote = ctx.getQuote()
   ##     let spread = quote.regularMarketDayHigh - quote.regularMarketDayLow
@@ -231,11 +231,11 @@ method onData*(s: Strategy, ctx: DataContext): Signal {.base.} =
   else:
     raise newException(StrategyError, "onData() requires at least OHLCV data")
 
-method onBar*(s: Strategy, bar: OHLCV): Signal {.base.} =
+proc onBar*(s: Strategy, bar: OHLCV): Signal =
   ## Process a single bar and generate signal (legacy streaming mode)
   ## 
-  ## **BACKWARD COMPATIBILITY**: This method is maintained for existing strategies.
-  ## It now delegates to the on(OHLCV) method.
+  ## **BACKWARD COMPATIBILITY**: This proc is maintained for existing strategies.
+  ## It now delegates to the on(OHLCV) proc.
   ## 
   ## Args:
   ##   bar: Single OHLCV bar
@@ -244,13 +244,13 @@ method onBar*(s: Strategy, bar: OHLCV): Signal {.base.} =
   ##   Signal with position recommendation
   s.on(bar)
 
-method analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal] {.base.} =
+proc analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal] =
   ## Analyze historical data and generate signals for each bar (batch mode)
   ## 
   ## **DEPRECATED**: Batch mode is deprecated. Use streaming onBar() instead.
   ## 
-  ## This method processes all historical data at once. For real-time trading
-  ## or more memory-efficient processing, use the onBar() method with streaming data.
+  ## This proc processes all historical data at once. For real-time trading
+  ## or more memory-efficient processing, use the onBar() proc with streaming data.
   ## 
   ## Args:
   ##   data: Historical OHLCV data
@@ -259,11 +259,11 @@ method analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal] {.base.} =
   ##   Sequence of signals, one for each bar
   raise newException(StrategyError, "analyze() batch mode is deprecated. Use onBar() for streaming mode.")
 
-method reset*(s: Strategy) {.base.} =
+proc reset*(s: Strategy) =
   ## Reset strategy state (for streaming mode)
   discard
 
-method getPositionSizing*(s: Strategy): tuple[sizingType: PositionSizingType, value: float] {.base.} =
+proc getPositionSizing*(s: Strategy): tuple[sizingType: PositionSizingType, value: float] =
   ## Get position sizing preference for this strategy
   ## 
   ## Returns:

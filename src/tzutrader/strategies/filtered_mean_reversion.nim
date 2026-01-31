@@ -79,7 +79,7 @@ proc newFilteredMeanReversionStrategy*(rsiPeriod: int = 14, trendPeriod: int = 2
   )
   result.symbol = symbol
 
-method on*(s: FilteredMeanReversionStrategy, bar: OHLCV): Signal =
+proc on*(s: FilteredMeanReversionStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming filtered mean reversion logic
   let rsiValue = s.rsiIndicator.update(bar.open, bar.close)
   let emaValue = s.trendEMA.update(bar.close)
@@ -136,7 +136,7 @@ method on*(s: FilteredMeanReversionStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-method reset*(s: FilteredMeanReversionStrategy) =
+proc reset*(s: FilteredMeanReversionStrategy) =
   ## Reset strategy state
   s.rsiIndicator = newRSI(s.rsiPeriod, memSize = 1)
   s.trendEMA = newEMA(s.trendPeriod, memSize = 1)
@@ -145,6 +145,6 @@ method reset*(s: FilteredMeanReversionStrategy) =
   s.lastRsiOverbought = false
   s.initialized = false
 
-method name*(s: FilteredMeanReversionStrategy): string =
+proc name*(s: FilteredMeanReversionStrategy): string =
   ## Return strategy name
   result = &"Filtered Mean Reversion Strategy (RSI: {s.rsiPeriod}, EMA: {s.trendPeriod})"

@@ -68,7 +68,7 @@ proc newDualMomentumStrategy*(rocPeriod: int = 12, smaPeriod: int = 50,
   )
   result.symbol = symbol
 
-method on*(s: DualMomentumStrategy, bar: OHLCV): Signal =
+proc on*(s: DualMomentumStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming dual momentum logic
   let rocValue = s.rocIndicator.update(bar.close)
   let smaValue = s.smaIndicator.update(bar.close)
@@ -122,7 +122,7 @@ method on*(s: DualMomentumStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-method reset*(s: DualMomentumStrategy) =
+proc reset*(s: DualMomentumStrategy) =
   ## Reset strategy state
   s.rocIndicator = newROC(s.rocPeriod, memSize = 1)
   s.smaIndicator = newMA(s.smaPeriod, memSize = 1)
@@ -130,6 +130,6 @@ method reset*(s: DualMomentumStrategy) =
   s.lastAboveSma = false
   s.initialized = false
 
-method name*(s: DualMomentumStrategy): string =
+proc name*(s: DualMomentumStrategy): string =
   ## Return strategy name
   result = &"Dual Momentum Strategy (ROC: {s.rocPeriod}, SMA: {s.smaPeriod})"

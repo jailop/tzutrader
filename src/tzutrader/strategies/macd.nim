@@ -64,11 +64,11 @@ proc newMACDStrategy*(fastPeriod: int = 12, slowPeriod: int = 26,
     lastMACDAbove: false
   )
 
-method analyze*(s: MACDStrategy, data: seq[OHLCV]): seq[Signal] =
+proc analyze*(s: MACDStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "MACD analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method on*(s: MACDStrategy, bar: OHLCV): Signal =
+proc on*(s: MACDStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MACD
   let macdResult = s.macdIndicator.update(bar.close)
   
@@ -103,7 +103,7 @@ method on*(s: MACDStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-method reset*(s: MACDStrategy) =
+proc reset*(s: MACDStrategy) =
   ## Reset MACD strategy state
   s.macdIndicator = newMACD(s.fastPeriod, s.slowPeriod, s.signalPeriod)
   s.lastMACDAbove = false

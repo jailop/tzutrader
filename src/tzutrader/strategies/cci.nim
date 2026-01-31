@@ -68,11 +68,11 @@ proc newCCIStrategy*(period: int = 20, oversoldLevel: float64 = -100.0,
     lastBelowOversold: false
   )
 
-method analyze*(s: CCIStrategy, data: seq[OHLCV]): seq[Signal] =
+proc analyze*(s: CCIStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "CCI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method on*(s: CCIStrategy, bar: OHLCV): Signal =
+proc on*(s: CCIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming CCI
   let cciVal = s.cciIndicator.update(bar.high, bar.low, bar.close)
   
@@ -117,7 +117,7 @@ method on*(s: CCIStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-method reset*(s: CCIStrategy) =
+proc reset*(s: CCIStrategy) =
   ## Reset CCI strategy state
   s.cciIndicator = newCCI(s.period)
   s.lastAboveOverbought = false

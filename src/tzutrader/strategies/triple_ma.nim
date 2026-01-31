@@ -74,7 +74,7 @@ proc newTripleMAStrategy*(fastPeriod: int = 20, mediumPeriod: int = 50,
   )
   result.symbol = symbol
 
-method on*(s: TripleMAStrategy, bar: OHLCV): Signal =
+proc on*(s: TripleMAStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Triple MA
   let fastValue = s.fastMA.update(bar.close)
   let mediumValue = s.mediumMA.update(bar.close)
@@ -116,7 +116,7 @@ method on*(s: TripleMAStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-method reset*(s: TripleMAStrategy) =
+proc reset*(s: TripleMAStrategy) =
   ## Reset strategy state
   s.fastMA = newMA(s.fastPeriod, memSize = 1)
   s.mediumMA = newMA(s.mediumPeriod, memSize = 1)
@@ -124,6 +124,6 @@ method reset*(s: TripleMAStrategy) =
   s.lastAlignment = Position.Stay
   s.initialized = false
 
-method name*(s: TripleMAStrategy): string =
+proc name*(s: TripleMAStrategy): string =
   ## Return strategy name
   result = &"Triple MA Strategy ({s.fastPeriod}/{s.mediumPeriod}/{s.slowPeriod})"

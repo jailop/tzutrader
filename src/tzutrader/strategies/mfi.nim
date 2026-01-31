@@ -65,11 +65,11 @@ proc newMFIStrategy*(period: int = 14, oversold: float64 = 20.0,
     lastSignal: Position.Stay
   )
 
-method analyze*(s: MFIStrategy, data: seq[OHLCV]): seq[Signal] =
+proc analyze*(s: MFIStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "MFI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-method on*(s: MFIStrategy, bar: OHLCV): Signal =
+proc on*(s: MFIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MFI
   let mfiVal = s.mfiIndicator.update(bar.high, bar.low, bar.close, bar.volume)
   
@@ -109,7 +109,7 @@ method on*(s: MFIStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-method reset*(s: MFIStrategy) =
+proc reset*(s: MFIStrategy) =
   ## Reset MFI strategy state
   s.mfiIndicator = newMFI(s.period)
   s.lastSignal = Position.Stay

@@ -616,7 +616,7 @@ proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
     let expr = parseExpression(strategyDef.positionSizing.dynamicExpr)
     result.positionSizingExpr = some(expr)
 
-method onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
+proc onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
   ## Process a single bar and generate signal
   ## Updates all indicators and evaluates entry/exit rules
   
@@ -681,12 +681,12 @@ method onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-method reset*(s: DeclarativeStrategy) =
+proc reset*(s: DeclarativeStrategy) =
   ## Reset strategy state
   s.lastSignal = Position.Stay
   s.previousValues.clear()
   
-method getPositionSizing*(s: DeclarativeStrategy): tuple[sizingType: PositionSizingType, value: float] =
+proc getPositionSizing*(s: DeclarativeStrategy): tuple[sizingType: PositionSizingType, value: float] =
   ## Return position sizing configuration from YAML definition
   case s.strategyDef.positionSizing.kind
   of psFixed:
@@ -696,7 +696,7 @@ method getPositionSizing*(s: DeclarativeStrategy): tuple[sizingType: PositionSiz
   of psDynamic:
     # Phase 3: Dynamic position sizing with expressions
     # Note: Dynamic sizing requires indicator values, so this is a placeholder
-    # In practice, the trader/backtester should call a separate method with current values
+    # In practice, the trader/backtester should call a separate proc with current values
     result = (pstPercent, 10.0)  # Default fallback
 
   # Recreate all indicators
