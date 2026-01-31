@@ -1,0 +1,130 @@
+metadata:
+  name: "Phase 3 Showcase Strategy"
+  description: |
+    Demonstrates all Phase 3 features:
+    - NOT logic
+    - Indicator-to-indicator comparisons  
+    - Expression-based custom indicators
+    - Complex nested conditions
+  author: "TzuTrader Phase 3"
+  created: "2026-01-31"
+  tags: ["phase3", "advanced", "showcase"]
+
+indicators:
+  # Standard indicators
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: rsi_21
+    type: rsi
+    params:
+      period: 21
+  
+  - id: sma_50
+    type: sma
+    params:
+      period: 50
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+  
+  - id: volume_sma
+    type: sma
+    params:
+      period: 20
+    source: volume
+  
+  # Phase 3: Expression-based custom indicators
+  - id: avg_rsi
+    type: expression
+    params:
+      formula: "(rsi_14 + rsi_21) / 2"
+  
+  - id: rsi_momentum
+    type: expression
+    params:
+      formula: "rsi_14 - rsi_21"
+  
+  - id: volume_ratio
+    type: expression
+    params:
+      formula: "volume / volume_sma"
+  
+  - id: trend_strength
+    type: expression
+    params:
+      formula: "(sma_50 - sma_200) / sma_200 * 100"
+
+# Phase 3: Complex nested conditions with NOT logic
+entry:
+  conditions:
+    all:
+      # Condition 1: Oversold with momentum turning positive
+      - any:
+          - left: avg_rsi
+            operator: "<"
+            right: "30"
+          - all:
+              - left: rsi_14
+                operator: "<"
+                right: "35"
+              - left: rsi_momentum
+                operator: ">"
+                right: "0"
+      
+      # Condition 2: NOT in a downtrend (Phase 3: NOT logic)
+      - not:
+          left: sma_50
+          operator: "<"
+          right: sma_200
+      
+      # Condition 3: Price above long-term moving average
+      - left: price
+        operator: ">"
+        right: sma_200
+      
+      # Condition 4: High volume confirmation
+      - left: volume_ratio
+        operator: ">"
+        right: "1.5"
+      
+      # Condition 5: Positive trend strength
+      - left: trend_strength
+        operator: ">"
+        right: "0"
+
+# Phase 3: Multiple exit conditions with OR logic
+exit:
+  conditions:
+    any:
+      # Exit 1: Overbought
+      - left: avg_rsi
+        operator: ">"
+        right: "70"
+      
+      # Exit 2: Golden cross reversal (death cross)
+      - left: sma_50
+        operator: "crosses_below"
+        right: sma_200
+      
+      # Exit 3: Negative momentum with weak volume
+      - all:
+          - left: rsi_momentum
+            operator: "<"
+            right: "-5"
+          - left: volume_ratio
+            operator: "<"
+            right: "0.8"
+      
+      # Exit 4: Price drops below support
+      - left: price
+        operator: "<"
+        right: sma_50
+
+position_sizing:
+  type: percent
+  percent: 20

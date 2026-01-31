@@ -143,6 +143,49 @@ type
     exitRule*: RuleYAML
     positionSizing*: PositionSizingYAML
 
+  # ============================================================================
+  # Batch Testing Configuration (Phase 4)
+  # ============================================================================
+  
+  DataSourceYAML* = object
+    ## Data source configuration for batch testing
+    source*: string                        # Data source type (yahoo, csv, coinbase)
+    symbols*: seq[string]                  # List of symbols to test
+    startDate*: string                     # Start date (YYYY-MM-DD)
+    endDate*: string                       # End date (YYYY-MM-DD)
+    csvPath*: Option[string]               # CSV file path (for csv source)
+  
+  ParameterOverride* = object
+    ## Parameter override for strategy customization
+    indicatorId*: string                   # Indicator ID to override
+    paramName*: string                     # Parameter name
+    paramValue*: ParamValue                # New parameter value
+  
+  StrategyConfigYAML* = object
+    ## Strategy configuration in a batch test
+    file*: string                          # Path to strategy YAML file
+    name*: string                          # Unique name for this configuration
+    overrides*: seq[ParameterOverride]     # Parameter overrides
+  
+  PortfolioConfigYAML* = object
+    ## Portfolio configuration for batch testing
+    initialCash*: float                    # Starting capital
+    commission*: float                     # Commission rate (e.g., 0.001 = 0.1%)
+  
+  OutputConfigYAML* = object
+    ## Output configuration for batch testing
+    comparisonReport*: Option[string]      # Path to comparison report
+    individualResults*: Option[string]     # Directory for individual results
+    format*: Option[string]                # Output format (html, csv, json)
+  
+  BatchTestYAML* = object
+    ## Complete batch test configuration
+    version*: string                       # Schema version
+    data*: DataSourceYAML                  # Data configuration
+    strategies*: seq[StrategyConfigYAML]   # Strategies to test
+    portfolio*: PortfolioConfigYAML        # Portfolio settings
+    output*: OutputConfigYAML              # Output settings
+
 # ============================================================================
 # Helper Constructors
 # ============================================================================
@@ -184,6 +227,15 @@ proc newOrCondition*(conditions: seq[ConditionYAML]): ConditionYAML =
   ConditionYAML(
     kind: ckOr,
     orConditions: conditions
+  )
+
+proc newNotCondition*(condition: ConditionYAML): ConditionYAML =
+  ## Create a boolean NOT condition (Phase 3)
+  var condRef = new(ConditionYAML)
+  condRef[] = condition
+  ConditionYAML(
+    kind: ckNot,
+    notCondition: condRef
   )
 
 # ============================================================================

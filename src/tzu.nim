@@ -1,4 +1,4 @@
-## TzuTrader CLI v0.8.0 - Command: tzu
+## TzuTrader CLI v0.8.0
 ##
 ## **DISCLAIMER**: This software is for educational and research purposes only.
 ## It does not provide financial advice. Trading involves substantial risk of loss.
@@ -11,10 +11,13 @@
 ## Usage:
 ##   tzu --run-strat=<STRATEGY> [data-source] [strategy-options] [portfolio-options]
 ##   tzu --yaml-strategy=<FILE> [data-source] [portfolio-options]
+##   tzu batch --batch-file=<FILE> [options]
+##   tzu validate --strategy-file=<FILE> [options]
 ##
 ## Strategy selection:
 ##   --run-strat=<STRATEGY>        Built-in strategy to backtest
 ##   --yaml-strategy=<FILE>        YAML declarative strategy file
+##   -y <FILE>                     Short form for --yaml-strategy
 ##
 ## Data sources:
 ##   --symbol=<SYMBOL> or -s       Use Yahoo Finance (default, simplest)
@@ -35,9 +38,9 @@
 ##   Hybrid: volume, dualmomentum, filteredrsi
 ##   YAML: Use --yaml-strategy for declarative strategies
 
-import std/[strformat, os, sequtils, tables, strutils]
+import std/[strformat, os, sequtils, tables, strutils, options]
 import tzutrader/[core, data, strategy, trader, portfolio]
-import tzutrader/declarative/[parser, validator, strategy_builder]
+import tzutrader/declarative/[parser, validator, strategy_builder, batch_parser, batch_runner, reporter]
 import cligen
 
 # ============================================================================
@@ -303,6 +306,7 @@ proc tzu(
   ## Usage:
   ##   tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
   ##   tzu --yaml-strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
+  ##   tzu -y my_strategy.yml -s AAPL --start=2023-01-01
   ##   tzu --run-strat=macd --csvFile=data.csv
   ##
   ## Available strategies:
@@ -310,7 +314,7 @@ proc tzu(
   ##   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
   ##   Volatility: keltner
   ##   Hybrid: volume, dualmomentum, filteredrsi
-  ##   YAML: Use --yaml-strategy to load declarative strategies
+  ##   YAML: Use --yaml-strategy or -y to load declarative strategies
   
   # Check that either runStrat or yamlStrategy is provided (but not both)
   if runStrat.len == 0 and yamlStrategy.len == 0:
@@ -410,8 +414,331 @@ proc tzu(
                              initialCash, commission, minCommission, riskFreeRate, verbose)
 
 # ============================================================================
+# BATCH TEST COMMAND
+# ============================================================================
+
+proc batch(
+  batchFile: string = "",
+  output: string = "",
+  format: string = "html",
+  verbose: bool = false
+): int =
+  ## Run a batch test from a YAML configuration file
+  ## 
+  ## This command allows you to test multiple strategies across multiple symbols
+  ## in a single run, generating comparison reports.
+  ## 
+  ## Args:
+  ##   batchFile: Path to batch test YAML file
+  ##   output: Output file path (overrides batch config)
+  ##   format: Output format: html, csv, or json (default: html)
+  ##   verbose: Enable verbose output
+  ## 
+  ## Returns:
+  ##   0 on success, 1 on error
+  ## 
+  ## Examples:
+  ##   tzu batch --batch-file=tests/batch.yml
+  ##   tzu batch --batch-file=tests/batch.yml --output=report.html
+  ##   tzu batch --batch-file=tests/batch.yml --format=csv --verbose
+  
+  # Check that batch file is provided
+  if batchFile.len == 0:
+    echo "Error: --batch-file is required"
+    echo ""
+    echo "Usage: tzu batch --batch-file=<FILE> [options]"
+    echo ""
+    echo "Options:"
+    echo "  --batch-file=<FILE>    Batch test YAML configuration"
+    echo "  --output=<FILE>        Output file path (overrides config)"
+    echo "  --format=html|csv|json Output format (default: html)"
+    echo "  --verbose              Enable verbose output"
+    echo ""
+    echo "Example:"
+    echo "  tzu batch --batch-file=examples/declarative/batch_test_example.yml"
+    return 1
+  
+  # Check file exists
+  if not fileExists(batchFile):
+    echo &"Error: Batch test file not found: {batchFile}"
+    return 1
+  
+  # Validate format
+  if format notin ["html", "csv", "json"]:
+    echo &"Error: Invalid format '{format}'. Must be html, csv, or json"
+    return 1
+  
+  echo "="
+  echo "TzuTrader Batch Test"
+  echo "="
+  echo &"Loading batch configuration from: {batchFile}"
+  echo ""
+  
+  # Parse batch configuration
+  let config = try:
+    parseBatchTestYAMLFile(batchFile)
+  except BatchParseError as e:
+    echo &"Error parsing batch test YAML: {e.msg}"
+    return 1
+  except CatchableError as e:
+    echo &"Error loading batch test: {e.msg}"
+    return 1
+  
+  echo &"Configuration loaded successfully"
+  echo &"  Strategies: {config.strategies.len}"
+  echo &"  Symbols: {config.data.symbols.len}"
+  echo &"  Total runs: {config.strategies.len * config.data.symbols.len}"
+  echo ""
+  
+  # Run batch test
+  let result = try:
+    runBatchTest(config, verbose = verbose)
+  except BatchRunError as e:
+    echo &"Error running batch test: {e.msg}"
+    return 1
+  except CatchableError as e:
+    echo &"Error during batch execution: {e.msg}"
+    return 1
+  
+  # Display summary
+  echo ""
+  echo formatSummary(result)
+  
+  # Determine output file
+  var outputFile = output
+  if outputFile.len == 0:
+    # Use config default if provided
+    if config.output.comparisonReport.isSome():
+      outputFile = config.output.comparisonReport.get()
+  
+  # Save report if output specified
+  if outputFile.len > 0:
+    let reportFormat = case format
+      of "html": rfHTML
+      of "csv": rfCSV
+      of "json": rfJSON
+      else: rfHTML
+    
+    try:
+      saveReport(result, outputFile, reportFormat)
+      echo ""
+      echo &"Report saved to: {outputFile}"
+    except CatchableError as e:
+      echo &"Error saving report: {e.msg}"
+      return 1
+  
+  return 0
+
+# ============================================================================
+# VALIDATE COMMAND
+# ============================================================================
+
+proc validate(
+  strategyFile: string = "",
+  batchFile: string = "",
+  verbose: bool = false
+): int =
+  ## Validate a strategy or batch test YAML file without running it
+  ## 
+  ## This command checks for syntax errors, invalid references, and
+  ## configuration issues before you run a backtest.
+  ## 
+  ## Args:
+  ##   strategyFile: Path to strategy YAML file to validate
+  ##   batchFile: Path to batch test YAML file to validate
+  ##   verbose: Show detailed validation information
+  ## 
+  ## Returns:
+  ##   0 if valid, 1 if validation fails or errors occur
+  ## 
+  ## Examples:
+  ##   tzu validate --strategy-file=my_strategy.yml
+  ##   tzu validate --batch-file=batch_test.yml --verbose
+  
+  # Check that exactly one file type is specified
+  if strategyFile.len == 0 and batchFile.len == 0:
+    echo "Error: Must specify either --strategy-file or --batch-file"
+    echo ""
+    echo "Usage: tzu validate [--strategy-file=<FILE> | --batch-file=<FILE>] [options]"
+    echo ""
+    echo "Options:"
+    echo "  --strategy-file=<FILE>  Validate a strategy YAML file"
+    echo "  --batch-file=<FILE>     Validate a batch test YAML file"
+    echo "  --verbose               Show detailed validation information"
+    echo ""
+    echo "Examples:"
+    echo "  tzu validate --strategy-file=examples/declarative/simple_rsi.yml"
+    echo "  tzu validate --batch-file=examples/declarative/batch_test_example.yml"
+    return 1
+  
+  if strategyFile.len > 0 and batchFile.len > 0:
+    echo "Error: Cannot validate both strategy and batch file at once"
+    echo "Please specify only one of --strategy-file or --batch-file"
+    return 1
+  
+  # Validate strategy file
+  if strategyFile.len > 0:
+    echo "="
+    echo "Strategy Validation"
+    echo "="
+    echo &"File: {strategyFile}"
+    echo ""
+    
+    # Check file exists
+    if not fileExists(strategyFile):
+      echo &"✗ Error: File not found: {strategyFile}"
+      return 1
+    
+    # Parse YAML
+    echo "Parsing YAML..."
+    let strategyDef = try:
+      parseStrategyYAMLFile(strategyFile)
+    except parser.ParseError as e:
+      echo &"✗ Parse Error: {e.msg}"
+      return 1
+    except CatchableError as e:
+      echo &"✗ Error: {e.msg}"
+      return 1
+    
+    echo "✓ YAML syntax valid"
+    
+    if verbose:
+      echo ""
+      echo "Strategy Information:"
+      echo &"  Name: {strategyDef.metadata.name}"
+      echo &"  Description: {strategyDef.metadata.description}"
+      if strategyDef.metadata.author.isSome():
+        echo &"  Author: {strategyDef.metadata.author.get()}"
+      echo &"  Indicators: {strategyDef.indicators.len}"
+      echo &"  Position Sizing: {strategyDef.positionSizing.kind}"
+    
+    # Validate strategy
+    echo ""
+    echo "Validating strategy..."
+    let validation = validateStrategy(strategyDef)
+    
+    if validation.valid:
+      echo "✓ Strategy is valid"
+      
+      if verbose:
+        echo ""
+        echo "Validation Details:"
+        echo &"  Entry conditions: OK"
+        echo &"  Exit conditions: OK"
+        echo &"  All indicator references: OK"
+        echo &"  No duplicate IDs: OK"
+      
+      echo ""
+      echo "="
+      echo "✓ Validation Passed"
+      echo "="
+      return 0
+    else:
+      echo "✗ Strategy validation failed:"
+      echo ""
+      for err in validation.errors:
+        echo &"  ✗ {err}"
+      echo ""
+      echo "="
+      echo "✗ Validation Failed"
+      echo "="
+      return 1
+  
+  # Validate batch file
+  if batchFile.len > 0:
+    echo "="
+    echo "Batch Test Validation"
+    echo "="
+    echo &"File: {batchFile}"
+    echo ""
+    
+    # Check file exists
+    if not fileExists(batchFile):
+      echo &"✗ Error: File not found: {batchFile}"
+      return 1
+    
+    # Parse batch YAML
+    echo "Parsing batch test YAML..."
+    let batchConfig = try:
+      parseBatchTestYAMLFile(batchFile)
+    except BatchParseError as e:
+      echo &"✗ Parse Error: {e.msg}"
+      return 1
+    except CatchableError as e:
+      echo &"✗ Error: {e.msg}"
+      return 1
+    
+    echo "✓ YAML syntax valid"
+    
+    if verbose:
+      echo ""
+      echo "Batch Test Information:"
+      echo &"  Version: {batchConfig.version}"
+      echo &"  Data Source: {batchConfig.data.source}"
+      echo &"  Symbols: {batchConfig.data.symbols.join(\", \")}"
+      echo &"  Date Range: {batchConfig.data.startDate} to {batchConfig.data.endDate}"
+      echo &"  Strategies: {batchConfig.strategies.len}"
+      echo &"  Total Runs: {batchConfig.strategies.len * batchConfig.data.symbols.len}"
+    
+    # Validate each strategy file referenced
+    echo ""
+    echo "Validating referenced strategies..."
+    var allValid = true
+    
+    for stratConfig in batchConfig.strategies:
+      echo &"  Checking: {stratConfig.name} ({stratConfig.file})"
+      
+      if not fileExists(stratConfig.file):
+        echo &"    ✗ Strategy file not found: {stratConfig.file}"
+        allValid = false
+        continue
+      
+      let strategyDef = try:
+        parseStrategyYAMLFile(stratConfig.file)
+      except parser.ParseError as e:
+        echo &"    ✗ Parse error: {e.msg}"
+        allValid = false
+        continue
+      except CatchableError as e:
+        echo &"    ✗ Error: {e.msg}"
+        allValid = false
+        continue
+      
+      let validation = validateStrategy(strategyDef)
+      if not validation.valid:
+        echo &"    ✗ Validation failed:"
+        for err in validation.errors:
+          echo &"      - {err}"
+        allValid = false
+      else:
+        echo &"    ✓ Valid"
+    
+    echo ""
+    if allValid:
+      echo "="
+      echo "✓ Validation Passed"
+      echo "="
+      return 0
+    else:
+      echo "="
+      echo "✗ Validation Failed"
+      echo "="
+      return 1
+
+# ============================================================================
 # CLI WIRING - Auto-generated by cligen
 # ============================================================================
 
 when isMainModule:
-  dispatch(tzu, short = {"runStrat": 'r', "symbol": 's'})
+  import std/os
+  
+  # Check if first argument is a subcommand
+  let args = commandLineParams()
+  if args.len > 0 and args[0] in ["batch", "validate"]:
+    # Use dispatchMulti for subcommands
+    dispatchMulti([tzu, short = {"runStrat": 'r', "symbol": 's', "yamlStrategy": 'y'}], 
+                  [batch, short = {"batchFile": 'b'}],
+                  [validate, short = {"strategyFile": 's', "batchFile": 'b'}])
+  else:
+    # Default to main backtest command
+    dispatch(tzu, short = {"runStrat": 'r', "symbol": 's', "yamlStrategy": 'y'})

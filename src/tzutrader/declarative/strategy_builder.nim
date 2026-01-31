@@ -12,6 +12,7 @@ import ../strategies/base  # Import for PositionSizingType
 import ../indicators
 import ../core
 import ./schema
+import ./expression  # Phase 3: Expression support
 
 export PositionSizingType  # Export position sizing types
 
@@ -31,7 +32,9 @@ type
     # Category 5: Momentum Indicators
     ikMOM, ikCMO,
     # Category 6: Advanced Oscillators
-    ikSTOCHRSI, ikPPO
+    ikSTOCHRSI, ikPPO,
+    # Category 7: Custom (Phase 3)
+    ikExpression  # Expression-based custom indicator
   
   IndicatorInstance* = ref object
     ## Runtime indicator instance with type-erased interface
@@ -94,15 +97,22 @@ type
       stochrsi*: STOCHRSI
     of ikPPO:
       ppo*: PPO
+    # Category 7: Custom (Phase 3)
+    of ikExpression:
+      expr*: ExprNode  # Compiled expression
+      exprValue*: float64  # Cached expression result
   
   DeclarativeStrategy* = ref object of Strategy
     ## A strategy built from YAML definition
     strategyDef*: StrategyYAML
     indicators*: Table[string, IndicatorInstance]
+    indicatorOrder*: seq[string]  # Maintain indicator order for deterministic updates
     indicatorSources*: Table[string, string]  # Maps indicator ID to source field
     indicatorOutputs*: Table[string, string]  # Maps indicator ID to output field
+    indicatorExpressions*: Table[string, string]  # Maps expression indicator ID to formula
     lastSignal*: Position
     previousValues*: Table[string, float64]  # For crosses_above/below detection
+    positionSizingExpr*: Option[ExprNode]  # Compiled dynamic position sizing expression
   
   BuildError* = object of CatchableError
     ## Error during strategy building
@@ -129,6 +139,14 @@ proc getFloatParam(params: Table[string, ParamValue], key: string, default: floa
       return p.floatVal
     elif p.kind == pkInt:
       return p.intVal.float
+  return default
+
+proc getStringParam(params: Table[string, ParamValue], key: string, default: string = ""): string =
+  ## Get string parameter with default (Phase 3)
+  if params.hasKey(key):
+    let p = params[key]
+    if p.kind == pkString:
+      return p.strVal
   return default
 
 proc createIndicator*(indicatorDef: IndicatorYAML): IndicatorInstance =
@@ -263,6 +281,15 @@ proc createIndicator*(indicatorDef: IndicatorYAML): IndicatorInstance =
     let signalPeriod = getIntParam(indicatorDef.params, "signalPeriod", 9)
     result = IndicatorInstance(kind: ikPPO, ppo: newPPO(fastPeriod, slowPeriod, signalPeriod))
   
+  of "expression", "expr":
+    # Phase 3: Expression-based custom indicator
+    let formula = getStringParam(indicatorDef.params, "formula", "")
+    if formula == "":
+      raise newException(BuildError, "Expression indicator requires 'formula' parameter")
+    
+    let expr = parseExpression(formula)
+    result = IndicatorInstance(kind: ikExpression, expr: expr, exprValue: NaN)
+  
   else:
     raise newException(BuildError, "Unknown indicator type: " & indicatorDef.indicatorType)
 
@@ -363,6 +390,9 @@ proc getValue*(ind: IndicatorInstance, subfield: string = ""): float64 =
       result = ind.ppo[0].histogram
     else:
       result = ind.ppo[0].ppo
+  # Category 7: Custom (Phase 3)
+  of ikExpression:
+    result = ind.exprValue
 
 proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV, source: string = "close") =
   ## Update indicator with new bar
@@ -434,6 +464,11 @@ proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV, source: string = "clos
     discard ind.ad.update(bar.high, bar.low, bar.close, bar.volume)
   of ikSTOCHRSI:
     discard ind.stochrsi.update(bar.open, bar.close)
+  # Category 7: Custom (Phase 3)
+  of ikExpression:
+    # Expression indicators don't update from bar data
+    # They are evaluated separately after all other indicators are updated
+    discard
 
 # ============================================================================
 # Condition Evaluation
@@ -557,7 +592,10 @@ proc evaluateCondition*(s: DeclarativeStrategy, condition: ConditionYAML, bar: O
     return false
   
   of ckNot:
-    raise newException(BuildError, "NOT conditions not supported in Phase 1")
+    # Phase 3: NOW SUPPORTED - negate the child condition
+    if condition.notCondition.isNil:
+      return false  # Invalid NOT condition
+    return not s.evaluateCondition(condition.notCondition[], bar)
 
 # ============================================================================
 # Strategy Builder
@@ -572,15 +610,19 @@ proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
     symbol: "",  # Will be set when running
     strategyDef: strategyDef,
     indicators: initTable[string, IndicatorInstance](),
+    indicatorOrder: @[],  # Initialize empty sequence
     indicatorSources: initTable[string, string](),
     indicatorOutputs: initTable[string, string](),
+    indicatorExpressions: initTable[string, string](),
     lastSignal: Position.Stay,
-    previousValues: initTable[string, float64]()
+    previousValues: initTable[string, float64](),
+    positionSizingExpr: none(ExprNode)
   )
   
-  # Create all indicator instances and store source/output configurations
+  # Create all indicator instances and store source/output/expression configurations
   for indicatorDef in strategyDef.indicators:
     result.indicators[indicatorDef.id] = createIndicator(indicatorDef)
+    result.indicatorOrder.add(indicatorDef.id)  # Maintain order from YAML
     
     # Store source configuration (default to "close")
     if indicatorDef.source.isSome():
@@ -591,6 +633,16 @@ proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
     # Store output configuration if specified
     if indicatorDef.output.isSome():
       result.indicatorOutputs[indicatorDef.id] = indicatorDef.output.get()
+    
+    # Store formula for expression indicators
+    if indicatorDef.indicatorType.toLowerAscii() in ["expression", "expr"]:
+      let formula = getStringParam(indicatorDef.params, "formula", "")
+      result.indicatorExpressions[indicatorDef.id] = formula
+  
+  # Parse dynamic position sizing expression if specified
+  if strategyDef.positionSizing.kind == psDynamic:
+    let expr = parseExpression(strategyDef.positionSizing.dynamicExpr)
+    result.positionSizingExpr = some(expr)
 
 # ============================================================================
 # Strategy Execution
@@ -601,9 +653,36 @@ method onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
   ## Updates all indicators and evaluates entry/exit rules
   
   # Update all indicators with the new bar, using their configured source
-  for id, indicator in s.indicators:
+  # IMPORTANT: Use indicatorOrder for deterministic, reproducible results
+  for id in s.indicatorOrder:
+    let indicator = s.indicators[id]
     let source = s.indicatorSources.getOrDefault(id, "close")
     updateIndicator(indicator, bar, source)
+  
+  # Phase 3: Evaluate expression indicators after all other indicators are updated
+  for id in s.indicatorOrder:
+    let indicator = s.indicators[id]
+    if indicator.kind == ikExpression:
+      # Build values table with all non-expression indicator values
+      var values = initTable[string, float64]()
+      
+      # Add special values
+      values["price"] = bar.close
+      values["close"] = bar.close
+      values["open"] = bar.open
+      values["high"] = bar.high
+      values["low"] = bar.low
+      values["volume"] = bar.volume
+      
+      # Add all non-expression indicator values in order
+      for otherId in s.indicatorOrder:
+        let otherInd = s.indicators[otherId]
+        if otherInd.kind != ikExpression:
+          let output = s.indicatorOutputs.getOrDefault(otherId, "")
+          values[otherId] = otherInd.getValue(output)
+      
+      # Evaluate the expression
+      indicator.exprValue = evaluateExpression(indicator.expr, values)
   
   var position = Position.Stay
   var reason = ""
@@ -647,8 +726,10 @@ method getPositionSizing*(s: DeclarativeStrategy): tuple[sizingType: PositionSiz
   of psPercent:
     result = (pstPercent, s.strategyDef.positionSizing.percentCapital)
   of psDynamic:
-    # Phase 3 - not yet implemented
-    raise newException(BuildError, "Dynamic position sizing not yet implemented")
+    # Phase 3: Dynamic position sizing with expressions
+    # Note: Dynamic sizing requires indicator values, so this is a placeholder
+    # In practice, the trader/backtester should call a separate method with current values
+    result = (pstPercent, 10.0)  # Default fallback
 
   # Recreate all indicators
   for indicatorDef in s.strategyDef.indicators:

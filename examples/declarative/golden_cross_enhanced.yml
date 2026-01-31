@@ -1,0 +1,80 @@
+metadata:
+  name: "Golden Cross with Confirmation"
+  description: |
+    Classic golden cross strategy enhanced with Phase 3 features.
+    Enters when SMA50 crosses above SMA200 with RSI and volume confirmation.
+  tags: ["trend-following", "golden-cross", "phase3"]
+
+indicators:
+  - id: sma_50
+    type: sma
+    params:
+      period: 50
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+  
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: volume_sma
+    type: sma
+    params:
+      period: 20
+    source: volume
+  
+  # Expression: Trend strength as percentage
+  - id: trend_strength
+    type: expression
+    params:
+      formula: "(sma_50 / sma_200 - 1) * 100"
+
+entry:
+  conditions:
+    all:
+      # Golden cross
+      - left: sma_50
+        operator: "crosses_above"
+        right: sma_200
+      
+      # RSI not overbought (using NOT logic)
+      - not:
+          left: rsi_14
+          operator: ">"
+          right: "70"
+      
+      # Volume above average
+      - left: volume
+        operator: ">"
+        right: volume_sma
+      
+      # Trend strength positive
+      - left: trend_strength
+        operator: ">"
+        right: "0"
+
+exit:
+  conditions:
+    any:
+      # Death cross
+      - left: sma_50
+        operator: "crosses_below"
+        right: sma_200
+      
+      # RSI overbought
+      - left: rsi_14
+        operator: ">"
+        right: "75"
+      
+      # Weakening trend
+      - left: trend_strength
+        operator: "<"
+        right: "-1"
+
+position_sizing:
+  type: percent
+  percent: 25

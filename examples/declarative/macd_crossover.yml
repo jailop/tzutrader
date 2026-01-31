@@ -1,0 +1,37 @@
+# MACD Crossover Strategy
+# Classic MACD signal line crossover strategy
+
+version: "1.0"
+
+metadata:
+  name: "MACD Crossover"
+  description: "Trend following with MACD indicator"
+  author: "TzuTrader"
+  tags:
+    - macd
+    - trend_following
+    - momentum
+
+indicators:
+  - id: macd
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+entry:
+  conditions:
+    left: macd.macd
+    operator: "crosses_above"
+    right: macd.signal
+
+exit:
+  conditions:
+    left: macd.macd
+    operator: "crosses_below"
+    right: macd.signal
+
+position_sizing:
+  type: percent
+  percent: 95

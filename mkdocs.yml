@@ -68,6 +68,7 @@ nav:
       - Scanning: user_guide/07_scanning.md
       - Workflows: user_guide/08_workflows.md
       - Best Practices: user_guide/09_best_practices.md
+      - Declarative Strategies: user_guide/10_declarative.md
   - Reference Guide:
       - Core Concepts: reference_guide/01_core.md
       - Data Management: reference_guide/02_data.md
@@ -81,6 +82,7 @@ nav:
       - Scanner: reference_guide/07_scanning.md
       - Exports: reference_guide/08_exports.md
       - CLI Tool: reference_guide/09_cli.md
+      - Declarative Strategies: reference_guide/10_declarative.md
   - API: api/index.html
 
 # Markdown extensions

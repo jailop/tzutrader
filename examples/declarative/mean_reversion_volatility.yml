@@ -1,0 +1,84 @@
+metadata:
+  name: "Mean Reversion with Volatility Filter"
+  description: |
+    RSI mean reversion strategy that only trades when volatility is favorable.
+    Uses expression-based volatility filter.
+  tags: ["mean-reversion", "rsi", "volatility", "phase3"]
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+  
+  - id: atr_14
+    type: atr
+    params:
+      period: 14
+  
+  # Expression: Normalized volatility (ATR as % of price)
+  - id: volatility_pct
+    type: expression
+    params:
+      formula: "(atr_14 / price) * 100"
+  
+  # Expression: Distance from mean
+  - id: price_deviation
+    type: expression
+    params:
+      formula: "((price - sma_200) / sma_200) * 100"
+
+entry:
+  conditions:
+    all:
+      # Oversold
+      - left: rsi_14
+        operator: "<"
+        right: "30"
+      
+      # NOT too far from mean
+      - not:
+          left: price_deviation
+          operator: "<"
+          right: "-10"
+      
+      # Volatility in acceptable range (not too high, not too low)
+      - all:
+          - left: volatility_pct
+            operator: ">"
+            right: "1"
+          - left: volatility_pct
+            operator: "<"
+            right: "5"
+      
+      # In uptrend
+      - left: price
+        operator: ">"
+        right: sma_200
+
+exit:
+  conditions:
+    any:
+      # Overbought
+      - left: rsi_14
+        operator: ">"
+        right: "70"
+      
+      # Volatility spike (risk management)
+      - left: volatility_pct
+        operator: ">"
+        right: "7"
+      
+      # Price below trend
+      - left: price
+        operator: "<"
+        right: sma_200
+
+position_sizing:
+  type: percent
+  percent: 15

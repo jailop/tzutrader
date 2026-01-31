@@ -1,0 +1,46 @@
+# Stochastic Oscillator Strategy
+# Classic stochastic overbought/oversold strategy
+
+version: "1.0"
+
+metadata:
+  name: "Stochastic Oscillator"
+  description: "Mean reversion using stochastic oscillator"
+  author: "TzuTrader"
+  tags:
+    - stochastic
+    - oscillator
+    - mean_reversion
+
+indicators:
+  - id: stoch
+    type: stochastic
+    params:
+      k_period: 14
+      d_period: 3
+
+entry:
+  conditions:
+    operator: and
+    conditions:
+      - left: stoch.k
+        operator: "<"
+        right: "20"
+      - left: stoch.k
+        operator: "crosses_above"
+        right: stoch.d
+
+exit:
+  conditions:
+    operator: or
+    conditions:
+      - left: stoch.k
+        operator: ">"
+        right: "80"
+      - left: stoch.k
+        operator: "crosses_below"
+        right: stoch.d
+
+position_sizing:
+  type: fixed
+  size: 100.0

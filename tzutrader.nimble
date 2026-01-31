@@ -7,6 +7,12 @@ license       = "MIT"
 srcDir        = "src"
 bin           = @["tzu", "tzu2"]
 
+# Build configuration - Enable Yahoo Finance by default
+# This ensures deterministic, reproducible backtests
+when not defined(disableYfnim):
+  switch("define", "useYfnim")
+  switch("define", "ssl")
+
 # Dependencies
 
 requires "nim >= 2.0.0"
@@ -29,6 +35,8 @@ task test, "Run the test suite":
   exec "nim c -r --path:src tests/declarative/test_parser.nim"
   exec "nim c -r --path:src tests/declarative/test_validator.nim"
   exec "nim c -r --path:src tests/declarative/test_strategy_builder.nim"
+  exec "nim c -r --path:src tests/declarative/test_expression.nim"
+  exec "nim c -r --path:src tests/declarative/test_batch_parser.nim"
   echo "========================="
   echo "All tests passed!"
 

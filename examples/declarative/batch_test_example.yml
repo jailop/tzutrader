@@ -1,0 +1,49 @@
+# Batch Test Example - Compare Multiple Strategy Configurations
+# This batch test compares different RSI and moving average strategies
+
+version: "1.0"
+type: batch_test
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+  start_date: "2023-01-01"
+  end_date: "2024-01-01"
+
+strategies:
+  # Golden Cross strategy (default)
+  - file: "examples/declarative/golden_cross_enhanced.yml"
+    name: "Golden Cross Default"
+  
+  # Golden Cross with different MA periods
+  - file: "examples/declarative/golden_cross_enhanced.yml"
+    name: "Golden Cross Fast"
+    overrides:
+      sma_fast:
+        period: 20
+      sma_slow:
+        period: 50
+  
+  # Mean reversion strategy
+  - file: "examples/declarative/mean_reversion_volatility.yml"
+    name: "Mean Reversion Default"
+  
+  # Mean reversion with more aggressive RSI thresholds
+  - file: "examples/declarative/mean_reversion_volatility.yml"
+    name: "Mean Reversion Aggressive"
+    overrides:
+      rsi_14:
+        period: 14
+        # Could add threshold overrides here if they were parameters
+
+portfolio:
+  initial_cash: 100000.0
+  commission: 0.001
+
+output:
+  comparison_report: "results/batch_comparison.html"
+  individual_results: "results/individual/"
+  format: "html"
