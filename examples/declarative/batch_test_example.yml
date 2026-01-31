@@ -22,10 +22,10 @@ strategies:
   - file: "examples/declarative/golden_cross_enhanced.yml"
     name: "Golden Cross Fast"
     overrides:
-      sma_fast:
-        period: 20
-      sma_slow:
-        period: 50
+      sma_50:
+        period: 30
+      sma_200:
+        period: 100
   
   # Mean reversion strategy
   - file: "examples/declarative/mean_reversion_volatility.yml"
