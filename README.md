@@ -50,13 +50,36 @@ nimble install -y   # Installs library + tzu CLI command
 After installation, the `tzu` command is available globally:
 
 ```bash
-# Quick backtest
-tzu rsi -s AAPL --start=2023-01-01
+# Quick backtest with Yahoo Finance data
+tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
 
-# Get help
+# Using short options (-r for run-strat, -s for symbol, -e for endDate)
+tzu -r rsi -s AAPL --start=2023-01-01 -e 2023-12-31
+
+# With custom strategy parameters
+tzu --run-strat=macd -s AAPL --start=2023-01-01 --fast=10 --slow=20 --signal=5
+
+# Using CSV file (no --start required)
+tzu --run-strat=bollinger --csvFile=data/AAPL.csv
+
+# Multiple custom parameters
+tzu -r rsi -s MSFT --start=2024-01-01 -p 10 -o 25 --overbought=75
+
+# Available strategies
 tzu --help
-tzu rsi --help
 ```
+
+**Common Options:**
+- `-r`, `--run-strat=STRATEGY` - Strategy to backtest (required)
+- `-s`, `--symbol=SYMBOL` - Symbol for Yahoo Finance data
+- `--start=YYYY-MM-DD` - Start date (required for Yahoo Finance)
+- `-e`, `--endDate=YYYY-MM-DD` - End date (optional, defaults to today)
+- `-c`, `--csvFile=FILE` - Use CSV file instead of Yahoo Finance
+- `-p`, `--period=N` - Period for indicators (default varies by strategy)
+- `-i`, `--initialCash=N` - Starting capital (default: 100000.0)
+- `--commission=N` - Commission rate (default: 0.0)
+
+**Note:** `--start` has no short option to avoid conflicts. Use the full `--start=` form.
 
 **Development workflow:**
 ```bash

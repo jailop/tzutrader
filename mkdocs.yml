@@ -3,7 +3,7 @@
 # Project information
 site_name: TzuTrader Documentation
 site_description: A trading bot library for Nim providing tools for building and testing algorithmic trading strategies
-site_author: DataInquiry Team
+site_author: Jaime Lopez
 site_url: https://jailop.github.io/tzutrader/
 
 # Repository information
@@ -81,6 +81,7 @@ nav:
       - Scanner: reference_guide/07_scanning.md
       - Exports: reference_guide/08_exports.md
       - CLI Tool: reference_guide/09_cli.md
+  - API: api/index.html
 
 # Markdown extensions
 markdown_extensions:

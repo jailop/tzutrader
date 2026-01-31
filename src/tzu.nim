@@ -9,7 +9,10 @@
 ## Automatic command-line interface powered by cligen
 ## 
 ## Usage:
-##   tzu {STRATEGY} [data-source] [strategy-options] [portfolio-options]
+##   tzu --run-strat=<STRATEGY> [data-source] [strategy-options] [portfolio-options]
+##
+## Strategy selection:
+##   --run-strat=<STRATEGY>        Strategy to backtest (required)
 ##
 ## Data sources:
 ##   --symbol=<SYMBOL> or -s       Use Yahoo Finance (default, simplest)
@@ -29,7 +32,7 @@
 ##   Volatility: keltner
 ##   Hybrid: volume, dualmomentum, filteredrsi
 
-import std/[strformat, os, sequtils]
+import std/[strformat, os, sequtils, tables, strutils]
 import tzutrader/[core, data, strategy, trader, portfolio]
 import cligen
 
@@ -53,8 +56,8 @@ proc loadData(symbol, csvFile, yahoo, coinbase, start, endDate: string): tuple[d
   # If symbol provided without explicit source, default to Yahoo Finance
   if symbol.len > 0 and explicitSources == 0:
     if start.len == 0:
-      echo "Error: --start=YYYY-MM-DD is required when using symbol"
-      echo "Usage: tzutrader rsi AAPL --start=2023-01-01"
+      echo "Error: --start=YYYY-MM-DD is required when using --symbol"
+      echo "Usage: tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
       quit(1)
     let streamer = newYFHistory(symbol, start, endDate)
     return (toSeq(streamer.items()), symbol, YahooFinance)
@@ -67,10 +70,10 @@ proc loadData(symbol, csvFile, yahoo, coinbase, start, endDate: string): tuple[d
   # If no symbol and no explicit source, error
   if symbol.len == 0 and explicitSources == 0:
     echo "Error: Must specify a data source:"
-    echo "  tzutrader rsi AAPL --start=2023-01-01    (Yahoo Finance - default)"
-    echo "  --csvFile=data.csv                       (CSV file)"
-    echo "  --yahoo=AAPL --start=2023-01-01          (Yahoo Finance explicit)"
-    echo "  --coinbase=BTC-USD --start=2023-01-01    (Coinbase, needs env vars)"
+    echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01    (Yahoo Finance - default)"
+    echo "  --csvFile=data.csv                                      (CSV file)"
+    echo "  --yahoo=AAPL --start=2023-01-01                         (Yahoo Finance explicit)"
+    echo "  --coinbase=BTC-USD --start=2023-01-01                   (Coinbase, needs env vars)"
     quit(1)
   
   # Load from CSV
@@ -126,274 +129,233 @@ proc runStrategyBacktest*(
   return 0
 
 # ============================================================================
-# MEAN REVERSION STRATEGIES (5)
+# STRATEGY FACTORY
 # ============================================================================
 
-proc rsi(
+proc createStrategy(strategyName: string, params: Table[string, string]): Strategy =
+  ## Factory function to create a strategy based on name and parameters
+  ## Parameters are passed as a table for flexible parsing
+  
+  template getInt(key: string, default: int): int =
+    if params.hasKey(key): parseInt(params[key]) else: default
+  
+  template getFloat(key: string, default: float): float =
+    if params.hasKey(key): parseFloat(params[key]) else: default
+  
+  template getStr(key: string, default: string): string =
+    if params.hasKey(key): params[key] else: default
+  
+  case strategyName.toLowerAscii()
+  # Mean Reversion Strategies
+  of "rsi":
+    let period = getInt("period", 14)
+    let oversold = getFloat("oversold", 30.0)
+    let overbought = getFloat("overbought", 70.0)
+    result = newRSIStrategy(period, oversold, overbought)
+  
+  of "bollinger":
+    let period = getInt("period", 20)
+    let stdDev = getFloat("stdDev", 2.0)
+    result = newBollingerStrategy(period, stdDev)
+  
+  of "stochastic":
+    let kPeriod = getInt("kPeriod", 14)
+    let dPeriod = getInt("dPeriod", 3)
+    let oversold = getFloat("oversold", 20.0)
+    let overbought = getFloat("overbought", 80.0)
+    result = newStochasticStrategy(kPeriod, dPeriod, oversold, overbought)
+  
+  of "mfi":
+    let period = getInt("period", 14)
+    let oversold = getFloat("oversold", 20.0)
+    let overbought = getFloat("overbought", 80.0)
+    result = newMFIStrategy(period, oversold, overbought)
+  
+  of "cci":
+    let period = getInt("period", 20)
+    let oversold = getFloat("oversold", -100.0)
+    let overbought = getFloat("overbought", 100.0)
+    result = newCCIStrategy(period, oversold, overbought)
+  
+  # Trend Following Strategies
+  of "crossover":
+    let fastPeriod = getInt("fastPeriod", 50)
+    let slowPeriod = getInt("slowPeriod", 200)
+    result = newCrossoverStrategy(fastPeriod, slowPeriod)
+  
+  of "macd":
+    let fast = getInt("fast", 12)
+    let slow = getInt("slow", 26)
+    let signal = getInt("signal", 9)
+    result = newMACDStrategy(fast, slow, signal)
+  
+  of "kama":
+    let period = getInt("period", 10)
+    let fastSC = getInt("fastSC", 2)
+    let slowSC = getInt("slowSC", 30)
+    result = newKAMAStrategy(period, fastSC, slowSC)
+  
+  of "aroon":
+    let period = getInt("period", 25)
+    let upThreshold = getFloat("upThreshold", 70.0)
+    let downThreshold = getFloat("downThreshold", 30.0)
+    result = newAroonStrategy(period, upThreshold, downThreshold)
+  
+  of "psar":
+    let acceleration = getFloat("acceleration", 0.02)
+    let maximum = getFloat("maximum", 0.20)
+    result = newParabolicSARStrategy(acceleration, maximum)
+  
+  of "triplem":
+    let fastPeriod = getInt("fastPeriod", 20)
+    let mediumPeriod = getInt("mediumPeriod", 50)
+    let slowPeriod = getInt("slowPeriod", 200)
+    result = newTripleMAStrategy(fastPeriod, mediumPeriod, slowPeriod)
+  
+  of "adx":
+    let period = getInt("period", 14)
+    let threshold = getFloat("threshold", 25.0)
+    result = newADXTrendStrategy(period, threshold)
+  
+  # Volatility Strategies
+  of "keltner":
+    let emaPeriod = getInt("emaPeriod", 20)
+    let atrPeriod = getInt("atrPeriod", 10)
+    let multiplier = getFloat("multiplier", 2.0)
+    let mode = getStr("mode", "breakout")
+    let channelMode = if mode == "reversion": Reversion else: Breakout
+    result = newKeltnerChannelStrategy(emaPeriod, atrPeriod, multiplier, channelMode)
+  
+  # Hybrid Strategies
+  of "volume":
+    let period = getInt("period", 20)
+    let volumeMultiplier = getFloat("volumeMultiplier", 1.5)
+    result = newVolumeBreakoutStrategy(period, volumeMultiplier)
+  
+  of "dualmomentum":
+    let rocPeriod = getInt("rocPeriod", 12)
+    let smaPeriod = getInt("smaPeriod", 50)
+    result = newDualMomentumStrategy(rocPeriod, smaPeriod)
+  
+  of "filteredrsi":
+    let rsiPeriod = getInt("rsiPeriod", 14)
+    let trendPeriod = getInt("trendPeriod", 200)
+    let oversold = getFloat("oversold", 30.0)
+    let overbought = getFloat("overbought", 70.0)
+    result = newFilteredMeanReversionStrategy(rsiPeriod, trendPeriod, oversold, overbought)
+  
+  else:
+    echo &"Error: Unknown strategy '{strategyName}'"
+    echo "Available strategies:"
+    echo "  Mean Reversion: rsi, bollinger, stochastic, mfi, cci"
+    echo "  Trend Following: crossover, macd, kama, aroon, psar, triplem, adx"
+    echo "  Volatility: keltner"
+    echo "  Hybrid: volume, dualmomentum, filteredrsi"
+    quit(1)
+
+# ============================================================================
+# MAIN CLI COMMAND
+# ============================================================================
+
+proc tzu(
+  runStrat = "",
   symbol = "",
   csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # RSI params
   period = 14, oversold = 30.0, overbought = 70.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest RSI mean reversion strategy
-  ## 
-  ## Buys when RSI falls below oversold threshold,
-  ## sells when it rises above overbought threshold.
-  ##
-  ## Data sources:
-  ##   symbol (positional)              Use Yahoo Finance (default): rsi AAPL --start=2023-01-01
-  ##   --csvFile=data.csv               Load from CSV file
-  ##   --yahoo=AAPL --start=2023-01-01  Fetch from Yahoo Finance (explicit)
-  ##   --coinbase=BTC-USD --start=2023-01-01  Fetch from Coinbase (needs env vars)
-  ##
-  ## Portfolio options (auto-generated):
-  ##   --initialCash=100000.0       Starting capital
-  ##   --commission=0.0             Commission rate (0.001 = 0.1%)
-  ##   --minCommission=0.0          Minimum commission per trade
-  ##   --riskFreeRate=0.02          Risk-free rate for Sharpe ratio (0.02 = 2%)
-  
-  let strategyObj = newRSIStrategy(period, oversold, overbought)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc bollinger(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 20, stdDev = 2.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Bollinger Bands mean reversion strategy
-  ## 
-  ## Buys when price touches lower band, sells when it touches upper band.
-  
-  let strategyObj = newBollingerStrategy(period, stdDev)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc stochastic(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  kPeriod = 14, dPeriod = 3, oversold = 20.0, overbought = 80.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Stochastic Oscillator mean reversion strategy
-  ## 
-  ## Buys when %K crosses above oversold threshold, sells when it crosses below overbought threshold.
-  
-  let strategyObj = newStochasticStrategy(kPeriod, dPeriod, oversold, overbought)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc mfi(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 14, oversold = 20.0, overbought = 80.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Money Flow Index mean reversion strategy
-  ## 
-  ## Volume-weighted RSI. Buys at oversold levels, sells at overbought levels.
-  
-  let strategyObj = newMFIStrategy(period, oversold, overbought)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc cci(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 20, oversold = -100.0, overbought = 100.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Commodity Channel Index mean reversion strategy
-  ## 
-  ## Measures price deviation from average. Buys at extreme lows, sells at extreme highs.
-  
-  let strategyObj = newCCIStrategy(period, oversold, overbought)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-# ============================================================================
-# TREND FOLLOWING STRATEGIES (7)
-# ============================================================================
-
-proc crossover(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # Bollinger params
+  stdDev = 2.0,
+  # Stochastic params
+  kPeriod = 14, dPeriod = 3,
+  # Crossover params
   fastPeriod = 50, slowPeriod = 200,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Moving Average Crossover trend following strategy
-  ## 
-  ## Classic trend strategy. Buys when fast MA crosses above slow MA, sells when it crosses below.
-  
-  let strategyObj = newCrossoverStrategy(fastPeriod, slowPeriod)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc macd(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # MACD params
   fast = 12, slow = 26, signal = 9,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest MACD trend following strategy
-  ## 
-  ## Buys when MACD crosses above signal line, sells when it crosses below.
-  
-  let strategyObj = newMACDStrategy(fast, slow, signal)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc kama(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 10, fastSC = 2, slowSC = 30,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Kaufman Adaptive Moving Average trend following strategy
-  ## 
-  ## Adaptive MA that adjusts to market volatility. Buys when price crosses above KAMA.
-  
-  let strategyObj = newKAMAStrategy(period, fastSC, slowSC)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc aroon(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 25, upThreshold = 70.0, downThreshold = 30.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Aroon trend identification strategy
-  ## 
-  ## Identifies trend strength and direction.
-  
-  let strategyObj = newAroonStrategy(period, upThreshold, downThreshold)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc psar(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # KAMA params
+  fastSC = 2, slowSC = 30,
+  # Aroon params
+  upThreshold = 70.0, downThreshold = 30.0,
+  # Parabolic SAR params
   acceleration = 0.02, maximum = 0.20,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Parabolic SAR trend following strategy
-  ## 
-  ## Trailing stop and reverse system.
-  
-  let strategyObj = newParabolicSARStrategy(acceleration, maximum)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc triplem(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  fastPeriod = 20, mediumPeriod = 50, slowPeriod = 200,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Triple Moving Average trend following strategy
-  ## 
-  ## Uses three MAs to confirm trend strength. Buys when fast > medium > slow.
-  
-  let strategyObj = newTripleMAStrategy(fastPeriod, mediumPeriod, slowPeriod)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc adx(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 14, threshold = 25.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest ADX Trend Strength strategy
-  ## 
-  ## Measures trend strength (not direction). Trades when ADX > threshold.
-  
-  let strategyObj = newADXTrendStrategy(period, threshold)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-# ============================================================================
-# VOLATILITY STRATEGIES (1)
-# ============================================================================
-
-proc keltner(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # Triple MA params
+  mediumPeriod = 50,
+  # ADX params
+  threshold = 25.0,
+  # Keltner params
   emaPeriod = 20, atrPeriod = 10, multiplier = 2.0, mode = "breakout",
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Keltner Channel volatility strategy
-  ## 
-  ## Channels based on ATR (volatility).
-  ## Mode 'breakout': buys at upper band breakout.
-  ## Mode 'reversion': mean reversion at lower band.
-  
-  let channelMode = if mode == "reversion": Reversion else: Breakout
-  let strategyObj = newKeltnerChannelStrategy(emaPeriod, atrPeriod, multiplier, channelMode)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-# ============================================================================
-# HYBRID STRATEGIES (3)
-# ============================================================================
-
-proc volume(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  period = 20, volumeMultiplier = 1.5,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Volume Breakout hybrid strategy
-  ## 
-  ## Combines price action with volume confirmation.
-  
-  let strategyObj = newVolumeBreakoutStrategy(period, volumeMultiplier)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc dualmomentum(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
+  # Volume params
+  volumeMultiplier = 1.5,
+  # Dual Momentum params
   rocPeriod = 12, smaPeriod = 50,
+  # Filtered RSI params
+  rsiPeriod = 14, trendPeriod = 200,
+  # Portfolio options
   initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
   verbose = false
 ): int =
-  ## Backtest Dual Momentum hybrid strategy
+  ## TzuTrader CLI - Backtest trading strategies
   ## 
-  ## Combines momentum (ROC) with trend filter (SMA).
+  ## Usage:
+  ##   tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
+  ##   tzu --run-strat=macd --csvFile=data.csv
+  ##
+  ## Available strategies:
+  ##   Mean Reversion: rsi, bollinger, stochastic, mfi, cci
+  ##   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
+  ##   Volatility: keltner
+  ##   Hybrid: volume, dualmomentum, filteredrsi
   
-  let strategyObj = newDualMomentumStrategy(rocPeriod, smaPeriod)
-  return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
-                             initialCash, commission, minCommission, riskFreeRate, verbose)
-
-proc filteredrsi(
-  symbol = "",
-  csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
-  rsiPeriod = 14, trendPeriod = 200, oversold = 30.0, overbought = 70.0,
-  initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
-  verbose = false
-): int =
-  ## Backtest Filtered RSI hybrid strategy
-  ## 
-  ## RSI mean reversion with long-term trend filter.
+  if runStrat.len == 0:
+    echo "Error: --run-strat=<STRATEGY> is required"
+    echo ""
+    echo "Usage: tzu --run-strat=<STRATEGY> [options]"
+    echo ""
+    echo "Available strategies:"
+    echo "  Mean Reversion: rsi, bollinger, stochastic, mfi, cci"
+    echo "  Trend Following: crossover, macd, kama, aroon, psar, triplem, adx"
+    echo "  Volatility: keltner"
+    echo "  Hybrid: volume, dualmomentum, filteredrsi"
+    echo ""
+    echo "Examples:"
+    echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
+    echo "  tzu --run-strat=rsi -s AAPL --start=2023-01-01"
+    echo "  tzu --run-strat=macd --csvFile=data.csv --fast=10 --slow=20"
+    echo ""
+    echo "For strategy-specific options, use: tzu --help"
+    return 1
   
-  let strategyObj = newFilteredMeanReversionStrategy(rsiPeriod, trendPeriod, oversold, overbought)
+  # Build params table from all possible strategy parameters
+  var params = initTable[string, string]()
+  params["period"] = $period
+  params["oversold"] = $oversold
+  params["overbought"] = $overbought
+  params["stdDev"] = $stdDev
+  params["kPeriod"] = $kPeriod
+  params["dPeriod"] = $dPeriod
+  params["fastPeriod"] = $fastPeriod
+  params["slowPeriod"] = $slowPeriod
+  params["fast"] = $fast
+  params["slow"] = $slow
+  params["signal"] = $signal
+  params["fastSC"] = $fastSC
+  params["slowSC"] = $slowSC
+  params["upThreshold"] = $upThreshold
+  params["downThreshold"] = $downThreshold
+  params["acceleration"] = $acceleration
+  params["maximum"] = $maximum
+  params["mediumPeriod"] = $mediumPeriod
+  params["threshold"] = $threshold
+  params["emaPeriod"] = $emaPeriod
+  params["atrPeriod"] = $atrPeriod
+  params["multiplier"] = $multiplier
+  params["mode"] = mode
+  params["volumeMultiplier"] = $volumeMultiplier
+  params["rocPeriod"] = $rocPeriod
+  params["smaPeriod"] = $smaPeriod
+  params["rsiPeriod"] = $rsiPeriod
+  params["trendPeriod"] = $trendPeriod
+  
+  let strategyObj = createStrategy(runStrat, params)
   return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
                              initialCash, commission, minCommission, riskFreeRate, verbose)
 
@@ -402,25 +364,4 @@ proc filteredrsi(
 # ============================================================================
 
 when isMainModule:
-  dispatchMulti(
-    # Mean Reversion
-    [rsi, short = {"symbol": 's'}],
-    [bollinger, short = {"symbol": 's'}],
-    [stochastic, short = {"symbol": 's'}],
-    [mfi, short = {"symbol": 's'}],
-    [cci, short = {"symbol": 's'}],
-    # Trend Following
-    [crossover, short = {"symbol": 's'}],
-    [macd, short = {"symbol": 's'}],
-    [kama, short = {"symbol": 's'}],
-    [aroon, short = {"symbol": 's'}],
-    [psar, short = {"symbol": 's'}],
-    [triplem, short = {"symbol": 's'}],
-    [adx, short = {"symbol": 's'}],
-    # Volatility
-    [keltner, short = {"symbol": 's'}],
-    # Hybrid
-    [volume, short = {"symbol": 's'}],
-    [dualmomentum, short = {"symbol": 's'}],
-    [filteredrsi, short = {"symbol": 's'}]
-  )
+  dispatch(tzu, short = {"runStrat": 'r', "symbol": 's'})

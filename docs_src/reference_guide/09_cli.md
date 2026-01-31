@@ -22,24 +22,30 @@ The CLI tool serves specific use cases where writing Nim code would be overhead:
 
 For more complex needs—custom strategies, multi-symbol scanning, advanced portfolio logic, or integration with other systems—writing Nim code using the library directly provides greater flexibility.
 
-## Command Structure (Subcommand-Based)
+## Command Structure
 
 ```bash
 # Simple syntax (Yahoo Finance default)
-tzu <strategy> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
-tzu <strategy> -s <SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu --run-strat=<STRATEGY> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu -r <STRATEGY> -s <SYMBOL> --start=<YYYY-MM-DD> [options]
 
 # Explicit data source
-tzu <strategy> --csvFile=<file> [options]
-tzu <strategy> --yahoo=<SYMBOL> --start=<YYYY-MM-DD> [options]
-tzu <strategy> --coinbase=<PAIR> --start=<YYYY-MM-DD> [options]
+tzu --run-strat=<STRATEGY> --csvFile=<file> [options]
+tzu --run-strat=<STRATEGY> --yahoo=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu --run-strat=<STRATEGY> --coinbase=<PAIR> --start=<YYYY-MM-DD> [options]
 ```
 
-Each strategy is a separate subcommand with its own parameters. This design ensures:
-- Type-safe parameter parsing
-- Strategy-specific help text
-- No parameter conflicts between strategies
+**Key Parameters:**
+- `--run-strat=<STRATEGY>` or `-r` (required): Strategy to backtest
+- `--symbol=<SYMBOL>` or `-s`: Use Yahoo Finance (default data source)
+- `--start=<YYYY-MM-DD>` (required for online sources): Start date (no short option)
+- `--endDate=<YYYY-MM-DD>` or `-e`: End date (optional)
+
+This design ensures:
+- Clear separation between command options and strategy selection
+- All strategies share the same parameter namespace
 - Yahoo Finance as default data source when using `--symbol` or `-s`
+- No conflicts: `--start` has no short option to avoid `-s` conflict
 
 ## Discovering Available Strategies
 
@@ -52,47 +58,64 @@ tzu --help
 **Output shows:**
 ```
 Usage:
-  tzu {SUBCMD}  [sub-command options & parameters]
-where {SUBCMD} is one of:
-  rsi           Backtest RSI mean reversion strategy
-  bollinger     Backtest Bollinger Bands mean reversion strategy
-  stochastic    Backtest Stochastic Oscillator mean reversion strategy
-  mfi           Backtest Money Flow Index mean reversion strategy
-  cci           Backtest Commodity Channel Index mean reversion strategy
-  crossover     Backtest Moving Average Crossover trend following strategy
-  macd          Backtest MACD trend following strategy
-  kama          Backtest Kaufman Adaptive Moving Average strategy
-  aroon         Backtest Aroon trend identification strategy
-  psar          Backtest Parabolic SAR trend following strategy
-  triplem       Backtest Triple Moving Average strategy
-  adx           Backtest ADX Trend Strength strategy
-  keltner       Backtest Keltner Channel volatility strategy
-  volume        Backtest Volume Breakout hybrid strategy
-  dualmomentum  Backtest Dual Momentum hybrid strategy
-  filteredrsi   Backtest Filtered RSI hybrid strategy
+  tzu [optional-params]
+
+TzuTrader CLI - Backtest trading strategies
+
+Available strategies:
+  Mean Reversion: rsi, bollinger, stochastic, mfi, cci
+  Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
+  Volatility: keltner
+  Hybrid: volume, dualmomentum, filteredrsi
+
+Options:
+  -r=, --runStrat=STRATEGY    Strategy to backtest (required)
+  -s=, --symbol=SYMBOL        Symbol for Yahoo Finance
+  --start=YYYY-MM-DD          Start date (required for online sources)
+  ...
 ```
 
 ## Discovering Strategy Parameters
 
-Get detailed help for any strategy:
+Get detailed help for all parameters:
 
 ```bash
-tzu <strategy> --help
+tzu --help
 ```
+
+The help output shows all available parameters for all strategies, including:
+- Strategy selection (`--run-strat`)
+- Data source options (`--symbol`, `--csvFile`, etc.)
+- All strategy-specific parameters (period, oversold, fast, slow, etc.)
+- Portfolio configuration options
+- Short flags (e.g., `-r`, `-s`, `-e`, `-p`, `-v`)
+- Long flags (e.g., `--runStrat`, `--symbol`, `--period`, `--verbose`)
+
+**All parameters are shown in a single help screen** since all strategies now share the same parameter namespace.
 
 **Example:**
 
 ```bash
-tzu rsi --help
+tzu --help
 ```
 
-**Output shows:**
-- Strategy description and trading logic
-- All available parameters with types and defaults
-- Short flags (e.g., `-c`, `-p`, `-v`)
-- Long flags (e.g., `--csvFile`, `--period`, `--verbose`)
+**Output shows all available options:**
+```
+Options:
+  -r=, --runStrat=          string    Strategy to backtest
+  -s=, --symbol=            string    Symbol for Yahoo Finance
+  --start=                  string    Start date (YYYY-MM-DD)
+  -e=, --endDate=           string    End date (YYYY-MM-DD)
+  -c=, --csvFile=           string    CSV file path
+  -p=, --period=            int       Period for indicators (default: 14)
+  -o=, --oversold=          float     Oversold threshold (default: 30.0)
+  --overbought=             float     Overbought threshold (default: 70.0)
+  --fast=                   int       Fast period for MACD (default: 12)
+  --slow=                   int       Slow period for MACD (default: 26)
+  ... (and many more)
+```
 
-**The help is automatically generated from the strategy's function signature**, so it's always accurate and up-to-date.
+**The help is automatically generated from the function signature**, so it's always accurate and up-to-date.
 
 ## Common Parameters (All Strategies)
 
@@ -105,7 +128,7 @@ Every strategy accepts these common parameters:
 | Parameter | Short | Type | Description |
 |-----------|-------|------|-------------|
 | `--symbol` | `-s` | string | Symbol to backtest (uses Yahoo Finance automatically) |
-| `--start` | | string | Start date (YYYY-MM-DD format) |
+| `--start` | *none* | string | Start date (YYYY-MM-DD format) - **no short option** |
 | `--endDate` | `-e` | string | End date (YYYY-MM-DD format, default: today) |
 
 **Option 2: Explicit Data Source (Mutually Exclusive)**
@@ -133,12 +156,12 @@ Every strategy accepts these common parameters:
 
 ## Usage Examples
 
-### Example 1: Simple Yahoo Finance (New Default Syntax)
+### Example 1: Simple Yahoo Finance (Default Syntax)
 
 ```bash
-tzu rsi --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
-# Or using short flag:
-tzu rsi -s AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
+# Or using short flags:
+tzu -r rsi -s AAPL --start=2023-01-01 -e 2023-12-31
 ```
 
 Simplest syntax - uses Yahoo Finance automatically when `--symbol` is provided.
@@ -146,7 +169,9 @@ Simplest syntax - uses Yahoo Finance automatically when `--symbol` is provided.
 ### Example 2: Yahoo Finance with Custom Parameters
 
 ```bash
-tzu rsi -s TSLA --start=2024-01-01 --period=10 --oversold=25 -v
+tzu --run-strat=rsi -s TSLA --start=2024-01-01 --period=10 --oversold=25 -v
+# Or fully abbreviated:
+tzu -r rsi -s TSLA --start=2024-01-01 -p 10 -o 25 -v
 ```
 
 Tesla data with custom RSI parameters and verbose output.
@@ -154,7 +179,7 @@ Tesla data with custom RSI parameters and verbose output.
 ### Example 3: Yahoo Finance with Portfolio Configuration
 
 ```bash
-tzu macd --symbol=MSFT --start=2023-01-01 --commission=0.001 --minCommission=1.0 --initialCash=50000
+tzu --run-strat=macd --symbol=MSFT --start=2023-01-01 --commission=0.001 --minCommission=1.0 --initialCash=50000
 ```
 
 Tests with 0.1% commission, $1 minimum per trade, and $50K starting capital.
@@ -162,7 +187,7 @@ Tests with 0.1% commission, $1 minimum per trade, and $50K starting capital.
 ### Example 4: Simple Backtest with CSV
 
 ```bash
-tzu rsi --csvFile=data/AAPL.csv
+tzu --run-strat=rsi --csvFile=data/AAPL.csv
 ```
 
 Uses RSI strategy with default parameters on local CSV file.
@@ -170,7 +195,7 @@ Uses RSI strategy with default parameters on local CSV file.
 ### Example 5: Explicit Yahoo Finance (Backward Compatible)
 
 ```bash
-tzu rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --run-strat=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
 Explicit `--yahoo` flag still works for backward compatibility.
@@ -178,7 +203,7 @@ Explicit `--yahoo` flag still works for backward compatibility.
 ### Example 6: Bitcoin from Yahoo Finance
 
 ```bash
-tzu macd -s BTC-USD --start=2024-01-01
+tzu --run-strat=macd -s BTC-USD --start=2024-01-01
 ```
 
 Tests MACD on Bitcoin, endDate defaults to today.
@@ -188,7 +213,7 @@ Tests MACD on Bitcoin, endDate defaults to today.
 ```bash
 export COINBASE_API_KEY="your_key_here"
 export COINBASE_SECRET_KEY="your_secret_here"
-tzu psar --coinbase=ETH-USD --start=2024-01-01
+tzu --run-strat=psar --coinbase=ETH-USD --start=2024-01-01
 ```
 
 Fetches Ethereum data from Coinbase (requires API credentials).
@@ -199,11 +224,11 @@ The CLI supports three data sources.
 
 ### Default: Yahoo Finance via Symbol Parameter (Recommended)
 
-The simplest way to use the CLI is with the `--symbol` (or `-s`) parameter, which automatically uses Yahoo Finance:
+The simplest way to use the CLI is with the `--symbol` (or `-s`) parameter and `--run-strat` to specify the strategy:
 
 ```bash
-tzu rsi --symbol=AAPL --start=2023-01-01
-tzu rsi -s AAPL --start=2023-01-01  # Short form
+tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
+tzu -r rsi -s AAPL --start=2023-01-01  # Short form
 ```
 
 **Supported symbols:**
@@ -227,7 +252,7 @@ tzu rsi -s AAPL --start=2023-01-01  # Short form
 Load historical data from local CSV files.
 
 ```bash
-tzu rsi --csvFile=data/AAPL.csv
+tzu --run-strat=rsi --csvFile=data/AAPL.csv
 ```
 
 **Requirements:**
@@ -240,7 +265,7 @@ tzu rsi --csvFile=data/AAPL.csv
 You can still use the explicit `--yahoo` flag:
 
 ```bash
-tzu rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --run-strat=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
 This is functionally identical to using `--symbol` but more explicit.
@@ -252,7 +277,7 @@ Fetch cryptocurrency data from Coinbase Advanced Trade API.
 ```bash
 export COINBASE_API_KEY="your_api_key"
 export COINBASE_SECRET_KEY="your_secret_key"
-tzu rsi --coinbase=BTC-USD --start=2024-01-01
+tzu --run-strat=rsi --coinbase=BTC-USD --start=2024-01-01
 ```
 
 **Supported pairs:**
@@ -278,12 +303,13 @@ tzu rsi --coinbase=BTC-USD --start=2024-01-01
 
 **Note:** Alpha Vantage is NOT currently implemented as a data source.
 
-The CLI uses **automatic parameter generation** from function signatures:
+The CLI uses **automatic parameter generation** from the main function signature:
 
-1. Each strategy is a Nim procedure with typed parameters and default values
+1. The `tzu` procedure accepts all strategy parameters as optional arguments
 2. cligen introspects the function signature at compile time
 3. Parameters become CLI options automatically:
-   - `csvFile: string` → required `--csvFile=` option
+   - `runStrat: string` → required `--run-strat=` or `-r` option
+   - `symbol: string` → optional `--symbol=` or `-s` option
    - `period = 14` → optional `--period=` with default 14
    - `verbose = false` → flag `-v` or `--verbose`
 4. Doc comments become help text automatically
@@ -292,10 +318,12 @@ The CLI uses **automatic parameter generation** from function signatures:
 - Parameters stay in sync with code (no manual documentation drift)
 - Type safety: cligen validates int/float/string/bool at parse time
 - Zero boilerplate: adding a parameter requires zero CLI wiring code
+- All strategies share the same parameter namespace
 
 **Example from source code:**
 ```nim
-proc rsi(
+proc tzu(
+  runStrat = "",          # Required: strategy name
   symbol = "",            # Optional: Yahoo Finance symbol (default)
   csvFile = "",           # Optional: CSV file path
   yahoo = "",             # Optional: Explicit Yahoo Finance
@@ -305,52 +333,78 @@ proc rsi(
   period = 14,            # Optional int, default 14
   oversold = 30.0,        # Optional float, default 30.0
   overbought = 70.0,      # Optional float, default 70.0
+  fast = 12,              # MACD fast period
+  slow = 26,              # MACD slow period
+  signal = 9,             # MACD signal period
   initialCash = 100000.0, # Optional: starting capital
   commission = 0.0,       # Optional: commission rate
   minCommission = 0.0,    # Optional: minimum commission per trade
   riskFreeRate = 0.02,    # Optional: risk-free rate for Sharpe
   verbose = false         # Optional flag, default false
 ): int =
-  ## Backtest RSI mean reversion strategy  # ← This becomes help text
+  ## TzuTrader CLI - Backtest trading strategies  # ← This becomes help text
 ```
 
 This single function signature automatically generates:
+- `-r=` or `--runStrat=` (required)
 - `--symbol=` or `-s` (optional, uses Yahoo Finance as default)
-- `--csvFile=` (optional)
-- `--yahoo=` (optional, explicit Yahoo Finance)
+- `--csvFile=` or `-c` (optional)
+- `--yahoo=` or `-y` (optional, explicit Yahoo Finance)
 - `--coinbase=` (optional)
-- `--start=` (required for online data sources)
-- `--endDate=` (optional, default: today)
-- `--period=` (default: 14)
-- `--oversold=` (default: 30.0)
+- `--start=` (required for online data sources, **no short option**)
+- `--endDate=` or `-e` (optional, default: today)
+- `--period=` or `-p` (default: 14)
+- `--oversold=` or `-o` (default: 30.0)
 - `--overbought=` (default: 70.0)
-- `--initialCash=` (default: 100000.0)
+- `--fast=` (default: 12)
+- `--slow=` (default: 26)
+- `--signal=` (default: 9)
+- `--initialCash=` or `-i` (default: 100000.0)
 - `--commission=` (default: 0.0)
 - `--minCommission=` (default: 0.0)
 - `--riskFreeRate=` (default: 0.02)
 - `-v` or `--verbose` (flag)
 - Complete help text with descriptions
 
-## Strategy-Specific Parameters (Discovery Method)
+**Note:** `--start` has no short option to avoid conflicts with `-s` (symbol).
 
-Instead of documenting all 16 strategies × parameters here, use the **self-documenting help system**:
+## Strategy-Specific Parameters
+
+All strategy parameters are available as command-line options. Use the **self-documenting help system** to see all available options:
 
 ```bash
-# Discover what each strategy needs:
-tzu rsi --help          # RSI: period, oversold, overbought
-tzu macd --help         # MACD: fast, slow, signal
-tzu stochastic --help   # Stochastic: kPeriod, dPeriod, oversold, overbought
-tzu bollinger --help    # Bollinger: period, stdDev
-tzu keltner --help      # Keltner: emaPeriod, atrPeriod, multiplier, mode
-tzu psar --help         # Parabolic SAR: acceleration, maximum
-tzu aroon --help        # Aroon: period, upThreshold, downThreshold
-tzu triplem --help      # Triple MA: fastPeriod, mediumPeriod, slowPeriod
-tzu adx --help          # ADX: period, threshold
-tzu volume --help       # Volume Breakout: period, volumeMultiplier
-tzu dualmomentum --help # Dual Momentum: rocPeriod, smaPeriod
-tzu filteredrsi --help  # Filtered RSI: rsiPeriod, trendPeriod, oversold, overbought
-# ... etc for all 16 strategies
+tzu --help
 ```
+
+This shows all parameters for all strategies in one unified interface, including:
+
+**RSI Strategy:**
+- `--period` (default: 14)
+- `--oversold` (default: 30.0)
+- `--overbought` (default: 70.0)
+
+**MACD Strategy:**
+- `--fast` (default: 12)
+- `--slow` (default: 26)
+- `--signal` (default: 9)
+
+**Stochastic Strategy:**
+- `--kPeriod` (default: 14)
+- `--dPeriod` (default: 3)
+- `--oversold` (default: 20.0)
+- `--overbought` (default: 80.0)
+
+**Bollinger Bands:**
+- `--period` (default: 20)
+- `--stdDev` (default: 2.0)
+
+**Crossover:**
+- `--fastPeriod` (default: 50)
+- `--slowPeriod` (default: 200)
+
+**And many more...**
+
+Use `tzu --help` to see the complete list with all available short options.
 
 **This approach ensures documentation never goes out of date.**
 
@@ -359,8 +413,8 @@ tzu filteredrsi --help  # Filtered RSI: rsiPeriod, trendPeriod, oversold, overbo
 The cligen-based CLI (v0.8.0) simplified the interface by removing:
 
 - **`scan` command:** Multi-symbol scanning removed. Use shell scripts for batch processing.
-- **`--export` option:** Removed. Pipe output to files instead: `tzutrader rsi -c data.csv > results.txt`
-- **`--strategy` selector:** Each strategy is now a separate subcommand.
+- **`--export` option:** Removed. Pipe output to files instead: `tzu --run-strat=rsi --csvFile=data.csv > results.txt`
+- **Subcommand structure:** Strategies are now selected via `--run-strat` argument instead of subcommands.
 
 **Migration from v0.7.0:**
 
@@ -371,7 +425,7 @@ tzutrader backtest data/AAPL.csv --strategy=rsi --rsi-period=10
 
 New syntax:
 ```bash
-tzu rsi --csvFile=data/AAPL.csv --period=10
+tzu --run-strat=rsi --csvFile=data/AAPL.csv --period=10
 ```
 
 ## CSV File Requirements
@@ -475,7 +529,7 @@ After installation, the `tzu` command is available globally:
 
 ```bash
 tzu --help           # Verify installation
-tzu rsi -s AAPL --start=2023-01-01  # Run backtest
+tzu --run-strat=rsi -s AAPL --start=2023-01-01  # Run backtest
 ```
 
 ### Development Workflow
