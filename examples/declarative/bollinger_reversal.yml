@@ -21,13 +21,13 @@ indicators:
 
 entry:
   conditions:
-    left: price.close
+    left: close
     operator: "<"
     right: bb.lower
 
 exit:
   conditions:
-    left: price.close
+    left: close
     operator: ">"
     right: bb.upper
 

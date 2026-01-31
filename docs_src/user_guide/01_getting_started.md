@@ -202,7 +202,7 @@ TzuTrader includes a command-line tool for quick backtests without writing code:
 nimble cli
 
 # Run a backtest
-./tzutrader_cli backtest data/AAPL.csv --strategy=rsi --initial-cash=100000
+./tzutrader_cli backtest data/AAPL.csv --strategy=rsi --initialCash=100000
 
 # Scan multiple symbols
 ./tzutrader_cli scan data/ AAPL,MSFT,GOOG --strategy=macd --rank-by=sharpe
