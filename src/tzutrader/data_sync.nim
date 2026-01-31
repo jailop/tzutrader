@@ -129,21 +129,30 @@ iterator synchronizeAlign*(ss: StreamSet): DataContext =
     # Check if all required streams have data at this timestamp
     var allRequiredPresent = true
     var dataAtTimestamp: seq[DataValue] = @[]
+    var advancedAny = false
     
     for stream in ss.streams.mitems:
       if not stream.hasMoreData():
         if stream.required:
           allRequiredPresent = false
-          break
         continue
       
       let ts = stream.currentTimestamp()
       if ts.isSome and ts.get == targetTs:
         dataAtTimestamp.add(stream.currentData().get)
         stream.advance()
+        advancedAny = true
       elif stream.required:
         allRequiredPresent = false
-        break
+    
+    # Safety check: if we didn't advance any stream, we're stuck - advance the minimum
+    if not advancedAny:
+      for stream in ss.streams.mitems:
+        if stream.hasMoreData():
+          let ts = stream.currentTimestamp()
+          if ts.isSome and ts.get == targetTs:
+            stream.advance()
+            break
     
     # Emit only if all required streams had data
     if allRequiredPresent and dataAtTimestamp.len > 0:
