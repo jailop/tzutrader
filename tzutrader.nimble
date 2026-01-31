@@ -1,18 +1,33 @@
 # Package
 
-version       = "0.7.0"
+version       = "0.8.0"
 author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["tzutrader_cli"]
+# CLI binary is built via custom task 'nimble cli' which outputs './tzu'
+# (nimble's bin directive doesn't support output renaming)
 
 # Dependencies
 
 requires "nim >= 2.0.0"
 requires "https://codeberg.org/jailop/yfnim.git"
+requires "cligen >= 1.7.0"
 
 # Tasks
+
+before build:
+  echo ""
+  echo "================================================"
+  echo "TzuTrader is a library, not a standalone app."
+  echo ""
+  echo "To build the CLI tool, use:"
+  echo "  nimble cli"
+  echo ""
+  echo "This creates the './tzu' command-line tool."
+  echo "================================================"
+  echo ""
+  quit(1)
 
 task test, "Run the test suite":
   echo "Running Phase 1-7 tests..."
@@ -51,14 +66,16 @@ task benchmark, "Run performance benchmarks":
   exec "nim c -d:release --opt:speed -r benchmarks/indicator_perf.nim"
 
 task cli, "Build the CLI tool":
-  echo "Building TzuTrader CLI..."
-  exec "nim c -d:release --opt:speed tzutrader_cli.nim"
-  echo "CLI built successfully: ./tzutrader_cli"
+  echo "Building TzuTrader CLI (cligen-powered)..."
+  exec "nim c -d:release --opt:speed -o:tzu src/tzutrader_cli.nim"
+  echo "CLI built successfully: ./tzu"
   echo ""
-  echo "Usage:"
-  echo "  ./tzutrader_cli --help"
-  echo "  ./tzutrader_cli backtest data/AAPL.csv --strategy=rsi"
-  echo "  ./tzutrader_cli scan data/ AAPL,MSFT --strategy=macd"
+  echo "Usage (16 strategies available):"
+  echo "  ./tzu --help                          # List all strategies"
+  echo "  ./tzu rsi --help                      # RSI strategy options"
+  echo "  ./tzu rsi -s AAPL --start=2023-01-01  # Yahoo Finance (default)"
+  echo "  ./tzu rsi --csvFile=data/AAPL.csv     # CSV file"
+  echo "  ./tzu macd --coinbase=BTC-USD --start=2024-01-01  # Coinbase"
 
 task examples, "Compile all examples":
   echo "Compiling examples..."

@@ -21,6 +21,14 @@ type
     Short = "SHORT" ## Short position (borrowed/sold)
     Flat = "FLAT"   ## No position
 
+  PortfolioConfig* = object
+    ## Configuration for portfolio initialization
+    ## All fields have defaults suitable for auto-generation by cligen
+    initialCash*: float64     ## Starting capital (default: 100000.0)
+    commission*: float64      ## Commission rate as decimal (default: 0.0, e.g., 0.001 = 0.1%)
+    minCommission*: float64   ## Minimum commission per trade (default: 0.0)
+    riskFreeRate*: float64    ## Risk-free rate for Sharpe ratio (default: 0.02 = 2%)
+
   PositionInfo* = object
     ## Information about an open position
     symbol*: string         ## Symbol/ticker
@@ -41,6 +49,7 @@ type
     commission*: float64                     ## Commission rate (0.001 = 0.1%)
     minCommission*: float64                  ## Minimum commission per trade
     totalRealizedPnL*: float64               ## Total realized P&L from all closed trades
+    riskFreeRate*: float64                   ## Risk-free rate for performance metrics
 
   PerformanceMetrics* = object
     ## Portfolio performance metrics
@@ -60,10 +69,39 @@ type
 # Portfolio Construction
 # ============================================================================
 
+proc defaultPortfolioConfig*(): PortfolioConfig =
+  ## Create default portfolio configuration
+  ## These defaults are used when parameters are not specified in CLI
+  result = PortfolioConfig(
+    initialCash: 100000.0,
+    commission: 0.0,
+    minCommission: 0.0,
+    riskFreeRate: 0.02
+  )
+
+proc newPortfolio*(config: PortfolioConfig): Portfolio =
+  ## Create a new portfolio from configuration object
+  ## 
+  ## Args:
+  ##   config: Portfolio configuration with all parameters
+  ## 
+  ## Returns:
+  ##   New Portfolio instance
+  result = Portfolio(
+    initialCash: config.initialCash,
+    cash: config.initialCash,
+    positions: initTable[string, PositionInfo](),
+    transactions: @[],
+    commission: config.commission,
+    minCommission: config.minCommission,
+    totalRealizedPnL: 0.0,
+    riskFreeRate: config.riskFreeRate
+  )
+
 proc newPortfolio*(initialCash: float64 = 100000.0, 
                    commission: float64 = 0.0, 
                    minCommission: float64 = 0.0): Portfolio =
-  ## Create a new portfolio with initial cash
+  ## Create a new portfolio with initial cash (legacy overload)
   ## 
   ## Args:
   ##   initialCash: Starting capital (default $100,000)
@@ -72,15 +110,13 @@ proc newPortfolio*(initialCash: float64 = 100000.0,
   ## 
   ## Returns:
   ##   New Portfolio instance
-  result = Portfolio(
+  let config = PortfolioConfig(
     initialCash: initialCash,
-    cash: initialCash,
-    positions: initTable[string, PositionInfo](),
-    transactions: @[],
     commission: commission,
     minCommission: minCommission,
-    totalRealizedPnL: 0.0
+    riskFreeRate: 0.02
   )
+  result = newPortfolio(config)
 
 # ============================================================================
 # Position Helpers
@@ -354,16 +390,14 @@ proc updatePrices*(p: Portfolio, prices: Table[string, float64]) =
 # ============================================================================
 
 proc calculatePerformance*(p: Portfolio, 
-                           currentPrices: Table[string, float64] = initTable[string, float64](),
-                           riskFreeRate: float64 = 0.02): PerformanceMetrics =
+                           currentPrices: Table[string, float64] = initTable[string, float64]()): PerformanceMetrics =
   ## Calculate comprehensive performance metrics
   ## 
   ## Args:
   ##   currentPrices: Current market prices for open positions
-  ##   riskFreeRate: Risk-free rate for Sharpe ratio (default 2%)
   ## 
   ## Returns:
-  ##   Performance metrics
+  ##   Performance metrics (uses portfolio's riskFreeRate for Sharpe ratio)
   
   result = PerformanceMetrics()
   
@@ -485,7 +519,7 @@ proc calculatePerformance*(p: Portfolio,
       
       if stdDev > 0:
         # Annualized Sharpe (assuming 252 trading days)
-        result.sharpeRatio = (avgReturn - riskFreeRate / 252.0) / stdDev * sqrt(252.0)
+        result.sharpeRatio = (avgReturn - p.riskFreeRate / 252.0) / stdDev * sqrt(252.0)
   
   # Calculate annualized return (simplified)
   # For accurate annualization, we'd need actual time period

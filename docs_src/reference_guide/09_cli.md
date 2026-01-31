@@ -2,10 +2,11 @@
 
 ## Overview
 
-The TzuTrader CLI provides a command-line interface for running backtests and scanning multiple symbols without writing code. It's particularly useful for quick parameter testing, batch processing historical data, and automating repetitive analysis tasks.
+The TzuTrader CLI provides a command-line interface for running backtests without writing code. It's particularly useful for quick parameter testing, batch processing historical data, and automating repetitive analysis tasks.
 
-**Binary:** `tzutrader_cli`  
-**Version:** 0.7.0
+**Binary:** `tzu`  
+**Version:** 0.8.0  
+**Powered by:** [cligen](https://github.com/c-blake/cligen) - automatic CLI generation
 
 ## When to Use the CLI
 
@@ -13,489 +14,360 @@ The CLI tool serves specific use cases where writing Nim code would be overhead:
 
 - **Quick backtests:** Testing a strategy against a single symbol's historical data
 - **Parameter exploration:** Trying different parameter values to see their effect
-- **Multi-symbol scanning:** Running the same strategy across many symbols to find candidates
 - **Batch processing:** Automating backtests in scripts or pipelines
-- **Results export:** Generating JSON or CSV files for analysis in other tools
 
-For more complex needs—custom strategies, advanced portfolio logic, or integration with other systems—writing Nim code using the library directly provides greater flexibility.
+For more complex needs—custom strategies, multi-symbol scanning, advanced portfolio logic, or integration with other systems—writing Nim code using the library directly provides greater flexibility.
 
-## Command Structure
-
-```
-tzutrader <command> <arguments> [options]
-```
-
-The CLI follows standard Unix conventions: positional arguments specify what to do, options modify how to do it.
-
-## Commands
-
-### backtest
-
-Runs a backtest on a single symbol's historical data.
-
-**Syntax:**
+## Command Structure (Subcommand-Based)
 
 ```bash
-tzutrader backtest <csv_file> [options]
+# Simple syntax (Yahoo Finance default)
+tzu <strategy> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu <strategy> -s <SYMBOL> --start=<YYYY-MM-DD> [options]
+
+# Explicit data source
+tzu <strategy> --csvFile=<file> [options]
+tzu <strategy> --yahoo=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu <strategy> --coinbase=<PAIR> --start=<YYYY-MM-DD> [options]
 ```
 
-**Arguments:**
+Each strategy is a separate subcommand with its own parameters. This design ensures:
+- Type-safe parameter parsing
+- Strategy-specific help text
+- No parameter conflicts between strategies
+- Yahoo Finance as default data source when using `--symbol` or `-s`
 
-- `csv_file`: Path to CSV file containing OHLCV data
+## Discovering Available Strategies
 
-**Purpose:**
+List all 16 available strategies:
 
-The backtest command loads historical data, applies a strategy, simulates trades, and reports performance metrics. It's the most straightforward way to evaluate a strategy's historical performance.
+```bash
+tzu --help
+```
+
+**Output shows:**
+```
+Usage:
+  tzu {SUBCMD}  [sub-command options & parameters]
+where {SUBCMD} is one of:
+  rsi           Backtest RSI mean reversion strategy
+  bollinger     Backtest Bollinger Bands mean reversion strategy
+  stochastic    Backtest Stochastic Oscillator mean reversion strategy
+  mfi           Backtest Money Flow Index mean reversion strategy
+  cci           Backtest Commodity Channel Index mean reversion strategy
+  crossover     Backtest Moving Average Crossover trend following strategy
+  macd          Backtest MACD trend following strategy
+  kama          Backtest Kaufman Adaptive Moving Average strategy
+  aroon         Backtest Aroon trend identification strategy
+  psar          Backtest Parabolic SAR trend following strategy
+  triplem       Backtest Triple Moving Average strategy
+  adx           Backtest ADX Trend Strength strategy
+  keltner       Backtest Keltner Channel volatility strategy
+  volume        Backtest Volume Breakout hybrid strategy
+  dualmomentum  Backtest Dual Momentum hybrid strategy
+  filteredrsi   Backtest Filtered RSI hybrid strategy
+```
+
+## Discovering Strategy Parameters
+
+Get detailed help for any strategy:
+
+```bash
+tzu <strategy> --help
+```
 
 **Example:**
 
 ```bash
-tzutrader backtest data/AAPL.csv --strategy=rsi --initial-cash=10000
+tzu rsi --help
 ```
 
-This runs an RSI strategy backtest on Apple stock data with $10,000 starting capital.
+**Output shows:**
+- Strategy description and trading logic
+- All available parameters with types and defaults
+- Short flags (e.g., `-c`, `-p`, `-v`)
+- Long flags (e.g., `--csvFile`, `--period`, `--verbose`)
 
-### scan
+**The help is automatically generated from the strategy's function signature**, so it's always accurate and up-to-date.
 
-Runs backtests across multiple symbols, ranks results, and optionally filters by performance criteria.
+## Common Parameters (All Strategies)
 
-**Syntax:**
+Every strategy accepts these common parameters:
+
+### Data Source Parameters
+
+**Option 1: Simple Yahoo Finance (Default)**
+
+| Parameter | Short | Type | Description |
+|-----------|-------|------|-------------|
+| `--symbol` | `-s` | string | Symbol to backtest (uses Yahoo Finance automatically) |
+| `--start` | | string | Start date (YYYY-MM-DD format) |
+| `--endDate` | `-e` | string | End date (YYYY-MM-DD format, default: today) |
+
+**Option 2: Explicit Data Source (Mutually Exclusive)**
+
+| Parameter | Short | Type | Description |
+|-----------|-------|------|-------------|
+| `--csvFile` | `-c` | string | Path to CSV file with OHLCV data |
+| `--yahoo` | `-y` | string | Yahoo Finance symbol (requires `--start`) |
+| `--coinbase` | | string | Coinbase trading pair (requires `--start` and env vars) |
+
+**Portfolio Configuration Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `--initialCash` | float | 100000.0 | Starting capital in dollars |
+| `--commission` | float | 0.0 | Commission rate as decimal (0.001 = 0.1%) |
+| `--minCommission` | float | 0.0 | Minimum commission per trade (e.g., 1.0 = $1 minimum) |
+| `--riskFreeRate` | float | 0.02 | Risk-free rate for Sharpe ratio calculation (0.02 = 2%) |
+
+**Output Parameters:**
+
+| Parameter | Short | Type | Default | Description |
+|-----------|-------|------|---------|-------------|
+| `--verbose` | `-v` | flag | false | Show detailed trade-by-trade output |
+
+## Usage Examples
+
+### Example 1: Simple Yahoo Finance (New Default Syntax)
 
 ```bash
-tzutrader scan <csv_dir> <symbols> [options]
+tzu rsi --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
+# Or using short flag:
+tzu rsi -s AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
-**Arguments:**
+Simplest syntax - uses Yahoo Finance automatically when `--symbol` is provided.
 
-- `csv_dir`: Directory containing CSV files (one per symbol)
-- `symbols`: Comma-separated list of symbols to scan
-
-**File Naming:**
-
-The scanner expects CSV files named `SYMBOL.csv` in the specified directory. For example, if you specify `AAPL,MSFT`, it looks for `data/AAPL.csv` and `data/MSFT.csv` in the directory.
-
-**Purpose:**
-
-Scanning helps identify which symbols work best with a given strategy. Rather than testing each symbol individually, the scan command automates the process and presents ranked results.
-
-**Example:**
+### Example 2: Yahoo Finance with Custom Parameters
 
 ```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --strategy=macd --rank-by=sharpe
+tzu rsi -s TSLA --start=2024-01-01 --period=10 --oversold=25 -v
 ```
 
-This scans three symbols using a MACD strategy and ranks them by Sharpe ratio.
+Tesla data with custom RSI parameters and verbose output.
 
-### help
-
-Displays usage information and available options.
-
-**Syntax:**
+### Example 3: Yahoo Finance with Portfolio Configuration
 
 ```bash
-tzutrader --help
+tzu macd --symbol=MSFT --start=2023-01-01 --commission=0.001 --minCommission=1.0 --initialCash=50000
 ```
 
-### version
+Tests with 0.1% commission, $1 minimum per trade, and $50K starting capital.
 
-Shows the CLI version number.
-
-**Syntax:**
+### Example 4: Simple Backtest with CSV
 
 ```bash
-tzutrader --version
+tzu rsi --csvFile=data/AAPL.csv
 ```
 
-## Common Options
+Uses RSI strategy with default parameters on local CSV file.
 
-These options apply to both `backtest` and `scan` commands.
-
-### --strategy=<name>
-
-Selects which pre-built strategy to use.
-
-**Available strategies:**
-- `rsi` (default)
-- `macd`
-- `crossover`
-- `bollinger`
-
-**Default:** `rsi`
-
-**Example:**
+### Example 5: Explicit Yahoo Finance (Backward Compatible)
 
 ```bash
-tzutrader backtest data/AAPL.csv --strategy=macd
+tzu rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
-### --initial-cash=<amount>
+Explicit `--yahoo` flag still works for backward compatibility.
 
-Sets the starting capital for the portfolio.
-
-**Type:** Float (dollars)  
-**Default:** `100000.0`
-
-**Example:**
+### Example 6: Bitcoin from Yahoo Finance
 
 ```bash
-tzutrader backtest data/AAPL.csv --initial-cash=50000
+tzu macd -s BTC-USD --start=2024-01-01
 ```
 
-Larger initial capital allows buying more shares but doesn't inherently change percentage-based metrics like return or Sharpe ratio. However, it affects trade sizing if you're implementing position sizing rules.
+Tests MACD on Bitcoin, endDate defaults to today.
 
-### --commission=<rate>
-
-Sets the commission rate as a decimal (not percentage).
-
-**Type:** Float  
-**Default:** `0.0`  
-**Range:** 0.0 to 1.0
-
-**Example:**
+### Example 7: Coinbase Cryptocurrency Data
 
 ```bash
-tzutrader backtest data/AAPL.csv --commission=0.001
+export COINBASE_API_KEY="your_key_here"
+export COINBASE_SECRET_KEY="your_secret_here"
+tzu psar --coinbase=ETH-USD --start=2024-01-01
 ```
 
-A value of `0.001` means 0.1% commission on each trade. Commissions directly reduce profits and can significantly impact strategy performance, especially for strategies that trade frequently.
+Fetches Ethereum data from Coinbase (requires API credentials).
 
-### --export=<file>
+## Data Sources
 
-Exports backtest results to a file.
+The CLI supports three data sources. 
 
-**Supported formats:**
-- `.json`: Detailed JSON export with all metrics and trade history
-- `.csv`: Tabular CSV format for spreadsheet analysis
+### Default: Yahoo Finance via Symbol Parameter (Recommended)
 
-**Example:**
+The simplest way to use the CLI is with the `--symbol` (or `-s`) parameter, which automatically uses Yahoo Finance:
 
 ```bash
-tzutrader backtest data/AAPL.csv --export=results.json
+tzu rsi --symbol=AAPL --start=2023-01-01
+tzu rsi -s AAPL --start=2023-01-01  # Short form
 ```
 
-### --verbose
+**Supported symbols:**
+- Stocks: AAPL, MSFT, TSLA, etc.
+- ETFs: SPY, QQQ, VTI, etc.
+- Crypto: BTC-USD, ETH-USD, etc.
+- Indices: ^GSPC (S&P 500), ^DJI (Dow Jones), etc.
 
-Enables detailed progress output during backtest execution.
+**Advantages:**
+- Simplest syntax (no explicit data source flag needed)
+- No API key required
+- Always up-to-date data
+- Wide symbol coverage (stocks, crypto, indices, forex)
 
-**Type:** Flag (no value required)  
-**Default:** Off
+**Limitations:**
+- Rate limits apply (avoid hammering the API)
+- Historical data availability varies by symbol
 
-**Example:**
+### CSV Files
+
+Load historical data from local CSV files.
 
 ```bash
-tzutrader backtest data/AAPL.csv --verbose
+tzu rsi --csvFile=data/AAPL.csv
 ```
 
-Verbose mode shows each trade as it's executed, useful for understanding what the strategy is doing and debugging unexpected results.
+**Requirements:**
+- CSV file must exist locally
+- Must contain columns: timestamp, open, high, low, close, volume
+- See [Data Management Reference](02_data.md) for format details
 
-## Strategy-Specific Options
+### Explicit Yahoo Finance (Backward Compatible)
 
-### RSI Strategy Options
+You can still use the explicit `--yahoo` flag:
 
-The RSI strategy buys when RSI falls below the oversold threshold and sells when it rises above the overbought threshold.
+```bash
+tzu rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
+```
 
-#### --rsi-period=<n>
+This is functionally identical to using `--symbol` but more explicit.
 
-Number of periods for RSI calculation.
+### Coinbase
 
-**Type:** Integer  
-**Default:** `14`  
-**Typical range:** 9-21
+Fetch cryptocurrency data from Coinbase Advanced Trade API.
 
-**Example:**
+```bash
+export COINBASE_API_KEY="your_api_key"
+export COINBASE_SECRET_KEY="your_secret_key"
+tzu rsi --coinbase=BTC-USD --start=2024-01-01
+```
 
+**Supported pairs:**
+- BTC-USD, ETH-USD, SOL-USD, etc.
+- See [Coinbase documentation](https://docs.cloud.coinbase.com/) for full list
+
+**Requirements:**
+- Coinbase account with API credentials
+- Set environment variables: `COINBASE_API_KEY` and `COINBASE_SECRET_KEY`
+
+**Parameters:**
+- `--coinbase=PAIR` (required)
+- `--start=YYYY-MM-DD` (required)
+- `--endDate=YYYY-MM-DD` (optional)
+
+**Advantages:**
+- Official Coinbase data
+- High-resolution crypto data
+
+**Limitations:**
+- Requires API key
+- Only cryptocurrency trading pairs
+
+**Note:** Alpha Vantage is NOT currently implemented as a data source.
+
+The CLI uses **automatic parameter generation** from function signatures:
+
+1. Each strategy is a Nim procedure with typed parameters and default values
+2. cligen introspects the function signature at compile time
+3. Parameters become CLI options automatically:
+   - `csvFile: string` → required `--csvFile=` option
+   - `period = 14` → optional `--period=` with default 14
+   - `verbose = false` → flag `-v` or `--verbose`
+4. Doc comments become help text automatically
+
+**Benefits:**
+- Parameters stay in sync with code (no manual documentation drift)
+- Type safety: cligen validates int/float/string/bool at parse time
+- Zero boilerplate: adding a parameter requires zero CLI wiring code
+
+**Example from source code:**
+```nim
+proc rsi(
+  symbol = "",            # Optional: Yahoo Finance symbol (default)
+  csvFile = "",           # Optional: CSV file path
+  yahoo = "",             # Optional: Explicit Yahoo Finance
+  coinbase = "",          # Optional: Coinbase pair
+  start = "",             # Required for symbol/yahoo/coinbase
+  endDate = "",           # Optional: defaults to today
+  period = 14,            # Optional int, default 14
+  oversold = 30.0,        # Optional float, default 30.0
+  overbought = 70.0,      # Optional float, default 70.0
+  initialCash = 100000.0, # Optional: starting capital
+  commission = 0.0,       # Optional: commission rate
+  minCommission = 0.0,    # Optional: minimum commission per trade
+  riskFreeRate = 0.02,    # Optional: risk-free rate for Sharpe
+  verbose = false         # Optional flag, default false
+): int =
+  ## Backtest RSI mean reversion strategy  # ← This becomes help text
+```
+
+This single function signature automatically generates:
+- `--symbol=` or `-s` (optional, uses Yahoo Finance as default)
+- `--csvFile=` (optional)
+- `--yahoo=` (optional, explicit Yahoo Finance)
+- `--coinbase=` (optional)
+- `--start=` (required for online data sources)
+- `--endDate=` (optional, default: today)
+- `--period=` (default: 14)
+- `--oversold=` (default: 30.0)
+- `--overbought=` (default: 70.0)
+- `--initialCash=` (default: 100000.0)
+- `--commission=` (default: 0.0)
+- `--minCommission=` (default: 0.0)
+- `--riskFreeRate=` (default: 0.02)
+- `-v` or `--verbose` (flag)
+- Complete help text with descriptions
+
+## Strategy-Specific Parameters (Discovery Method)
+
+Instead of documenting all 16 strategies × parameters here, use the **self-documenting help system**:
+
+```bash
+# Discover what each strategy needs:
+tzu rsi --help          # RSI: period, oversold, overbought
+tzu macd --help         # MACD: fast, slow, signal
+tzu stochastic --help   # Stochastic: kPeriod, dPeriod, oversold, overbought
+tzu bollinger --help    # Bollinger: period, stdDev
+tzu keltner --help      # Keltner: emaPeriod, atrPeriod, multiplier, mode
+tzu psar --help         # Parabolic SAR: acceleration, maximum
+tzu aroon --help        # Aroon: period, upThreshold, downThreshold
+tzu triplem --help      # Triple MA: fastPeriod, mediumPeriod, slowPeriod
+tzu adx --help          # ADX: period, threshold
+tzu volume --help       # Volume Breakout: period, volumeMultiplier
+tzu dualmomentum --help # Dual Momentum: rocPeriod, smaPeriod
+tzu filteredrsi --help  # Filtered RSI: rsiPeriod, trendPeriod, oversold, overbought
+# ... etc for all 16 strategies
+```
+
+**This approach ensures documentation never goes out of date.**
+
+## Removed Features (vs v0.7.0)
+
+The cligen-based CLI (v0.8.0) simplified the interface by removing:
+
+- **`scan` command:** Multi-symbol scanning removed. Use shell scripts for batch processing.
+- **`--export` option:** Removed. Pipe output to files instead: `tzutrader rsi -c data.csv > results.txt`
+- **`--strategy` selector:** Each strategy is now a separate subcommand.
+
+**Migration from v0.7.0:**
+
+Old syntax:
 ```bash
 tzutrader backtest data/AAPL.csv --strategy=rsi --rsi-period=10
 ```
 
-Shorter periods make RSI more reactive but generate more false signals. Longer periods smooth the indicator but lag price changes.
-
-#### --rsi-oversold=<n>
-
-RSI value considered oversold (buy signal).
-
-**Type:** Float  
-**Default:** `30.0`  
-**Range:** 0-100
-
-**Example:**
-
+New syntax:
 ```bash
-tzutrader backtest data/AAPL.csv --strategy=rsi --rsi-oversold=25
-```
-
-Lower thresholds wait for more extreme conditions before buying, potentially missing some opportunities but reducing false signals.
-
-#### --rsi-overbought=<n>
-
-RSI value considered overbought (sell signal).
-
-**Type:** Float  
-**Default:** `70.0`  
-**Range:** 0-100
-
-**Example:**
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=rsi --rsi-overbought=75
-```
-
-### MACD Strategy Options
-
-The MACD strategy generates buy signals when the MACD line crosses above the signal line and sell signals on downward crosses.
-
-#### --macd-fast=<n>
-
-Fast EMA period.
-
-**Type:** Integer  
-**Default:** `12`
-
-#### --macd-slow=<n>
-
-Slow EMA period.
-
-**Type:** Integer  
-**Default:** `26`
-
-#### --macd-signal=<n>
-
-Signal line EMA period.
-
-**Type:** Integer  
-**Default:** `9`
-
-**Example:**
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=macd --macd-fast=10 --macd-slow=20 --macd-signal=8
-```
-
-The standard 12/26/9 parameters were designed for daily stock charts decades ago. Different timeframes and assets may benefit from different values.
-
-### Crossover Strategy Options
-
-The crossover strategy buys when a fast moving average crosses above a slow moving average and sells on downward crosses.
-
-#### --ma-fast=<n>
-
-Fast moving average period.
-
-**Type:** Integer  
-**Default:** `10`
-
-**Example:**
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=crossover --ma-fast=20
-```
-
-#### --ma-slow=<n>
-
-Slow moving average period.
-
-**Type:** Integer  
-**Default:** `30`
-
-**Example:**
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=crossover --ma-fast=50 --ma-slow=200
-```
-
-The 50/200 combination is known as the "golden cross" setup when used with daily data.
-
-### Bollinger Bands Strategy Options
-
-The Bollinger Bands strategy buys when price touches the lower band and sells when it touches the upper band.
-
-#### --bb-period=<n>
-
-Period for the middle band (SMA) and standard deviation calculation.
-
-**Type:** Integer  
-**Default:** `20`
-
-#### --bb-stddev=<n>
-
-Number of standard deviations for the bands.
-
-**Type:** Float  
-**Default:** `2.0`
-
-**Example:**
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=bollinger --bb-period=15 --bb-stddev=2.5
-```
-
-Wider bands (higher stddev) generate fewer signals but capture stronger moves. Narrower bands trade more frequently.
-
-## Scan-Specific Options
-
-These options only apply to the `scan` command.
-
-### --rank-by=<metric>
-
-Determines which performance metric to use for ranking results.
-
-**Available metrics:**
-- `return`: Total return percentage
-- `sharpe`: Sharpe ratio (risk-adjusted return)
-- `winrate`: Win rate percentage
-- `profitfactor`: Profit factor (ratio of gross profit to gross loss)
-
-**Default:** `return`
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --rank-by=sharpe
-```
-
-**Choosing a Ranking Metric:**
-
-- **Return:** Identifies the most profitable symbols but ignores risk
-- **Sharpe:** Favors symbols with consistent returns relative to volatility
-- **Win rate:** Shows which symbols had the highest percentage of winning trades
-- **Profit factor:** Identifies symbols where winners significantly outweighed losers
-
-No single metric tells the complete story. Review multiple metrics before drawing conclusions.
-
-### --min-return=<pct>
-
-Filters results to show only symbols with at least this return percentage.
-
-**Type:** Float (percentage)  
-**Default:** No minimum
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --min-return=10.0
-```
-
-This shows only symbols that gained at least 10%.
-
-### --min-sharpe=<ratio>
-
-Filters results to show only symbols with at least this Sharpe ratio.
-
-**Type:** Float  
-**Default:** No minimum
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --min-sharpe=1.0
-```
-
-A Sharpe ratio above 1.0 is generally considered acceptable for a strategy, though this depends on the strategy's holding period and asset class.
-
-### --min-winrate=<pct>
-
-Filters results to show only symbols with at least this win rate percentage.
-
-**Type:** Float (percentage)  
-**Default:** `0.0`
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --min-winrate=60.0
-```
-
-### --max-drawdown=<pct>
-
-Filters results to show only symbols with drawdowns smaller than this percentage.
-
-**Type:** Float (percentage)  
-**Default:** No maximum
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --max-drawdown=20.0
-```
-
-Drawdown measures the largest peak-to-trough decline. Lower drawdowns indicate more stable equity curves but may also indicate less aggressive trading.
-
-### --top=<n>
-
-Limits output to the top N ranked results.
-
-**Type:** Integer  
-**Default:** `0` (show all)
-
-**Example:**
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --top=5
-```
-
-When scanning many symbols, `--top` helps focus on the best performers.
-
-## Complete Usage Examples
-
-### Simple Backtest
-
-Test an RSI strategy with default parameters:
-
-```bash
-tzutrader backtest data/AAPL.csv
-```
-
-### Custom RSI Parameters
-
-Test more aggressive RSI thresholds:
-
-```bash
-tzutrader backtest data/AAPL.csv --rsi-oversold=20 --rsi-overbought=80
-```
-
-### MACD with Commission
-
-Test MACD strategy with realistic 0.1% commission:
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=macd --commission=0.001
-```
-
-### Crossover with Export
-
-Test moving average crossover and export results:
-
-```bash
-tzutrader backtest data/AAPL.csv --strategy=crossover --ma-fast=50 --ma-slow=200 --export=results.json
-```
-
-### Basic Scan
-
-Scan multiple symbols with MACD strategy:
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG,AMZN,TSLA --strategy=macd
-```
-
-### Filtered Scan
-
-Find top performers meeting minimum criteria:
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG --min-return=5.0 --min-sharpe=0.5 --max-drawdown=15.0
-```
-
-### Comprehensive Scan with Export
-
-Scan many symbols, rank by Sharpe ratio, get top 10, export to CSV:
-
-```bash
-tzutrader scan data/ AAPL,MSFT,GOOG,AMZN,TSLA,NVDA,META,NFLX,COST,AVGO \
-  --strategy=macd \
-  --rank-by=sharpe \
-  --min-sharpe=0.5 \
-  --top=10 \
-  --export=top_performers.csv
+tzu rsi --csvFile=data/AAPL.csv --period=10
 ```
 
 ## CSV File Requirements
@@ -522,78 +394,50 @@ Timestamps should be Unix timestamps (seconds since epoch) or dates in common fo
 
 ## Output Format
 
-### Backtest Output
+The CLI displays a `BacktestReport` with:
 
-The backtest command displays a `BacktestReport` with:
-
-- Strategy configuration
-- Performance metrics (return, Sharpe ratio, max drawdown, etc.)
-- Trade statistics (number of trades, win rate, profit factor)
-- Equity curve summary
+- **Period:** Date range and number of days
+- **Capital:** Initial and final values
+- **Returns:** Total return, annualized return, Sharpe ratio
+- **Risk:** Max drawdown and duration
+- **Trades:** Total, winning, losing, win rate
+- **Trade Statistics:** Profit factor, avg win/loss, best/worst trade
 
 See [Backtesting Reference](06_backtesting.md) for detailed metric definitions.
 
-### Scan Output
-
-The scan command displays a summary table with one row per symbol:
+**Example output:**
 
 ```
-Symbol  Return%  Sharpe  Trades  WinRate%  MaxDD%
-------  -------  ------  ------  --------  ------
-AAPL    15.3     1.45    42      58.3      -12.5
-MSFT    12.7     1.32    38      60.5      -10.2
-...
-```
+Backtest Report: AAPL
+============================================================
+Period: 2023-01-01 to 2023-09-07 (249. days)
 
-Results are sorted by the selected ranking metric.
+Capital
+  Initial: $      100000.00
+  Final:   $      109138.11
 
-## Export Formats
+Returns
+  Total Return:            9.14%
+  Annualized Return:      13.69%
+  Sharpe Ratio:           11.34
 
-### JSON Export
+Risk
+  Max Drawdown:           95.00%
+  DD Duration:              94. days
 
-JSON exports contain complete backtest details suitable for programmatic analysis:
+Trades
+  Total Trades:               3
+  Winning Trades:             3
+  Losing Trades:              0
+  Win Rate:               100.0%
 
-```json
-{
-  "symbol": "AAPL",
-  "strategy": "RSI Strategy",
-  "initial_cash": 100000.0,
-  "final_equity": 115300.0,
-  "total_return": 15.3,
-  "sharpe_ratio": 1.45,
-  "max_drawdown": -12.5,
-  "num_trades": 42,
-  "win_rate": 58.3,
-  "profit_factor": 1.82,
-  "trades": [...]
-}
-```
-
-See [Export Reference](08_exports.md) for complete schema.
-
-### CSV Export
-
-CSV exports provide tabular data for spreadsheet analysis:
-
-**Backtest CSV:**
-
-```csv
-metric,value
-symbol,AAPL
-initial_cash,100000.0
-final_equity,115300.0
-total_return,15.3
-sharpe_ratio,1.45
-...
-```
-
-**Scan CSV:**
-
-```csv
-symbol,return,sharpe,trades,win_rate,max_drawdown
-AAPL,15.3,1.45,42,58.3,-12.5
-MSFT,12.7,1.32,38,60.5,-10.2
-...
+Trade Statistics
+  Profit Factor:            inf
+  Avg Win:          $   3046.04
+  Avg Loss:         $      0.00
+  Best Trade:       $   3165.61
+  Worst Trade:      $   2882.11
+  Avg Trade Return: $   3046.04
 ```
 
 ## Error Handling
@@ -601,73 +445,33 @@ MSFT,12.7,1.32,38,60.5,-10.2
 The CLI exits with non-zero status codes on errors:
 
 **Common errors:**
-- File not found: Check CSV file paths
-- Invalid CSV format: Verify column names and data types
-- Unknown strategy: Check strategy name spelling
-- Insufficient data: Ensure CSV has enough bars for indicator calculation
+- **File not found:** Check CSV file path
+- **Invalid CSV format:** Verify column names match requirements
+- **Insufficient data:** Ensure CSV has enough bars for indicator calculation (e.g., RSI needs >14 bars for period=14)
 
-Error messages are printed to stderr and describe the issue.
-
-## Performance Considerations
-
-**Single backtest:** Typically completes in milliseconds to seconds depending on data size.
-
-**Scanning:** Scales linearly with the number of symbols. Scanning 100 symbols takes approximately 100x as long as a single backtest.
-
-**Memory usage:** Minimal. The CLI loads one symbol's data at a time, processes it, and moves to the next.
+Error messages describe the issue clearly.
 
 ## Limitations
 
-The CLI uses pre-built strategies and cannot execute custom strategy logic. For custom strategies:
-
-1. Write a Nim strategy using the library (see [Strategy Reference](04_strategies.md))
-2. Compile it into your own executable
-3. Use the library's API directly
+The CLI uses pre-built strategies and cannot execute custom strategy logic. For custom strategies, write Nim code using the library directly (see [Strategy Reference](04_strategies.md)).
 
 The CLI is a convenience tool for common use cases, not a replacement for programming when you need flexibility.
 
-## Integration with Scripts
-
-The CLI works well in shell scripts for batch processing:
-
-**Bash example:**
+## Building from Source
 
 ```bash
-#!/bin/bash
-
-# Backtest multiple files
-for file in data/*.csv; do
-  echo "Testing $file..."
-  tzutrader backtest "$file" --strategy=rsi --export="${file%.csv}_results.json"
-done
+git clone <repo-url>
+cd tzutrader
+nimble install -y cligen    # Install dependency
+nimble cli                   # Build CLI (creates ./tzu)
+./tzu --help                 # Verify installation
 ```
 
-**Parameter sweep example:**
-
-```bash
-#!/bin/bash
-
-# Test multiple RSI periods
-for period in 10 12 14 16 18 20; do
-  tzutrader backtest data/AAPL.csv \
-    --rsi-period=$period \
-    --export="results_period_${period}.json"
-done
-```
-
-Exit codes allow scripts to detect errors:
-
-```bash
-if tzutrader backtest data/AAPL.csv; then
-  echo "Backtest succeeded"
-else
-  echo "Backtest failed"
-fi
-```
+**Note:** Use `nimble cli` (not `nimble build`) to create the CLI binary. The `nimble build` command is for libraries and will show a helpful message directing you to use `nimble cli` instead.
 
 ## See Also
 
-- [User Guide: Workflows](../user_guide/08_workflows.md) - Practical CLI usage examples
+- [User Guide: Workflows](../user_guide/08_workflows.md) - Practical CLI usage examples  
 - [Backtesting Reference](06_backtesting.md) - Understanding metrics
-- [Scanner Reference](07_scanning.md) - Multi-symbol scanning API
-- [Export Reference](08_exports.md) - File format specifications
+- [Strategy Reference](04_strategies.md) - Available strategies and their logic
+- [cligen documentation](https://github.com/c-blake/cligen) - CLI framework details

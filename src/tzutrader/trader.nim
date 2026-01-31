@@ -13,7 +13,7 @@
 ## - Comprehensive performance reports
 ## - Transaction cost modeling
 
-import std/[tables, times, math, sequtils, strformat, algorithm]
+import std/[tables, times, math, sequtils, strformat, algorithm, strutils]
 import core, data, strategy, portfolio
 
 type
@@ -63,9 +63,27 @@ type
 # Backtester Construction
 # ============================================================================
 
+proc newBacktester*(strategy: Strategy, config: PortfolioConfig, verbose: bool = false): Backtester =
+  ## Create a new backtesting engine with portfolio configuration
+  ## 
+  ## Args:
+  ##   strategy: Trading strategy to test
+  ##   config: Portfolio configuration object
+  ##   verbose: Enable verbose logging (default false)
+  ## 
+  ## Returns:
+  ##   New Backtester instance
+  result = Backtester(
+    strategy: strategy,
+    portfolio: newPortfolio(config),
+    tradeLogs: @[],
+    equityCurve: @[],
+    verbose: verbose
+  )
+
 proc newBacktester*(strategy: Strategy, initialCash: float64 = 100000.0,
                    commission: float64 = 0.0, verbose: bool = false): Backtester =
-  ## Create a new backtesting engine
+  ## Create a new backtesting engine (legacy overload)
   ## 
   ## Args:
   ##   strategy: Trading strategy to test
@@ -171,12 +189,12 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
   
   if bt.verbose:
     echo ""
-    echo "=" .repeat(60)
+    echo repeat("=", 60)
     echo &"Starting Backtest: {sym}"
     echo &"Period: {data[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} to {data[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")}"
     echo &"Bars: {data.len}"
     echo &"Initial Cash: ${bt.portfolio.initialCash:.2f}"
-    echo "=" .repeat(60)
+    echo repeat("=", 60)
   
   # Run strategy on data and execute signals
   for i, bar in data:
@@ -294,9 +312,9 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
   
   if bt.verbose:
     echo ""
-    echo "=" .repeat(60)
+    echo repeat("=", 60)
     echo "Backtest Complete!"
-    echo "=" .repeat(60)
+    echo repeat("=", 60)
     echo $result
 
 # ============================================================================
@@ -304,10 +322,27 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
 # ============================================================================
 
 proc quickBacktest*(symbol: string, strategy: Strategy, data: seq[OHLCV],
+                   config: PortfolioConfig, verbose: bool = false): BacktestReport =
+  ## Quick backtest with portfolio configuration
+  ## 
+  ## Args:
+  ##   symbol: Symbol being tested
+  ##   strategy: Trading strategy
+  ##   data: Historical OHLCV data
+  ##   config: Portfolio configuration object
+  ##   verbose: Enable verbose output
+  ## 
+  ## Returns:
+  ##   Backtest report
+  
+  let bt = newBacktester(strategy, config, verbose)
+  result = bt.run(data, symbol)
+
+proc quickBacktest*(symbol: string, strategy: Strategy, data: seq[OHLCV],
                    initialCash: float64 = 100000.0, 
                    commission: float64 = 0.0,
                    verbose: bool = false): BacktestReport =
-  ## Quick backtest convenience function
+  ## Quick backtest convenience function (legacy overload)
   ## 
   ## Args:
   ##   symbol: Symbol being tested
