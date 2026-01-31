@@ -1,0 +1,50 @@
+metadata:
+  name: "Bollinger Band Mean Reversion with Explicit Bands"
+  description: "Buy when price touches lower band, sell when price touches upper band"
+  author: "TzuTrader"
+  tags:
+    - mean-reversion
+    - bollinger-bands
+    - output-selection
+
+indicators:
+  - id: bb_upper
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: upper  # Explicit upper band selection
+  
+  - id: bb_lower
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: lower  # Explicit lower band selection
+  
+  - id: bb_middle
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: middle  # Explicit middle band selection (same as MA)
+
+entry:
+  conditions:
+    left: price
+    operator: "<"
+    right: bb_lower  # Price below lower band
+
+exit:
+  conditions:
+    any:
+      - left: price
+        operator: ">"
+        right: bb_upper  # Price above upper band
+      - left: price
+        operator: ">"
+        right: bb_middle  # Or price crosses back above middle
+
+position_sizing:
+  type: percent
+  percent: 10

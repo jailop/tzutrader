@@ -1,0 +1,36 @@
+# Bollinger Bands Mean Reversion
+# Buy when price touches lower band
+# Sell when price touches upper band
+
+metadata:
+  name: "Bollinger Bands Mean Reversion"
+  description: "Trade reversals at Bollinger Band extremes"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - bollinger
+    - mean-reversion
+    - volatility
+
+indicators:
+  - id: bb_20
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+
+entry:
+  conditions:
+    left: close
+    operator: "<="
+    right: bb_20.lower
+
+exit:
+  conditions:
+    left: close
+    operator: ">="
+    right: bb_20.upper
+
+position_sizing:
+  type: fixed
+  size: 100

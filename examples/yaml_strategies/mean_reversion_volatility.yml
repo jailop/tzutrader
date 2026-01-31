@@ -1,0 +1,44 @@
+metadata:
+  name: "Mean Reversion with Volatility Filter"
+  description: "Buy oversold conditions with low volatility using STDEV"
+  author: "TzuTrader Phase 2"
+  version: "1.0"
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: stdev_20
+    type: stdev
+    params:
+      period: 20
+  
+  - id: sma_20
+    type: ma
+    params:
+      period: 20
+
+entry:
+  conditions:
+    all:
+      - operator: "<"
+        left: rsi_14
+        right: "30"
+      - operator: "<"
+        left: stdev_20
+        right: "5.0"
+      - operator: ">"
+        left: price
+        right: sma_20
+
+exit:
+  conditions:
+    operator: ">"
+    left: rsi_14
+    right: "70"
+
+position_sizing:
+  type: percent
+  percent: 10

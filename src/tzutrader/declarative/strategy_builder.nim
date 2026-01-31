@@ -6,7 +6,7 @@
 ## Phase 1: Semi-automated approach - manual indicator mapping
 ## Phase 2: Full introspection using macros (future enhancement)
 
-import std/[tables, strformat, strutils]
+import std/[tables, strformat, strutils, options]
 import ../strategy
 import ../strategies/base  # Import for PositionSizingType
 import ../indicators
@@ -19,7 +19,19 @@ type
   IndicatorKind* = enum
     ## Supported indicator types
     ikMA, ikEMA, ikRSI, ikMACD, ikBollinger, ikSTOCH, ikCCI, ikMFI,
-    ikADX, ikATR, ikOBV, ikAROON, ikPSAR
+    ikADX, ikATR, ikOBV, ikAROON, ikPSAR,
+    # Category 1: Advanced Moving Averages
+    ikTRIMA, ikDEMA, ikTEMA, ikKAMA,
+    # Category 2: Statistical Indicators
+    ikMV, ikSTDEV, ikTRANGE,
+    # Category 3: Volatility Indicators
+    ikNATR,
+    # Category 4: Volume Indicators
+    ikAD,
+    # Category 5: Momentum Indicators
+    ikMOM, ikCMO,
+    # Category 6: Advanced Oscillators
+    ikSTOCHRSI, ikPPO
   
   IndicatorInstance* = ref object
     ## Runtime indicator instance with type-erased interface
@@ -50,11 +62,45 @@ type
       aroon*: AROON
     of ikPSAR:
       psar*: PSAR
+    # Category 1: Advanced Moving Averages
+    of ikTRIMA:
+      trima*: TRIMA
+    of ikDEMA:
+      dema*: DEMA
+    of ikTEMA:
+      tema*: TEMA
+    of ikKAMA:
+      kama*: KAMA
+    # Category 2: Statistical Indicators
+    of ikMV:
+      mv*: MV
+    of ikSTDEV:
+      stdev*: STDEV
+    of ikTRANGE:
+      trange*: TRANGE
+    # Category 3: Volatility Indicators
+    of ikNATR:
+      natr*: NATR
+    # Category 4: Volume Indicators
+    of ikAD:
+      ad*: AD
+    # Category 5: Momentum Indicators
+    of ikMOM:
+      mom*: MOM
+    of ikCMO:
+      cmo*: CMO
+    # Category 6: Advanced Oscillators
+    of ikSTOCHRSI:
+      stochrsi*: STOCHRSI
+    of ikPPO:
+      ppo*: PPO
   
   DeclarativeStrategy* = ref object of Strategy
     ## A strategy built from YAML definition
     strategyDef*: StrategyYAML
     indicators*: Table[string, IndicatorInstance]
+    indicatorSources*: Table[string, string]  # Maps indicator ID to source field
+    indicatorOutputs*: Table[string, string]  # Maps indicator ID to output field
     lastSignal*: Position
     previousValues*: Table[string, float64]  # For crosses_above/below detection
   
@@ -148,6 +194,75 @@ proc createIndicator*(indicatorDef: IndicatorYAML): IndicatorInstance =
     let maximum = getFloatParam(indicatorDef.params, "maximum", 0.20)
     result = IndicatorInstance(kind: ikPSAR, psar: newPSAR(acceleration, maximum))
   
+  # Category 1: Advanced Moving Averages
+  
+  of "trima", "triangular_ma":
+    let period = getIntParam(indicatorDef.params, "period", 20)
+    result = IndicatorInstance(kind: ikTRIMA, trima: newTRIMA(period))
+  
+  of "dema", "double_ema":
+    let period = getIntParam(indicatorDef.params, "period", 20)
+    result = IndicatorInstance(kind: ikDEMA, dema: newDEMA(period))
+  
+  of "tema", "triple_ema":
+    let period = getIntParam(indicatorDef.params, "period", 20)
+    result = IndicatorInstance(kind: ikTEMA, tema: newTEMA(period))
+  
+  of "kama", "kaufman":
+    let period = getIntParam(indicatorDef.params, "period", 10)
+    let fastPeriod = getIntParam(indicatorDef.params, "fastPeriod", 2)
+    let slowPeriod = getIntParam(indicatorDef.params, "slowPeriod", 30)
+    result = IndicatorInstance(kind: ikKAMA, kama: newKAMA(period, fastPeriod, slowPeriod))
+  
+  # Category 2: Statistical Indicators
+  
+  of "mv", "variance":
+    let period = getIntParam(indicatorDef.params, "period", 20)
+    result = IndicatorInstance(kind: ikMV, mv: newMV(period))
+  
+  of "stdev", "stddev", "standard_deviation":
+    let period = getIntParam(indicatorDef.params, "period", 20)
+    result = IndicatorInstance(kind: ikSTDEV, stdev: newSTDEV(period))
+  
+  of "trange", "true_range":
+    result = IndicatorInstance(kind: ikTRANGE, trange: newTRANGE())
+  
+  # Category 3: Volatility Indicators
+  
+  of "natr", "normalized_atr":
+    let period = getIntParam(indicatorDef.params, "period", 14)
+    result = IndicatorInstance(kind: ikNATR, natr: newNATR(period))
+  
+  # Category 4: Volume Indicators
+  
+  of "ad", "accumulation_distribution":
+    result = IndicatorInstance(kind: ikAD, ad: newAD())
+  
+  # Category 5: Momentum Indicators
+  
+  of "mom", "momentum":
+    let period = getIntParam(indicatorDef.params, "period", 10)
+    result = IndicatorInstance(kind: ikMOM, mom: newMOM(period))
+  
+  of "cmo", "chande":
+    let period = getIntParam(indicatorDef.params, "period", 14)
+    result = IndicatorInstance(kind: ikCMO, cmo: newCMO(period))
+  
+  # Category 6: Advanced Oscillators
+  
+  of "stochrsi", "stochastic_rsi":
+    let rsiPeriod = getIntParam(indicatorDef.params, "rsiPeriod", 14)
+    let period = getIntParam(indicatorDef.params, "period", 14)
+    let kPeriod = getIntParam(indicatorDef.params, "kPeriod", 3)
+    let dPeriod = getIntParam(indicatorDef.params, "dPeriod", 3)
+    result = IndicatorInstance(kind: ikSTOCHRSI, stochrsi: newSTOCHRSI(rsiPeriod, period, kPeriod, dPeriod))
+  
+  of "ppo", "percentage_price_oscillator":
+    let fastPeriod = getIntParam(indicatorDef.params, "fastPeriod", 12)
+    let slowPeriod = getIntParam(indicatorDef.params, "slowPeriod", 26)
+    let signalPeriod = getIntParam(indicatorDef.params, "signalPeriod", 9)
+    result = IndicatorInstance(kind: ikPPO, ppo: newPPO(fastPeriod, slowPeriod, signalPeriod))
+  
   else:
     raise newException(BuildError, "Unknown indicator type: " & indicatorDef.indicatorType)
 
@@ -208,21 +323,93 @@ proc getValue*(ind: IndicatorInstance, subfield: string = ""): float64 =
       result = ind.aroon[0].up
   of ikPSAR:
     result = ind.psar[0].sar
+  # Category 1: Advanced Moving Averages
+  of ikTRIMA:
+    result = ind.trima[0]
+  of ikDEMA:
+    result = ind.dema[0]
+  of ikTEMA:
+    result = ind.tema[0]
+  of ikKAMA:
+    result = ind.kama[0]
+  # Category 2: Statistical Indicators
+  of ikMV:
+    result = ind.mv[0]
+  of ikSTDEV:
+    result = ind.stdev[0]
+  of ikTRANGE:
+    result = ind.trange[0]
+  # Category 3: Volatility Indicators
+  of ikNATR:
+    result = ind.natr[0]
+  # Category 4: Volume Indicators
+  of ikAD:
+    result = ind.ad[0]
+  # Category 5: Momentum Indicators
+  of ikMOM:
+    result = ind.mom[0]
+  of ikCMO:
+    result = ind.cmo[0]
+  # Category 6: Advanced Oscillators
+  of ikSTOCHRSI:
+    if subfield == "d":
+      result = ind.stochrsi[0].d
+    else:
+      result = ind.stochrsi[0].k
+  of ikPPO:
+    if subfield == "signal":
+      result = ind.ppo[0].signal
+    elif subfield == "histogram" or subfield == "hist":
+      result = ind.ppo[0].histogram
+    else:
+      result = ind.ppo[0].ppo
 
-proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV) =
+proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV, source: string = "close") =
   ## Update indicator with new bar
+  ## source specifies which field to use: open, high, low, close, volume
   ## Note: Returns nothing, use getValue() to get current value
+  
+  # Get the source value
+  let sourceValue = case source
+    of "open": bar.open
+    of "high": bar.high
+    of "low": bar.low
+    of "close": bar.close
+    of "volume": bar.volume
+    else: bar.close
+  
   case ind.kind
+  # Single-value indicators that can use any source
   of ikMA:
-    discard ind.ma.update(bar.close)
+    discard ind.ma.update(sourceValue)
   of ikEMA:
-    discard ind.ema.update(bar.close)
+    discard ind.ema.update(sourceValue)
+  of ikTRIMA:
+    discard ind.trima.update(sourceValue)
+  of ikDEMA:
+    discard ind.dema.update(sourceValue)
+  of ikTEMA:
+    discard ind.tema.update(sourceValue)
+  of ikKAMA:
+    discard ind.kama.update(sourceValue)
+  of ikMV:
+    discard ind.mv.update(sourceValue)
+  of ikSTDEV:
+    discard ind.stdev.update(sourceValue)
+  of ikMOM:
+    discard ind.mom.update(sourceValue)
+  of ikCMO:
+    discard ind.cmo.update(sourceValue)
+  of ikMACD:
+    discard ind.macd.update(sourceValue)
+  of ikBollinger:
+    discard ind.bb.update(sourceValue)
+  of ikPPO:
+    discard ind.ppo.update(sourceValue)
+  
+  # Multi-value indicators that require specific OHLC fields
   of ikRSI:
     discard ind.rsi.update(bar.open, bar.close)
-  of ikMACD:
-    discard ind.macd.update(bar.close)
-  of ikBollinger:
-    discard ind.bb.update(bar.close)
   of ikSTOCH:
     discard ind.stoch.update(bar.high, bar.low, bar.close)
   of ikCCI:
@@ -239,6 +426,14 @@ proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV) =
     discard ind.aroon.update(bar.high, bar.low)
   of ikPSAR:
     discard ind.psar.update(bar.high, bar.low, bar.close)
+  of ikTRANGE:
+    discard ind.trange.update(bar.high, bar.low, bar.close)
+  of ikNATR:
+    discard ind.natr.update(bar.high, bar.low, bar.close)
+  of ikAD:
+    discard ind.ad.update(bar.high, bar.low, bar.close, bar.volume)
+  of ikSTOCHRSI:
+    discard ind.stochrsi.update(bar.open, bar.close)
 
 # ============================================================================
 # Condition Evaluation
@@ -282,9 +477,11 @@ proc parseReference*(s: DeclarativeStrategy, refStr: string, bar: OHLCV): float6
     else:
       raise newException(BuildError, "Unknown indicator: " & parts[0])
   elif parts.len == 1:
-    # Simple indicator reference
+    # Simple indicator reference - check for configured output
     if s.indicators.hasKey(refStr):
-      return s.indicators[refStr].getValue()
+      # Use configured output if available, otherwise use default (empty string)
+      let output = s.indicatorOutputs.getOrDefault(refStr, "")
+      return s.indicators[refStr].getValue(output)
     else:
       raise newException(BuildError, "Unknown reference: " & refStr)
   else:
@@ -375,13 +572,25 @@ proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
     symbol: "",  # Will be set when running
     strategyDef: strategyDef,
     indicators: initTable[string, IndicatorInstance](),
+    indicatorSources: initTable[string, string](),
+    indicatorOutputs: initTable[string, string](),
     lastSignal: Position.Stay,
     previousValues: initTable[string, float64]()
   )
   
-  # Create all indicator instances
+  # Create all indicator instances and store source/output configurations
   for indicatorDef in strategyDef.indicators:
     result.indicators[indicatorDef.id] = createIndicator(indicatorDef)
+    
+    # Store source configuration (default to "close")
+    if indicatorDef.source.isSome():
+      result.indicatorSources[indicatorDef.id] = indicatorDef.source.get()
+    else:
+      result.indicatorSources[indicatorDef.id] = "close"
+    
+    # Store output configuration if specified
+    if indicatorDef.output.isSome():
+      result.indicatorOutputs[indicatorDef.id] = indicatorDef.output.get()
 
 # ============================================================================
 # Strategy Execution
@@ -391,9 +600,10 @@ method onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
   ## Process a single bar and generate signal
   ## Updates all indicators and evaluates entry/exit rules
   
-  # Update all indicators with the new bar
+  # Update all indicators with the new bar, using their configured source
   for id, indicator in s.indicators:
-    updateIndicator(indicator, bar)
+    let source = s.indicatorSources.getOrDefault(id, "close")
+    updateIndicator(indicator, bar, source)
   
   var position = Position.Stay
   var reason = ""

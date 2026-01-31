@@ -1,0 +1,39 @@
+# Conservative MACD Strategy with Small Position Sizes
+# Entry: MACD crosses above signal line
+# Exit: MACD crosses below signal line
+# Position Size: 10% of portfolio equity (conservative)
+
+metadata:
+  name: "Conservative MACD - 10% Per Trade"
+  description: "MACD crossover with conservative position sizing"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - macd
+    - trend-following
+    - conservative
+    - percent-sizing
+
+indicators:
+  - id: macd_12_26_9
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+entry:
+  conditions:
+    left: macd_12_26_9
+    operator: "crosses_above"
+    right: macd_12_26_9.signal
+
+exit:
+  conditions:
+    left: macd_12_26_9
+    operator: "crosses_below"
+    right: macd_12_26_9.signal
+
+position_sizing:
+  type: percent
+  percent: 10  # Conservative 10% per trade

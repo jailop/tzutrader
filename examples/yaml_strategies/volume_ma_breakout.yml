@@ -1,0 +1,41 @@
+metadata:
+  name: "Volume MA Breakout"
+  description: "Enter when volume exceeds its moving average and price is trending up"
+  author: "TzuTrader"
+  tags:
+    - volume
+    - trend-following
+    - breakout
+
+indicators:
+  - id: volume_ma
+    type: ma
+    params:
+      period: 20
+    source: volume  # Apply MA to volume instead of price
+  
+  - id: price_ma
+    type: ma
+    params:
+      period: 50
+    source: close  # Explicit close (this is the default)
+
+entry:
+  conditions:
+    all:
+      - left: volume
+        operator: ">"
+        right: volume_ma
+      - left: price
+        operator: ">"
+        right: price_ma
+
+exit:
+  conditions:
+    left: price
+    operator: "<"
+    right: price_ma
+
+position_sizing:
+  type: percent
+  percent: 15

@@ -12,6 +12,17 @@ type
     ## Error during YAML parsing
 
 # ============================================================================
+# Location Tracking (Phase 2 - Feature B2)
+# ============================================================================
+
+proc toSourceLocation(node: YamlNode): SourceLocation =
+  ## Extract source location from YAML node for error reporting
+  SourceLocation(
+    line: node.startPos.line,
+    column: node.startPos.column
+  )
+
+# ============================================================================
 # YAML Node Helpers
 # ============================================================================
 
@@ -134,9 +145,12 @@ proc parseIndicator(node: YamlNode): IndicatorYAML =
   result.id = ""
   result.indicatorType = ""
   result.params = initTable[string, ParamValue]()
+  result.source = none(string)
+  result.output = none(string)
+  result.location = some(toSourceLocation(node))  # Capture location
   
   if node.kind != yMapping:
-    raise newException(ParseError, "Indicator must be a mapping")
+    raise newException(ParseError, formatError("Indicator must be a mapping", result.location))
   
   for key, val in node.fields:
     case key.content
@@ -148,6 +162,10 @@ proc parseIndicator(node: YamlNode): IndicatorYAML =
       if val.kind == yMapping:
         for paramKey, paramVal in val.fields:
           result.params[paramKey.content] = parseParamValue(paramVal)
+    of "source":
+      result.source = some(val.getStr())
+    of "output":
+      result.output = some(val.getStr())
     else:
       discard
 
@@ -161,7 +179,7 @@ proc parseIndicators(node: YamlNode): seq[IndicatorYAML] =
 # Parse Conditions
 # ============================================================================
 
-proc parseOperator(s: string): ComparisonOp =
+proc parseOperator(s: string, loc: Option[SourceLocation] = none(SourceLocation)): ComparisonOp =
   ## Parse comparison operator from string
   case s
   of "<": opLessThan
@@ -173,16 +191,17 @@ proc parseOperator(s: string): ComparisonOp =
   of "crosses_above": opCrossesAbove
   of "crosses_below": opCrossesBelow
   else:
-    raise newException(ParseError, "Unknown operator: " & s)
+    raise newException(ParseError, formatError("Unknown operator: " & s, loc))
 
 proc parseCondition(node: YamlNode): ConditionYAML
 
 proc parseSimpleCondition(node: YamlNode): ConditionYAML =
   ## Parse a simple comparison condition
+  let loc = some(toSourceLocation(node))  # Capture location
   var left, op, right: string
   
   if node.kind != yMapping:
-    raise newException(ParseError, "Simple condition must be a mapping")
+    raise newException(ParseError, formatError("Simple condition must be a mapping", loc))
   
   for key, val in node.fields:
     case key.content
@@ -196,27 +215,32 @@ proc parseSimpleCondition(node: YamlNode): ConditionYAML =
       discard
   
   if left == "" or op == "" or right == "":
-    raise newException(ParseError, "Simple condition must have left, operator, and right")
+    raise newException(ParseError, formatError("Simple condition must have left, operator, and right", loc))
   
-  result = newSimpleCondition(left, parseOperator(op), right)
+  result = newSimpleCondition(left, parseOperator(op, loc), right)
+  result.location = loc  # Store location
 
 proc parseAndCondition(node: YamlNode): ConditionYAML =
   ## Parse an AND condition
+  let loc = some(toSourceLocation(node))  # Capture location
   var conditions: seq[ConditionYAML] = @[]
   
   for childNode in node.getSeq():
     conditions.add(parseCondition(childNode))
   
   result = newAndCondition(conditions)
+  result.location = loc  # Store location
 
 proc parseOrCondition(node: YamlNode): ConditionYAML =
   ## Parse an OR condition
+  let loc = some(toSourceLocation(node))  # Capture location
   var conditions: seq[ConditionYAML] = @[]
   
   for childNode in node.getSeq():
     conditions.add(parseCondition(childNode))
   
   result = newOrCondition(conditions)
+  result.location = loc  # Store location
 
 proc parseCondition(node: YamlNode): ConditionYAML =
   ## Parse a condition (simple or compound)

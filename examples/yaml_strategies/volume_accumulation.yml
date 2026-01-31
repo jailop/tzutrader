@@ -1,0 +1,39 @@
+metadata:
+  name: "Volume Accumulation Strategy"
+  description: "Trade using Accumulation/Distribution line with price confirmation"
+  author: "TzuTrader Phase 2"
+  version: "1.0"
+
+indicators:
+  - id: ad_line
+    type: ad
+  
+  - id: ad_ma
+    type: ma
+    params:
+      period: 20
+  
+  - id: price_ma
+    type: ma
+    params:
+      period: 20
+
+entry:
+  conditions:
+    all:
+      - operator: "crosses_above"
+        left: ad_line
+        right: ad_ma
+      - operator: ">"
+        left: price
+        right: price_ma
+
+exit:
+  conditions:
+    operator: "crosses_below"
+    left: ad_line
+    right: ad_ma
+
+position_sizing:
+  type: percent
+  percent: 12

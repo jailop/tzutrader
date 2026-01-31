@@ -1,0 +1,34 @@
+# Simple RSI Mean Reversion Strategy
+# Buy when RSI < 30 (oversold), sell when RSI > 70 (overbought)
+
+metadata:
+  name: "Simple RSI Mean Reversion"
+  description: "Classic RSI oversold/overbought strategy"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - rsi
+    - mean-reversion
+    - beginner-friendly
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

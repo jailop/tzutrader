@@ -1,0 +1,37 @@
+# MACD Crossover Strategy
+# Buy when MACD crosses above signal line
+# Sell when MACD crosses below signal line
+
+metadata:
+  name: "MACD Crossover"
+  description: "Classic MACD signal line crossover strategy"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - macd
+    - trend-following
+    - crossover
+
+indicators:
+  - id: macd_12_26_9
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+entry:
+  conditions:
+    left: macd_12_26_9
+    operator: crosses_above
+    right: macd_12_26_9.signal
+
+exit:
+  conditions:
+    left: macd_12_26_9
+    operator: crosses_below
+    right: macd_12_26_9.signal
+
+position_sizing:
+  type: fixed
+  size: 100

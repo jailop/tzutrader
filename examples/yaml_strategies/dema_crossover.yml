@@ -1,0 +1,41 @@
+metadata:
+  name: "DEMA Crossover"
+  description: "Fast trend detection using Double Exponential Moving Average crossovers"
+  author: "TzuTrader Phase 2"
+  version: "1.0"
+
+indicators:
+  - id: dema_fast
+    type: dema
+    params:
+      period: 12
+  
+  - id: dema_slow
+    type: dema
+    params:
+      period: 26
+  
+  - id: atr_14
+    type: atr
+    params:
+      period: 14
+
+entry:
+  conditions:
+    all:
+      - operator: "crosses_above"
+        left: dema_fast
+        right: dema_slow
+      - operator: ">"
+        left: atr_14
+        right: "2.0"
+
+exit:
+  conditions:
+    operator: "crosses_below"
+    left: dema_fast
+    right: dema_slow
+
+position_sizing:
+  type: percent
+  percent: 20

@@ -1,0 +1,60 @@
+# Multi-Condition Strategy: RSI + MACD + Volume
+# Entry requires:
+# - RSI oversold
+# - MACD bullish (above zero)
+# - High volume
+
+metadata:
+  name: "Multi-Indicator Confirmation"
+  description: "Combines RSI, MACD, and volume for high-confidence signals"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - multi-indicator
+    - confirmation
+    - advanced
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: macd_12_26_9
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+  
+  - id: sma_volume
+    type: sma
+    params:
+      period: 20
+
+entry:
+  conditions:
+    all:  # All three conditions required
+      - left: rsi_14
+        operator: "<"
+        right: "30"
+      - left: macd_12_26_9
+        operator: ">"
+        right: "0"
+      - left: volume
+        operator: ">"
+        right: sma_volume
+
+exit:
+  conditions:
+    any:  # Exit on either condition
+      - left: rsi_14
+        operator: ">"
+        right: "70"
+      - left: macd_12_26_9
+        operator: "<"
+        right: "0"
+
+position_sizing:
+  type: fixed
+  size: 100

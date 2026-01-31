@@ -11,6 +11,7 @@ tests/test_portfolio
 tests/test_trader
 examples/*
 !examples/*.nim
+!examples/yaml_strategies/
 benchmarks/indicator_perf
 
 # IDE and editor files

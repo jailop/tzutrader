@@ -8,6 +8,15 @@ import std/[tables, options]
 
 type
   # ============================================================================
+  # Source Location (Phase 2 - Feature B2)
+  # ============================================================================
+  
+  SourceLocation* = object
+    ## Location in the YAML source file (for better error messages)
+    line*: int
+    column*: int
+    
+  # ============================================================================
   # Strategy Metadata
   # ============================================================================
   
@@ -48,6 +57,9 @@ type
     id*: string                      # Unique identifier (e.g., "rsi_14")
     indicatorType*: string           # Type of indicator (e.g., "rsi", "macd")
     params*: Table[string, ParamValue]  # Indicator-specific parameters
+    source*: Option[string]          # Data source (open/high/low/close/volume) - Phase 2
+    output*: Option[string]          # Output selection for multi-output indicators - Phase 2
+    location*: Option[SourceLocation]  # Source location for error reporting - Phase 2
   
   # ============================================================================
   # Conditions (Boolean Logic)
@@ -74,6 +86,7 @@ type
   ConditionYAML* = object
     ## A single condition in a rule
     ## Can be a simple comparison or a boolean combination
+    location*: Option[SourceLocation]  # Source location for error reporting - Phase 2
     case kind*: ConditionKind
     of ckSimple:
       # Simple comparison: left op right
@@ -196,3 +209,15 @@ proc `$`*(op: ComparisonOp): string =
   of opNotEqual: "!="
   of opCrossesAbove: "crosses_above"
   of opCrossesBelow: "crosses_below"
+
+proc `$`*(loc: SourceLocation): string =
+  ## Convert source location to string (line:column format)
+  "line " & $loc.line & ", column " & $loc.column
+
+proc formatError*(msg: string, loc: Option[SourceLocation] = none(SourceLocation)): string =
+  ## Format an error message with optional location information
+  if loc.isSome():
+    let l = loc.get()
+    result = "[" & $l & "] " & msg
+  else:
+    result = msg

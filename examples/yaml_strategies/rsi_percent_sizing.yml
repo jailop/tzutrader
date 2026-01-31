@@ -1,0 +1,37 @@
+# RSI Strategy with Percent-Based Position Sizing
+# Entry: RSI < 30 (oversold)
+# Exit: RSI > 70 (overbought)
+# Position Size: 20% of portfolio equity
+
+metadata:
+  name: "RSI Strategy - 20% Per Trade"
+  description: "RSI mean reversion with percent-based position sizing"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - rsi
+    - oscillator
+    - mean-reversion
+    - percent-sizing
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: percent
+  percent: 20  # Use 20% of portfolio equity per trade

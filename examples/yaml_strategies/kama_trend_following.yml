@@ -1,0 +1,36 @@
+metadata:
+  name: "KAMA Trend Following"
+  description: "Adaptive trend following using Kaufman's Adaptive Moving Average"
+  author: "TzuTrader Phase 2"
+  version: "1.0"
+
+indicators:
+  - id: kama_10
+    type: kama
+    params:
+      period: 10
+      fastPeriod: 2
+      slowPeriod: 30
+  
+  - id: kama_30
+    type: kama
+    params:
+      period: 30
+      fastPeriod: 2
+      slowPeriod: 30
+
+entry:
+  conditions:
+    operator: "crosses_above"
+    left: kama_10
+    right: kama_30
+
+exit:
+  conditions:
+    operator: "crosses_below"
+    left: kama_10
+    right: kama_30
+
+position_sizing:
+  type: percent
+  percent: 15

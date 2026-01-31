@@ -1,0 +1,36 @@
+metadata:
+  name: "CMO Momentum Strategy"
+  description: "Trade momentum extremes using Chande Momentum Oscillator"
+  author: "TzuTrader Phase 2"
+  version: "1.0"
+
+indicators:
+  - id: cmo_14
+    type: cmo
+    params:
+      period: 14
+  
+  - id: ema_50
+    type: ema
+    params:
+      period: 50
+
+entry:
+  conditions:
+    all:
+      - operator: ">"
+        left: cmo_14
+        right: "50"
+      - operator: ">"
+        left: price
+        right: ema_50
+
+exit:
+  conditions:
+    operator: "<"
+    left: cmo_14
+    right: "-20"
+
+position_sizing:
+  type: percent
+  percent: 15

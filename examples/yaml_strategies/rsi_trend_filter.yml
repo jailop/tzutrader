@@ -1,0 +1,43 @@
+# RSI with Trend Filter
+# Only buy when oversold AND price is above 200-day SMA (uptrend)
+
+metadata:
+  name: "RSI with Trend Filter"
+  description: "RSI mean reversion only in established uptrends"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - rsi
+    - trend-filter
+    - mean-reversion
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+
+entry:
+  conditions:
+    all:  # Both conditions must be true
+      - left: rsi_14
+        operator: "<"
+        right: "30"
+      - left: close
+        operator: ">"
+        right: sma_200
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

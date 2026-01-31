@@ -2,17 +2,32 @@
 
 This directory contains the implementation of TzuTrader's YAML-based declarative strategy system.
 
-## Status: Phase 1 - In Progress
+## Status: Phase 2 - Near Complete (95%)
 
-**Current Implementation**: Day 1-5 Complete
+**Phase 1 Implementation**: ✅ COMPLETE
 - ✅ Module structure created
 - ✅ Schema types defined
 - ✅ YAML parser implemented
 - ✅ Validator implemented
 - ✅ Test fixtures created
-- ✅ Unit tests written
-- ⏳ Strategy builder (Day 8-9) - **Next**
-- ⏳ CLI integration (Day 10)
+- ✅ Unit tests written (48/48 passing)
+- ✅ Strategy builder implemented
+- ✅ CLI integration complete
+
+**Phase 2 Implementation**: 🎉 95% COMPLETE
+- ✅ Percent-based position sizing
+- ✅ Complete indicator support (28 indicators)
+  - Advanced Moving Averages: TRIMA, DEMA, TEMA, KAMA
+  - Statistical: MV, STDEV, TRANGE
+  - Volatility: NATR
+  - Volume: AD
+  - Momentum: MOM, CMO
+  - Advanced Oscillators: STOCHRSI, PPO
+- ✅ Enhanced condition evaluation (source & output parameters)
+- ✅ Error messages with line numbers
+- ✅ Validation warnings system
+- ✅ 84 comprehensive tests passing
+- ⏳ Dry-run mode (optional - Phase 2.5)
 
 ## Module Structure
 
