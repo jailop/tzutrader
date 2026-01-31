@@ -2,6 +2,8 @@
 
 A high-performance Nim library for **backtesting trading strategies** and **building live trading bots**. Rewrite of Python's [pybottrader](https://github.com/datainquiry/pybottrader).
 
+[Documentation](https://jailop.codeberg.page/tzutrader/docs/)
+
 **Key Features:**
 - Backtest strategies on historical data
 - Build live trading bots with the same code
