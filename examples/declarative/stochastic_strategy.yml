@@ -21,8 +21,7 @@ indicators:
 
 entry:
   conditions:
-    operator: and
-    conditions:
+    and:
       - left: stoch.k
         operator: "<"
         right: "20"
@@ -32,8 +31,7 @@ entry:
 
 exit:
   conditions:
-    operator: or
-    conditions:
+    or:
       - left: stoch.k
         operator: ">"
         right: "80"

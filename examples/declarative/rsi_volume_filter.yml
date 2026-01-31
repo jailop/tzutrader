@@ -26,8 +26,7 @@ indicators:
 
 entry:
   conditions:
-    operator: and
-    conditions:
+    and:
       - left: rsi_14
         operator: "<"
         right: "30"
