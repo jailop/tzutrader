@@ -457,17 +457,33 @@ The CLI uses pre-built strategies and cannot execute custom strategy logic. For 
 
 The CLI is a convenience tool for common use cases, not a replacement for programming when you need flexibility.
 
-## Building from Source
+## Installation
+
+### Standard Installation
 
 ```bash
-git clone <repo-url>
+git clone https://codeberg.org/jailop/tzutrader.git
 cd tzutrader
-nimble install -y cligen    # Install dependency
-nimble cli                   # Build CLI (creates ./tzu)
-./tzu --help                 # Verify installation
+nimble install -y    # Installs library + tzu command
 ```
 
-**Note:** Use `nimble cli` (not `nimble build`) to create the CLI binary. The `nimble build` command is for libraries and will show a helpful message directing you to use `nimble cli` instead.
+After installation, the `tzu` command is available globally:
+
+```bash
+tzu --help           # Verify installation
+tzu rsi -s AAPL --start=2023-01-01  # Run backtest
+```
+
+### Development Workflow
+
+```bash
+nimble build         # Build ./tzu in current directory (for testing)
+nimble install       # Install library and CLI globally
+```
+
+Both commands follow standard Nim conventions:
+- `nimble build` - Builds binaries in the current directory
+- `nimble install` - Installs the library to `~/.nimble/pkgs/` and binaries to `~/.nimble/bin/`
 
 ## See Also
 

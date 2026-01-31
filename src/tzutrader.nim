@@ -62,6 +62,6 @@ export core, data, indicators, strategy, portfolio, trader, scanner, exports
 
 # Version information
 const
-  TzuTraderVersion* = "0.8.0"
-  TzuTraderAuthor* = "tzutrader contributors"
+  TzuTraderVersion* = "0.1.0"
+  TzuTraderAuthor* = "Jaime Lopez"
   TzuTraderLicense* = "MIT"

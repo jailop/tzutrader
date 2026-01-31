@@ -5,29 +5,13 @@ author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"
 srcDir        = "src"
-# CLI binary is built via custom task 'nimble cli' which outputs './tzu'
-# (nimble's bin directive doesn't support output renaming)
+bin           = @["tzu"]
 
 # Dependencies
 
 requires "nim >= 2.0.0"
 requires "https://codeberg.org/jailop/yfnim.git"
 requires "cligen >= 1.7.0"
-
-# Tasks
-
-before build:
-  echo ""
-  echo "================================================"
-  echo "TzuTrader is a library, not a standalone app."
-  echo ""
-  echo "To build the CLI tool, use:"
-  echo "  nimble cli"
-  echo ""
-  echo "This creates the './tzu' command-line tool."
-  echo "================================================"
-  echo ""
-  quit(1)
 
 task test, "Run the test suite":
   echo "Running Phase 1-7 tests..."
@@ -65,10 +49,9 @@ task docapi, "Generate API documentation only":
 task benchmark, "Run performance benchmarks":
   exec "nim c -d:release --opt:speed -r benchmarks/indicator_perf.nim"
 
-task cli, "Build the CLI tool":
-  echo "Building TzuTrader CLI (cligen-powered)..."
-  exec "nim c -d:release --opt:speed -o:tzu src/tzutrader_cli.nim"
-  echo "CLI built successfully: ./tzu"
+task cli, "Build the CLI tool (alias for 'nimble build')":
+  echo "Building TzuTrader CLI..."
+  exec "nimble build"
   echo ""
   echo "Usage (16 strategies available):"
   echo "  ./tzu --help                          # List all strategies"
