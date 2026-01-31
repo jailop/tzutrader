@@ -51,10 +51,6 @@
 ##     echo "Buy signal: ", signal.reason
 ## ```
 
-import std/[strformat, sequtils, times]
-import core
-import indicators
-
 # Import all strategy modules
 import strategies/base
 import strategies/rsi

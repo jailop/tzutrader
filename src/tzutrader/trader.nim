@@ -13,7 +13,7 @@
 ## - Comprehensive performance reports
 ## - Transaction cost modeling
 
-import std/[tables, times, math, sequtils, strformat, algorithm, strutils]
+import std/[tables, times, math, strformat, strutils]
 import core, data, strategy, portfolio
 
 type
