@@ -1,5 +1,19 @@
 # Getting Started with TzuTrader
 
+## ⚠️ Important: Read This First
+
+**This software is for educational and research purposes only.**
+
+TzuTrader is a tool for learning algorithmic trading and testing strategies against historical data. It does **not** provide financial advice, and the authors are **not responsible** for any losses incurred from using this library.
+
+**Key points:**
+- Past performance does not guarantee future results
+- Backtesting has limitations and cannot predict actual trading outcomes
+- Trading involves substantial risk of loss
+- Consult qualified financial professionals before making investment decisions
+
+By using TzuTrader, you accept full responsibility for your trading decisions.
+
 ## What is Algorithmic Trading?
 
 Algorithmic trading uses computer programs to execute trades based on predefined rules. Instead of manually watching charts and clicking buy or sell buttons, an algorithmic trader writes code that makes trading decisions automatically.

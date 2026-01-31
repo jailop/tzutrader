@@ -4,7 +4,29 @@ A high-performance Nim library for **backtesting trading strategies** and **buil
 
 [Documentation](https://jailop.codeberg.page/tzutrader/docs/)
 
+## ⚠️ Disclaimer
+
+**This software is provided for educational and research purposes
+only.**
+
+- **No Financial Advice**: TzuTrader does not provide financial,
+  investment, trading, or any other type of professional advice. Any
+  strategies, indicators, or results shown are for informational
+  purposes only.
+- **No Liability**: The authors and contributors are not responsible for
+  any financial losses, damages, or other consequences resulting from
+  the use of this library.
+- **Trading Risks**: Trading financial instruments involves substantial
+  risk of loss. Past performance does not guarantee future results.
+- **Use at Your Own Risk**: Users are solely responsible for their
+  trading decisions and should consult with qualified financial
+  professionals before making any investment decisions.
+
+By using TzuTrader, you acknowledge that you understand these risks and
+accept full responsibility for your actions.
+
 **Key Features:**
+
 - Backtest strategies on historical data
 - Build live trading bots with the same code
 - Technical indicators with O(1) memory

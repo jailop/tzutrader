@@ -1,5 +1,11 @@
 ## TzuTrader CLI v0.8.0 - Command: tzu
 ##
+## **DISCLAIMER**: This software is for educational and research purposes only.
+## It does not provide financial advice. Trading involves substantial risk of loss.
+## Past performance does not guarantee future results. The authors are not responsible
+## for any losses from using this tool. Users accept full responsibility for their
+## trading decisions. Consult qualified financial professionals before investing.
+##
 ## Automatic command-line interface powered by cligen
 ## 
 ## Usage:

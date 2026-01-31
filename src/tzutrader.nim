@@ -1,5 +1,12 @@
 ## TzuTrader - A Simplified Trading Bot Library in Nim
 ##
+## **DISCLAIMER**: This software is provided for educational and research purposes only.
+## It does not constitute financial advice. Trading involves substantial risk of loss.
+## Past performance does not guarantee future results. The authors and contributors are
+## not responsible for any losses incurred from using this library. Users are solely
+## responsible for their trading decisions and should consult with qualified financial
+## professionals before making any investment decisions.
+##
 ## TzuTrader is a high-performance trading bot library designed with simplicity
 ## and ease of use in mind. It provides a flat architecture with minimal nesting,
 ## making it easy to get started with algorithmic trading.

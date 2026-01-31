@@ -1,5 +1,9 @@
 # Reference Guide: Command-Line Interface
 
+## ⚠️ Disclaimer
+
+**Educational Use Only**: The TzuTrader CLI is for backtesting and research purposes only. It does not provide financial advice. Trading involves substantial risk, and past performance does not guarantee future results. Users are solely responsible for their trading decisions.
+
 ## Overview
 
 The TzuTrader CLI provides a command-line interface for running backtests without writing code. It's particularly useful for quick parameter testing, batch processing historical data, and automating repetitive analysis tasks.
