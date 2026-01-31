@@ -31,7 +31,7 @@ entry:
       - left: rsi_14
         operator: "<"
         right: "30"
-      - left: price.volume
+      - left: volume
         operator: ">"
         right: vol_sma
 
