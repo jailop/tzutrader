@@ -11,6 +11,9 @@ requires "https://codeberg.org/jailop/yfnim.git"
 requires "cligen >= 1.7.0"
 requires "yaml >= 2.0.0"
 
+task release, "Build release binaries":
+  exec "nimble build -d:release"
+
 task docs, "Build documentation":
   exec "bash scripts/build_docs.sh"
 

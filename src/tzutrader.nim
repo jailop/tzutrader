@@ -12,7 +12,7 @@ import tzutrader/exports
 import tzutrader/declarative
 
 # Re-export core types for convenience
-export core, data, indicators, strategy, portfolio, trader, scanner, exports, declarative, datastreamers
+export core, data, indicators, strategy, portfolio, trader, scanner, exports, datastreamers, declarative
 
 # Version information
 const
