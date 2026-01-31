@@ -249,7 +249,7 @@ proc runBatchTest*(config: BatchTestYAML, verbose: bool = false): BatchTestResul
         echo &"[{currentRun}/{totalRuns}] {strategyConfig.name} on {symbol}"
       
       try:
-        let result = runStrategy(
+        let res = runStrategy(
           strategyName = strategyConfig.name,
           strategyFile = strategyConfig.file,
           strategyDef = strategyDef,
@@ -259,7 +259,7 @@ proc runBatchTest*(config: BatchTestYAML, verbose: bool = false): BatchTestResul
           verbose = verbose
         )
         
-        results.add(result)
+        results.add(res)
         
       except CatchableError as e:
         if verbose:

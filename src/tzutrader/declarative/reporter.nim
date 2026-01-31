@@ -5,7 +5,7 @@
 ## - CSV exports for spreadsheet analysis
 ## - JSON data for programmatic access
 
-import std/[tables, times, strformat, os, json, strutils, algorithm]
+import std/[times, strformat, os, json, strutils, algorithm]
 import ./batch_runner, ./schema
 
 type

@@ -1,8 +1,8 @@
 ## Comprehensive Integration and Edge Case Tests (Phase 2 - Feature A3)
 
 import std/[unittest, options, tables]
-import ../../src/tzutrader/core
-import ../../src/tzutrader/declarative/[parser, validator, strategy_builder, schema]
+import ../src/tzutrader/core
+import ../src/tzutrader/declarative/[parser, validator, strategy_builder, schema]
 
 suite "Integration Tests - Complete Workflows":
   

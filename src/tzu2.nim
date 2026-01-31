@@ -35,7 +35,7 @@
 ##   Hybrid: volume, dualmomentum, filteredrsi
 
 import std/[strformat, os, tables, strutils]
-import tzutrader/[core, data, strategy, runner, portfolio, trader]
+import tzutrader/[data, strategy, runner, portfolio, trader]
 import tzutrader/strategies/base
 import cligen
 

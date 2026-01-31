@@ -1,29 +1,21 @@
-# TzuTrader Documentation Configuration
-
-# Project information
 site_name: TzuTrader Documentation
 site_description: A trading bot library for Nim providing tools for building and testing algorithmic trading strategies
 site_author: Jaime Lopez
 site_url: https://jailop.github.io/tzutrader/
 
-# Repository information
 repo_name: tzutrader
 repo_url: https://codeberg.org/jailop/tzutrader
 edit_uri: edit/main/docs_src/
 
-# Directory configuration
 docs_dir: docs_src
 site_dir: docs
 
-# Copyright
-copyright: Copyright &copy; 2024 DataInquiry Team
+copyright: Copyright &copy; 2025-206 Jaime Lopez
 
-# Theme configuration
 theme:
   name: material
   language: en
   palette:
-    # Light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: indigo
@@ -31,7 +23,6 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
@@ -55,7 +46,6 @@ theme:
     - content.code.copy       # Copy button for code blocks
     - content.code.annotate   # Code annotations
 
-# Navigation structure
 nav:
   - Home: index.md
   - User Guide:
@@ -85,9 +75,7 @@ nav:
       - Declarative Strategies: reference_guide/10_declarative.md
   - API: api/index.html
 
-# Markdown extensions
 markdown_extensions:
-  # Python Markdown extensions
   - abbr                      # Abbreviations
   - admonition                # Callout blocks
   - attr_list                 # Add HTML attributes
@@ -99,7 +87,6 @@ markdown_extensions:
       permalink: true
       toc_depth: 3
   
-  # PyMdown Extensions
   - pymdownx.arithmatex:      # Math equations
       generic: true
   - pymdownx.betterem:        # Better emphasis
@@ -126,16 +113,13 @@ markdown_extensions:
   - pymdownx.tasklist:        # Task lists
       custom_checkbox: true
 
-# Extra JavaScript for MathJax
 extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
-# Extra CSS
 extra_css:
   - stylesheets/extra.css
 
-# Plugins
 plugins:
   - search:                   # Search functionality
       lang: en
@@ -151,7 +135,6 @@ plugins:
       css_files:
         - stylesheets/extra.css
 
-# Extra configuration
 extra:
   version:
     provider: mike

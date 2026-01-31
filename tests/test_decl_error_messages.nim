@@ -1,7 +1,7 @@
 ## Test Error Messages with Line Numbers (Phase 2 - Feature B2)
 
 import std/[unittest, strutils, options]
-import ../../src/tzutrader/declarative/[parser, validator, schema]
+import ../src/tzutrader/declarative/[parser, validator, schema]
 
 suite "Error Messages - Line Numbers (Phase 2)":
   

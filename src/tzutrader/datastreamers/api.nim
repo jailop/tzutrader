@@ -40,6 +40,104 @@ export Interval, OHLCV, Quote
 # Iterator for DataStreamer - defined here where all concrete types are known
 # ============================================================================
 
+# ============================================================================
+# Iterator for DataStreamer - defined here where all concrete types are known
+# ============================================================================
+
+# ============================================================================
+# Iterator for DataStreamer - defined here where all concrete types are known
+# ============================================================================
+
+proc next*[T](streamer: DataStreamer[T]): bool =
+  ## Advance to next item in stream
+  ## Returns true if successful, false if end of stream
+  ##
+  ## This provides dynamic dispatch to concrete streamer types.
+  when T is OHLCV:
+    if streamer of YahooStreamer[OHLCV]:
+      result = YahooStreamer[OHLCV](streamer).next()
+    elif streamer of CSVStreamer[OHLCV]:
+      result = CSVStreamer[OHLCV](streamer).next()
+    elif streamer of CoinbaseStreamer[OHLCV]:
+      result = CoinbaseStreamer[OHLCV](streamer).next()
+    else:
+      result = false
+  elif T is Quote:
+    if streamer of YahooStreamer[Quote]:
+      result = YahooStreamer[Quote](streamer).next()
+    else:
+      result = false
+  else:
+    {.error: "Unsupported data type for streaming".}
+
+proc reset*[T](streamer: DataStreamer[T]) =
+  ## Reset stream to beginning
+  ##
+  ## This provides dynamic dispatch to concrete streamer types.
+  when T is OHLCV:
+    if streamer of YahooStreamer[OHLCV]:
+      YahooStreamer[OHLCV](streamer).reset()
+    elif streamer of CSVStreamer[OHLCV]:
+      CSVStreamer[OHLCV](streamer).reset()
+    elif streamer of CoinbaseStreamer[OHLCV]:
+      CoinbaseStreamer[OHLCV](streamer).reset()
+  elif T is Quote:
+    if streamer of YahooStreamer[Quote]:
+      YahooStreamer[Quote](streamer).reset()
+  else:
+    {.error: "Unsupported data type for streaming".}
+
+proc len*[T](streamer: DataStreamer[T]): int =
+  ## Get total number of items in stream
+  ## Returns -1 if unknown
+  ##
+  ## This provides dynamic dispatch to concrete streamer types.
+  when T is OHLCV:
+    if streamer of YahooStreamer[OHLCV]:
+      result = YahooStreamer[OHLCV](streamer).len()
+    elif streamer of CSVStreamer[OHLCV]:
+      result = CSVStreamer[OHLCV](streamer).len()
+    elif streamer of CoinbaseStreamer[OHLCV]:
+      result = CoinbaseStreamer[OHLCV](streamer).len()
+    else:
+      result = -1
+  elif T is Quote:
+    if streamer of YahooStreamer[Quote]:
+      result = YahooStreamer[Quote](streamer).len()
+    else:
+      result = -1
+  else:
+    {.error: "Unsupported data type for streaming".}
+
+proc current*[T](streamer: DataStreamer[T]): T =
+  ## Get current item from stream
+  ## Must call next() first to advance to an item
+  ##
+  ## This provides a generic way to access current() on the base DataStreamer type
+  ## by dispatching to the concrete type's current() implementation.
+  ##
+  ## Usage:
+  ##   let stream = streamCSV[OHLCV]("data.csv", "AAPL")
+  ##   while stream.next():
+  ##     let bar = stream.current()
+  ##     echo bar
+  when T is OHLCV:
+    if streamer of YahooStreamer[OHLCV]:
+      result = YahooStreamer[OHLCV](streamer).current()
+    elif streamer of CSVStreamer[OHLCV]:
+      result = CSVStreamer[OHLCV](streamer).current()
+    elif streamer of CoinbaseStreamer[OHLCV]:
+      result = CoinbaseStreamer[OHLCV](streamer).current()
+    else:
+      raise newException(DataError, "Unknown streamer type")
+  elif T is Quote:
+    if streamer of YahooStreamer[Quote]:
+      result = YahooStreamer[Quote](streamer).current()
+    else:
+      raise newException(DataError, "Unknown quote streamer type")
+  else:
+    {.error: "Unsupported data type for streaming".}
+
 iterator items*[T](streamer: DataStreamer[T]): T =
   ## Stream all items one at a time
   ## This is the idiomatic Nim way to consume streams
@@ -49,24 +147,7 @@ iterator items*[T](streamer: DataStreamer[T]): T =
   ##   for bar in stream.items():
   ##     echo bar
   while streamer.next():
-    # Call current() using type-based dispatch
-    # We need to cast to the concrete type since current() is a proc not a method
-    when T is OHLCV:
-      if streamer of YahooStreamer[OHLCV]:
-        yield YahooStreamer[OHLCV](streamer).current()
-      elif streamer of CSVStreamer[OHLCV]:
-        yield CSVStreamer[OHLCV](streamer).current()
-      elif streamer of CoinbaseStreamer[OHLCV]:
-        yield CoinbaseStreamer[OHLCV](streamer).current()
-      else:
-        raise newException(DataError, "Unknown streamer type")
-    elif T is Quote:
-      if streamer of YahooStreamer[Quote]:
-        yield YahooStreamer[Quote](streamer).current()
-      else:
-        raise newException(DataError, "Unknown quote streamer type")
-    else:
-      {.error: "Unsupported data type for streaming".}
+    yield streamer.current()
 
 # ============================================================================
 # Generic stream() function - Provider as parameter

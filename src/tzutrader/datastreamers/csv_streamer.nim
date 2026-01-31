@@ -131,7 +131,7 @@ proc newCSVStreamer*[T](filename: string, symbol: string = "",
 
 # Implement DataStreamer interface
 
-method next*(stream: CSVStreamer[OHLCV]): bool =
+proc next*(stream: CSVStreamer[OHLCV]): bool =
   ## Advance to next data point
   ## Returns true if successful, false if end of stream
   stream.hasCurrentBar = false
@@ -172,14 +172,14 @@ proc current*(stream: CSVStreamer[OHLCV]): OHLCV =
     raise newException(DataError, "No current data - call next() first")
   return stream.currentBar
 
-method reset*(stream: CSVStreamer[OHLCV]) =
+proc reset*(stream: CSVStreamer[OHLCV]) =
   ## Reset stream to beginning
   stream.file.close()
   stream.file = open(stream.filename, fmRead)
   stream.lineNum = 0
   stream.hasCurrentBar = false
 
-method len*(stream: CSVStreamer[OHLCV]): int =
+proc len*(stream: CSVStreamer[OHLCV]): int =
   ## Get total number of items in stream
   ## Note: This requires reading the entire file once
   if stream.totalLines < 0:
@@ -188,7 +188,7 @@ method len*(stream: CSVStreamer[OHLCV]): int =
       stream.totalLines.dec
   return stream.totalLines
 
-method hasNext*(stream: CSVStreamer[OHLCV]): bool =
+proc hasNext*(stream: CSVStreamer[OHLCV]): bool =
   ## Check if more data is available
   ## Note: For file streams, this peeks ahead which may affect performance
   return not stream.file.endOfFile()

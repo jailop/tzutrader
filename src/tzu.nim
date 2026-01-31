@@ -491,7 +491,7 @@ proc batch(
   echo ""
   
   # Run batch test
-  let result = try:
+  let res = try:
     runBatchTest(config, verbose = verbose)
   except BatchRunError as e:
     echo &"Error running batch test: {e.msg}"
@@ -502,7 +502,7 @@ proc batch(
   
   # Display summary
   echo ""
-  echo formatSummary(result)
+  echo formatSummary(res)
   
   # Determine output file
   var outputFile = output
@@ -520,7 +520,7 @@ proc batch(
       else: rfHTML
     
     try:
-      saveReport(result, outputFile, reportFormat)
+      saveReport(res, outputFile, reportFormat)
       echo ""
       echo &"Report saved to: {outputFile}"
     except CatchableError as e:

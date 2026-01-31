@@ -12,32 +12,14 @@ type
     symbol*: string            # Symbol being streamed
 
 # Core streaming methods
-# Note: These use method dispatch without generic parameters to avoid deprecation warnings
-# Subclasses override these for their specific types (e.g., YahooStreamer[OHLCV])
-
-method next*[T](streamer: DataStreamer[T]): bool {.base.} =
-  ## Advance to next item in stream
-  ## Returns true if successful, false if end of stream
-  ## This is the PRIMARY method that all streamers must implement
-  false
-
-method reset*[T](streamer: DataStreamer[T]) {.base.} =
-  ## Reset stream to beginning
-  discard
-
-method len*[T](streamer: DataStreamer[T]): int {.base.} =
-  ## Total number of items in stream (if known)
-  ## Returns -1 if unknown (e.g., live streaming)
-  -1
-
-method hasNext*[T](streamer: DataStreamer[T]): bool {.base.} =
-  ## Check if more data is available
-  ## Default: assume more data is available
-  true
-
-# current() is implemented as procs in each streamer subclass
-# We can't have a generic method, so each concrete type must define:
+# Note: These are implemented in the api module with dynamic dispatch
+# Each concrete streamer type implements their own version:
+#   proc next*(stream: ConcreteStreamer[T]): bool
+#   proc reset*(stream: ConcreteStreamer[T])
+#   proc len*(stream: ConcreteStreamer[T]): int
 #   proc current*(stream: ConcreteStreamer[T]): T
+#
+# The api module provides generic versions that dispatch to concrete types.
 
 # Note: The items() iterator is defined in the api module where
 # all concrete streamer types are imported

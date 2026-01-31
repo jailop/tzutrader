@@ -1,7 +1,7 @@
 ## Tests for expression parser and evaluator
 
 import std/[unittest, tables, math]
-import tzutrader/declarative/expression
+import ../src/tzutrader/declarative/expression
 
 suite "Expression Parser - Literals and References":
   

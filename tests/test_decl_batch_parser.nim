@@ -3,7 +3,7 @@
 ## Tests the parsing of batch test YAML configurations
 
 import std/[unittest, options, tables]
-import tzutrader/declarative/[schema, batch_parser]
+import ../src/tzutrader/declarative/[schema, batch_parser]
 
 suite "Batch Parser Tests":
   

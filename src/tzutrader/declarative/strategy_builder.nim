@@ -2,38 +2,33 @@
 ##
 ## This module builds executable strategies from StrategyYAML definitions.
 ## It creates indicator instances, evaluates conditions, and generates signals.
-##
-## Phase 1: Semi-automated approach - manual indicator mapping
-## Phase 2: Full introspection using macros (future enhancement)
 
-import std/[tables, strformat, strutils, options]
+import std/[tables, strutils, options]
 import ../strategy
 import ../strategies/base  # Import for PositionSizingType
 import ../indicators
 import ../core
 import ./schema
-import ./expression  # Phase 3: Expression support
+import ./expression
 
 export PositionSizingType  # Export position sizing types
 
 type
   IndicatorKind* = enum
-    ## Supported indicator types
     ikMA, ikEMA, ikRSI, ikMACD, ikBollinger, ikSTOCH, ikCCI, ikMFI,
     ikADX, ikATR, ikOBV, ikAROON, ikPSAR,
-    # Category 1: Advanced Moving Averages
+    # Advanced Moving Averages
     ikTRIMA, ikDEMA, ikTEMA, ikKAMA,
-    # Category 2: Statistical Indicators
+    # Statistical Indicators
     ikMV, ikSTDEV, ikTRANGE,
-    # Category 3: Volatility Indicators
+    # Volatility Indicators
     ikNATR,
-    # Category 4: Volume Indicators
+    # Volume Indicators
     ikAD,
-    # Category 5: Momentum Indicators
+    # Momentum Indicators
     ikMOM, ikCMO,
-    # Category 6: Advanced Oscillators
+    # Advanced Oscillators
     ikSTOCHRSI, ikPPO,
-    # Category 7: Custom (Phase 3)
     ikExpression  # Expression-based custom indicator
   
   IndicatorInstance* = ref object
@@ -65,7 +60,6 @@ type
       aroon*: AROON
     of ikPSAR:
       psar*: PSAR
-    # Category 1: Advanced Moving Averages
     of ikTRIMA:
       trima*: TRIMA
     of ikDEMA:
@@ -74,30 +68,24 @@ type
       tema*: TEMA
     of ikKAMA:
       kama*: KAMA
-    # Category 2: Statistical Indicators
     of ikMV:
       mv*: MV
     of ikSTDEV:
       stdev*: STDEV
     of ikTRANGE:
       trange*: TRANGE
-    # Category 3: Volatility Indicators
     of ikNATR:
       natr*: NATR
-    # Category 4: Volume Indicators
     of ikAD:
       ad*: AD
-    # Category 5: Momentum Indicators
     of ikMOM:
       mom*: MOM
     of ikCMO:
       cmo*: CMO
-    # Category 6: Advanced Oscillators
     of ikSTOCHRSI:
       stochrsi*: STOCHRSI
     of ikPPO:
       ppo*: PPO
-    # Category 7: Custom (Phase 3)
     of ikExpression:
       expr*: ExprNode  # Compiled expression
       exprValue*: float64  # Cached expression result
@@ -116,10 +104,6 @@ type
   
   BuildError* = object of CatchableError
     ## Error during strategy building
-
-# ============================================================================
-# Indicator Factory
-# ============================================================================
 
 proc getIntParam(params: Table[string, ParamValue], key: string, default: int): int =
   ## Get integer parameter with default
@@ -292,10 +276,6 @@ proc createIndicator*(indicatorDef: IndicatorYAML): IndicatorInstance =
   
   else:
     raise newException(BuildError, "Unknown indicator type: " & indicatorDef.indicatorType)
-
-# ============================================================================
-# Indicator Value Extraction
-# ============================================================================
 
 proc getValue*(ind: IndicatorInstance, subfield: string = ""): float64 =
   ## Get current value from indicator
@@ -470,10 +450,6 @@ proc updateIndicator*(ind: IndicatorInstance, bar: OHLCV, source: string = "clos
     # They are evaluated separately after all other indicators are updated
     discard
 
-# ============================================================================
-# Condition Evaluation
-# ============================================================================
-
 proc parseReference*(s: DeclarativeStrategy, refStr: string, bar: OHLCV): float64 =
   ## Parse a reference and return its value
   ## References can be:
@@ -597,10 +573,6 @@ proc evaluateCondition*(s: DeclarativeStrategy, condition: ConditionYAML, bar: O
       return false  # Invalid NOT condition
     return not s.evaluateCondition(condition.notCondition[], bar)
 
-# ============================================================================
-# Strategy Builder
-# ============================================================================
-
 proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
   ## Build an executable strategy from YAML definition
   ## Creates indicator instances and prepares for execution
@@ -643,10 +615,6 @@ proc buildStrategy*(strategyDef: StrategyYAML): DeclarativeStrategy =
   if strategyDef.positionSizing.kind == psDynamic:
     let expr = parseExpression(strategyDef.positionSizing.dynamicExpr)
     result.positionSizingExpr = some(expr)
-
-# ============================================================================
-# Strategy Execution
-# ============================================================================
 
 method onBar*(s: DeclarativeStrategy, bar: OHLCV): Signal =
   ## Process a single bar and generate signal

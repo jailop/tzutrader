@@ -62,12 +62,12 @@ suite "DataStreamers - CSV Streaming":
     check firstBar.close > 0
     check lastBar.timestamp >= firstBar.timestamp
   
-  test "Stream CSV file with next/result":
+  test "Stream CSV file with next/current":
     let stream = streamCSV[OHLCV]("tests/data/uptrend.csv", "TEST")
     var count = 0
     
     while stream.next():
-      let bar = stream.result()
+      let bar = stream.current()
       check bar.timestamp > 0
       check bar.open > 0
       check bar.high >= bar.low
@@ -80,7 +80,7 @@ suite "DataStreamers - CSV Streaming":
     
     # Read first bar
     check stream.next()
-    let firstBar = stream.result()
+    let firstBar = stream.current()
     
     # Read a few more
     discard stream.next()
@@ -89,7 +89,7 @@ suite "DataStreamers - CSV Streaming":
     # Reset and read first bar again
     stream.reset()
     check stream.next()
-    let firstBarAgain = stream.result()
+    let firstBarAgain = stream.current()
     
     check firstBar.timestamp == firstBarAgain.timestamp
     check firstBar.close == firstBarAgain.close
@@ -108,16 +108,16 @@ suite "DataStreamers - CSV Streaming":
     # Get a bar to find timestamps
     let fullStream = streamCSV[OHLCV]("tests/data/uptrend.csv", "TEST")
     check fullStream.next()
-    let firstBar = fullStream.result()
+    let firstBar = fullStream.current()
     check fullStream.next()
     check fullStream.next()
-    let thirdBar = fullStream.result()
+    let thirdBar = fullStream.current()
     
     # Create filtered stream (skip first 2 bars)
     let filteredStream = streamCSV[OHLCV]("tests/data/uptrend.csv", "TEST",
                                           startTime = thirdBar.timestamp)
     check filteredStream.next()
-    let filteredFirstBar = filteredStream.result()
+    let filteredFirstBar = filteredStream.current()
     
     check filteredFirstBar.timestamp >= thirdBar.timestamp
   
@@ -155,14 +155,14 @@ suite "DataStreamers - Yahoo Finance Streaming":
     let stream = streamYahoo[OHLCV]("AAPL", 7)
     
     check stream.next()
-    let firstBar = stream.result()
+    let firstBar = stream.current()
     
     discard stream.next()
     discard stream.next()
     
     stream.reset()
     check stream.next()
-    let firstBarAgain = stream.result()
+    let firstBarAgain = stream.current()
     
     check firstBar.timestamp == firstBarAgain.timestamp
 
@@ -188,14 +188,14 @@ suite "DataStreamers - Coinbase Streaming":
     let stream = streamCoinbase[OHLCV]("BTC-USD", 7)
     
     check stream.next()
-    let firstBar = stream.result()
+    let firstBar = stream.current()
     
     discard stream.next()
     discard stream.next()
     
     stream.reset()
     check stream.next()
-    let firstBarAgain = stream.result()
+    let firstBarAgain = stream.current()
     
     check firstBar.timestamp == firstBarAgain.timestamp
 
@@ -283,17 +283,17 @@ suite "DataStreamers - Error Handling":
     # Clean up
     removeFile(tempFile)
   
-  test "next() without result() is safe":
+  test "next() without current() is safe":
     let stream = streamCSV[OHLCV]("tests/data/uptrend.csv", "TEST")
-    # Just calling next() without result() should not crash
+    # Just calling next() without current() should not crash
     discard stream.next()
     check true
   
-  test "result() without next() raises error":
+  test "current() without next() raises error":
     let stream = streamCSV[OHLCV]("tests/data/uptrend.csv", "TEST")
     
     expect(DataError):
-      discard stream.result()
+      discard stream.current()
 
 suite "DataStreamers - Performance":
   test "Streaming is O(1) memory (not loading all data at once)":
@@ -302,7 +302,7 @@ suite "DataStreamers - Performance":
     
     # Should be able to start iterating immediately
     check stream.next()
-    check stream.result().timestamp > 0
+    check stream.current().timestamp > 0
 
 when isMainModule:
   echo "Running DataStreamers tests..."

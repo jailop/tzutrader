@@ -226,7 +226,7 @@ proc newCoinbaseStreamer*[T](symbol: string, start: string, `end`: string,
 
 # Implement DataStreamer interface
 
-method next*(stream: CoinbaseStreamer[OHLCV]): bool =
+proc next*(stream: CoinbaseStreamer[OHLCV]): bool =
   ## Advance to next data point
   ## Returns true if successful, false if end of stream
   if stream.index < stream.data.len:
@@ -241,14 +241,14 @@ proc current*(stream: CoinbaseStreamer[OHLCV]): OHLCV =
     raise newException(DataError, "No current data - call next() first")
   return stream.data[stream.index - 1]
 
-method reset*(stream: CoinbaseStreamer[OHLCV]) =
+proc reset*(stream: CoinbaseStreamer[OHLCV]) =
   ## Reset stream to beginning
   stream.index = 0
 
-method len*(stream: CoinbaseStreamer[OHLCV]): int =
+proc len*(stream: CoinbaseStreamer[OHLCV]): int =
   ## Get total number of items in stream
   return stream.data.len
 
-method hasNext*(stream: CoinbaseStreamer[OHLCV]): bool =
+proc hasNext*(stream: CoinbaseStreamer[OHLCV]): bool =
   ## Check if more data is available
   return stream.index < stream.data.len

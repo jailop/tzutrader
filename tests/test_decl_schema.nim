@@ -1,7 +1,7 @@
 ## Unit tests for schema type definitions
 
 import std/unittest
-import tzutrader/declarative/schema
+import ../src/tzutrader/declarative/schema
 
 suite "Schema Types":
   

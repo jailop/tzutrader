@@ -183,7 +183,7 @@ proc newYahooStreamer*[T](symbol: string, start: string, `end`: string,
 
 # Implement DataStreamer interface for OHLCV
 
-method next*(stream: YahooStreamer[OHLCV]): bool =
+proc next*(stream: YahooStreamer[OHLCV]): bool =
   ## Advance to next data point
   ## Returns true if successful, false if end of stream
   if stream.index < stream.data.len:
@@ -198,21 +198,21 @@ proc current*(stream: YahooStreamer[OHLCV]): OHLCV =
     raise newException(DataError, "No current data - call next() first")
   return stream.data[stream.index - 1]
 
-method reset*(stream: YahooStreamer[OHLCV]) =
+proc reset*(stream: YahooStreamer[OHLCV]) =
   ## Reset stream to beginning
   stream.index = 0
 
-method len*(stream: YahooStreamer[OHLCV]): int =
+proc len*(stream: YahooStreamer[OHLCV]): int =
   ## Get total number of items in stream
   return stream.data.len
 
-method hasNext*(stream: YahooStreamer[OHLCV]): bool =
+proc hasNext*(stream: YahooStreamer[OHLCV]): bool =
   ## Check if more data is available
   return stream.index < stream.data.len
 
 # Implement DataStreamer interface for Quote
 
-method next*(stream: YahooStreamer[data.Quote]): bool =
+proc next*(stream: YahooStreamer[data.Quote]): bool =
   ## Advance to next data point
   ## For quotes, this fetches a fresh quote
   stream.quote = fetchYahooQuote(stream.symbol)
@@ -225,17 +225,17 @@ proc current*(stream: YahooStreamer[data.Quote]): data.Quote =
     raise newException(DataError, "No current data - call next() first")
   return stream.quote
 
-method reset*(stream: YahooStreamer[data.Quote]) =
+proc reset*(stream: YahooStreamer[data.Quote]) =
   ## Reset stream to beginning
   ## For quotes, this is a no-op
   discard
 
-method len*(stream: YahooStreamer[data.Quote]): int =
+proc len*(stream: YahooStreamer[data.Quote]): int =
   ## Get total number of items in stream
   ## For quotes, this is always 1 (latest quote)
   return 1
 
-method hasNext*(stream: YahooStreamer[data.Quote]): bool =
+proc hasNext*(stream: YahooStreamer[data.Quote]): bool =
   ## Check if more data is available
   ## For quotes, always true (can always fetch latest)
   return true

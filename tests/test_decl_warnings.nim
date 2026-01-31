@@ -1,7 +1,7 @@
 ## Tests for Validation Warnings System (Phase 2 - Feature B3)
 
 import std/[unittest, strutils]
-import ../../src/tzutrader/declarative/[parser, validator, schema]
+import ../src/tzutrader/declarative/[parser, validator, schema]
 
 suite "Validation Warnings - Position Sizing":
   
