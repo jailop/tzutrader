@@ -12,6 +12,7 @@ bin           = @["tzu"]
 requires "nim >= 2.0.0"
 requires "https://codeberg.org/jailop/yfnim.git"
 requires "cligen >= 1.7.0"
+requires "yaml >= 2.0.0"
 
 task test, "Run the test suite":
   echo "Running Phase 1-7 tests..."
@@ -23,6 +24,11 @@ task test, "Run the test suite":
   exec "nim c -r tests/test_trader.nim"
   exec "nim c -r tests/test_scanner.nim"
   exec "nim c -r tests/test_export.nim"
+  echo "Running declarative strategy tests..."
+  exec "nim c -r --path:src tests/declarative/test_schema.nim"
+  exec "nim c -r --path:src tests/declarative/test_parser.nim"
+  exec "nim c -r --path:src tests/declarative/test_validator.nim"
+  exec "nim c -r --path:src tests/declarative/test_strategy_builder.nim"
   echo "========================="
   echo "All tests passed!"
 

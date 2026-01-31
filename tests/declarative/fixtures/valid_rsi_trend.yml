@@ -1,0 +1,41 @@
+# RSI with Trend Filter - Valid
+# Entry: RSI < 30 AND price > SMA_200 (oversold in uptrend)
+# Exit: RSI > 70 (overbought)
+
+metadata:
+  name: "RSI with Trend Filter"
+  description: "Only buy oversold conditions in uptrend"
+  tags:
+    - rsi
+    - trend-following
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+
+entry:
+  conditions:
+    all:
+      - left: rsi_14
+        operator: "<"
+        right: "30"
+      - left: price
+        operator: ">"
+        right: sma_200
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

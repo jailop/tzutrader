@@ -7,6 +7,12 @@ import ../core
 export core
 
 type
+  PositionSizingType* = enum
+    ## How the strategy calculates position sizes
+    pstDefault,   ## Use backtester default (95% of cash)
+    pstFixed,     ## Fixed number of shares
+    pstPercent    ## Percentage of portfolio equity
+  
   Strategy* = ref object of RootObj
     ## Base strategy class
     ## All strategies should inherit from this
@@ -48,3 +54,15 @@ method onBar*(s: Strategy, bar: OHLCV): Signal {.base.} =
 method reset*(s: Strategy) {.base.} =
   ## Reset strategy state (for streaming mode)
   discard
+
+method getPositionSizing*(s: Strategy): tuple[sizingType: PositionSizingType, value: float] {.base.} =
+  ## Get position sizing preference for this strategy
+  ## 
+  ## Returns:
+  ##   Tuple of (sizing type, value):
+  ##   - (pstDefault, 0.0): Use backtester default (95% of cash)
+  ##   - (pstFixed, N): Use fixed N shares
+  ##   - (pstPercent, P): Use P percent of portfolio equity
+  ## 
+  ## Default implementation returns pstDefault
+  result = (pstDefault, 0.0)

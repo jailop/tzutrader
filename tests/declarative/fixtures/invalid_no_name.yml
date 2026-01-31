@@ -1,0 +1,26 @@
+# Invalid - Missing metadata name
+
+metadata:
+  description: "This is missing a name"
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

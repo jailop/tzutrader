@@ -1,0 +1,27 @@
+# Invalid - Undefined indicator reference
+
+metadata:
+  name: "Bad Strategy"
+  description: "References undefined indicator"
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: sma_50  # Undefined!
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

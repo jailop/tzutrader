@@ -1,0 +1,35 @@
+# Simple RSI Strategy - Valid
+# Entry: RSI < 30 (oversold)
+# Exit: RSI > 70 (overbought)
+
+metadata:
+  name: "Simple RSI Strategy"
+  description: "Buy when oversold, sell when overbought"
+  author: "TzuTrader"
+  created: "2026-01-30"
+  tags:
+    - rsi
+    - oscillator
+    - mean-reversion
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

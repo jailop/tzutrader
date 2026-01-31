@@ -1,0 +1,34 @@
+# MACD Crossover - Valid
+# Entry: MACD crosses above signal
+# Exit: MACD crosses below signal
+
+metadata:
+  name: "MACD Crossover"
+  description: "Trade MACD signal line crossovers"
+  tags:
+    - macd
+    - trend-following
+
+indicators:
+  - id: macd_12_26_9
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+entry:
+  conditions:
+    left: macd_12_26_9
+    operator: crosses_above
+    right: macd_12_26_9.signal
+
+exit:
+  conditions:
+    left: macd_12_26_9
+    operator: crosses_below
+    right: macd_12_26_9.signal
+
+position_sizing:
+  type: fixed
+  size: 100

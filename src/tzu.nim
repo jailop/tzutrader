@@ -10,9 +10,11 @@
 ## 
 ## Usage:
 ##   tzu --run-strat=<STRATEGY> [data-source] [strategy-options] [portfolio-options]
+##   tzu --yaml-strategy=<FILE> [data-source] [portfolio-options]
 ##
 ## Strategy selection:
-##   --run-strat=<STRATEGY>        Strategy to backtest (required)
+##   --run-strat=<STRATEGY>        Built-in strategy to backtest
+##   --yaml-strategy=<FILE>        YAML declarative strategy file
 ##
 ## Data sources:
 ##   --symbol=<SYMBOL> or -s       Use Yahoo Finance (default, simplest)
@@ -31,9 +33,11 @@
 ##   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
 ##   Volatility: keltner
 ##   Hybrid: volume, dualmomentum, filteredrsi
+##   YAML: Use --yaml-strategy for declarative strategies
 
 import std/[strformat, os, sequtils, tables, strutils]
 import tzutrader/[core, data, strategy, trader, portfolio]
+import tzutrader/declarative/[parser, validator, strategy_builder]
 import cligen
 
 # ============================================================================
@@ -259,6 +263,7 @@ proc createStrategy(strategyName: string, params: Table[string, string]): Strate
 
 proc tzu(
   runStrat = "",
+  yamlStrategy = "",  # NEW: Path to YAML strategy file
   symbol = "",
   csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
   # RSI params
@@ -297,6 +302,7 @@ proc tzu(
   ## 
   ## Usage:
   ##   tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
+  ##   tzu --yaml-strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
   ##   tzu --run-strat=macd --csvFile=data.csv
   ##
   ## Available strategies:
@@ -304,25 +310,69 @@ proc tzu(
   ##   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
   ##   Volatility: keltner
   ##   Hybrid: volume, dualmomentum, filteredrsi
+  ##   YAML: Use --yaml-strategy to load declarative strategies
   
-  if runStrat.len == 0:
-    echo "Error: --run-strat=<STRATEGY> is required"
+  # Check that either runStrat or yamlStrategy is provided (but not both)
+  if runStrat.len == 0 and yamlStrategy.len == 0:
+    echo "Error: Either --run-strat=<STRATEGY> or --yaml-strategy=<FILE> is required"
     echo ""
-    echo "Usage: tzu --run-strat=<STRATEGY> [options]"
+    echo "Usage: tzu [--run-strat=<STRATEGY> | --yaml-strategy=<FILE>] [options]"
     echo ""
-    echo "Available strategies:"
+    echo "Built-in strategies:"
     echo "  Mean Reversion: rsi, bollinger, stochastic, mfi, cci"
     echo "  Trend Following: crossover, macd, kama, aroon, psar, triplem, adx"
     echo "  Volatility: keltner"
     echo "  Hybrid: volume, dualmomentum, filteredrsi"
     echo ""
+    echo "YAML strategies:"
+    echo "  Use --yaml-strategy=path/to/strategy.yml for declarative strategies"
+    echo ""
     echo "Examples:"
     echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
     echo "  tzu --run-strat=rsi -s AAPL --start=2023-01-01"
+    echo "  tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL"
     echo "  tzu --run-strat=macd --csvFile=data.csv --fast=10 --slow=20"
     echo ""
     echo "For strategy-specific options, use: tzu --help"
     return 1
+  
+  if runStrat.len > 0 and yamlStrategy.len > 0:
+    echo "Error: Cannot use both --run-strat and --yaml-strategy"
+    echo "Choose one: built-in strategy OR YAML strategy"
+    return 1
+  
+  # Handle YAML strategy
+  if yamlStrategy.len > 0:
+    # Check file exists
+    if not fileExists(yamlStrategy):
+      echo &"Error: YAML strategy file not found: {yamlStrategy}"
+      return 1
+    
+    # Parse YAML strategy
+    echo &"Loading YAML strategy from: {yamlStrategy}"
+    let strategyDef = try:
+      parseStrategyYAMLFile(yamlStrategy)
+    except parser.ParseError as e:
+      echo &"Error parsing YAML: {e.msg}"
+      return 1
+    
+    # Validate strategy
+    echo "Validating strategy..."
+    let validation = validateStrategy(strategyDef)
+    if not validation.valid:
+      echo "Strategy validation failed:"
+      for err in validation.errors:
+        echo &"  - {err}"
+      return 1
+    
+    echo &"Strategy '{strategyDef.metadata.name}' loaded successfully"
+    
+    # Build strategy
+    var strategyObj = buildStrategy(strategyDef)
+    
+    # Run backtest
+    return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
+                               initialCash, commission, minCommission, riskFreeRate, verbose)
   
   # Build params table from all possible strategy parameters
   var params = initTable[string, string]()

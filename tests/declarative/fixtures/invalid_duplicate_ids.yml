@@ -1,0 +1,32 @@
+# Invalid - Duplicate indicator IDs
+
+metadata:
+  name: "Bad Strategy"
+  description: "Has duplicate indicator IDs"
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: rsi_14  # Duplicate!
+    type: rsi
+    params:
+      period: 20
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100

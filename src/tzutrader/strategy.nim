@@ -76,10 +76,12 @@ import strategies/filtered_mean_reversion
 
 # Export base strategy type and interface
 export base.Strategy
+export base.PositionSizingType  # Export position sizing types
 export base.name
 export base.analyze
 export base.onBar
 export base.reset
+export base.getPositionSizing  # Export position sizing method
 
 # Export all strategy types and constructors
 # Classic strategies

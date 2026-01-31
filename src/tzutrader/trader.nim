@@ -117,10 +117,23 @@ proc executeSignal(bt: Backtester, signal: Signal, bar: OHLCV) =
   
   case signal.position
   of Position.Buy:
-    # Calculate position size based on available cash
-    # Use 95% of cash to leave some buffer
-    let availableCash = bt.portfolio.cash * 0.95
-    let quantity = floor(availableCash / price)
+    # Get position sizing from strategy
+    let (sizingType, sizingValue) = bt.strategy.getPositionSizing()
+    
+    var quantity: float
+    case sizingType
+    of pstDefault:
+      # Default: Use 95% of available cash
+      let availableCash = bt.portfolio.cash * 0.95
+      quantity = floor(availableCash / price)
+    of pstFixed:
+      # Fixed: Use exact number of shares
+      quantity = sizingValue
+    of pstPercent:
+      # Percent: Use percentage of portfolio equity
+      let portfolioEquity = bt.portfolio.equity()
+      let allocationAmount = portfolioEquity * (sizingValue / 100.0)
+      quantity = floor(allocationAmount / price)
     
     if quantity > 0:
       let success = bt.portfolio.buy(symbol, quantity, price, bar.timestamp)
