@@ -3,8 +3,8 @@
 ## This module provides utilities for scanning multiple symbols with strategies
 ## and ranking results based on performance metrics.
 
-import std/[tables, times, algorithm, strformat, sequtils, os, strutils, math]
-import core, data, strategy, portfolio, trader
+import std/[tables, algorithm, strformat, sequtils, os, strutils, math]
+import core, data, strategy, trader
 
 type
   ScanResult* = object

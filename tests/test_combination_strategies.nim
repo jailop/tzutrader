@@ -15,7 +15,7 @@ proc loadTestData(filename: string): seq[OHLCV] =
 suite "TripleMAStrategy Tests":
   test "Basic construction and parameters":
     let strat = newTripleMAStrategy(fastPeriod=20, mediumPeriod=50, slowPeriod=200)
-    check strat.name().contains("Triple MA Strategy")
+    check strat.name.contains("Triple MA Strategy")
     check strat.fastPeriod == 20
     check strat.mediumPeriod == 50
     check strat.slowPeriod == 200
@@ -90,7 +90,7 @@ suite "TripleMAStrategy Tests":
 suite "ADXTrendStrategy Tests":
   test "Basic construction and parameters":
     let strat = newADXTrendStrategy(period=14, adxThreshold=25.0)
-    check strat.name().contains("ADX Trend Strategy")
+    check strat.name.contains("ADX Trend Strategy")
     check strat.period == 14
     check strat.adxThreshold == 25.0
   
@@ -162,7 +162,7 @@ suite "ADXTrendStrategy Tests":
 suite "VolumeBreakoutStrategy Tests":
   test "Basic construction and parameters":
     let strat = newVolumeBreakoutStrategy(period=20, volumeMultiplier=1.5)
-    check strat.name().contains("Volume Breakout Strategy")
+    check strat.name.contains("Volume Breakout Strategy")
     check strat.period == 20
     check strat.volumeMultiplier == 1.5
   
@@ -235,7 +235,7 @@ suite "VolumeBreakoutStrategy Tests":
 suite "DualMomentumStrategy Tests":
   test "Basic construction and parameters":
     let strat = newDualMomentumStrategy(rocPeriod=12, smaPeriod=50)
-    check strat.name().contains("Dual Momentum Strategy")
+    check strat.name.contains("Dual Momentum Strategy")
     check strat.rocPeriod == 12
     check strat.smaPeriod == 50
   
@@ -306,7 +306,7 @@ suite "DualMomentumStrategy Tests":
 suite "FilteredMeanReversionStrategy Tests":
   test "Basic construction and parameters":
     let strat = newFilteredMeanReversionStrategy(rsiPeriod=14, trendPeriod=200)
-    check strat.name().contains("Filtered Mean Reversion Strategy")
+    check strat.name.contains("Filtered Mean Reversion Strategy")
     check strat.rsiPeriod == 14
     check strat.trendPeriod == 200
   
@@ -384,11 +384,11 @@ suite "Integration Tests - Combination Strategies":
     let dual = newDualMomentumStrategy()
     let filtered = newFilteredMeanReversionStrategy()
     
-    check triple.name().contains("Triple MA")
-    check adx.name().contains("ADX")
-    check volume.name().contains("Volume Breakout")
-    check dual.name().contains("Dual Momentum")
-    check filtered.name().contains("Filtered Mean Reversion")
+    check triple.name.contains("Triple MA")
+    check adx.name.contains("ADX")
+    check volume.name.contains("Volume Breakout")
+    check dual.name.contains("Dual Momentum")
+    check filtered.name.contains("Filtered Mean Reversion")
   
   test "All Phase 3 strategies work with streaming data":
     let data = loadTestData("uptrend.csv")

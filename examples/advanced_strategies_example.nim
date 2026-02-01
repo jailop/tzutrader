@@ -10,7 +10,7 @@
 ## 4. Momentum Divergence - Uses MOM and CMO for divergence detection
 
 import ../src/tzutrader/indicators
-import std/[math, tables, sequtils, strformat, strutils]
+import std/[math, tables, sequtils, strutils]
 
 proc printSeparator(title: string) =
   echo "\n", "=".repeat(70)
@@ -23,12 +23,12 @@ proc printSubSection(title: string) =
   echo "-".repeat(70)
 
 # Helper for formatting table rows
-proc formatRow(values: varargs[string]): string =
-  result = ""
-  for i, val in values:
-    if i > 0:
-      result.add(" ")
-    result.add(val)
+# proc formatRow(values: varargs[string]): string =
+#   result = ""
+#   for i, val in values:
+#     if i > 0:
+#       result.add(" ")
+#     result.add(val)
 
 proc pad(s: string, width: int, alignRight: bool = false): string =
   if s.len >= width:
@@ -211,7 +211,7 @@ proc demonstrateMomentumRotation() =
     lows.mgetOrPut("TECH", @[]).add(techPrice - 0.5)
     
     # ENERGY: Weak in period 1, strong in period 2, weak in period 3
-    let energyTrend = if i >= 20 and i < 40: 1.2 else: 0.1
+    # let energyTrend = if i >= 20 and i < 40: 1.2 else: 0.1
     let energyBase = 100.0 + (if i < 20: float64(i) * 0.1 else: float64(i - 20) * 1.2 + 2.0)
     let energyPrice = if i < 40: energyBase else: energyBase + float64(i - 40) * 0.1
     prices.mgetOrPut("ENERGY", @[]).add(energyPrice)
@@ -219,7 +219,7 @@ proc demonstrateMomentumRotation() =
     lows.mgetOrPut("ENERGY", @[]).add(energyPrice - 0.5)
     
     # FINANCE: Weak early, strong in period 3
-    let financeTrend = if i >= 40: 1.3 else: 0.1
+    # let financeTrend = if i >= 40: 1.3 else: 0.1
     let financeBase = 100.0 + (if i < 40: float64(i) * 0.1 else: float64(i - 40) * 1.3 + 4.0)
     prices.mgetOrPut("FINANCE", @[]).add(financeBase)
     highs.mgetOrPut("FINANCE", @[]).add(financeBase + 0.5)
@@ -333,7 +333,7 @@ proc demonstrateVolatilityAdjusted() =
   
   const accountSize = 100000.0
   const targetRiskPercent = 2.0  # Risk 2% per trade
-  const baseShares = 1000  # Starting position size
+  # const baseShares = 1000  # Starting position size
   
   var trades: seq[tuple[bar: int, price: float64, natr: float64, shares: int, riskAmount: float64]] = @[]
   

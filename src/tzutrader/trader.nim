@@ -212,7 +212,7 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
   # Run strategy on data and execute signals
   for i, bar in data:
     # Get signal from strategy
-    let signal = bt.strategy.onBar(bar)
+    let signal = bt.strategy.on(bar)
     
     # Update portfolio prices
     var prices = initTable[string, float64]()

@@ -1,6 +1,7 @@
 ## Core types and data structures for tzutrader.
 ##
 ## This module defines the fundamental types used throughout the library:
+##
 ## - Position: Trading position enum (Stay, Buy, Sell)
 ## - OHLCV: Open-High-Low-Close-Volume data structure
 ## - Signal: Trading signal representation

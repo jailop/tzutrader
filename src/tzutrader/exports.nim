@@ -3,8 +3,8 @@
 ## This module provides utilities for exporting backtest reports
 ## and scan results to various formats.
 
-import std/[json, tables, times, strformat, streams]
-import core, trader, scanner
+import std/[json, strformat]
+import trader, scanner
 
 proc toJson*(report: BacktestReport): JsonNode =
   ## Convert BacktestReport to JSON

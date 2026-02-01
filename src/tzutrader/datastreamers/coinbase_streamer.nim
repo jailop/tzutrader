@@ -42,22 +42,22 @@ type
     endTime: int64
     apiKey: string
     apiSecret: string
-    data: seq[OHLCV]  # Cached candles
+    data: seq[OHLCV] # Cached candles
     index: int
 
-const COINBASE_LIMIT = 350  ## Limit set by Coinbase API
+# const COINBASE_LIMIT = 350  ## Limit set by Coinbase API
 
 # Helper procs
 
-proc intervalToGranularity(interval: Interval): CoinbaseGranularity =
-  ## Convert Interval to Coinbase granularity
-  case interval
-  of Int1m: OneMinute
-  of Int5m: FiveMinute
-  of Int15m: FifteenMinute
-  of Int30m: ThirtyMinute
-  of Int1h: OneHour
-  else: OneDay
+# proc intervalToGranularity(interval: Interval): CoinbaseGranularity =
+#   ## Convert Interval to Coinbase granularity
+#   case interval
+#   of Int1m: OneMinute
+#   of Int5m: FiveMinute
+#   of Int15m: FifteenMinute
+#   of Int30m: ThirtyMinute
+#   of Int1h: OneHour
+#   else: OneDay
 
 proc parseGranularity(s: string): CoinbaseGranularity =
   ## Parse granularity string
@@ -72,42 +72,27 @@ proc parseGranularity(s: string): CoinbaseGranularity =
   of "ONE_DAY", "1D": OneDay
   else: raise newException(DataError, "Invalid granularity: " & s)
 
-proc fetchCoinbaseCandles(symbol: string, startTime, endTime: int64, 
+proc fetchCoinbaseCandles(symbol: string, startTime, endTime: int64,
                          granularity: CoinbaseGranularity,
                          apiKey, apiSecret: string): seq[OHLCV] =
   ## Fetch candles from Coinbase REST API
-  ## 
-  ## Note: This is a simplified implementation. For production use,
-  ## you should implement proper authentication (JWT signing) as per
-  ## Coinbase Advanced Trade API documentation.
   result = @[]
-  
-  # Check if credentials are provided
   if apiKey.len == 0 or apiSecret.len == 0:
-    # Return mock data if no credentials
-    return generateMockOHLCV(symbol, startTime, endTime, Int1d)
-  
+    raise newException(Exception, "Coinbase API key not defined")
   try:
     let client = newHttpClient()
     defer: client.close()
-    
     # Build API URL
     # Note: Actual Coinbase API requires proper authentication
-    let url = "https://api.coinbase.com/api/v3/brokerage/products/" & 
+    let url = "https://api.coinbase.com/api/v3/brokerage/products/" &
               symbol & "/candles"
-    
-    let params = "?start=" & $startTime & 
-                 "&end=" & $endTime & 
+    let params = "?start=" & $startTime &
+                 "&end=" & $endTime &
                  "&granularity=" & $granularity
-    
-    # TODO: Add proper JWT authentication headers for production
-    # For now, this will return empty or fail gracefully
-    
     let response = client.getContent(url & params)
     let jsonData = parseJson(response)
-    
     # Parse Coinbase candle format
-    # Format: {"candles": [{"start": "...", "low": "...", "high": "...", 
+    # Format: {"candles": [{"start": "...", "low": "...", "high": "...",
     #                       "open": "...", "close": "...", "volume": "..."}]}
     if jsonData.hasKey("candles"):
       for candle in jsonData["candles"]:
@@ -121,15 +106,10 @@ proc fetchCoinbaseCandles(symbol: string, startTime, endTime: int64,
         )
         if bar.isValid():
           result.add(bar)
-    
     # Sort by timestamp
     result.sort(proc (a, b: OHLCV): int = cmp(a.timestamp, b.timestamp))
-    
   except HttpRequestError, JsonParsingError, OSError, ValueError:
-    # On error, return mock data for testing
-    return generateMockOHLCV(symbol, startTime, endTime, Int1d)
-
-# Public interface
+    raise newException(Exception, "Coinbase error pulling data")
 
 proc newCoinbaseStreamer*[T](params: StreamParams): CoinbaseStreamer[T] =
   ## Create a new Coinbase streamer
@@ -154,18 +134,14 @@ proc newCoinbaseStreamer*[T](params: StreamParams): CoinbaseStreamer[T] =
   when T isnot OHLCV:
     raise newException(UnsupportedDataTypeError,
       "Coinbase streamer only supports OHLCV data type, got: " & $getDataKind[T]())
-  
   if params.symbol.len == 0:
     raise newException(DataError, "Coinbase streamer requires a symbol")
-  
-  # Get credentials (from metadata or environment)
   let apiKey = params.metadata.getOrDefault("apiKey", getEnv("COINBASE_API_KEY", ""))
-  let apiSecret = params.metadata.getOrDefault("apiSecret", getEnv("COINBASE_SECRET_KEY", ""))
-  
+  let apiSecret = params.metadata.getOrDefault("apiSecret", getEnv(
+      "COINBASE_SECRET_KEY", ""))
   # Parse granularity
   let granularityStr = params.metadata.getOrDefault("granularity", "ONE_DAY")
   let granularity = parseGranularity(granularityStr)
-  
   result = CoinbaseStreamer[T](
     symbol: params.symbol,
     granularity: granularity,
@@ -175,14 +151,13 @@ proc newCoinbaseStreamer*[T](params: StreamParams): CoinbaseStreamer[T] =
     apiSecret: apiSecret,
     index: 0
   )
-  
-  # Fetch data from Coinbase
   result.data = fetchCoinbaseCandles(params.symbol, params.startTime, params.endTime,
                                      granularity, apiKey, apiSecret)
 
 proc newCoinbaseStreamer*[T](symbol: string, startTime: int64, endTime: int64,
                              granularity: CoinbaseGranularity = OneDay,
-                             apiKey: string = "", apiSecret: string = ""): CoinbaseStreamer[T] =
+                             apiKey: string = "",
+                                 apiSecret: string = ""): CoinbaseStreamer[T] =
   ## Convenience constructor for Coinbase streamer
   ##
   ## Args:
@@ -193,8 +168,9 @@ proc newCoinbaseStreamer*[T](symbol: string, startTime: int64, endTime: int64,
   ##   apiKey: Optional API key (from env if empty)
   ##   apiSecret: Optional API secret (from env if empty)
   let actualApiKey = if apiKey.len > 0: apiKey else: getEnv("COINBASE_API_KEY", "")
-  let actualApiSecret = if apiSecret.len > 0: apiSecret else: getEnv("COINBASE_SECRET_KEY", "")
-  
+  let actualApiSecret = if apiSecret.len > 0: apiSecret else: getEnv(
+      "COINBASE_SECRET_KEY", "")
+
   var params = StreamParams(
     provider: dpCoinbase,
     symbol: symbol,
@@ -210,7 +186,8 @@ proc newCoinbaseStreamer*[T](symbol: string, startTime: int64, endTime: int64,
 
 proc newCoinbaseStreamer*[T](symbol: string, start: string, `end`: string,
                              granularity: CoinbaseGranularity = OneDay,
-                             apiKey: string = "", apiSecret: string = ""): CoinbaseStreamer[T] =
+                             apiKey: string = "",
+                                 apiSecret: string = ""): CoinbaseStreamer[T] =
   ## Convenience constructor with date strings (ISO 8601 format)
   ##
   ## Args:
@@ -222,9 +199,8 @@ proc newCoinbaseStreamer*[T](symbol: string, start: string, `end`: string,
   ##   apiSecret: Optional API secret
   let startTime = parse(start, "yyyy-MM-dd").toTime().toUnix()
   let endTime = parse(`end`, "yyyy-MM-dd").toTime().toUnix()
-  result = newCoinbaseStreamer[T](symbol, startTime, endTime, granularity, apiKey, apiSecret)
-
-# Implement DataStreamer interface
+  result = newCoinbaseStreamer[T](symbol, startTime, endTime, granularity,
+      apiKey, apiSecret)
 
 proc next*(stream: CoinbaseStreamer[OHLCV]): bool =
   ## Advance to next data point

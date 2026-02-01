@@ -3,10 +3,9 @@
 ## Demonstrates reading and working with CSV data files
 
 import std/[strformat, strutils]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
+import ../src/tzutrader/core
+import ../src/tzutrader/data
+import ../src/tzutrader/indicators
 
 echo "=" .repeat(70)
 echo "CSV Data Stream Example"

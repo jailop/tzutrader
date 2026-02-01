@@ -12,8 +12,7 @@
 
 import std/[strformat, strutils, math]
 
-include ../src/tzutrader/core
-include ../src/tzutrader/indicators
+import ../src/tzutrader/indicators
 
 # ============================================================================
 # Section 1: Basic Streaming - One Indicator at a Time

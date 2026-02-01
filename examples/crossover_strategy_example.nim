@@ -4,12 +4,10 @@
 ## This strategy generates buy signals on golden cross (fast MA > slow MA)
 ## and sell signals on death cross (fast MA < slow MA).
 
-import std/[times, strformat]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import std/[times, sequtils, strformat]
+import ../src/tzutrader/core
+import ../src/tzutrader/data
+import ../src/tzutrader/strategy
 
 proc main() =
   echo "="
