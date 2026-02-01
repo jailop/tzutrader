@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.8.0"
+version       = "0.1.1"
 author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"

@@ -66,9 +66,3 @@ import tzutrader/exports
 
 # Re-export core types for convenience
 export core, data, indicators, strategy, portfolio, trader, scanner, exports
-
-# Version information
-const
-  TzuTraderVersion* = "0.1.0"
-  TzuTraderAuthor* = "Jaime Lopez"
-  TzuTraderLicense* = "MIT"
