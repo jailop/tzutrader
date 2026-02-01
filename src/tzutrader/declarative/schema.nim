@@ -142,6 +142,113 @@ type
     entryRule*: RuleYAML
     exitRule*: RuleYAML
     positionSizing*: PositionSizingYAML
+  
+  # ============================================================================
+  # Batch Testing Configuration (Phase 4)
+  # ============================================================================
+  
+  DataSourceKind* = enum
+    ## Type of data source
+    dsYahoo,      # Yahoo Finance
+    dsCsv,        # CSV file
+    dsCoinbase    # Coinbase (future)
+  
+  DataConfigYAML* = object
+    ## Data source configuration for batch tests
+    case source*: DataSourceKind
+    of dsYahoo:
+      symbols*: seq[string]
+      startDate*: string
+      endDate*: string
+    of dsCsv:
+      csvFile*: string
+    of dsCoinbase:
+      coinbaseSymbols*: seq[string]
+      coinbaseStart*: string
+      coinbaseEnd*: string
+  
+  PortfolioConfigYAML* = object
+    ## Portfolio configuration
+    initialCash*: float
+    commission*: float
+    minCommission*: Option[float]
+    riskFreeRate*: Option[float]
+  
+  IndicatorOverride* = object
+    ## Override for a single indicator parameter
+    params*: Table[string, ParamValue]
+  
+  ConditionOverride* = object
+    ## Override for entry/exit conditions
+    entry*: Option[ConditionYAML]
+    exit*: Option[ConditionYAML]
+  
+  StrategyOverrides* = object
+    ## Parameter overrides for a strategy variant
+    indicators*: Option[Table[string, IndicatorOverride]]
+    conditions*: Option[ConditionOverride]
+    positionSizing*: Option[PositionSizingYAML]
+  
+  StrategyVariantYAML* = object
+    ## A strategy with optional parameter overrides
+    file*: string                        # Path to strategy YAML file
+    name*: string                        # Unique name for this variant
+    overrides*: Option[StrategyOverrides]  # Parameter overrides
+  
+  BatchOutputYAML* = object
+    ## Output configuration for batch tests
+    comparisonReport*: Option[string]    # HTML comparison report path
+    individualResults*: Option[string]   # Directory for individual CSVs
+    formats*: seq[string]                # Output formats: csv, json, html
+  
+  BatchTestYAML* = object
+    ## Complete batch test configuration
+    version*: string
+    metadata*: MetadataYAML
+    data*: DataConfigYAML
+    strategies*: seq[StrategyVariantYAML]
+    portfolio*: PortfolioConfigYAML
+    output*: BatchOutputYAML
+  
+  # ============================================================================
+  # Parameter Sweep Configuration (Phase 4)
+  # ============================================================================
+  
+  SweepRangeKind* = enum
+    ## Type of parameter sweep range
+    srkLinear,   # Linear range with step
+    srkList      # Explicit list of values
+  
+  SweepRange* = object
+    ## Range of values for parameter sweep
+    case kind*: SweepRangeKind
+    of srkLinear:
+      min*: float
+      max*: float
+      step*: float
+    of srkList:
+      values*: seq[float]
+  
+  SweepParameter* = object
+    ## Parameter to sweep
+    path*: string          # JSON path to parameter (e.g., "indicators.rsi_14.period")
+    range*: SweepRange     # Range of values
+  
+  SweepOutputYAML* = object
+    ## Output configuration for parameter sweeps
+    heatmap*: Option[string]       # Heatmap visualization path
+    bestResults*: string           # Top N results CSV
+    fullResults*: string           # All results CSV
+  
+  ParameterSweepYAML* = object
+    ## Complete parameter sweep configuration
+    version*: string
+    metadata*: MetadataYAML
+    baseStrategy*: string              # Base strategy file path
+    data*: DataConfigYAML
+    portfolio*: PortfolioConfigYAML
+    parameters*: seq[SweepParameter]   # Parameters to sweep
+    output*: SweepOutputYAML
 
 # ============================================================================
 # Helper Constructors
@@ -184,6 +291,86 @@ proc newOrCondition*(conditions: seq[ConditionYAML]): ConditionYAML =
   ConditionYAML(
     kind: ckOr,
     orConditions: conditions
+  )
+
+proc newNotCondition*(condition: ConditionYAML): ConditionYAML =
+  ## Create a boolean NOT condition
+  var condRef = new(ConditionYAML)
+  condRef[] = condition
+  ConditionYAML(
+    kind: ckNot,
+    notCondition: condRef
+  )
+
+proc newDataConfigYahoo*(symbols: seq[string], startDate: string, endDate: string): DataConfigYAML =
+  ## Create a Yahoo Finance data configuration
+  DataConfigYAML(
+    source: dsYahoo,
+    symbols: symbols,
+    startDate: startDate,
+    endDate: endDate
+  )
+
+proc newDataConfigCsv*(csvFile: string): DataConfigYAML =
+  ## Create a CSV data configuration
+  DataConfigYAML(
+    source: dsCsv,
+    csvFile: csvFile
+  )
+
+proc newPortfolioConfig*(initialCash: float = 100000.0, 
+                        commission: float = 0.001,
+                        minCommission: Option[float] = none(float),
+                        riskFreeRate: Option[float] = none(float)): PortfolioConfigYAML =
+  ## Create a portfolio configuration with sensible defaults
+  PortfolioConfigYAML(
+    initialCash: initialCash,
+    commission: commission,
+    minCommission: minCommission,
+    riskFreeRate: riskFreeRate
+  )
+
+proc newStrategyVariant*(file: string, 
+                        name: string,
+                        overrides: Option[StrategyOverrides] = none(StrategyOverrides)): StrategyVariantYAML =
+  ## Create a strategy variant
+  StrategyVariantYAML(
+    file: file,
+    name: name,
+    overrides: overrides
+  )
+
+proc newBatchOutput*(formats: seq[string] = @["csv"],
+                    comparisonReport: Option[string] = none(string),
+                    individualResults: Option[string] = none(string)): BatchOutputYAML =
+  ## Create batch output configuration
+  BatchOutputYAML(
+    formats: formats,
+    comparisonReport: comparisonReport,
+    individualResults: individualResults
+  )
+
+proc newSweepRangeLinear*(min: float, max: float, step: float): SweepRange =
+  ## Create a linear parameter sweep range
+  SweepRange(
+    kind: srkLinear,
+    min: min,
+    max: max,
+    step: step
+  )
+
+proc newSweepRangeList*(values: seq[float]): SweepRange =
+  ## Create a list-based parameter sweep range
+  SweepRange(
+    kind: srkList,
+    values: values
+  )
+
+proc newSweepParameter*(path: string, range: SweepRange): SweepParameter =
+  ## Create a sweep parameter
+  SweepParameter(
+    path: path,
+    range: range
   )
 
 # ============================================================================

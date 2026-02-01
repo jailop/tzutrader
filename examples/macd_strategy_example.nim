@@ -4,12 +4,8 @@
 ## This strategy generates buy signals when MACD crosses above the signal line
 ## and sell signals when MACD crosses below the signal line.
 
-import std/[times, strformat]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import std/[times, strformat, sequtils]
+import ../src/tzutrader
 
 proc main() =
   echo "="
@@ -27,9 +23,11 @@ proc main() =
   echo "Creating MACD Strategy (Fast: 12, Slow: 26, Signal: 9)"
   let strategy = newMACDStrategy(fastPeriod = 12, slowPeriod = 26, signalPeriod = 9)
   
-  # Batch mode analysis
-  echo "\n=== BATCH MODE ==="
-  let signals = strategy.analyze(data)
+  # Streaming mode analysis
+  echo "\n=== STREAMING MODE ==="
+  var signals: seq[Signal] = @[]
+  for bar in data:
+    signals.add(strategy.onBar(bar))
   
   var buySignals: seq[Signal] = @[]
   var sellSignals: seq[Signal] = @[]
@@ -89,7 +87,9 @@ proc main() =
       slowPeriod = config.slow,
       signalPeriod = config.signal
     )
-    let testSignals = testStrat.analyze(data)
+    var testSignals: seq[Signal] = @[]
+    for bar in data:
+      testSignals.add(testStrat.onBar(bar))
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     echo &"  MACD({config.fast},{config.slow},{config.signal}): {buys} bullish, {sells} bearish"

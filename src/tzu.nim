@@ -37,7 +37,7 @@
 
 import std/[strformat, os, sequtils, tables, strutils]
 import tzutrader/[core, data, strategy, trader, portfolio]
-import tzutrader/declarative/[parser, validator, strategy_builder]
+import tzutrader/declarative/[parser, validator, strategy_builder, batch_runner, results, sweep_runner]
 import cligen
 
 # ============================================================================
@@ -264,6 +264,8 @@ proc createStrategy(strategyName: string, params: Table[string, string]): Strate
 proc tzu(
   runStrat = "",
   yamlStrategy = "",  # NEW: Path to YAML strategy file
+  batch = "",  # NEW: Path to batch test configuration file
+  sweep = "",  # NEW: Path to parameter sweep configuration file
   symbol = "",
   csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
   # RSI params
@@ -303,6 +305,8 @@ proc tzu(
   ## Usage:
   ##   tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
   ##   tzu --yaml-strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
+  ##   tzu --batch=batch_config.yml
+  ##   tzu --sweep=sweep_config.yml
   ##   tzu --run-strat=macd --csvFile=data.csv
   ##
   ## Available strategies:
@@ -311,12 +315,19 @@ proc tzu(
   ##   Volatility: keltner
   ##   Hybrid: volume, dualmomentum, filteredrsi
   ##   YAML: Use --yaml-strategy to load declarative strategies
+  ##   Batch: Use --batch to run multiple strategies at once
+  ##   Sweep: Use --sweep for automated parameter optimization
   
-  # Check that either runStrat or yamlStrategy is provided (but not both)
-  if runStrat.len == 0 and yamlStrategy.len == 0:
-    echo "Error: Either --run-strat=<STRATEGY> or --yaml-strategy=<FILE> is required"
+  # Check that only one mode is provided
+  let modesProvided = (if runStrat.len > 0: 1 else: 0) +
+                     (if yamlStrategy.len > 0: 1 else: 0) +
+                     (if batch.len > 0: 1 else: 0) +
+                     (if sweep.len > 0: 1 else: 0)
+  
+  if modesProvided == 0:
+    echo "Error: Must specify one of: --run-strat, --yaml-strategy, --batch, or --sweep"
     echo ""
-    echo "Usage: tzu [--run-strat=<STRATEGY> | --yaml-strategy=<FILE>] [options]"
+    echo "Usage: tzu [--run-strat=<STRATEGY> | --yaml-strategy=<FILE> | --batch=<FILE> | --sweep=<FILE>] [options]"
     echo ""
     echo "Built-in strategies:"
     echo "  Mean Reversion: rsi, bollinger, stochastic, mfi, cci"
@@ -327,19 +338,88 @@ proc tzu(
     echo "YAML strategies:"
     echo "  Use --yaml-strategy=path/to/strategy.yml for declarative strategies"
     echo ""
+    echo "Batch testing:"
+    echo "  Use --batch=path/to/batch_config.yml to test multiple strategies"
+    echo ""
+    echo "Parameter sweep:"
+    echo "  Use --sweep=path/to/sweep_config.yml for automated optimization"
+    echo ""
     echo "Examples:"
     echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
     echo "  tzu --run-strat=rsi -s AAPL --start=2023-01-01"
     echo "  tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL"
+    echo "  tzu --batch=examples/batch/basic_batch.yml"
+    echo "  tzu --sweep=examples/sweep/rsi_optimization.yml"
     echo "  tzu --run-strat=macd --csvFile=data.csv --fast=10 --slow=20"
     echo ""
     echo "For strategy-specific options, use: tzu --help"
     return 1
   
-  if runStrat.len > 0 and yamlStrategy.len > 0:
-    echo "Error: Cannot use both --run-strat and --yaml-strategy"
-    echo "Choose one: built-in strategy OR YAML strategy"
+  if modesProvided > 1:
+    echo "Error: Can only use ONE of: --run-strat, --yaml-strategy, --batch, or --sweep"
+    echo "Choose one mode at a time"
     return 1
+  
+  # Handle parameter sweep mode
+  if sweep.len > 0:
+    # Check file exists
+    if not fileExists(sweep):
+      echo &"Error: Parameter sweep configuration file not found: {sweep}"
+      return 1
+    
+    echo &"Running parameter sweep from: {sweep}"
+    echo ""
+    
+    try:
+      let sweepResults = runParameterSweepFromFile(sweep, verbose)
+      
+      # Print summary
+      echo ""
+      printSummary(sweepResults)
+      
+      # Print best parameters
+      printBestParameters(sweepResults, rmTotalReturn, 10)
+      
+      return 0
+    
+    except SweepRunnerError as e:
+      echo &"Parameter sweep error: {e.msg}"
+      return 1
+    except:
+      echo &"Unexpected error: {getCurrentExceptionMsg()}"
+      return 1
+  
+  # Handle batch test mode
+  if batch.len > 0:
+    # Check file exists
+    if not fileExists(batch):
+      echo &"Error: Batch configuration file not found: {batch}"
+      return 1
+    
+    echo &"Running batch test from: {batch}"
+    echo ""
+    
+    try:
+      let batchResults = runBatchTestFromFile(batch, verbose)
+      
+      # Print summary
+      echo ""
+      printSummary(batchResults)
+      
+      # Print top performers
+      echo "\nTop 10 by Total Return:"
+      let top10 = batchResults.getTopN(rmTotalReturn, 10)
+      for i, r in top10:
+        echo &"  {i+1:2}. {r.strategyName:25} on {r.symbol:6}: {r.totalReturn:8.2f}% (Sharpe: {r.sharpeRatio:5.2f})"
+      
+      return 0
+    
+    except BatchRunnerError as e:
+      echo &"Batch test error: {e.msg}"
+      return 1
+    except:
+      echo &"Unexpected error: {getCurrentExceptionMsg()}"
+      return 1
   
   # Handle YAML strategy
   if yamlStrategy.len > 0:

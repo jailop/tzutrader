@@ -15,6 +15,7 @@
 
 import std/[times, tables, strutils, math, random, algorithm, os, httpclient, json, options]
 import core
+import yfnim
 
 type
   Interval* = enum
@@ -210,61 +211,66 @@ proc generateMockQuote*(symbol: string, price: float64 = 100.0): Quote =
     regularMarketPreviousClose: previousClose
   )
 
-# Yahoo Finance integration
-# Note: Will use yfnim when available, for now provide interface
+# Yahoo Finance integration using yfnim
 
-when defined(useYfnim):
-  # This section will be enabled when yfnim is properly installed
-  import yfnim
-  
-  proc convertYfnimToOHLCV(yfData: yfnim.HistoricalData): seq[OHLCV] =
-    ## Convert yfnim historical data to our OHLCV format
-    result = @[]
-    for bar in yfData.data:
-      result.add(OHLCV(
-        timestamp: bar.date,
-        open: bar.open,
-        high: bar.high,
-        low: bar.low,
-        close: bar.close,
-        volume: bar.volume
-      ))
-  
-  proc convertYfnimToQuote(yfQuote: yfnim.Quote): Quote =
-    ## Convert yfnim quote to our Quote format
-    result = Quote(
-      symbol: yfQuote.symbol,
-      timestamp: getTime().toUnix(),
-      regularMarketPrice: yfQuote.regularMarketPrice,
-      regularMarketChange: yfQuote.regularMarketChange,
-      regularMarketChangePercent: yfQuote.regularMarketChangePercent,
-      regularMarketVolume: yfQuote.regularMarketVolume,
-      regularMarketOpen: yfQuote.regularMarketOpen,
-      regularMarketDayHigh: yfQuote.regularMarketDayHigh,
-      regularMarketDayLow: yfQuote.regularMarketDayLow,
-      regularMarketPreviousClose: yfQuote.regularMarketPreviousClose
-    )
-  
-  proc fetchHistoryYfnim*(ds: DataStream, startTime, endTime: int64): seq[OHLCV] =
-    ## Fetch historical data using yfnim
-    let intervalStr = $ds.interval
-    let history = yfnim.getHistory(ds.symbol, intervalStr, startTime, endTime)
+proc convertYfnimToOHLCV(yfData: yfnim.History): seq[OHLCV] =
+  ## Convert yfnim historical data to our OHLCV format
+  result = @[]
+  for record in yfData.data:
+    result.add(OHLCV(
+      timestamp: record.time,
+      open: record.open,
+      high: record.high,
+      low: record.low,
+      close: record.close,
+      volume: float64(record.volume)
+    ))
+
+proc convertYfnimToQuote(yfQuote: yfnim.Quote): Quote =
+  ## Convert yfnim quote to our Quote format
+  result = Quote(
+    symbol: yfQuote.symbol,
+    timestamp: getTime().toUnix(),
+    regularMarketPrice: yfQuote.regularMarketPrice,
+    regularMarketChange: yfQuote.regularMarketChange,
+    regularMarketChangePercent: yfQuote.regularMarketChangePercent,
+    regularMarketVolume: float64(yfQuote.regularMarketVolume),
+    regularMarketOpen: yfQuote.regularMarketOpen,
+    regularMarketDayHigh: yfQuote.regularMarketDayHigh,
+    regularMarketDayLow: yfQuote.regularMarketDayLow,
+    regularMarketPreviousClose: yfQuote.regularMarketPreviousClose
+  )
+
+proc fetchHistoryYfnim*(ds: DataStream, startTime, endTime: int64): seq[OHLCV] =
+  ## Fetch historical data using yfnim
+  ## Raises DataError if the request fails
+  try:
+    # Convert our Interval to yfnim.Interval
+    let yfInterval = case ds.interval
+      of Int1m: yfnim.Int1m
+      of Int5m: yfnim.Int5m
+      of Int15m: yfnim.Int15m
+      of Int30m: yfnim.Int30m
+      of Int1h: yfnim.Int1h
+      of Int1d: yfnim.Int1d
+      of Int1wk: yfnim.Int1wk
+      of Int1mo: yfnim.Int1mo
+    
+    let history = yfnim.getHistory(ds.symbol, yfInterval, startTime, endTime)
     result = convertYfnimToOHLCV(history)
-  
-  proc fetchQuoteYfnim*(symbol: string): Quote =
-    ## Fetch current quote using yfnim
+  except Exception as e:
+    raise newException(DataError, 
+      "Failed to fetch Yahoo Finance data for " & ds.symbol & ": " & e.msg)
+
+proc fetchQuoteYfnim*(symbol: string): Quote =
+  ## Fetch current quote using yfnim
+  ## Raises DataError if the request fails
+  try:
     let yfQuote = yfnim.getQuote(symbol)
     result = convertYfnimToQuote(yfQuote)
-
-else:
-  # Fallback to mock data when yfnim is not available
-  proc fetchHistoryYfnim*(ds: DataStream, startTime, endTime: int64): seq[OHLCV] =
-    ## Fallback: Generate mock data
-    result = generateMockOHLCV(ds.symbol, startTime, endTime, ds.interval)
-  
-  proc fetchQuoteYfnim*(symbol: string): Quote =
-    ## Fallback: Generate mock quote
-    result = generateMockQuote(symbol)
+  except Exception as e:
+    raise newException(DataError,
+      "Failed to fetch Yahoo Finance quote for " & symbol & ": " & e.msg)
 
 # Main data fetching API
 
@@ -675,20 +681,22 @@ proc intervalToGranularity(interval: Interval): CoinbaseGranularity =
   else: OneDay
 
 proc fetchCoinbaseCandles(symbol: string, startTime, endTime: int64, 
-                         granularity: CoinbaseGranularity,
-                         apiKey, apiSecret: string): seq[OHLCV] =
+                          granularity: CoinbaseGranularity,
+                          apiKey, apiSecret: string): seq[OHLCV] =
   ## Fetch candles from Coinbase REST API
   ## 
   ## Note: This is a simplified implementation. For production use,
   ## you should implement proper authentication (JWT signing) as per
   ## Coinbase Advanced Trade API documentation.
+  ## 
+  ## Raises DataError if credentials are missing or API request fails.
   result = @[]
   
   # Check if credentials are provided
   if apiKey.len == 0 or apiSecret.len == 0:
-    # Return mock data if no credentials
-    let ds = DataStream(symbol: symbol, interval: Int1d)
-    return generateMockOHLCV(symbol, startTime, endTime, Int1d)
+    raise newException(DataError,
+      "Coinbase API credentials not found. " &
+      "Set COINBASE_API_KEY and COINBASE_SECRET_KEY environment variables.")
   
   try:
     let client = newHttpClient()
@@ -728,10 +736,18 @@ proc fetchCoinbaseCandles(symbol: string, startTime, endTime: int64,
     # Sort by timestamp
     result.sort(proc (a, b: OHLCV): int = cmp(a.timestamp, b.timestamp))
     
-  except HttpRequestError, JsonParsingError, OSError, ValueError:
-    # On error, return mock data for testing
-    let ds = DataStream(symbol: symbol, interval: Int1d)
-    return generateMockOHLCV(symbol, startTime, endTime, Int1d)
+  except HttpRequestError as e:
+    raise newException(DataError,
+      "Coinbase API HTTP request failed for " & symbol & ": " & e.msg)
+  except JsonParsingError as e:
+    raise newException(DataError,
+      "Failed to parse Coinbase API response for " & symbol & ": " & e.msg)
+  except OSError as e:
+    raise newException(DataError,
+      "Network error fetching Coinbase data for " & symbol & ": " & e.msg)
+  except ValueError as e:
+    raise newException(DataError,
+      "Invalid data format from Coinbase API for " & symbol & ": " & e.msg)
 
 proc newCBHistory*(symbol: string, start: string, endStr: string = "",
                    interval: Interval = Int1d): CBHistory =
@@ -794,10 +810,7 @@ proc newCBHistory*(symbol: string, start: string, endStr: string = "",
   if result.startTime < limit:
     result.startTime = limit
   
-  # Fetch data
-  if result.apiKey.len == 0 or result.apiSecret.len == 0:
-    echo "Warning: COINBASE_API_KEY or COINBASE_SECRET_KEY not set, using mock data"
-  
+  # Fetch data (will raise exception if credentials missing or request fails)
   result.data = fetchCoinbaseCandles(
     symbol, 
     result.startTime, 

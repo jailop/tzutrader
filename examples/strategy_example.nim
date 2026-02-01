@@ -1,19 +1,16 @@
 ## Strategy Example
 ## 
-## This example demonstrates all 4 built-in strategies:
-## - RSI Strategy
-## - Moving Average Crossover Strategy
-## - MACD Strategy
-## - Bollinger Bands Strategy
+## This example demonstrates using TzuTrader's built-in strategies
+## in streaming mode (processing one bar at a time).
 ##
-## Both batch mode and streaming mode are shown.
+## Strategies shown:
+## - RSI Strategy (Mean Reversion)
+## - Moving Average Crossover (Trend Following)
+## - MACD Strategy (Trend Following)
+## - Bollinger Bands Strategy (Mean Reversion)
 
 import std/[times, strformat, sequtils]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import ../src/tzutrader
 
 proc printSignalSummary(name: string, signals: seq[Signal]) =
   let buySignals = signals.filterIt(it.position == Position.Buy)
@@ -34,6 +31,12 @@ proc printSignalSummary(name: string, signals: seq[Signal]) =
     echo &"  First Sell: {sellSignals[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${sellSignals[0].price:.2f}"
     echo &"  Last Sell:  {sellSignals[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")} @ ${sellSignals[^1].price:.2f}"
 
+proc analyzeWithStrategy(strategy: Strategy, data: seq[OHLCV]): seq[Signal] =
+  ## Helper to process all data through a strategy in streaming mode
+  result = newSeq[Signal](data.len)
+  for i, bar in data:
+    result[i] = strategy.onBar(bar)
+
 proc main() =
   echo "="
   echo "TzuTrader Strategy Example"
@@ -47,43 +50,43 @@ proc main() =
   echo &"Date range: {data[0].timestamp.fromUnix.format(\"yyyy-MM-dd\")} to {data[^1].timestamp.fromUnix.format(\"yyyy-MM-dd\")}"
   
   # ============================================================================
-  # BATCH MODE EXAMPLES
+  # STREAMING MODE EXAMPLES
   # ============================================================================
   
   echo "\n" & "=".repeat(60)
-  echo "BATCH MODE: Analyze entire dataset at once"
+  echo "STREAMING MODE: Process bars one at a time"
   echo "=".repeat(60)
   
   # 1. RSI Strategy
   echo "\n1. RSI Strategy (Period: 14, Oversold: 30, Overbought: 70)"
   let rsiStrat = newRSIStrategy(period = 14, oversold = 30.0, overbought = 70.0)
-  let rsiSignals = rsiStrat.analyze(data)
+  let rsiSignals = analyzeWithStrategy(rsiStrat, data)
   printSignalSummary("RSI Strategy", rsiSignals)
   
   # 2. Moving Average Crossover Strategy
   echo "\n2. Moving Average Crossover (Fast: 10, Slow: 20)"
   let crossStrat = newCrossoverStrategy(fastPeriod = 10, slowPeriod = 20)
-  let crossSignals = crossStrat.analyze(data)
+  let crossSignals = analyzeWithStrategy(crossStrat, data)
   printSignalSummary("Crossover Strategy", crossSignals)
   
   # 3. MACD Strategy
   echo "\n3. MACD Strategy (Fast: 12, Slow: 26, Signal: 9)"
   let macdStrat = newMACDStrategy(fastPeriod = 12, slowPeriod = 26, signalPeriod = 9)
-  let macdSignals = macdStrat.analyze(data)
+  let macdSignals = analyzeWithStrategy(macdStrat, data)
   printSignalSummary("MACD Strategy", macdSignals)
   
   # 4. Bollinger Bands Strategy
   echo "\n4. Bollinger Bands Strategy (Period: 20, StdDev: 2.0)"
   let bbStrat = newBollingerStrategy(period = 20, stdDev = 2.0)
-  let bbSignals = bbStrat.analyze(data)
+  let bbSignals = analyzeWithStrategy(bbStrat, data)
   printSignalSummary("Bollinger Bands Strategy", bbSignals)
   
   # ============================================================================
-  # STREAMING MODE EXAMPLE
+  # REAL-TIME SIMULATION
   # ============================================================================
   
   echo "\n" & "=".repeat(60)
-  echo "STREAMING MODE: Process bars one at a time"
+  echo "REAL-TIME SIMULATION: Show signal changes as they happen"
   echo "=".repeat(60)
   
   echo "\nSimulating real-time data stream with RSI Strategy..."
@@ -102,7 +105,7 @@ proc main() =
       echo &"  [{i+1}/{data.len}] {bar.timestamp.fromUnix.format(\"yyyy-MM-dd\")}: {signal.position} @ ${signal.price:.2f}"
       lastSignalPos = signal.position
   
-  printSignalSummary("Streaming RSI Strategy", streamSignals)
+  printSignalSummary("Real-time RSI Strategy", streamSignals)
   
   # ============================================================================
   # STRATEGY COMPARISON
@@ -142,7 +145,12 @@ proc main() =
   echo &"\nRunning Crossover Strategy on multiple symbols:"
   for symbol in symbols:
     let symbolData = readCSV(&"data/{symbol}")
-    let symbolSignals = strategy.analyze(symbolData)
+    
+    # Reset strategy for each symbol
+    strategy.reset()
+    
+    # Process all bars
+    let symbolSignals = analyzeWithStrategy(strategy, symbolData)
     
     let buys = symbolSignals.filterIt(it.position == Position.Buy).len
     let sells = symbolSignals.filterIt(it.position == Position.Sell).len
@@ -151,9 +159,6 @@ proc main() =
     echo &"  Bars: {symbolData.len}"
     echo &"  Buy signals: {buys}"
     echo &"  Sell signals: {sells}"
-    
-    # Reset strategy for next symbol
-    strategy.reset()
   
   # ============================================================================
   # CUSTOM PARAMETERS EXAMPLE
@@ -177,7 +182,7 @@ proc main() =
       oversold = params.oversold,
       overbought = params.overbought
     )
-    let testSignals = testStrat.analyze(data)
+    let testSignals = analyzeWithStrategy(testStrat, data)
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     
@@ -188,9 +193,10 @@ proc main() =
   echo "=".repeat(60)
   echo ""
   echo "Next steps:"
-  echo "  - Combine strategies for consensus signals"
-  echo "  - Implement portfolio management (Phase 5)"
-  echo "  - Run backtests with transaction costs (Phase 6)"
+  echo "  - Try different strategy parameters"
+  echo "  - Run backtests with the trader module"
+  echo "  - Compare strategies on different symbols"
+  echo "  - Create your own custom strategies"
   echo ""
 
 when isMainModule:

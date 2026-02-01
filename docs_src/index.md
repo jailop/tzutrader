@@ -34,17 +34,21 @@ emphasizes understanding over exhaustive coverage.
 3. [Understanding Technical Indicators](user_guide/03_indicators.md) -
    What indicators measure and when to use them
 4. [Building Trading Strategies](user_guide/04_strategies.md) - Using
-   pre-built strategies and creating custom ones
-5. [Managing Your Portfolio](user_guide/05_portfolio.md) - Capital
+   pre-built strategies and understanding how they work
+5. [Writing Custom Strategies with Nim](user_guide/04a_custom_strategies_nim.md) - 
+   Creating strategies with full programming control
+6. [Writing Custom Strategies with YAML](user_guide/04b_custom_strategies_yaml.md) - 
+   Creating strategies without programming
+7. [Managing Your Portfolio](user_guide/05_portfolio.md) - Capital
    allocation, position sizing, and performance tracking
-6. [Running Backtests](user_guide/06_backtesting.md) - Testing
+8. [Running Backtests](user_guide/06_backtesting.md) - Testing
    strategies and interpreting results
-7. [Comparing Strategies](user_guide/07_scanning.md) - Scanning multiple
+9. [Comparing Strategies](user_guide/07_scanning.md) - Scanning multiple
    symbols and ranking results
-8. [Advanced Workflows](user_guide/08_workflows.md) - Parameter
-   optimization and batch processing
-9. [Best Practices](user_guide/09_best_practices.md) - Testing
-   methodology and risk management
+10. [Advanced Workflows](user_guide/08_workflows.md) - Parameter
+    optimization and batch processing
+11. [Best Practices](user_guide/09_best_practices.md) - Testing
+    methodology and risk management
 
 ### 2. Reference Guide
 
@@ -72,6 +76,8 @@ technical information.
    export formats
 9. [CLI Tool](reference_guide/09_cli.md) - Command-line interface
    complete reference
+10. [Declarative YAML Interface](reference_guide/10_declarative.md) - 
+    Complete YAML strategy system reference
 
 ### 3. API Documentation
 
@@ -113,7 +119,8 @@ It provides detailed information about every function, type, and module.
 - [Load historical data from CSV](user_guide/02_data.md#loading-data-from-csv)
 - [Generate test data](user_guide/02_data.md#generating-test-data)
 - [Calculate technical indicators](user_guide/03_indicators.md)
-- [Create a custom strategy](user_guide/04_strategies.md)
+- [Create a custom strategy in YAML](user_guide/04b_custom_strategies_yaml.md)
+- [Create a custom strategy in Nim](user_guide/04a_custom_strategies_nim.md)
 - [Run a backtest](user_guide/06_backtesting.md#setting-up-a-backtest)
 - [Compare strategies across symbols](user_guide/07_scanning.md)
 - [Export results to JSON/CSV](reference_guide/08_exports.md)

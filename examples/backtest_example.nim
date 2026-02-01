@@ -7,14 +7,8 @@
 ## - Generating and analyzing backtest reports
 ## - Backtesting from CSV data
 
-import std/[times, strformat, tables, os]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
-include ../src/tzutrader/portfolio
-include ../src/tzutrader/trader
+import std/[times, strformat, strutils, tables, os]
+import ../src/tzutrader
 
 # Helper: Generate synthetic price data with a trend
 proc generatePriceData(bars: int, startPrice: float, trend: float = 0.001): seq[OHLCV] =

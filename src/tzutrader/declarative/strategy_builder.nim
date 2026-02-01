@@ -557,7 +557,8 @@ proc evaluateCondition*(s: DeclarativeStrategy, condition: ConditionYAML, bar: O
     return false
   
   of ckNot:
-    raise newException(BuildError, "NOT conditions not supported in Phase 1")
+    # NOT logic: negate the result of the nested condition
+    return not s.evaluateCondition(condition.notCondition[], bar)
 
 # ============================================================================
 # Strategy Builder

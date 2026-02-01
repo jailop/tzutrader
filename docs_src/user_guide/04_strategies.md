@@ -4,13 +4,19 @@
 
 A trading strategy is a set of rules that determine when to buy, sell, or hold a security. These rules are based on market conditions, technical indicators, price patterns, or other factors.
 
-A complete trading strategy specifies:
-1. **Entry conditions**: When to open a position
-2. **Exit conditions**: When to close a position
-3. **Position sizing**: How much capital to allocate
-4. **Risk management**: When to cut losses
+A complete trading strategy specifies when to open a position, when to close it, how much capital to allocate, and when to cut losses. In TzuTrader, strategies analyze market data and generate signals indicating whether to Buy, Sell, or Stay (do nothing). The backtesting engine then executes trades based on these signals.
 
-In TzuTrader, strategies analyze market data and generate signals indicating whether to Buy, Sell, or Stay (do nothing). The backtesting engine then executes trades based on these signals.
+## Three Approaches to Working with Strategies
+
+TzuTrader offers three ways to work with trading strategies, each suited to different needs and skill levels.
+
+The simplest approach is to use the pre-built strategies that come with TzuTrader. These sixteen strategies demonstrate various trading approaches and serve as learning examples. They show you how different strategies work, provide reference implementations for common trading patterns, and offer starting points for developing your own ideas. However, these are educational examples rather than production-ready systems. Think of them as textbook examples that help you learn and experiment.
+
+If you want to create your own strategies without programming, YAML strategies provide an excellent middle ground. You define strategies in human-readable configuration files, access over thirty technical indicators, and leverage powerful features like batch testing and automated parameter optimization. For most retail traders who want to backtest their own ideas, this is the most practical approach. The YAML system handles all the complexity while letting you focus on your trading logic.
+
+When you need maximum flexibility and control, writing strategies in Nim gives you access to all language features and optimal performance. This approach is best suited for complex strategies requiring custom logic, sophisticated state management, or when building production trading bots. Most traders won't need this level of control, but it's available when your requirements outgrow what YAML can express.
+
+This guide focuses on the pre-built strategies, explaining how each one works and when you might want to use it. If you're ready to create your own strategies, see the guides on writing custom strategies with YAML or Nim.
 
 ## Strategy Signals
 
@@ -442,7 +448,13 @@ Only use information available at the time of the decision. For example, don't u
 
 ## Next Steps
 
-Now that you understand how to build strategies, the next chapter covers portfolio management - how strategies interact with capital allocation, position sizing, and performance tracking.
+Now that you understand how pre-built strategies work, you have several paths forward.
+
+If you're ready to create your own strategies, you have two options. The YAML approach lets you define strategies in configuration files without programming, access over thirty technical indicators, and use automated parameter optimization. This is the recommended approach for most retail traders. See the guide on Writing Custom Strategies with YAML to get started.
+
+For strategies that require complex custom logic, sophisticated state management, or maximum performance, you can write strategies directly in Nim. This gives you complete control and access to all language features. See the guide on Writing Custom Strategies with Nim when you need this level of flexibility.
+
+The next chapter covers portfolio management and how strategies interact with capital allocation, position sizing, and performance tracking.
 
 ## Key Takeaways
 

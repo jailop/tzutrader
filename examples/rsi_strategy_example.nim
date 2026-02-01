@@ -3,12 +3,8 @@
 ## Demonstrates the RSI (Relative Strength Index) strategy.
 ## This strategy buys when RSI is oversold and sells when overbought.
 
-import std/[times, strformat]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import std/[times, strformat, sequtils]
+import ../src/tzutrader
 
 proc main() =
   echo "="
@@ -27,9 +23,11 @@ proc main() =
   echo "Creating RSI Strategy (Period: 14, Oversold: 30, Overbought: 70)"
   let strategy = newRSIStrategy(period = 14, oversold = 30.0, overbought = 70.0)
   
-  # Batch mode analysis
-  echo "\n=== BATCH MODE ==="
-  let signals = strategy.analyze(data)
+  # Streaming mode: Process all bars
+  echo "\n=== STREAMING MODE ==="
+  var signals: seq[Signal] = @[]
+  for bar in data:
+    signals.add(strategy.onBar(bar))
   
   var buyCount = 0
   var sellCount = 0
@@ -84,7 +82,9 @@ proc main() =
   
   for p in params:
     let testStrat = newRSIStrategy(period = p.period, oversold = p.oversold, overbought = p.overbought)
-    let testSignals = testStrat.analyze(data)
+    var testSignals: seq[Signal] = @[]
+    for bar in data:
+      testSignals.add(testStrat.onBar(bar))
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     echo &"  RSI({p.period}, {p.oversold:.0f}, {p.overbought:.0f}): {buys} buys, {sells} sells"

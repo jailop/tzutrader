@@ -53,6 +53,10 @@
          <lastmod>2026-02-01</lastmod>
     </url>
     <url>
+         <loc>https://jailop.github.io/tzutrader/reference_guide/10_declarative/</loc>
+         <lastmod>2026-02-01</lastmod>
+    </url>
+    <url>
          <loc>https://jailop.github.io/tzutrader/user_guide/01_getting_started/</loc>
          <lastmod>2026-02-01</lastmod>
     </url>
@@ -66,6 +70,14 @@
     </url>
     <url>
          <loc>https://jailop.github.io/tzutrader/user_guide/04_strategies/</loc>
+         <lastmod>2026-02-01</lastmod>
+    </url>
+    <url>
+         <loc>https://jailop.github.io/tzutrader/user_guide/04a_custom_strategies_nim/</loc>
+         <lastmod>2026-02-01</lastmod>
+    </url>
+    <url>
+         <loc>https://jailop.github.io/tzutrader/user_guide/04b_custom_strategies_yaml/</loc>
          <lastmod>2026-02-01</lastmod>
     </url>
     <url>

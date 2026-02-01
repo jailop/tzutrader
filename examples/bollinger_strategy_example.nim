@@ -4,12 +4,8 @@
 ## This strategy generates buy signals when price touches the lower band
 ## and sell signals when price touches the upper band.
 
-import std/[times, strformat]
-
-include ../src/tzutrader/core
-include ../src/tzutrader/data
-include ../src/tzutrader/indicators
-include ../src/tzutrader/strategy
+import std/[times, strformat, sequtils]
+import ../src/tzutrader
 
 proc main() =
   echo "="
@@ -98,7 +94,9 @@ proc main() =
   
   for config in configurations:
     let testStrat = newBollingerStrategy(period = config.period, stdDev = config.stdDev)
-    let testSignals = testStrat.analyze(data)
+    var testSignals: seq[Signal] = @[]
+    for bar in data:
+      testSignals.add(testStrat.onBar(bar))
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     echo &"  BB({config.period}, {config.stdDev}): {buys} buys, {sells} sells"

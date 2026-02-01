@@ -6,6 +6,7 @@ description   = "A simplified trading bot library in Nim"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["tzu"]
+installExt    = @["nim"]
 
 # Dependencies
 
@@ -102,3 +103,5 @@ task examples, "Compile all examples":
   echo "  ./examples/advanced_strategies_example # Multi-indicator strategies"
   echo "  ./examples/portfolio_example        # Portfolio management"
   echo "  ./examples/backtest_example         # Backtesting"
+
+requires "mathexpr >= 1.3.2"

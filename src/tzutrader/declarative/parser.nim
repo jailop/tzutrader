@@ -259,7 +259,13 @@ proc parseCondition(node: YamlNode): ConditionYAML =
     of "any", "or":
       return parseOrCondition(val)
     of "not":
-      raise newException(ParseError, "NOT operator not supported in Phase 1")
+      # Parse NOT condition
+      let loc = some(toSourceLocation(node))
+      var notCond = new(ConditionYAML)
+      notCond[] = parseCondition(val)
+      result = ConditionYAML(kind: ckNot, notCondition: notCond)
+      result.location = loc
+      return result
     else:
       discard
   
@@ -367,3 +373,365 @@ proc parseStrategyYAMLFile*(filename: string): StrategyYAML =
   ## Parse a strategy from a YAML file
   let content = readFile(filename)
   result = parseStrategyYAML(content)
+
+# ============================================================================
+# Parse Batch Test Configuration (Phase 4)
+# ============================================================================
+
+proc parseDataConfig(node: YamlNode): DataConfigYAML =
+  ## Parse data configuration section
+  if node.kind != yMapping:
+    raise newException(ParseError, "Data config must be a mapping")
+  
+  var source = "yahoo"
+  
+  for key, val in node.fields:
+    if key.content == "source":
+      source = val.getStr()
+      break
+  
+  case source
+  of "yahoo":
+    var symbols: seq[string] = @[]
+    var startDate = ""
+    var endDate = ""
+    
+    for key, val in node.fields:
+      case key.content
+      of "symbols":
+        for sym in val.getSeq():
+          symbols.add(sym.getStr())
+      of "start_date", "start":
+        startDate = val.getStr()
+      of "end_date", "end":
+        endDate = val.getStr()
+      else:
+        discard
+    
+    result = newDataConfigYahoo(symbols, startDate, endDate)
+  
+  of "csv":
+    var csvFile = ""
+    
+    for key, val in node.fields:
+      if key.content == "file":
+        csvFile = val.getStr()
+        break
+    
+    result = newDataConfigCsv(csvFile)
+  
+  else:
+    raise newException(ParseError, "Unsupported data source: " & source)
+
+proc parsePortfolioConfig(node: YamlNode): PortfolioConfigYAML =
+  ## Parse portfolio configuration section
+  if node.kind != yMapping:
+    raise newException(ParseError, "Portfolio config must be a mapping")
+  
+  var initialCash = 100000.0
+  var commission = 0.001
+  var minCommission = none(float)
+  var riskFreeRate = none(float)
+  
+  for key, val in node.fields:
+    case key.content
+    of "initial_cash", "cash":
+      initialCash = val.getFloat()
+    of "commission":
+      commission = val.getFloat()
+    of "min_commission":
+      minCommission = some(val.getFloat())
+    of "risk_free_rate":
+      riskFreeRate = some(val.getFloat())
+    else:
+      discard
+  
+  result = newPortfolioConfig(initialCash, commission, minCommission, riskFreeRate)
+
+proc parseIndicatorOverride(node: YamlNode): IndicatorOverride =
+  ## Parse indicator parameter overrides
+  result.params = initTable[string, ParamValue]()
+  
+  if node.kind != yMapping:
+    return
+  
+  for key, val in node.fields:
+    if key.content == "params":
+      if val.kind == yMapping:
+        for paramKey, paramVal in val.fields:
+          result.params[paramKey.content] = parseParamValue(paramVal)
+
+proc parseConditionOverride(node: YamlNode): ConditionOverride =
+  ## Parse condition overrides (entry/exit)
+  if node.kind != yMapping:
+    return
+  
+  for key, val in node.fields:
+    case key.content
+    of "entry":
+      result.entry = some(parseCondition(val))
+    of "exit":
+      result.exit = some(parseCondition(val))
+    else:
+      discard
+
+proc parseStrategyOverrides(node: YamlNode): StrategyOverrides =
+  ## Parse strategy parameter overrides
+  if node.kind != yMapping:
+    return
+  
+  for key, val in node.fields:
+    case key.content
+    of "indicators":
+      var indicatorOverrides = initTable[string, IndicatorOverride]()
+      if val.kind == yMapping:
+        for indKey, indVal in val.fields:
+          indicatorOverrides[indKey.content] = parseIndicatorOverride(indVal)
+      result.indicators = some(indicatorOverrides)
+    
+    of "conditions":
+      result.conditions = some(parseConditionOverride(val))
+    
+    of "position_sizing":
+      result.positionSizing = some(parsePositionSizing(val))
+    
+    else:
+      discard
+
+proc parseStrategyVariant(node: YamlNode): StrategyVariantYAML =
+  ## Parse a strategy variant definition
+  if node.kind != yMapping:
+    raise newException(ParseError, "Strategy variant must be a mapping")
+  
+  var file = ""
+  var name = ""
+  var overrides = none(StrategyOverrides)
+  
+  for key, val in node.fields:
+    case key.content
+    of "file", "strategy":
+      file = val.getStr()
+    of "name":
+      name = val.getStr()
+    of "overrides":
+      overrides = some(parseStrategyOverrides(val))
+    else:
+      discard
+  
+  if file == "":
+    raise newException(ParseError, "Strategy variant must have 'file' field")
+  if name == "":
+    raise newException(ParseError, "Strategy variant must have 'name' field")
+  
+  result = newStrategyVariant(file, name, overrides)
+
+proc parseBatchOutput(node: YamlNode): BatchOutputYAML =
+  ## Parse batch output configuration
+  var formats: seq[string] = @["csv"]
+  var comparisonReport = none(string)
+  var individualResults = none(string)
+  
+  if node.kind != yMapping:
+    return newBatchOutput(formats, comparisonReport, individualResults)
+  
+  for key, val in node.fields:
+    case key.content
+    of "formats":
+      formats = @[]
+      for fmt in val.getSeq():
+        formats.add(fmt.getStr())
+    of "comparison_report":
+      comparisonReport = some(val.getStr())
+    of "individual_results":
+      individualResults = some(val.getStr())
+    else:
+      discard
+  
+  result = newBatchOutput(formats, comparisonReport, individualResults)
+
+proc parseBatchTestYAML*(yamlContent: string): BatchTestYAML =
+  ## Parse a complete batch test configuration from YAML string
+  var root: YamlNode
+  
+  try:
+    load(yamlContent, root)
+  except YamlParserError as e:
+    raise newException(ParseError, "YAML syntax error: " & e.msg)
+  except YamlConstructionError as e:
+    raise newException(ParseError, "YAML construction error: " & e.msg)
+  
+  if root.kind != yMapping:
+    raise newException(ParseError, "Batch test root must be a mapping")
+  
+  # Initialize with defaults
+  result.version = "1.0"
+  result.metadata = MetadataYAML(name: "", description: "", tags: @[])
+  result.strategies = @[]
+  result.portfolio = newPortfolioConfig()
+  result.output = newBatchOutput()
+  
+  # Parse each section
+  for key, val in root.fields:
+    case key.content
+    of "version":
+      result.version = val.getStr()
+    of "metadata":
+      result.metadata = parseMetadata(val)
+    of "data":
+      result.data = parseDataConfig(val)
+    of "strategies":
+      for stratNode in val.getSeq():
+        result.strategies.add(parseStrategyVariant(stratNode))
+    of "portfolio":
+      result.portfolio = parsePortfolioConfig(val)
+    of "output":
+      result.output = parseBatchOutput(val)
+    else:
+      discard
+
+proc parseBatchTestYAMLFile*(filename: string): BatchTestYAML =
+  ## Parse a batch test configuration from a YAML file
+  let content = readFile(filename)
+  result = parseBatchTestYAML(content)
+
+# ============================================================================
+# Parse Parameter Sweep Configuration (Phase 4)
+# ============================================================================
+
+proc parseSweepRange(node: YamlNode): SweepRange =
+  ## Parse parameter sweep range
+  if node.kind != yMapping:
+    raise newException(ParseError, "Sweep range must be a mapping")
+  
+  var rangeType = "linear"
+  
+  for key, val in node.fields:
+    if key.content == "type":
+      rangeType = val.getStr()
+      break
+  
+  case rangeType
+  of "linear":
+    var min = 0.0
+    var max = 100.0
+    var step = 1.0
+    
+    for key, val in node.fields:
+      case key.content
+      of "min", "from":
+        min = val.getFloat()
+      of "max", "to":
+        max = val.getFloat()
+      of "step":
+        step = val.getFloat()
+      else:
+        discard
+    
+    result = newSweepRangeLinear(min, max, step)
+  
+  of "list", "values":
+    var values: seq[float] = @[]
+    
+    for key, val in node.fields:
+      if key.content == "values":
+        for v in val.getSeq():
+          values.add(v.getFloat())
+        break
+    
+    result = newSweepRangeList(values)
+  
+  else:
+    raise newException(ParseError, "Unsupported sweep range type: " & rangeType)
+
+proc parseSweepParameter(node: YamlNode): SweepParameter =
+  ## Parse a sweep parameter definition
+  if node.kind != yMapping:
+    raise newException(ParseError, "Sweep parameter must be a mapping")
+  
+  var path = ""
+  var range: SweepRange
+  
+  for key, val in node.fields:
+    case key.content
+    of "path", "parameter":
+      path = val.getStr()
+    of "range":
+      range = parseSweepRange(val)
+    else:
+      discard
+  
+  if path == "":
+    raise newException(ParseError, "Sweep parameter must have 'path' field")
+  
+  result = newSweepParameter(path, range)
+
+proc parseSweepOutput(node: YamlNode): SweepOutputYAML =
+  ## Parse sweep output configuration
+  result.heatmap = none(string)
+  result.bestResults = "best_results.csv"
+  result.fullResults = "all_results.csv"
+  
+  if node.kind != yMapping:
+    return
+  
+  for key, val in node.fields:
+    case key.content
+    of "heatmap":
+      result.heatmap = some(val.getStr())
+    of "best_results":
+      result.bestResults = val.getStr()
+    of "full_results", "all_results":
+      result.fullResults = val.getStr()
+    else:
+      discard
+
+proc parseParameterSweepYAML*(yamlContent: string): ParameterSweepYAML =
+  ## Parse a complete parameter sweep configuration from YAML string
+  var root: YamlNode
+  
+  try:
+    load(yamlContent, root)
+  except YamlParserError as e:
+    raise newException(ParseError, "YAML syntax error: " & e.msg)
+  except YamlConstructionError as e:
+    raise newException(ParseError, "YAML construction error: " & e.msg)
+  
+  if root.kind != yMapping:
+    raise newException(ParseError, "Parameter sweep root must be a mapping")
+  
+  # Initialize with defaults
+  result.version = "1.0"
+  result.metadata = MetadataYAML(name: "", description: "", tags: @[])
+  result.parameters = @[]
+  result.portfolio = newPortfolioConfig()
+  result.output = SweepOutputYAML(
+    heatmap: none(string),
+    bestResults: "best_results.csv",
+    fullResults: "all_results.csv"
+  )
+  
+  # Parse each section
+  for key, val in root.fields:
+    case key.content
+    of "version":
+      result.version = val.getStr()
+    of "metadata":
+      result.metadata = parseMetadata(val)
+    of "base_strategy", "strategy":
+      result.baseStrategy = val.getStr()
+    of "data":
+      result.data = parseDataConfig(val)
+    of "portfolio":
+      result.portfolio = parsePortfolioConfig(val)
+    of "parameters":
+      for paramNode in val.getSeq():
+        result.parameters.add(parseSweepParameter(paramNode))
+    of "output":
+      result.output = parseSweepOutput(val)
+    else:
+      discard
+
+proc parseParameterSweepYAMLFile*(filename: string): ParameterSweepYAML =
+  ## Parse a parameter sweep configuration from a YAML file
+  let content = readFile(filename)
+  result = parseParameterSweepYAML(content)
