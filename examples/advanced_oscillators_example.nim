@@ -10,7 +10,7 @@
 
 import std/[strformat, strutils]
 
-import ../src/tzutrader/indicators
+include ../src/tzutrader/indicators
 
 # Generate sample data with a clear trend
 proc generateTrendingData(count: int): seq[tuple[high, low, close, volume: float64]] =

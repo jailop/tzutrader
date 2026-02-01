@@ -62,12 +62,12 @@ proc newRSIStrategy*(period: int = 14, oversold: float64 = 30.0,
     lastSignal: Position.Stay
   )
 
-proc analyze*(s: RSIStrategy, data: seq[OHLCV]): seq[Signal] =
-  ## **DEPRECATED**: Use on() for streaming mode instead.
-  raise newException(StrategyError, "RSI analyze() batch mode deprecated. Use on() streaming mode.")
+method analyze*(s: RSIStrategy, data: seq[OHLCV]): seq[Signal] =
+  ## **DEPRECATED**: Use onBar() for streaming mode instead.
+  raise newException(StrategyError, "RSI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc onData*(s: RSIStrategy, bar: OHLCV): Signal =
-  ## Process single bar using streaming RSI (new interface)
+method onBar*(s: RSIStrategy, bar: OHLCV): Signal =
+  ## Process single bar using streaming RSI
   # RSI needs open and close prices
   let rsiVal = s.rsiIndicator.update(bar.open, bar.close)
   
@@ -97,7 +97,7 @@ proc onData*(s: RSIStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-proc reset*(s: RSIStrategy) =
+method reset*(s: RSIStrategy) =
   ## Reset RSI strategy state
   s.rsiIndicator = newRSI(s.period)
   s.lastSignal = Position.Stay

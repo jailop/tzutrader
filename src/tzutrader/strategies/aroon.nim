@@ -65,11 +65,11 @@ proc newAroonStrategy*(period: int = 25, upThreshold: float64 = 70.0,
     lastPosition: Position.Stay
   )
 
-proc analyze*(s: AroonStrategy, data: seq[OHLCV]): seq[Signal] =
+method analyze*(s: AroonStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Aroon analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc onData*(s: AroonStrategy, bar: OHLCV): Signal =
+method onBar*(s: AroonStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Aroon indicator
   let aroonResult = s.aroonIndicator.update(bar.high, bar.low)
   
@@ -116,7 +116,7 @@ proc onData*(s: AroonStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-proc reset*(s: AroonStrategy) =
+method reset*(s: AroonStrategy) =
   ## Reset Aroon strategy state
   s.aroonIndicator = newAROON(s.period)
   s.lastPosition = Position.Stay

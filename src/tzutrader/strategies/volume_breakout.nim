@@ -71,7 +71,7 @@ proc newVolumeBreakoutStrategy*(period: int = 20, volumeMultiplier: float64 = 1.
   )
   result.symbol = symbol
 
-proc onData*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
+method onBar*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming volume breakout logic
   
   # Update volume MA
@@ -128,7 +128,7 @@ proc onData*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-proc reset*(s: VolumeBreakoutStrategy) =
+method reset*(s: VolumeBreakoutStrategy) =
   ## Reset strategy state
   s.volumeMA = newMA(s.period, memSize = 1)
   s.priceHighs = newSeq[float64](s.period)
@@ -138,6 +138,6 @@ proc reset*(s: VolumeBreakoutStrategy) =
   s.lastBreakoutDirection = Position.Stay
   s.initialized = false
 
-proc name*(s: VolumeBreakoutStrategy): string =
+method name*(s: VolumeBreakoutStrategy): string =
   ## Return strategy name
   result = &"Volume Breakout Strategy (period: {s.period}, volMult: {s.volumeMultiplier:.1f}x)"

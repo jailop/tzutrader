@@ -1,7 +1,7 @@
 ## Unit tests for YAML parser
 
 import std/[unittest, tables, options]
-import ../src/tzutrader/declarative/[schema, parser]
+import tzutrader/declarative/[schema, parser]
 
 suite "YAML Parser - Valid Files":
   

@@ -15,7 +15,7 @@ proc loadTestData(filename: string): seq[OHLCV] =
 suite "TripleMAStrategy Tests":
   test "Basic construction and parameters":
     let strat = newTripleMAStrategy(fastPeriod=20, mediumPeriod=50, slowPeriod=200)
-    # check strat.name.contains("Triple MA Strategy")
+    check strat.name().contains("Triple MA Strategy")
     check strat.fastPeriod == 20
     check strat.mediumPeriod == 50
     check strat.slowPeriod == 200
@@ -33,7 +33,7 @@ suite "TripleMAStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -49,7 +49,7 @@ suite "TripleMAStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -64,13 +64,13 @@ suite "TripleMAStrategy Tests":
     
     # Process some data
     for i in 0..<50:
-      discard strat.onData(data[i])
+      discard strat.onBar(data[i])
     
     # Reset
     strat.reset()
     
     # After reset, should have insufficient data
-    let signal = strat.onData(data[0])
+    let signal = strat.onBar(data[0])
     check signal.position == Position.Stay
   
   test "Insufficient data handling":
@@ -80,7 +80,7 @@ suite "TripleMAStrategy Tests":
     # Need slowPeriod bars before signals
     var stayCount = 0
     for i in 0..<50:
-      let signal = strat.onData(data[i])
+      let signal = strat.onBar(data[i])
       if signal.position == Position.Stay:
         stayCount += 1
     
@@ -90,7 +90,7 @@ suite "TripleMAStrategy Tests":
 suite "ADXTrendStrategy Tests":
   test "Basic construction and parameters":
     let strat = newADXTrendStrategy(period=14, adxThreshold=25.0)
-    # check strat.name.contains("ADX Trend Strategy")
+    check strat.name().contains("ADX Trend Strategy")
     check strat.period == 14
     check strat.adxThreshold == 25.0
   
@@ -105,7 +105,7 @@ suite "ADXTrendStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -121,7 +121,7 @@ suite "ADXTrendStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -137,13 +137,13 @@ suite "ADXTrendStrategy Tests":
     
     # Process some data
     for i in 0..<20:
-      discard strat.onData(data[i])
+      discard strat.onBar(data[i])
     
     # Reset
     strat.reset()
     
     # After reset, should have insufficient data
-    let signal = strat.onData(data[0])
+    let signal = strat.onBar(data[0])
     check signal.position == Position.Stay
   
   test "Insufficient data handling":
@@ -153,7 +153,7 @@ suite "ADXTrendStrategy Tests":
     # First bars should return Stay
     var stayCount = 0
     for i in 0..<13:
-      let signal = strat.onData(data[i])
+      let signal = strat.onBar(data[i])
       if signal.position == Position.Stay:
         stayCount += 1
     
@@ -162,7 +162,7 @@ suite "ADXTrendStrategy Tests":
 suite "VolumeBreakoutStrategy Tests":
   test "Basic construction and parameters":
     let strat = newVolumeBreakoutStrategy(period=20, volumeMultiplier=1.5)
-    # check strat.name.contains("Volume Breakout Strategy")
+    check strat.name().contains("Volume Breakout Strategy")
     check strat.period == 20
     check strat.volumeMultiplier == 1.5
   
@@ -177,7 +177,7 @@ suite "VolumeBreakoutStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -194,7 +194,7 @@ suite "VolumeBreakoutStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -210,13 +210,13 @@ suite "VolumeBreakoutStrategy Tests":
     
     # Process some data
     for i in 0..<25:
-      discard strat.onData(data[i])
+      discard strat.onBar(data[i])
     
     # Reset
     strat.reset()
     
     # After reset, should be building history
-    let signal = strat.onData(data[0])
+    let signal = strat.onBar(data[0])
     check signal.position == Position.Stay
   
   test "Insufficient data handling":
@@ -226,7 +226,7 @@ suite "VolumeBreakoutStrategy Tests":
     # Need period bars to build history
     var stayCount = 0
     for i in 0..<20:
-      let signal = strat.onData(data[i])
+      let signal = strat.onBar(data[i])
       if signal.position == Position.Stay:
         stayCount += 1
     
@@ -235,7 +235,7 @@ suite "VolumeBreakoutStrategy Tests":
 suite "DualMomentumStrategy Tests":
   test "Basic construction and parameters":
     let strat = newDualMomentumStrategy(rocPeriod=12, smaPeriod=50)
-    # check strat.name.contains("Dual Momentum Strategy")
+    check strat.name().contains("Dual Momentum Strategy")
     check strat.rocPeriod == 12
     check strat.smaPeriod == 50
   
@@ -250,7 +250,7 @@ suite "DualMomentumStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -266,7 +266,7 @@ suite "DualMomentumStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -281,13 +281,13 @@ suite "DualMomentumStrategy Tests":
     
     # Process some data
     for i in 0..<30:
-      discard strat.onData(data[i])
+      discard strat.onBar(data[i])
     
     # Reset
     strat.reset()
     
     # After reset, should have insufficient data
-    let signal = strat.onData(data[0])
+    let signal = strat.onBar(data[0])
     check signal.position == Position.Stay
   
   test "Insufficient data handling":
@@ -297,7 +297,7 @@ suite "DualMomentumStrategy Tests":
     # Need smaPeriod bars before signals
     var stayCount = 0
     for i in 0..<45:
-      let signal = strat.onData(data[i])
+      let signal = strat.onBar(data[i])
       if signal.position == Position.Stay:
         stayCount += 1
     
@@ -306,7 +306,7 @@ suite "DualMomentumStrategy Tests":
 suite "FilteredMeanReversionStrategy Tests":
   test "Basic construction and parameters":
     let strat = newFilteredMeanReversionStrategy(rsiPeriod=14, trendPeriod=200)
-    # check strat.name.contains("Filtered Mean Reversion Strategy")
+    check strat.name().contains("Filtered Mean Reversion Strategy")
     check strat.rsiPeriod == 14
     check strat.trendPeriod == 200
   
@@ -322,7 +322,7 @@ suite "FilteredMeanReversionStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -338,7 +338,7 @@ suite "FilteredMeanReversionStrategy Tests":
     var sellSignals = 0
     
     for candle in data:
-      let signal = strat.onData(candle)
+      let signal = strat.onBar(candle)
       if signal.position == Position.Buy:
         buySignals += 1
       elif signal.position == Position.Sell:
@@ -354,13 +354,13 @@ suite "FilteredMeanReversionStrategy Tests":
     
     # Process some data
     for i in 0..<50:
-      discard strat.onData(data[i])
+      discard strat.onBar(data[i])
     
     # Reset
     strat.reset()
     
     # After reset, should have insufficient data
-    let signal = strat.onData(data[0])
+    let signal = strat.onBar(data[0])
     check signal.position == Position.Stay
   
   test "Insufficient data handling":
@@ -370,7 +370,7 @@ suite "FilteredMeanReversionStrategy Tests":
     # Need trendPeriod bars before signals
     var stayCount = 0
     for i in 0..<50:
-      let signal = strat.onData(data[i])
+      let signal = strat.onBar(data[i])
       if signal.position == Position.Stay:
         stayCount += 1
     
@@ -384,65 +384,52 @@ suite "Integration Tests - Combination Strategies":
     let dual = newDualMomentumStrategy()
     let filtered = newFilteredMeanReversionStrategy()
     
-#     check triple.name.contains("Triple MA")
-#     check adx.name.contains("ADX")
-#     check volume.name.contains("Volume Breakout")
-#     check dual.name.contains("Dual Momentum")
-#     check filtered.name.contains("Filtered Mean Reversion")
+    check triple.name().contains("Triple MA")
+    check adx.name().contains("ADX")
+    check volume.name().contains("Volume Breakout")
+    check dual.name().contains("Dual Momentum")
+    check filtered.name().contains("Filtered Mean Reversion")
   
   test "All Phase 3 strategies work with streaming data":
     let data = loadTestData("uptrend.csv")
     let strategies = @[
-#       newTripleMAStrategy().Strategy,
-#       newADXTrendStrategy().Strategy,
-#       newVolumeBreakoutStrategy().Strategy,
-#       newDualMomentumStrategy().Strategy,
-#       newFilteredMeanReversionStrategy().Strategy
-#     ]
-#     
-#     for strat in strategies:
-#       var signalCount = 0
-#       for candle in data:
-#         let signal = strat.onData(candle)
-#         if signal.position != Position.Stay:
-#           signalCount += 1
-#       # Each strategy should process all bars without error
-#       check signalCount >= 0
-      newTripleMAStrategy(),
-      newADXTrendStrategy(),
-      newVolumeBreakoutStrategy(),
-      newDualMomentumStrategy(),
-      newFilteredMeanReversionStrategy(),
+      newTripleMAStrategy().Strategy,
+      newADXTrendStrategy().Strategy,
+      newVolumeBreakoutStrategy().Strategy,
+      newDualMomentumStrategy().Strategy,
+      newFilteredMeanReversionStrategy().Strategy
     ]
-#     for strat in strategies:
-#       var signalCount = 0
-#       for candle in data:
-#         let signal = strat.onData(candle)
-#         if signal.position != Position.Stay:
-#           signalCount += 1
-#       # Each strategy should process all bars without error
-
-#   test "All Phase 3 strategies handle reset correctly":
-#     let data = loadTestData("uptrend.csv")
-#     let strategies = @[
-#       newTripleMAStrategy(),
-#       newADXTrendStrategy(),
-#       newVolumeBreakoutStrategy(),
-#       newDualMomentumStrategy(),
-#       newFilteredMeanReversionStrategy()
-#     ]
-#     
-#     for strat in strategies:
-#       # Process some data
-#       for i in 0..<30:
-#         discard strat.onData(data[i])
-#       
-#       # Reset
-#       strat.reset()
-#       
-#       # Should be able to process again
-#       let signal = strat.onData(data[0])
-#       check signal.position == Position.Stay  # First bar after reset should be Stay
+    
+    for strat in strategies:
+      var signalCount = 0
+      for candle in data:
+        let signal = strat.onBar(candle)
+        if signal.position != Position.Stay:
+          signalCount += 1
+      # Each strategy should process all bars without error
+      check signalCount >= 0
+  
+  test "All Phase 3 strategies handle reset correctly":
+    let data = loadTestData("uptrend.csv")
+    let strategies = @[
+      newTripleMAStrategy().Strategy,
+      newADXTrendStrategy().Strategy,
+      newVolumeBreakoutStrategy().Strategy,
+      newDualMomentumStrategy().Strategy,
+      newFilteredMeanReversionStrategy().Strategy
+    ]
+    
+    for strat in strategies:
+      # Process some data
+      for i in 0..<30:
+        discard strat.onBar(data[i])
+      
+      # Reset
+      strat.reset()
+      
+      # Should be able to process again
+      let signal = strat.onBar(data[0])
+      check signal.position == Position.Stay  # First bar after reset should be Stay
   
   test "Phase 3 strategies with different market conditions":
     let uptrend = loadTestData("uptrend.csv")
@@ -454,19 +441,19 @@ suite "Integration Tests - Combination Strategies":
     
     # Test with all market conditions
     for candle in uptrend:
-      discard strat.onData(candle)
+      discard strat.onBar(candle)
     
     strat.reset()
     for candle in downtrend:
-      discard strat.onData(candle)
+      discard strat.onBar(candle)
     
     strat.reset()
     for candle in volatile:
-      discard strat.onData(candle)
+      discard strat.onBar(candle)
     
     strat.reset()
     for candle in ranging:
-      discard strat.onData(candle)
+      discard strat.onBar(candle)
     
     # If we got here without crashing, test passes
     check true

@@ -61,7 +61,7 @@ proc newParabolicSARStrategy*(acceleration: float64 = 0.02, maximum: float64 = 0
   )
   result.symbol = symbol
 
-proc onData*(s: ParabolicSARStrategy, bar: OHLCV): Signal =
+method onBar*(s: ParabolicSARStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Parabolic SAR
   let psarResult = s.psarIndicator.update(bar.high, bar.low, bar.close)
   
@@ -96,12 +96,12 @@ proc onData*(s: ParabolicSARStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-proc reset*(s: ParabolicSARStrategy) =
+method reset*(s: ParabolicSARStrategy) =
   ## Reset strategy state
   s.psarIndicator = newPSAR(s.acceleration, s.maximum, memSize = 2)
   s.lastTrendUp = false
   s.initialized = false
 
-proc name*(s: ParabolicSARStrategy): string =
+method name*(s: ParabolicSARStrategy): string =
   ## Return strategy name
   result = "Parabolic SAR Strategy"

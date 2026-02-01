@@ -242,16 +242,6 @@ proc parseOrCondition(node: YamlNode): ConditionYAML =
   result = newOrCondition(conditions)
   result.location = loc  # Store location
 
-proc parseNotCondition(node: YamlNode): ConditionYAML =
-  ## Parse a NOT condition (Phase 3)
-  let loc = some(toSourceLocation(node))  # Capture location
-  
-  # NOT takes a single condition (not a sequence)
-  let childCondition = parseCondition(node)
-  
-  result = newNotCondition(childCondition)
-  result.location = loc  # Store location
-
 proc parseCondition(node: YamlNode): ConditionYAML =
   ## Parse a condition (simple or compound)
   if node.kind == ySequence:
@@ -269,7 +259,7 @@ proc parseCondition(node: YamlNode): ConditionYAML =
     of "any", "or":
       return parseOrCondition(val)
     of "not":
-      return parseNotCondition(val)  # Phase 3: NOW SUPPORTED
+      raise newException(ParseError, "NOT operator not supported in Phase 1")
     else:
       discard
   

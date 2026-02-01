@@ -3,9 +3,16 @@
 TzuTrader is a trading bot library for Nim that provides tools for
 building and testing algorithmic trading strategies.
 
+## ⚠️ Important Disclaimer
 
-**This software is not stable yet. Don't use in production. The API is
-still evolving**
+**This software is provided for educational and research purposes only.**
+
+- **No Financial Advice**: TzuTrader does not provide financial, investment, trading, or any other type of professional advice. Any strategies, indicators, or results shown are for informational purposes only.
+- **No Liability**: The authors and contributors are not responsible for any financial losses, damages, or other consequences resulting from the use of this library.
+- **Trading Risks**: Trading financial instruments involves substantial risk of loss. Past performance does not guarantee future results. Backtested results do not represent actual trading and may not reflect the impact of material market factors such as liquidity, slippage, and transaction costs.
+- **Use at Your Own Risk**: Users are solely responsible for their trading decisions and should consult with qualified financial professionals before making any investment decisions.
+
+By using TzuTrader, you acknowledge that you understand these risks and accept full responsibility for your actions.
 
 ## Documentation Structure
 
@@ -97,9 +104,9 @@ It provides detailed information about every function, type, and module.
 
 ### Looking for Specific Information?
 
-- How do I...? → Check the User Guide
-- What parameters does X take? → Check the Reference Guide
-- What functions are available? → Check the API Documentation
+- **How do I...?** → Check the User Guide
+- **What parameters does X take?** → Check the Reference Guide
+- **What functions are available?** → Check the API Documentation
 
 ### Common Tasks
 
@@ -120,7 +127,7 @@ cd tzutrader
 nimble install -y
 ```
 
-Requirements: Nim 2.0.0 or later
+**Requirements:** Nim 2.0.0 or later
 
 ## Quick Example
 
@@ -148,42 +155,45 @@ echo report.summary()
 
 ## Limitations
 
-At this moment, TzuTrader only supports price-based technical analysis
-using OHLCV (Open, High, Low, Close, Volume) data. All indicators and
-strategies in the library operate on this standardized market data
-format.
+At this moment, TzuTrader only supports price-based technical analysis using OHLCV (Open, High, Low, Close, Volume) data. All indicators and strategies in the library operate on this standardized market data format.
+
+**Current scope:**
+
+- Technical indicators calculate from OHLCV bars
+- Pre-built strategies generate signals from price and volume patterns
+- Backtesting simulates trading based on historical OHLCV data
+
+**Not currently supported:**
+
+- Order book data and market microstructure analysis
+- Level 2 data or bid-ask spreads
+- Alternative data sources (news sentiment, social media, economic indicators)
+- Cross-asset correlation strategies requiring synchronized multi-market data
+- Tick-level or sub-bar execution modeling
+
+This focused scope allows TzuTrader to maintain its streaming
+architecture with constant memory usage. For most retail traders working
+with daily, hourly, or minute bars, OHLCV data provides sufficient
+information for technical analysis strategies. The library can be
+extended with custom indicators and strategies that work within this
+data framework.
 
 ## About the Name
 
-TzuTrader takes its name from Sun Tzu, the ancient Chinese
-military strategist and author of *The Art of War*. Written around the
-5th century BC, this treatise on military strategy has found application
-far beyond warfare, particularly in business.
+TzuTrader takes its name from Sun Tzu (孫子), the ancient Chinese military strategist and author of *The Art of War*. Written around the 5th century BC, this treatise on military strategy has found application far beyond warfare, particularly in business and trading.
 
-## ⚠️ Disclaimer
+Several principles from *The Art of War* apply directly to algorithmic trading:
 
-This software is provided for educational and research purposes only.
+**"Know the enemy and know yourself; in a hundred battles you will never be in peril."** This translates to understanding both market conditions and your strategy's behavior through rigorous backtesting before risking capital.
 
-- No Financial Advice: TzuTrader does not provide financial, investment,
-  trading, or any other type of professional advice. Any strategies,
-  indicators, or results shown are for informational purposes only.
-- No Liability: The authors and contributors are not responsible for any
-  financial losses, damages, or other consequences resulting from the
-  use of this library.
-- Trading Risks: Trading financial instruments involves substantial risk
-  of loss. Past performance does not guarantee future results.
-  Backtested results do not represent actual trading and may not reflect
-  the impact of material market factors such as liquidity, slippage, and
-  transaction costs.
-- Use at Your Own Risk: Users are solely responsible for their trading
-  decisions and should consult with qualified financial professionals
-  before making any investment decisions.
+**"The general who wins the battle makes many calculations in his temple before the battle is fought."** Systematic backtesting and strategy validation embody this preparation, allowing traders to test ideas thoroughly before deployment.
 
-By using TzuTrader, you acknowledge that you understand these risks and
-accept full responsibility for your actions.
+**"In war, numbers alone confer no advantage."** Similarly in trading, simply having more indicators or complex strategies does not guarantee success. What matters is disciplined execution of well-tested approaches.
+
+**"To secure ourselves against defeat lies in our own hands."** Risk management and position sizing—core features of TzuTrader—are tools traders control directly, protecting capital regardless of market outcomes.
+
+The name reflects the library's emphasis on preparation through backtesting, disciplined strategy development, and systematic decision-making based on tested rules rather than emotion or speculation.
 
 ## Next Steps
 
-Ready to start? Head to the [Getting Started
-Guide](user_guide/01_getting_started.md) and run your first backtest in
-under 15 minutes.
+Ready to start? Head to the [Getting Started Guide](user_guide/01_getting_started.md) and run your first backtest in under 15 minutes.

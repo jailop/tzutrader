@@ -1,25 +1,42 @@
 #!/bin/bash
+# Build TzuTrader Documentation
+# This script generates HTML documentation from Markdown sources
+
 set -e  # Exit on error
+
+echo "Building TzuTrader Documentation..."
+echo "===================================="
+echo ""
+
 # Check if mkdocs is installed
 if ! command -v mkdocs &> /dev/null; then
     echo "Error: mkdocs is not installed"
+    echo "Install with: pip install mkdocs mkdocs-material pymdown-extensions mkdocs-minify-plugin"
     exit 1
 fi
 
 # Check if nim is installed
 if ! command -v nim &> /dev/null; then
     echo "Error: nim is not installed"
+    echo "Install from: https://nim-lang.org/install.html"
     exit 1
 fi
 
 # Step 1: Build MkDocs documentation (Markdown -> HTML)
+echo "Step 1: Building HTML from Markdown..."
 mkdocs build --clean --strict
-if [ $? -ne 0 ]; then
-    echo "Failed to build HTML documentation"
+
+if [ $? -eq 0 ]; then
+    echo "✓ HTML documentation generated successfully"
+else
+    echo "✗ Failed to build HTML documentation"
     exit 1
 fi
 
+echo ""
+
 # Step 2: Generate API documentation with NimDoc
+echo "Step 2: Generating API documentation..."
 mkdir -p docs/api
 
 # Find nimdoc.css in standard locations
@@ -27,6 +44,7 @@ NIMDOC_PATH=""
 for CHECK_PATH in "/usr/share/nim/doc" "/usr/local/lib/nim/doc" "/usr/lib/nim/doc"; do
     if [ -f "$CHECK_PATH/nimdoc.css" ]; then
         NIMDOC_PATH="$CHECK_PATH"
+        echo "Found nimdoc files at: $NIMDOC_PATH"
         break
     fi
 done
@@ -80,3 +98,18 @@ else
     echo "✗ Warning: API documentation generation failed"
     echo "  HTML documentation is still available"
 fi
+
+echo ""
+
+# Step 3: Summary
+echo "===================================="
+echo "Documentation build complete!"
+echo ""
+echo "Output locations:"
+echo "  - HTML docs: docs/"
+echo "  - API docs:  docs/api/"
+echo ""
+echo "To view locally:"
+echo "  - Run: mkdocs serve"
+echo "  - Open: http://localhost:8000"
+echo ""

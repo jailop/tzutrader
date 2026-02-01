@@ -1,8 +1,8 @@
 ## Unit tests for strategy builder
 
 import std/[unittest, tables, times, math]
-import ../src/tzutrader/core
-import ../src/tzutrader/declarative/[schema, parser, validator, strategy_builder]
+import tzutrader/core
+import tzutrader/declarative/[schema, parser, validator, strategy_builder]
 
 proc testBar(close: float = 100.0, open: float = 100.0, high: float = 105.0, 
              low: float = 95.0, volume: float = 1000.0): OHLCV =

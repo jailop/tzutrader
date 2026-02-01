@@ -10,7 +10,7 @@
 
 import std/[strformat, strutils, math]
 
-import ../src/tzutrader/indicators
+include ../src/tzutrader/indicators
 
 # ============================================================================
 # Section 1: True Range - Capturing Full Volatility

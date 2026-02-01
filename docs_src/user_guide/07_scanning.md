@@ -361,7 +361,7 @@ The CLI tool provides scanning without writing code:
 # Scan multiple symbols
 ./tzutrader_cli scan data/ AAPL,MSFT,GOOG,AMZN,TSLA \
   --strategy=rsi \
-  --initialCash=100000 \
+  --initial-cash=100000 \
   --commission=0.001
 
 # Rank by Sharpe ratio

@@ -7,10 +7,11 @@
 ## - Calculating performance metrics
 ## - Simulating a simple trading strategy with portfolio
 
-import std/[times, sequtils, strformat, tables, math]
+import std/[times, strformat, tables]
 
-import ../src/tzutrader/core
-import ../src/tzutrader/portfolio
+include ../src/tzutrader/core
+include ../src/tzutrader/data
+include ../src/tzutrader/portfolio
 
 proc main() =
   echo "="

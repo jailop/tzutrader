@@ -6,7 +6,3 @@
 
 - tzu uses command -r or --run-strat to run strategies, enabling the
   addition of other commands in the future.
-- declarative module started
-- generic data streamers
-- strategies with data requirement declarations
-- new runner for generic data streamers and strategies

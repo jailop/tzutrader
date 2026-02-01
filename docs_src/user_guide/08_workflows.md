@@ -188,7 +188,7 @@ for symbol in $SYMBOLS; do
   echo "Testing $symbol..."
   ./tzutrader_cli backtest data/${symbol}.csv \
     --strategy=$STRATEGY \
-    --initialCash=100000 \
+    --initial-cash=100000 \
     --commission=0.001 \
     --export=${OUTPUT_DIR}/${symbol}_${STRATEGY}.json
 done
@@ -217,7 +217,7 @@ for strategy in $STRATEGIES; do
   echo "Testing $strategy on $SYMBOL..."
   ./tzutrader_cli backtest data/${SYMBOL}.csv \
     --strategy=$strategy \
-    --initialCash=100000 \
+    --initial-cash=100000 \
     --commission=0.001 \
     --export=results/${SYMBOL}_${strategy}.json
 done

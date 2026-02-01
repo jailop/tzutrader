@@ -69,11 +69,11 @@ proc newKAMAStrategy*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 3
     initialized: false
   )
 
-proc analyze*(s: KAMAStrategy, data: seq[OHLCV]): seq[Signal] =
+method analyze*(s: KAMAStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "KAMA analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc onData*(s: KAMAStrategy, bar: OHLCV): Signal =
+method onBar*(s: KAMAStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming KAMA
   let kamaVal = s.kamaIndicator.update(bar.close)
   
@@ -123,7 +123,7 @@ proc onData*(s: KAMAStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-proc reset*(s: KAMAStrategy) =
+method reset*(s: KAMAStrategy) =
   ## Reset KAMA strategy state
   s.kamaIndicator = newKAMA(s.period, s.fastPeriod, s.slowPeriod)
   s.lastPriceAbove = false

@@ -61,11 +61,11 @@ proc newBollingerStrategy*(period: int = 20, stdDev: float64 = 2.0,
     lastPosition: Position.Stay
   )
 
-proc analyze*(s: BollingerStrategy, data: seq[OHLCV]): seq[Signal] =
+method analyze*(s: BollingerStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Bollinger analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc onData*(s: BollingerStrategy, bar: OHLCV): Signal =
+method onBar*(s: BollingerStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Bollinger Bands
   let bb = s.bbIndicator.update(bar.close)
   
@@ -101,7 +101,7 @@ proc onData*(s: BollingerStrategy, bar: OHLCV): Signal =
     reason: reason
   )
 
-proc reset*(s: BollingerStrategy) =
+method reset*(s: BollingerStrategy) =
   ## Reset Bollinger strategy state
   s.bbIndicator = newBollingerBands(s.period, s.stdDev)
   s.lastPosition = Position.Stay

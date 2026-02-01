@@ -1,7 +1,7 @@
 ## Unit tests for validator
 
 import std/[unittest, tables, sets, strutils]
-import ../src/tzutrader/declarative/[schema, parser, validator]
+import tzutrader/declarative/[schema, parser, validator]
 
 suite "Validator - Metadata":
   

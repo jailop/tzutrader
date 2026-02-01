@@ -9,9 +9,11 @@
 ## Both batch mode and streaming mode are shown.
 
 import std/[times, strformat, sequtils]
-import ../src/tzutrader/core
-import ../src/tzutrader/data
-import ../src/tzutrader/strategy
+
+include ../src/tzutrader/core
+include ../src/tzutrader/data
+include ../src/tzutrader/indicators
+include ../src/tzutrader/strategy
 
 proc printSignalSummary(name: string, signals: seq[Signal]) =
   let buySignals = signals.filterIt(it.position == Position.Buy)
@@ -55,33 +57,25 @@ proc main() =
   # 1. RSI Strategy
   echo "\n1. RSI Strategy (Period: 14, Oversold: 30, Overbought: 70)"
   let rsiStrat = newRSIStrategy(period = 14, oversold = 30.0, overbought = 70.0)
-  var rsiSignals: seq[Signal] = @[]
-  for bar in data:
-    rsiSignals.add(on(rsiStrat, bar))
+  let rsiSignals = rsiStrat.analyze(data)
   printSignalSummary("RSI Strategy", rsiSignals)
   
   # 2. Moving Average Crossover Strategy
   echo "\n2. Moving Average Crossover (Fast: 10, Slow: 20)"
   let crossStrat = newCrossoverStrategy(fastPeriod = 10, slowPeriod = 20)
-  var crossSignals: seq[Signal] = @[]
-  for bar in data:
-    crossSignals.add(on(crossStrat, bar))
+  let crossSignals = crossStrat.analyze(data)
   printSignalSummary("Crossover Strategy", crossSignals)
   
   # 3. MACD Strategy
   echo "\n3. MACD Strategy (Fast: 12, Slow: 26, Signal: 9)"
   let macdStrat = newMACDStrategy(fastPeriod = 12, slowPeriod = 26, signalPeriod = 9)
-  var macdSignals: seq[Signal] = @[]
-  for bar in data:
-    macdSignals.add(on(macdStrat, bar))
+  let macdSignals = macdStrat.analyze(data)
   printSignalSummary("MACD Strategy", macdSignals)
   
   # 4. Bollinger Bands Strategy
   echo "\n4. Bollinger Bands Strategy (Period: 20, StdDev: 2.0)"
   let bbStrat = newBollingerStrategy(period = 20, stdDev = 2.0)
-  var bbSignals: seq[Signal] = @[]
-  for bar in data:
-    bbSignals.add(on(bbStrat, bar))
+  let bbSignals = bbStrat.analyze(data)
   printSignalSummary("Bollinger Bands Strategy", bbSignals)
   
   # ============================================================================
@@ -100,7 +94,7 @@ proc main() =
   
   echo "Processing bars..."
   for i, bar in data:
-    let signal = on(streamStrat, bar)
+    let signal = streamStrat.onBar(bar)
     streamSignals.add(signal)
     
     # Print only when signal changes
@@ -148,9 +142,7 @@ proc main() =
   echo &"\nRunning Crossover Strategy on multiple symbols:"
   for symbol in symbols:
     let symbolData = readCSV(&"data/{symbol}")
-    var symbolSignals: seq[Signal] = @[]
-    for bar in symbolData:
-      symbolSignals.add(on(strategy, bar))
+    let symbolSignals = strategy.analyze(symbolData)
     
     let buys = symbolSignals.filterIt(it.position == Position.Buy).len
     let sells = symbolSignals.filterIt(it.position == Position.Sell).len
@@ -185,9 +177,7 @@ proc main() =
       oversold = params.oversold,
       overbought = params.overbought
     )
-    var testSignals: seq[Signal] = @[]
-    for bar in data:
-      testSignals.add(on(testStrat, bar))
+    let testSignals = testStrat.analyze(data)
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     

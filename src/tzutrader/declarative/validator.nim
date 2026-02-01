@@ -130,14 +130,7 @@ proc validateCondition*(condition: ConditionYAML, indicatorIds: HashSet[string])
         for err in childResult.errors:
           result.addError(err)
   of ckNot:
-    # Phase 3: NOW SUPPORTED
-    if condition.notCondition.isNil:
-      result.addError(formatError("NOT condition must have a child condition", condition.location))
-    else:
-      let childResult = validateCondition(condition.notCondition[], indicatorIds)
-      if not childResult.valid:
-        for err in childResult.errors:
-          result.addError(err)
+    result.addError(formatError("NOT conditions not supported in Phase 1", condition.location))
 
 proc validateRule*(rule: RuleYAML, indicatorIds: HashSet[string]): ValidationResult =
   ## Validate an entry or exit rule

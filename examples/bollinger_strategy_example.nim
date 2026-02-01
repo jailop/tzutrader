@@ -4,12 +4,12 @@
 ## This strategy generates buy signals when price touches the lower band
 ## and sell signals when price touches the upper band.
 
-import std/[times, sequtils, strformat]
+import std/[times, strformat]
 
-import ../src/tzutrader/core
-import ../src/tzutrader/data
-import ../src/tzutrader/indicators
-import ../src/tzutrader/strategy
+include ../src/tzutrader/core
+include ../src/tzutrader/data
+include ../src/tzutrader/indicators
+include ../src/tzutrader/strategy
 
 proc main() =
   echo "="
@@ -19,7 +19,7 @@ proc main() =
   
   # Load CSV data
   echo "Loading AAPL sample data..."
-  let data = readCSV("data/AAPL.csv")
+  let data = readCSV("data/AAPL_sample.csv")
   echo &"Loaded {data.len} bars"
   echo ""
   

@@ -1,7 +1,7 @@
 ## Example: Fetching and displaying stock data
 
 import ../src/tzutrader
-import std/[times, tables]
+import std/[times, tables, strformat]
 
 echo "=== TzuTrader Data Module Example ==="
 echo ""
@@ -44,7 +44,7 @@ echo ""
 echo "4. Getting quotes for multiple symbols..."
 let quotes = getQuotes(symbols)
 for symbol, q in quotes:
-  # let changeStr = if q.regularMarketChange >= 0: "+" & $q.regularMarketChange else: $q.regularMarketChange
+  let changeStr = if q.regularMarketChange >= 0: "+" & $q.regularMarketChange else: $q.regularMarketChange
   let pctStr = if q.regularMarketChangePercent >= 0: "+" else: ""
   echo "   ", symbol, ": $", q.regularMarketPrice, 
        " (", pctStr, $q.regularMarketChangePercent, "%)"

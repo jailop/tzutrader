@@ -13,7 +13,7 @@
 ## - Comprehensive performance reports
 ## - Transaction cost modeling
 
-import std/[tables, times, math, strformat, strutils]
+import std/[tables, times, math, sequtils, strformat, algorithm, strutils]
 import core, data, strategy, portfolio
 
 type
@@ -212,7 +212,7 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
   # Run strategy on data and execute signals
   for i, bar in data:
     # Get signal from strategy
-    let signal = bt.strategy.onData(bar)
+    let signal = bt.strategy.onBar(bar)
     
     # Update portfolio prices
     var prices = initTable[string, float64]()

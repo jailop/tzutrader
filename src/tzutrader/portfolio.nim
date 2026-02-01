@@ -11,7 +11,7 @@
 ## - Transaction history
 ## - Risk management helpers
 
-import std/[tables, times, math, sequtils, strformat]
+import std/[tables, times, math, algorithm, sequtils, strformat]
 import core
 
 type

@@ -11,7 +11,7 @@
 
 import std/[strformat, strutils, math]
 
-import ../src/tzutrader/indicators
+include ../src/tzutrader/indicators
 
 # ============================================================================
 # Section 1: Basic Moving Average Comparison

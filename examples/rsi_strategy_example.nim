@@ -3,10 +3,12 @@
 ## Demonstrates the RSI (Relative Strength Index) strategy.
 ## This strategy buys when RSI is oversold and sells when overbought.
 
-import std/[times, sequtils, strformat]
-import ../src/tzutrader/core
-import ../src/tzutrader/data
-import ../src/tzutrader/strategy
+import std/[times, strformat]
+
+include ../src/tzutrader/core
+include ../src/tzutrader/data
+include ../src/tzutrader/indicators
+include ../src/tzutrader/strategy
 
 proc main() =
   echo "="

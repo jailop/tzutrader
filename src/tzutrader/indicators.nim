@@ -11,6 +11,7 @@
 ## - No batch processing - streaming only
 
 import std/[math, deques]
+import core
 
 # ============================================================================
 # Base Types

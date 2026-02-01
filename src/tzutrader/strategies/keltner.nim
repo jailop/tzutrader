@@ -90,7 +90,7 @@ proc newKeltnerChannelStrategy*(emaPeriod: int = 20, atrPeriod: int = 10,
   )
   result.symbol = symbol
 
-proc onData*(s: KeltnerChannelStrategy, bar: OHLCV): Signal =
+method onBar*(s: KeltnerChannelStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Keltner Channels
   let emaValue = s.emaIndicator.update(bar.close)
   let atrValue = s.atrIndicator.update(bar.low, bar.high, bar.close)
@@ -146,7 +146,7 @@ proc onData*(s: KeltnerChannelStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-proc reset*(s: KeltnerChannelStrategy) =
+method reset*(s: KeltnerChannelStrategy) =
   ## Reset strategy state
   s.emaIndicator = newEMA(s.emaPeriod, memSize = 1)
   s.atrIndicator = newATR(s.atrPeriod, memSize = 1)
@@ -154,7 +154,7 @@ proc reset*(s: KeltnerChannelStrategy) =
   s.lastBelowLower = false
   s.initialized = false
 
-proc name*(s: KeltnerChannelStrategy): string =
+method name*(s: KeltnerChannelStrategy): string =
   ## Return strategy name
   let modeStr = if s.mode == Breakout: "Breakout" else: "Reversion"
   result = &"Keltner Channel Strategy ({modeStr})"

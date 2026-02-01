@@ -64,7 +64,7 @@ proc newADXTrendStrategy*(period: int = 14, adxThreshold: float64 = 25.0,
   )
   result.symbol = symbol
 
-proc onData*(s: ADXTrendStrategy, bar: OHLCV): Signal =
+method onBar*(s: ADXTrendStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming ADX
   let adxResult = s.adxIndicator.update(bar.low, bar.high, bar.close)
   
@@ -110,12 +110,12 @@ proc onData*(s: ADXTrendStrategy, bar: OHLCV): Signal =
   
   result = newSignal(position, s.symbol, bar.close, reason)
 
-proc reset*(s: ADXTrendStrategy) =
+method reset*(s: ADXTrendStrategy) =
   ## Reset strategy state
   s.adxIndicator = newADX(s.period, memSize = 1)
   s.lastPlusDIAbove = false
   s.initialized = false
 
-proc name*(s: ADXTrendStrategy): string =
+method name*(s: ADXTrendStrategy): string =
   ## Return strategy name
   result = &"ADX Trend Strategy (threshold: {s.adxThreshold:.0f})"
