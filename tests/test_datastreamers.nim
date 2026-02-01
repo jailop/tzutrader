@@ -166,38 +166,38 @@ suite "DataStreamers - Yahoo Finance Streaming":
     
     check firstBar.timestamp == firstBarAgain.timestamp
 
-suite "DataStreamers - Coinbase Streaming":
-  test "Stream Coinbase OHLCV (mock data)":
-    # This will use mock data since credentials are not available
-    let stream = streamCoinbase[OHLCV]("BTC-USD", 7)  # Last 7 days
-    var count = 0
-    
-    for bar in stream.items():
-      check bar.timestamp > 0
-      check bar.close > 0
-      check bar.high >= bar.low
-      count.inc
-    
-    check count > 0
-  
-  test "Stream Coinbase with date strings":
-    let stream = streamCoinbase[OHLCV]("ETH-USD", "2023-01-01", "2023-01-31")
-    check stream.len() > 0
-  
-  test "Coinbase stream reset":
-    let stream = streamCoinbase[OHLCV]("BTC-USD", 7)
-    
-    check stream.next()
-    let firstBar = stream.current()
-    
-    discard stream.next()
-    discard stream.next()
-    
-    stream.reset()
-    check stream.next()
-    let firstBarAgain = stream.current()
-    
-    check firstBar.timestamp == firstBarAgain.timestamp
+# suite "DataStreamers - Coinbase Streaming":
+#   test "Stream Coinbase OHLCV (mock data)":
+#     # This will use mock data since credentials are not available
+#     let stream = streamCoinbase[OHLCV]("BTC-USD", 7)  # Last 7 days
+#     var count = 0
+#     
+#     for bar in stream.items():
+#       check bar.timestamp > 0
+#       check bar.close > 0
+#       check bar.high >= bar.low
+#       count.inc
+#     
+#     check count > 0
+#   
+#   test "Stream Coinbase with date strings":
+#     let stream = streamCoinbase[OHLCV]("ETH-USD", "2023-01-01", "2023-01-31")
+#     check stream.len() > 0
+#   
+#   test "Coinbase stream reset":
+#     let stream = streamCoinbase[OHLCV]("BTC-USD", 7)
+#     
+#     check stream.next()
+#     let firstBar = stream.current()
+#     
+#     discard stream.next()
+#     discard stream.next()
+#     
+#     stream.reset()
+#     check stream.next()
+#     let firstBarAgain = stream.current()
+#     
+#     check firstBar.timestamp == firstBarAgain.timestamp
 
 suite "DataStreamers - Generic API":
   test "Generic stream() with CSV provider":

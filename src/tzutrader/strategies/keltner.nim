@@ -90,7 +90,7 @@ proc newKeltnerChannelStrategy*(emaPeriod: int = 20, atrPeriod: int = 10,
   )
   result.symbol = symbol
 
-proc on*(s: KeltnerChannelStrategy, bar: OHLCV): Signal =
+proc onData*(s: KeltnerChannelStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Keltner Channels
   let emaValue = s.emaIndicator.update(bar.close)
   let atrValue = s.atrIndicator.update(bar.low, bar.high, bar.close)

@@ -71,7 +71,7 @@ proc newVolumeBreakoutStrategy*(period: int = 20, volumeMultiplier: float64 = 1.
   )
   result.symbol = symbol
 
-proc on*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
+proc onData*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming volume breakout logic
   
   # Update volume MA

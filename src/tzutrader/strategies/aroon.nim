@@ -69,7 +69,7 @@ proc analyze*(s: AroonStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Aroon analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc on*(s: AroonStrategy, bar: OHLCV): Signal =
+proc onData*(s: AroonStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Aroon indicator
   let aroonResult = s.aroonIndicator.update(bar.high, bar.low)
   

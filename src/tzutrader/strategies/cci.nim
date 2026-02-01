@@ -72,7 +72,7 @@ proc analyze*(s: CCIStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "CCI analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc on*(s: CCIStrategy, bar: OHLCV): Signal =
+proc onData*(s: CCIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming CCI
   let cciVal = s.cciIndicator.update(bar.high, bar.low, bar.close)
   

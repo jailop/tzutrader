@@ -64,7 +64,7 @@ proc newMACDStrategy*(fastPeriod: int = 12, slowPeriod: int = 26,
     lastMACDAbove: false
   )
 
-proc on*(s: MACDStrategy, bar: OHLCV): Signal =
+proc onData*(s: MACDStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MACD
   let macdResult = s.macdIndicator.update(bar.close)
   

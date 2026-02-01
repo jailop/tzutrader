@@ -66,7 +66,7 @@ proc analyze*(s: RSIStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use on() for streaming mode instead.
   raise newException(StrategyError, "RSI analyze() batch mode deprecated. Use on() streaming mode.")
 
-proc on*(s: RSIStrategy, bar: OHLCV): Signal =
+proc onData*(s: RSIStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming RSI (new interface)
   # RSI needs open and close prices
   let rsiVal = s.rsiIndicator.update(bar.open, bar.close)

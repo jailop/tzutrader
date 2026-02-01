@@ -74,7 +74,7 @@ proc newTripleMAStrategy*(fastPeriod: int = 20, mediumPeriod: int = 50,
   )
   result.symbol = symbol
 
-proc on*(s: TripleMAStrategy, bar: OHLCV): Signal =
+proc onData*(s: TripleMAStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming Triple MA
   let fastValue = s.fastMA.update(bar.close)
   let mediumValue = s.mediumMA.update(bar.close)

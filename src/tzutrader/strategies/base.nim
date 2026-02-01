@@ -163,7 +163,7 @@ proc getDataRequirements*(s: Strategy): seq[DataRequirement] =
   ##     ]
   @[newDataRequirement(dkOHLCV, required = true, frequency = dfDaily)]
 
-proc on*(s: Strategy, bar: OHLCV): Signal =
+proc onData*(s: Strategy, bar: OHLCV): Signal =
   ## Callback for OHLCV data (new pattern)
   ## 
   ## This is the primary callback for strategies that work with OHLCV bars.
@@ -175,14 +175,14 @@ proc on*(s: Strategy, bar: OHLCV): Signal =
   ##   Signal with position recommendation
   ## 
   ## Example:
-  ##   proc on*(s: RSIStrategy, bar: OHLCV): Signal =
+  ##   proc onData*(s: RSIStrategy, bar: OHLCV): Signal =
   ##     s.rsi.update(bar.close)
   ##     if s.rsi.value < 30: return newSignal(Buy, s.symbol, bar.close)
   ##     elif s.rsi.value > 70: return newSignal(Sell, s.symbol, bar.close)
   ##     else: return newSignal(Stay, s.symbol, bar.close)
   raise newException(StrategyError, "on(OHLCV) not implemented for " & s.name)
 
-proc on*(s: Strategy, quote: Quote): Signal =
+proc onData*(s: Strategy, quote: Quote): Signal =
   ## Callback for Quote data (new pattern)
   ## 
   ## This is the primary callback for strategies that work with real-time quotes.
@@ -194,7 +194,7 @@ proc on*(s: Strategy, quote: Quote): Signal =
   ##   Signal with position recommendation
   ## 
   ## Example:
-  ##   proc on*(s: ScalpStrategy, quote: Quote): Signal =
+  ##   proc onData*(s: ScalpStrategy, quote: Quote): Signal =
   ##     let spread = quote.regularMarketDayHigh - quote.regularMarketDayLow
   ##     if spread > s.threshold:
   ##       return newSignal(Buy, s.symbol, quote.regularMarketPrice)
@@ -227,7 +227,7 @@ proc onData*(s: Strategy, ctx: DataContext): Signal =
   # Default: Extract OHLCV and delegate to on(OHLCV)
   if ctx.hasData(dkOHLCV):
     let bar = ctx.getOHLCV()
-    return s.on(bar)
+    return s.onData(bar)
   else:
     raise newException(StrategyError, "onData() requires at least OHLCV data")
 
@@ -242,7 +242,7 @@ proc onBar*(s: Strategy, bar: OHLCV): Signal =
   ## 
   ## Returns:
   ##   Signal with position recommendation
-  s.on(bar)
+  s.onData(bar)
 
 proc analyze*(s: Strategy, data: seq[OHLCV]): seq[Signal] =
   ## Analyze historical data and generate signals for each bar (batch mode)

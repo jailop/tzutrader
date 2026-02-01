@@ -320,7 +320,7 @@ proc run*(runner: Runner, symbol: string,
     if requirements.len == 1 and requirements[0].dataKind == dkOHLCV:
       # Single OHLCV data - use on() callback (new interface)
       let bar = ctx.getOHLCV()
-      signal = runner.strategy.on(bar)
+      signal = runner.strategy.onData(bar)
     else:
       # Multi-data or non-OHLCV - use onData(ctx) callback
       signal = runner.strategy.onData(ctx)
@@ -488,7 +488,7 @@ proc runWithData*(runner: Runner, symbol: string,
   # Run strategy on data
   for i, bar in data:
     # Get signal from strategy (use on() - new interface)
-    let signal = runner.strategy.on(bar)
+    let signal = runner.strategy.onData(bar)
     
     # Update portfolio prices
     var prices = initTable[string, float64]()

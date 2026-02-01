@@ -67,7 +67,7 @@ proc analyze*(s: CrossoverStrategy, data: seq[OHLCV]): seq[Signal] =
   ## **DEPRECATED**: Use onBar() for streaming mode instead.
   raise newException(StrategyError, "Crossover analyze() batch mode deprecated. Use onBar() streaming mode.")
 
-proc on*(s: CrossoverStrategy, bar: OHLCV): Signal =
+proc onData*(s: CrossoverStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming MAs
   let fastVal = s.fastMA.update(bar.close)
   let slowVal = s.slowMA.update(bar.close)
