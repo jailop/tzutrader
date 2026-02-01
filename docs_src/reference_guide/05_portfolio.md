@@ -707,4 +707,4 @@ echo metrics
 - [Core Types Reference](01_core.md) - Transaction and Position types
 - [Backtesting Reference](06_backtesting.md) - Using portfolios in backtests
 - [User Guide: Portfolio Management](../user_guide/05_portfolio.md) - Conceptual introduction
-- [User Guide: Best Practices](../user_guide/09_best_practices.md) - Position sizing and risk management
+- [User Guide: Best Practices](../user_guide/10_best_practices.md) - Position sizing and risk management

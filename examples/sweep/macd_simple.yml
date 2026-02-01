@@ -1,0 +1,41 @@
+## Simple MACD Parameter Sweep
+##
+## A minimal sweep to test MACD fast/slow period combinations
+
+version: "1.0"
+
+metadata:
+  name: "MACD Quick Sweep"
+  description: "Test different MACD period combinations"
+
+base_strategy: "examples/yaml_strategies/macd_crossover.yml"
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+  start_date: "2023-06-01"
+  end_date: "2023-12-31"
+
+portfolio:
+  initial_cash: 10000.0
+  commission: 0.001
+
+parameters:
+  # MACD fast period: 8, 12, 16
+  - path: "indicators.macd.fast"
+    range:
+      type: list
+      values: [8, 12, 16]
+  
+  # MACD slow period: 20, 26, 32
+  - path: "indicators.macd.slow"
+    range:
+      type: list
+      values: [20, 26, 32]
+
+output:
+  best_results: "macd_best.csv"
+  full_results: "macd_all.csv"
+
+# Total combinations: 3 × 3 = 9 tests

@@ -1,14 +1,10 @@
-# Package
-
-version       = "0.1.1"
+version       = "0.2.0"
 author        = "tzutrader contributors"
 description   = "A simplified trading bot library in Nim"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["tzu"]
 installExt    = @["nim"]
-
-# Dependencies
 
 requires "nim >= 2.0.0"
 requires "https://codeberg.org/jailop/yfnim.git"
@@ -30,6 +26,10 @@ task test, "Run the test suite":
   exec "nim c -r --path:src tests/declarative/test_parser.nim"
   exec "nim c -r --path:src tests/declarative/test_validator.nim"
   exec "nim c -r --path:src tests/declarative/test_strategy_builder.nim"
+  echo "Running screener tests..."
+  exec "nim c -r --path:src tests/screener/test_parser.nim"
+  exec "nim c -r --path:src tests/screener/test_reports.nim"
+  exec "nim c -r --path:src tests/screener/test_integration.nim"
   echo "========================="
   echo "All tests passed!"
 
@@ -52,20 +52,6 @@ task docapi, "Generate API documentation only":
   exec "mkdir -p docs/api"
   exec "nim doc --project --index:on --outdir:docs/api src/tzutrader.nim"
   echo "API documentation generated in docs/api/"
-
-task benchmark, "Run performance benchmarks":
-  exec "nim c -d:release --opt:speed -r benchmarks/indicator_perf.nim"
-
-task cli, "Build the CLI tool (alias for 'nimble build')":
-  echo "Building TzuTrader CLI..."
-  exec "nimble build"
-  echo ""
-  echo "Usage (16 strategies available):"
-  echo "  ./tzu --help                          # List all strategies"
-  echo "  ./tzu rsi --help                      # RSI strategy options"
-  echo "  ./tzu rsi -s AAPL --start=2023-01-01  # Yahoo Finance (default)"
-  echo "  ./tzu rsi --csvFile=data/AAPL.csv     # CSV file"
-  echo "  ./tzu macd --coinbase=BTC-USD --start=2024-01-01  # Coinbase"
 
 task examples, "Compile all examples":
   echo "Compiling examples..."
@@ -103,5 +89,3 @@ task examples, "Compile all examples":
   echo "  ./examples/advanced_strategies_example # Multi-indicator strategies"
   echo "  ./examples/portfolio_example        # Portfolio management"
   echo "  ./examples/backtest_example         # Backtesting"
-
-requires "mathexpr >= 1.3.2"

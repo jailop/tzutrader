@@ -1,0 +1,43 @@
+# Integration Test Screener
+# Uses CSV data for reliable testing
+
+metadata:
+  name: "Integration Test Screener"
+  description: "Test screener with CSV data"
+  author: "TzuTrader"
+  tags:
+    - test
+    - csv
+
+strategies:
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 40
+      overbought: 60
+  
+  - kind: built_in
+    name: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+
+data:
+  source: csv
+  directory: "test_data"
+  lookback: 90d
+  interval: 1d
+
+output:
+  format: json
+  detail_level: detailed
+  filepath: "test_screener_output.json"
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: weak
+  top_n: 50

@@ -1,4 +1,4 @@
-## TzuTrader CLI v0.8.0 - Command: tzu
+## TzuTrader CLI v0.9.0 - Command: tzu
 ##
 ## **DISCLAIMER**: This software is for educational and research purposes only.
 ## It does not provide financial advice. Trading involves substantial risk of loss.
@@ -9,12 +9,15 @@
 ## Automatic command-line interface powered by cligen
 ## 
 ## Usage:
-##   tzu --run-strat=<STRATEGY> [data-source] [strategy-options] [portfolio-options]
-##   tzu --yaml-strategy=<FILE> [data-source] [portfolio-options]
+##   tzu --backtest=<STRATEGY> [data-source] [strategy-options] [portfolio-options]
+##   tzu --strategy=<FILE> [data-source] [portfolio-options]
 ##
-## Strategy selection:
-##   --run-strat=<STRATEGY>        Built-in strategy to backtest
-##   --yaml-strategy=<FILE>        YAML declarative strategy file
+## Commands:
+##   --backtest=<STRATEGY>         Backtest a built-in strategy
+##   --strategy=<FILE>             Backtest a YAML strategy file
+##   --batch=<FILE>                Run batch tests from configuration
+##   --sweep=<FILE>                Run parameter sweep optimization
+##   --screen=<FILE>               Screen multiple symbols for signals
 ##
 ## Data sources:
 ##   --symbol=<SYMBOL> or -s       Use Yahoo Finance (default, simplest)
@@ -35,9 +38,10 @@
 ##   Hybrid: volume, dualmomentum, filteredrsi
 ##   YAML: Use --yaml-strategy for declarative strategies
 
-import std/[strformat, os, sequtils, tables, strutils]
+import std/[strformat, os, sequtils, tables, strutils, options]
 import tzutrader/[core, data, strategy, trader, portfolio]
 import tzutrader/declarative/[parser, validator, strategy_builder, batch_runner, results, sweep_runner]
+import tzutrader/screener/[screener, parser as screener_parser, reports, schema]
 import cligen
 
 # ============================================================================
@@ -61,7 +65,7 @@ proc loadData(symbol, csvFile, yahoo, coinbase, start, endDate: string): tuple[d
   if symbol.len > 0 and explicitSources == 0:
     if start.len == 0:
       echo "Error: --start=YYYY-MM-DD is required when using --symbol"
-      echo "Usage: tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
+      echo "Usage: tzu --backtest=rsi --symbol=AAPL --start=2023-01-01"
       quit(1)
     let streamer = newYFHistory(symbol, start, endDate)
     return (toSeq(streamer.items()), symbol, YahooFinance)
@@ -74,10 +78,10 @@ proc loadData(symbol, csvFile, yahoo, coinbase, start, endDate: string): tuple[d
   # If no symbol and no explicit source, error
   if symbol.len == 0 and explicitSources == 0:
     echo "Error: Must specify a data source:"
-    echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01    (Yahoo Finance - default)"
-    echo "  --csvFile=data.csv                                      (CSV file)"
-    echo "  --yahoo=AAPL --start=2023-01-01                         (Yahoo Finance explicit)"
-    echo "  --coinbase=BTC-USD --start=2023-01-01                   (Coinbase, needs env vars)"
+    echo "  tzu --backtest=rsi --symbol=AAPL --start=2023-01-01    (Yahoo Finance - default)"
+    echo "  --csvFile=data.csv                                     (CSV file)"
+    echo "  --yahoo=AAPL --start=2023-01-01                        (Yahoo Finance explicit)"
+    echo "  --coinbase=BTC-USD --start=2023-01-01                  (Coinbase, needs env vars)"
     quit(1)
   
   # Load from CSV
@@ -258,14 +262,96 @@ proc createStrategy(strategyName: string, params: Table[string, string]): Strate
     quit(1)
 
 # ============================================================================
+# SCREENER HELPER
+# ============================================================================
+
+proc runScreenerFromFile(screenerFile: string, verbose: bool = false): int =
+  ## Run market screener from YAML configuration file
+  ## Returns 0 on success, 1 on error
+  
+  # Check file exists
+  if not fileExists(screenerFile):
+    echo &"Error: Screener config file not found: {screenerFile}"
+    return 1
+  
+  # Parse YAML configuration
+  if verbose:
+    echo &"Loading screener config from: {screenerFile}"
+  
+  let config = try:
+    parseScreenerYAMLFile(screenerFile)
+  except ScreenerParseError as e:
+    echo &"Error parsing screener config: {e.msg}"
+    return 1
+  except:
+    echo &"Unexpected error parsing config: {getCurrentExceptionMsg()}"
+    return 1
+  
+  # Validate configuration
+  if verbose:
+    echo "Validating screener configuration..."
+  
+  let validation = validateConfig(config)
+  if not validation.valid:
+    echo "Screener configuration validation failed:"
+    for err in validation.errors:
+      echo &"  - {err}"
+    # Continue anyway if there are only warnings
+    if validation.errors.len > 0:
+      echo ""
+  
+  # Create screener
+  if verbose:
+    echo &"Creating screener with {config.strategies.len} strategies..."
+    case config.data.source
+    of dsYahoo:
+      echo &"  Data source: Yahoo Finance ({config.data.symbols.len} symbols)"
+    of dsCoinbase:
+      echo &"  Data source: Coinbase ({config.data.pairs.len} pairs)"
+    of dsCsv:
+      echo &"  Data source: CSV files from {config.data.directory}"
+  
+  var screenerObj = newScreener(config)
+  
+  # Run screener
+  if verbose:
+    echo "Running screener..."
+  
+  let result = try:
+    screenerObj.run()
+  except ScreenerError as e:
+    echo &"Screener error: {e.msg}"
+    return 1
+  except:
+    echo &"Unexpected error during screening: {getCurrentExceptionMsg()}"
+    return 1
+  
+  # Generate and print report
+  let screenerResult = formatResult(result, config.output)
+  echo screenerResult
+  
+  # Write to file if specified
+  if config.output.filepath.isSome():
+    let filepath = config.output.filepath.get()
+    try:
+      writeFile(filepath, screenerResult)
+      if verbose:
+        echo &"\nReport written to: {filepath}"
+    except IOError as e:
+      echo &"Warning: Could not write report to file: {e.msg}"
+  
+  return 0
+
+# ============================================================================
 # MAIN CLI COMMAND
 # ============================================================================
 
 proc tzu(
-  runStrat = "",
-  yamlStrategy = "",  # NEW: Path to YAML strategy file
-  batch = "",  # NEW: Path to batch test configuration file
-  sweep = "",  # NEW: Path to parameter sweep configuration file
+  backtest = "",  # Built-in strategy name to backtest
+  strategy = "",  # Path to YAML strategy file
+  batch = "",  # Path to batch test configuration file
+  sweep = "",  # Path to parameter sweep configuration file
+  screen = "",  # Path to screener configuration file
   symbol = "",
   csvFile = "", yahoo = "", coinbase = "", start = "", endDate = "",
   # RSI params
@@ -300,34 +386,44 @@ proc tzu(
   initialCash = 100000.0, commission = 0.0, minCommission = 0.0, riskFreeRate = 0.02,
   verbose = false
 ): int =
-  ## TzuTrader CLI - Backtest trading strategies
+  ## TzuTrader CLI - Backtest trading strategies and screen markets
   ## 
   ## Usage:
-  ##   tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
-  ##   tzu --yaml-strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
+  ##   tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
+  ##   tzu --strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
   ##   tzu --batch=batch_config.yml
   ##   tzu --sweep=sweep_config.yml
-  ##   tzu --run-strat=macd --csvFile=data.csv
+  ##   tzu --screen=screener_config.yml
+  ##   tzu --backtest=macd --csvFile=data.csv
   ##
   ## Available strategies:
   ##   Mean Reversion: rsi, bollinger, stochastic, mfi, cci
   ##   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
   ##   Volatility: keltner
   ##   Hybrid: volume, dualmomentum, filteredrsi
-  ##   YAML: Use --yaml-strategy to load declarative strategies
+  ##   Custom: Use --strategy to load YAML declarative strategies
   ##   Batch: Use --batch to run multiple strategies at once
   ##   Sweep: Use --sweep for automated parameter optimization
+  ##   Screen: Use --screen to scan multiple symbols for signals
   
   # Check that only one mode is provided
-  let modesProvided = (if runStrat.len > 0: 1 else: 0) +
-                     (if yamlStrategy.len > 0: 1 else: 0) +
+  let modesProvided = (if backtest.len > 0: 1 else: 0) +
+                     (if strategy.len > 0: 1 else: 0) +
                      (if batch.len > 0: 1 else: 0) +
-                     (if sweep.len > 0: 1 else: 0)
+                     (if sweep.len > 0: 1 else: 0) +
+                     (if screen.len > 0: 1 else: 0)
   
   if modesProvided == 0:
-    echo "Error: Must specify one of: --run-strat, --yaml-strategy, --batch, or --sweep"
+    echo "Error: Must specify one command: --backtest, --strategy, --batch, --sweep, or --screen"
     echo ""
-    echo "Usage: tzu [--run-strat=<STRATEGY> | --yaml-strategy=<FILE> | --batch=<FILE> | --sweep=<FILE>] [options]"
+    echo "Usage: tzu [COMMAND] [options]"
+    echo ""
+    echo "Commands:"
+    echo "  --backtest=STRATEGY   Backtest a built-in strategy"
+    echo "  --strategy=FILE       Backtest a YAML strategy file"
+    echo "  --batch=FILE          Run batch tests from configuration"
+    echo "  --sweep=FILE          Run parameter sweep optimization"
+    echo "  --screen=FILE         Screen multiple symbols for signals"
     echo ""
     echo "Built-in strategies:"
     echo "  Mean Reversion: rsi, bollinger, stochastic, mfi, cci"
@@ -335,30 +431,26 @@ proc tzu(
     echo "  Volatility: keltner"
     echo "  Hybrid: volume, dualmomentum, filteredrsi"
     echo ""
-    echo "YAML strategies:"
-    echo "  Use --yaml-strategy=path/to/strategy.yml for declarative strategies"
-    echo ""
-    echo "Batch testing:"
-    echo "  Use --batch=path/to/batch_config.yml to test multiple strategies"
-    echo ""
-    echo "Parameter sweep:"
-    echo "  Use --sweep=path/to/sweep_config.yml for automated optimization"
-    echo ""
     echo "Examples:"
-    echo "  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01"
-    echo "  tzu --run-strat=rsi -s AAPL --start=2023-01-01"
-    echo "  tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL"
+    echo "  tzu --backtest=rsi --symbol=AAPL --start=2023-01-01"
+    echo "  tzu --backtest=rsi -s AAPL --start=2023-01-01"
+    echo "  tzu --strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01"
     echo "  tzu --batch=examples/batch/basic_batch.yml"
     echo "  tzu --sweep=examples/sweep/rsi_optimization.yml"
-    echo "  tzu --run-strat=macd --csvFile=data.csv --fast=10 --slow=20"
+    echo "  tzu --screen=examples/screeners/basic_rsi_screener.yml"
+    echo "  tzu --backtest=macd --csvFile=data.csv --fast=10 --slow=20"
     echo ""
-    echo "For strategy-specific options, use: tzu --help"
+    echo "For detailed options, use: tzu --help"
     return 1
   
   if modesProvided > 1:
-    echo "Error: Can only use ONE of: --run-strat, --yaml-strategy, --batch, or --sweep"
-    echo "Choose one mode at a time"
+    echo "Error: Can only use ONE command at a time"
+    echo "Choose one of: --backtest, --strategy, --batch, --sweep, or --screen"
     return 1
+  
+  # Handle market screener mode
+  if screen.len > 0:
+    return runScreenerFromFile(screen, verbose)
   
   # Handle parameter sweep mode
   if sweep.len > 0:
@@ -422,16 +514,16 @@ proc tzu(
       return 1
   
   # Handle YAML strategy
-  if yamlStrategy.len > 0:
+  if strategy.len > 0:
     # Check file exists
-    if not fileExists(yamlStrategy):
-      echo &"Error: YAML strategy file not found: {yamlStrategy}"
+    if not fileExists(strategy):
+      echo &"Error: Strategy file not found: {strategy}"
       return 1
     
     # Parse YAML strategy
-    echo &"Loading YAML strategy from: {yamlStrategy}"
+    echo &"Loading strategy from: {strategy}"
     let strategyDef = try:
-      parseStrategyYAMLFile(yamlStrategy)
+      parseStrategyYAMLFile(strategy)
     except parser.ParseError as e:
       echo &"Error parsing YAML: {e.msg}"
       return 1
@@ -485,7 +577,7 @@ proc tzu(
   params["rsiPeriod"] = $rsiPeriod
   params["trendPeriod"] = $trendPeriod
   
-  let strategyObj = createStrategy(runStrat, params)
+  let strategyObj = createStrategy(backtest, params)
   return runStrategyBacktest(strategyObj, symbol, csvFile, yahoo, coinbase, start, endDate,
                              initialCash, commission, minCommission, riskFreeRate, verbose)
 
@@ -494,4 +586,4 @@ proc tzu(
 # ============================================================================
 
 when isMainModule:
-  dispatch(tzu, short = {"runStrat": 'r', "symbol": 's'})
+  dispatch(tzu, short = {"backtest": 'b', "symbol": 's', "strategy": 't'})

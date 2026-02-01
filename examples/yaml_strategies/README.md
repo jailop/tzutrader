@@ -183,15 +183,15 @@ Run any strategy with:
 
 ```bash
 # Yahoo Finance data
-./tzu --yaml-strategy=examples/yaml_strategies/rsi_simple.yml \
+./tzu --strategy=examples/yaml_strategies/rsi_simple.yml \
       --symbol=AAPL --start=2023-01-01
 
 # CSV data
-./tzu --yaml-strategy=examples/yaml_strategies/macd_crossover.yml \
+./tzu --strategy=examples/yaml_strategies/macd_crossover.yml \
       --csvFile=data/AAPL.csv
 
 # With portfolio options
-./tzu --yaml-strategy=examples/yaml_strategies/multi_indicator.yml \
+./tzu --strategy=examples/yaml_strategies/multi_indicator.yml \
       --symbol=TSLA --start=2023-01-01 \
       --initialCash=50000 --commission=0.001
 ```

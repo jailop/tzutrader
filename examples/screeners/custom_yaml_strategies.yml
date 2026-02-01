@@ -1,0 +1,44 @@
+# Custom Strategy Screener
+# Uses YAML strategy files instead of built-in strategies
+
+metadata:
+  name: "Custom Strategy Screener"
+  description: "Scan market with custom YAML strategies"
+  author: "TzuTrader"
+  tags:
+    - custom
+    - yaml-strategies
+
+strategies:
+  # Load custom strategies from YAML files
+  - kind: yaml_file
+    filepath: "examples/yaml_strategies/rsi_percent_sizing.yml"
+  
+  - kind: yaml_file
+    filepath: "examples/yaml_strategies/macd_crossover.yml"
+  
+  - kind: yaml_file
+    filepath: "examples/yaml_strategies/bollinger_mean_reversion.yml"
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - TSLA
+    - NVDA
+  lookback: 90d
+  interval: 1d
+
+output:
+  format: terminal
+  detail_level: detailed
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: moderate
+  top_n: 5

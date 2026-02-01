@@ -1,0 +1,43 @@
+# Test Screener - More Lenient RSI
+# Find trading signals with wider RSI bands
+
+metadata:
+  name: "Lenient RSI Screener"
+  description: "Find trading signals with wider RSI bands"
+  author: "TzuTrader"
+  tags:
+    - rsi
+    - test
+
+strategies:
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 40
+      overbought: 60
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - TSLA
+    - NVDA
+    - META
+    - AMZN
+    - NFLX
+  lookback: 180d
+  interval: 1d
+
+output:
+  format: terminal
+  detail_level: detailed
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: weak
+  top_n: 10

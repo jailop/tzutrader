@@ -1,24 +1,17 @@
-# TzuTrader Documentation Configuration
-
-# Project information
 site_name: TzuTrader Documentation
 site_description: A trading bot library for Nim providing tools for building and testing algorithmic trading strategies
 site_author: Jaime Lopez
 site_url: https://jailop.github.io/tzutrader/
 
-# Repository information
 repo_name: tzutrader
 repo_url: https://codeberg.org/jailop/tzutrader
 edit_uri: edit/main/docs_src/
 
-# Directory configuration
 docs_dir: docs_src
 site_dir: docs
 
-# Copyright
 copyright: Copyright &copy; 2025-2026 Jaime Lopez
 
-# Theme configuration
 theme:
   name: material
   language: en
@@ -63,13 +56,15 @@ nav:
       - Working with Data: user_guide/02_data.md
       - Technical Indicators: user_guide/03_indicators.md
       - Trading Strategies: user_guide/04_strategies.md
-      - Writing Custom Strategies with Nim: user_guide/04a_custom_strategies_nim.md
       - Writing Custom Strategies with YAML: user_guide/04b_custom_strategies_yaml.md
+      - Writing Custom Strategies with Nim: user_guide/04a_custom_strategies_nim.md
       - Portfolio Management: user_guide/05_portfolio.md
       - Backtesting: user_guide/06_backtesting.md
+      - Risk Management: user_guide/06a_risk_management.md
       - Scanning: user_guide/07_scanning.md
-      - Workflows: user_guide/08_workflows.md
-      - Best Practices: user_guide/09_best_practices.md
+      - Screening: user_guide/08_screening.md
+      - Workflows: user_guide/09_workflows.md
+      - Best Practices: user_guide/10_best_practices.md
   - Reference Guide:
       - Core Concepts: reference_guide/01_core.md
       - Data Management: reference_guide/02_data.md
@@ -84,7 +79,9 @@ nav:
       - Exports: reference_guide/08_exports.md
       - CLI Tool: reference_guide/09_cli.md
       - Declarative YAML Interface: reference_guide/10_declarative.md
+      - Market Screener: reference_guide/11_screening.md
   - API: api/index.html
+  - Why Nim?: about_nim.md
 
 # Markdown extensions
 markdown_extensions:

@@ -1,0 +1,193 @@
+# Advanced Filter Configuration Example
+# Demonstrates sophisticated filtering and alert selection
+
+metadata:
+  name: "Advanced Filtering Screener"
+  description: "Demonstrates advanced filtering capabilities with multiple criteria"
+  author: "TzuTrader"
+  created: "2024-02-01"
+  tags:
+    - advanced
+    - filtering
+    - multi-strategy
+    - daily
+
+strategies:
+  # Multiple strategies to generate diverse signals
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 30
+      overbought: 70
+  
+  - kind: built_in
+    name: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+  
+  - kind: built_in
+    name: bollinger
+    params:
+      period: 20
+      stdDev: 2.0
+
+data:
+  source: yahoo
+  symbols:
+    # Large cap tech
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - META
+    - NVDA
+    - TSLA
+    - AMD
+    - NFLX
+    - CRM
+    # Financial sector
+    - JPM
+    - BAC
+    - WFC
+    - GS
+    # Healthcare
+    - JNJ
+    - UNH
+    - PFE
+    - ABBV
+    # Consumer
+    - WMT
+    - HD
+    - NKE
+    - COST
+  lookback: 6mo
+  interval: 1d
+
+output:
+  format: markdown
+  detail_level: detailed
+  filepath: "filtered_screener_results.md"
+
+# Advanced filtering configuration
+filters:
+  # Signal Type Filtering
+  # -----------------------
+  # Only include specific signal types
+  # Options: buy_signal, sell_signal, exit_long, exit_short
+  signal_types:
+    - buy_signal
+    - sell_signal
+  
+  # Signal Strength Filtering
+  # --------------------------
+  # Filter by minimum signal strength
+  # Options: weak, moderate, strong
+  # 
+  # Strength is calculated based on:
+  # - RSI: Distance from oversold/overbought thresholds
+  # - MACD: Magnitude of histogram
+  # - Bollinger: Distance from bands
+  min_strength: moderate
+  
+  # Top N Limiting
+  # ---------------
+  # Only return the top N strongest signals
+  # Useful when screening large symbol universes
+  # Set to 0 or omit to return all matching signals
+  top_n: 15
+
+# History tracking (optional)
+# ---------------------------
+# Enable to track signals over time and compare with previous runs
+history:
+  enabled: true
+  directory: "screener_history"
+  retention_days: 30  # Keep history for 30 days
+
+# Notes on Filter Behavior
+# =========================
+#
+# 1. SIGNAL TYPE FILTERING
+#    - Filters are applied AFTER strategies generate alerts
+#    - Only alerts matching specified types are included
+#    - If omitted, ALL signal types are included
+#
+# 2. STRENGTH FILTERING
+#    - Each strategy calculates signal strength independently
+#    - "weak": Include all signals (no filtering)
+#    - "moderate": Filter out very weak/marginal signals
+#    - "strong": Only include high-confidence signals
+#
+# 3. TOP N LIMITING
+#    - Applied AFTER type and strength filtering
+#    - Sorts by signal strength (strongest first)
+#    - Includes both buy and sell signals in the count
+#
+# 4. FILTER COMBINATION
+#    Filters are applied in this order:
+#    a) Signal type filter (buy/sell/exit)
+#    b) Minimum strength filter
+#    c) Sort by strength descending
+#    d) Take top N results
+#
+# EXAMPLE FILTER CHAINS:
+#
+# Example 1: Find top 5 buy signals only
+# filters:
+#   signal_types: [buy_signal]
+#   min_strength: moderate
+#   top_n: 5
+#
+# Example 2: All strong signals (buy and sell)
+# filters:
+#   min_strength: strong
+#   # No signal_types = include all types
+#   # No top_n = include all matches
+#
+# Example 3: All buy/sell signals, no strength filter
+# filters:
+#   signal_types: [buy_signal, sell_signal]
+#   # No min_strength = include all strengths
+#   top_n: 20
+#
+# Example 4: Exit signals only (for portfolio management)
+# filters:
+#   signal_types: [exit_long, exit_short]
+#   min_strength: moderate
+#   # No top_n = show all exit signals
+
+# Advanced Use Cases
+# ==================
+#
+# Use Case 1: Building a Daily Watchlist
+# ---------------------------------------
+# Run this screener daily to identify trading opportunities.
+# The top_n limit helps focus on the best setups.
+# Export to markdown for easy review.
+#
+# Use Case 2: Portfolio Monitoring
+# ---------------------------------
+# Change signal_types to [exit_long, exit_short]
+# Use the same symbols as your portfolio holdings
+# Monitor for exit signals on your positions
+#
+# Use Case 3: Sector Rotation
+# ----------------------------
+# Group symbols by sector (tech, finance, healthcare, etc.)
+# Run separate screeners for each sector
+# Compare signal counts to identify strong/weak sectors
+#
+# Use Case 4: Signal Confirmation
+# --------------------------------
+# Look for symbols with signals from MULTIPLE strategies
+# High-conviction trades have RSI + MACD + Bollinger alignment
+# Review "Strategies" column in output
+#
+# Use Case 5: Backtesting Filter Settings
+# ----------------------------------------
+# Run screener with different min_strength values
+# Track historical performance of each setting
+# Optimize filter thresholds based on results

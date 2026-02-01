@@ -80,7 +80,7 @@ position_sizing:
 Run a backtest using the CLI:
 
 ```bash
-./tzu --yaml-strategy=my_rsi_strategy.yml \
+./tzu --strategy=my_rsi_strategy.yml \
       --symbol=AAPL \
       --start=2023-01-01 \
       --end=2024-01-01
@@ -659,7 +659,7 @@ position_sizing:
 Test on one symbol:
 
 ```bash
-./tzu --yaml-strategy=my_strategy.yml \
+./tzu --strategy=my_strategy.yml \
       --symbol=AAPL \
       --start=2023-01-01 \
       --end=2024-01-01
@@ -671,15 +671,15 @@ Test different periods to validate robustness:
 
 ```bash
 # Bull market (2020)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2020-01-01 --end=2020-12-31
 
 # Bear market (2022)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2022-01-01 --end=2022-12-31
 
 # Recent (2023)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2023-01-01 --end=2023-12-31
 ```
 
@@ -688,9 +688,9 @@ Test different periods to validate robustness:
 Test on different stocks to avoid overfitting:
 
 ```bash
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL
-./tzu --yaml-strategy=my_strategy.yml --symbol=MSFT
-./tzu --yaml-strategy=my_strategy.yml --symbol=GOOGL
+./tzu --strategy=my_strategy.yml --symbol=AAPL
+./tzu --strategy=my_strategy.yml --symbol=MSFT
+./tzu --strategy=my_strategy.yml --symbol=GOOGL
 ```
 
 ## Batch Testing
@@ -901,15 +901,15 @@ Choose clear, meaningful indicator IDs:
 
 ```bash
 # Short term (6 months)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2023-07-01 --end=2024-01-01
 
 # Medium term (1 year)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2023-01-01 --end=2024-01-01
 
 # Long term (2 years)
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL \
+./tzu --strategy=my_strategy.yml --symbol=AAPL \
       --start=2022-01-01 --end=2024-01-01
 ```
 
@@ -919,14 +919,14 @@ Avoid overfitting to a single stock:
 
 ```bash
 # Tech stocks
-./tzu --yaml-strategy=my_strategy.yml --symbol=AAPL
-./tzu --yaml-strategy=my_strategy.yml --symbol=MSFT
-./tzu --yaml-strategy=my_strategy.yml --symbol=GOOGL
+./tzu --strategy=my_strategy.yml --symbol=AAPL
+./tzu --strategy=my_strategy.yml --symbol=MSFT
+./tzu --strategy=my_strategy.yml --symbol=GOOGL
 
 # Different sectors
-./tzu --yaml-strategy=my_strategy.yml --symbol=JPM   # Finance
-./tzu --yaml-strategy=my_strategy.yml --symbol=XOM   # Energy
-./tzu --yaml-strategy=my_strategy.yml --symbol=JNJ   # Healthcare
+./tzu --strategy=my_strategy.yml --symbol=JPM   # Finance
+./tzu --strategy=my_strategy.yml --symbol=XOM   # Energy
+./tzu --strategy=my_strategy.yml --symbol=JNJ   # Healthcare
 ```
 
 ### 5. Use Batch Testing for Comparison
@@ -1014,7 +1014,7 @@ After optimizing, test on fresh data:
 ./tzu --sweep=optimize_2023.yml
 
 # Test winner on 2024 data (out-of-sample)
-./tzu --yaml-strategy=optimized_strategy.yml \
+./tzu --strategy=optimized_strategy.yml \
       --symbol=AAPL \
       --start=2024-01-01 \
       --end=2024-12-31
@@ -1226,7 +1226,7 @@ position_sizing: {...}  # Required
 
 - **[Reference: Declarative System](../reference_guide/10_declarative.md)** - Complete technical reference
 - **[Reference: Indicators](../reference_guide/03_indicators.md)** - All 30+ indicators documented
-- **[User Guide: Workflows](08_workflows.md)** - Complete workflow examples
+- **[User Guide: Workflows](09_workflows.md)** - Complete workflow examples
 
 ### Example Strategies
 

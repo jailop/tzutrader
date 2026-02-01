@@ -1,0 +1,86 @@
+## Basic Batch Test Example
+##
+## This batch test compares multiple strategy variants on multiple symbols
+## to identify which performs best across different market conditions.
+
+version: "1.0"
+
+metadata:
+  name: "Multi-Strategy Comparison"
+  description: "Compare RSI, MACD, and Bollinger Band strategies on tech stocks"
+  author: "TzuTrader"
+  tags: ["batch", "comparison", "tech-stocks"]
+
+# Data source configuration
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+  start_date: "2023-01-01"
+  end_date: "2024-01-01"
+
+# Portfolio configuration (applied to all backtests)
+portfolio:
+  initial_cash: 100000.0
+  commission: 0.001
+  min_commission: 1.0
+  risk_free_rate: 0.02
+
+# Strategy variants to test
+strategies:
+  # 1. RSI Simple Strategy
+  - file: "examples/yaml_strategies/rsi_simple.yml"
+    name: "RSI_Simple"
+  
+  # 2. RSI with aggressive thresholds
+  - file: "examples/yaml_strategies/rsi_simple.yml"
+    name: "RSI_Aggressive"
+    overrides:
+      indicators:
+        rsi_14:
+          params:
+            period: 14
+      conditions:
+        entry:
+          left: "rsi_14"
+          operator: "<"
+          right: "25"  # More aggressive entry (was 30)
+        exit:
+          left: "rsi_14"
+          operator: ">"
+          right: "75"  # More aggressive exit (was 70)
+  
+  # 3. RSI with conservative thresholds
+  - file: "examples/yaml_strategies/rsi_simple.yml"
+    name: "RSI_Conservative"
+    overrides:
+      indicators:
+        rsi_14:
+          params:
+            period: 14
+      conditions:
+        entry:
+          left: "rsi_14"
+          operator: "<"
+          right: "35"  # More conservative entry
+        exit:
+          left: "rsi_14"
+          operator: ">"
+          right: "65"  # More conservative exit
+  
+  # 4. MACD Crossover Strategy
+  - file: "examples/yaml_strategies/macd_crossover.yml"
+    name: "MACD_Standard"
+  
+  # 5. Bollinger Mean Reversion
+  - file: "examples/yaml_strategies/bollinger_mean_reversion.yml"
+    name: "Bollinger_MeanReversion"
+
+# Output configuration
+output:
+  formats:
+    - csv
+  comparison_report: "batch_results.csv"
+  individual_results: "individual_results/"

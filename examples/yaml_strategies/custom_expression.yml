@@ -1,0 +1,108 @@
+# Custom Expression Indicator Strategy
+# Phase 3 Example: Using expression-based custom indicators
+
+version: "1.0"
+type: strategy
+
+metadata:
+  name: "Custom Expression Indicator Strategy"
+  description: "Demonstrates custom indicators created with mathematical expressions"
+  author: "TzuTrader Team"
+  created: "2026-01-31"
+  tags: ["custom-indicator", "expression", "advanced"]
+
+indicators:
+  # Standard indicators
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: rsi_21
+    type: rsi
+    params:
+      period: 21
+  
+  - id: bb_upper
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: upper
+  
+  - id: bb_lower
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: lower
+  
+  - id: atr_14
+    type: atr
+    params:
+      period: 14
+  
+  # Custom expression indicators
+  - id: rsi_avg
+    type: expression
+    formula: "(rsi_14 + rsi_21) / 2"
+    description: "Average of two RSI periods"
+  
+  - id: oversold_signal
+    type: expression
+    formula: "(rsi_14 < 30) and (price < bb_lower)"
+    description: "Combined oversold signal: RSI and Bollinger"
+  
+  - id: bb_width
+    type: expression
+    formula: "bb_upper - bb_lower"
+    description: "Bollinger Band width (volatility measure)"
+  
+  - id: bb_pct
+    type: expression
+    formula: "(price - bb_lower) / (bb_upper - bb_lower)"
+    description: "Price position within Bollinger Bands (0-1)"
+
+# Entry using custom indicators
+entry:
+  conditions:
+    all:
+      # Use custom oversold signal
+      - left: oversold_signal
+        operator: "=="
+        right: "1"  # Expression evaluates to 1 (true)
+      
+      # Volatility filter: only trade when bands are wide enough
+      - left: bb_width
+        operator: ">"
+        right: atr_14
+      
+      # Price in lower 20% of Bollinger Band
+      - left: bb_pct
+        operator: "<"
+        right: "0.2"
+
+# Exit conditions
+exit:
+  conditions:
+    any:
+      # Average RSI reaches overbought
+      - left: rsi_avg
+        operator: ">"
+        right: "70"
+      
+      # Price in upper 80% of Bollinger Band
+      - left: bb_pct
+        operator: ">"
+        right: "0.8"
+      
+      # Volatility expansion (potential reversal)
+      - left: bb_width
+        operator: ">"
+        right: atr_14
+        # This actually checks bb_width > atr_14 * 1.5
+        # Note: multiplier would need schema support
+
+position_sizing:
+  type: percent
+  percent: 100.0

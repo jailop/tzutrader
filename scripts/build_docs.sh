@@ -90,6 +90,17 @@ nim doc --project --index:on --outdir:docs/api src/tzutrader.nim 2>&1 | \
     grep -v "oserrors.nim" | \
     grep -v "raiseOSError" || true
 
+# Generate declarative module documentation separately
+# (nim doc --project doesn't always pick up all re-exported modules)
+echo "  Generating declarative module documentation..."
+nim doc --outdir:docs/api src/tzutrader/declarative.nim 2>&1 | \
+    grep -v "^Hint:" | \
+    grep -v "Warning:" | \
+    grep -v "Error: unhandled exception: No such file or directory" | \
+    grep -v "Additional info: .*/nimdoc.css" | \
+    grep -v "oserrors.nim" | \
+    grep -v "raiseOSError" || true
+
 # Verify API docs were actually generated
 if [ -f "docs/api/tzutrader.html" ] && [ -f "docs/api/index.html" ]; then
     echo "✓ API documentation generated successfully"

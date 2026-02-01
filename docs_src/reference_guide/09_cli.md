@@ -30,20 +30,20 @@ The CLI supports four modes of operation:
 
 ```bash
 # Simple syntax (Yahoo Finance default)
-tzu --run-strat=<STRATEGY> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
-tzu -r <STRATEGY> -s <SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu --backtest=<STRATEGY> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu -b <STRATEGY> -s <SYMBOL> --start=<YYYY-MM-DD> [options]
 
 # Explicit data source
-tzu --run-strat=<STRATEGY> --csvFile=<file> [options]
-tzu --run-strat=<STRATEGY> --yahoo=<SYMBOL> --start=<YYYY-MM-DD> [options]
-tzu --run-strat=<STRATEGY> --coinbase=<PAIR> --start=<YYYY-MM-DD> [options]
+tzu --backtest=<STRATEGY> --csvFile=<file> [options]
+tzu --backtest=<STRATEGY> --yahoo=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu --backtest=<STRATEGY> --coinbase=<PAIR> --start=<YYYY-MM-DD> [options]
 ```
 
 ### 2. YAML Strategy Mode
 
 ```bash
 # Test a declarative YAML strategy
-tzu --yaml-strategy=<FILE> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
+tzu --strategy=<FILE> --symbol=<SYMBOL> --start=<YYYY-MM-DD> [options]
 ```
 
 ### 3. Batch Testing Mode
@@ -61,15 +61,16 @@ tzu --sweep=<SWEEP_CONFIG.yml>
 ```
 
 **Key Parameters:**
-- `--run-strat=<STRATEGY>` or `-r`: Built-in strategy to backtest
-- `--yaml-strategy=<FILE>`: Path to YAML strategy file
+- `--backtest=<STRATEGY>` or `-b`: Built-in strategy to backtest
+- `--strategy=<FILE>` or `-t`: Path to YAML strategy file
 - `--batch=<FILE>`: Path to batch testing configuration
 - `--sweep=<FILE>`: Path to parameter sweep configuration
+- `--screen=<FILE>`: Path to market screener configuration
 - `--symbol=<SYMBOL>` or `-s`: Use Yahoo Finance (default data source)
 - `--start=<YYYY-MM-DD>`: Start date (required for online sources, no short option)
 - `--endDate=<YYYY-MM-DD>` or `-e`: End date (optional)
 
-**Note**: Only ONE mode can be used at a time (--run-strat, --yaml-strategy, --batch, or --sweep).
+**Note**: Only ONE mode can be used at a time (--backtest, --strategy, --batch, --sweep, or --screen).
 
 This design ensures:
 - Clear separation between different testing modes
@@ -97,15 +98,17 @@ Available strategies:
   Trend Following: crossover, macd, kama, aroon, psar, triplem, adx
   Volatility: keltner
   Hybrid: volume, dualmomentum, filteredrsi
-  YAML: Use --yaml-strategy for declarative strategies
+  Custom: Use --strategy for declarative YAML strategies
   Batch: Use --batch to run multiple strategies at once
   Sweep: Use --sweep for automated parameter optimization
+  Screen: Use --screen to scan multiple symbols for signals
 
 Options:
-  -r=, --runStrat=STRATEGY       Built-in strategy to backtest
-  --yamlStrategy=FILE            Path to YAML strategy file
+  -b=, --backtest=STRATEGY       Built-in strategy to backtest
+  -t=, --strategy=FILE           Path to YAML strategy file
   --batch=FILE                   Path to batch testing configuration
   --sweep=FILE                   Path to parameter sweep configuration
+  --screen=FILE                  Path to market screener configuration
   -s=, --symbol=SYMBOL           Symbol for Yahoo Finance
   --start=YYYY-MM-DD             Start date (required for online sources)
   -e=, --endDate=YYYY-MM-DD      End date (optional)
@@ -121,16 +124,17 @@ tzu
 
 **Output:**
 ```
-Error: Must specify one of: --run-strat, --yaml-strategy, --batch, or --sweep
+Error: Must specify one command: --backtest, --strategy, --batch, --sweep, or --screen
 
-Usage: tzu [--run-strat=<STRATEGY> | --yaml-strategy=<FILE> | --batch=<FILE> | --sweep=<FILE>] [options]
+Usage: tzu [COMMAND] [options]
 
 Examples:
-  tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
-  tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01
+  tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
+  tzu --strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01
   tzu --batch=examples/batch/basic_batch.yml
   tzu --sweep=examples/sweep/rsi_optimization.yml
-  tzu --run-strat=macd --csvFile=data.csv --fast=10 --slow=20
+  tzu --screen=examples/screeners/basic_rsi_screener.yml
+  tzu --backtest=macd --csvFile=data.csv --fast=10 --slow=20
 ```
 
 ## Discovering Strategy Parameters
@@ -142,12 +146,12 @@ tzu --help
 ```
 
 The help output shows all available parameters for all strategies, including:
-- Strategy selection (`--run-strat`)
+- Strategy selection (`--backtest`)
 - Data source options (`--symbol`, `--csvFile`, etc.)
 - All strategy-specific parameters (period, oversold, fast, slow, etc.)
 - Portfolio configuration options
 - Short flags (e.g., `-r`, `-s`, `-e`, `-p`, `-v`)
-- Long flags (e.g., `--runStrat`, `--symbol`, `--period`, `--verbose`)
+- Long flags (e.g., `--backtest`, `--symbol`, `--period`, `--verbose`)
 
 **All parameters are shown in a single help screen** since all strategies now share the same parameter namespace.
 
@@ -160,7 +164,7 @@ tzu --help
 **Output shows all available options:**
 ```
 Options:
-  -r=, --runStrat=          string    Strategy to backtest
+  -r=, --backtest=          string    Strategy to backtest
   -s=, --symbol=            string    Symbol for Yahoo Finance
   --start=                  string    Start date (YYYY-MM-DD)
   -e=, --endDate=           string    End date (YYYY-MM-DD)
@@ -217,9 +221,9 @@ Every strategy accepts these common parameters:
 ### Example 1: Simple Yahoo Finance (Default Syntax)
 
 ```bash
-tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --backtest=rsi --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
 # Or using short flags:
-tzu -r rsi -s AAPL --start=2023-01-01 -e 2023-12-31
+tzu -b rsi -s AAPL --start=2023-01-01 -e 2023-12-31
 ```
 
 Simplest syntax - uses Yahoo Finance automatically when `--symbol` is provided.
@@ -227,9 +231,9 @@ Simplest syntax - uses Yahoo Finance automatically when `--symbol` is provided.
 ### Example 2: Yahoo Finance with Custom Parameters
 
 ```bash
-tzu --run-strat=rsi -s TSLA --start=2024-01-01 --period=10 --oversold=25 -v
+tzu --backtest=rsi -s TSLA --start=2024-01-01 --period=10 --oversold=25 -v
 # Or fully abbreviated:
-tzu -r rsi -s TSLA --start=2024-01-01 -p 10 -o 25 -v
+tzu -b rsi -s TSLA --start=2024-01-01 -p 10 -o 25 -v
 ```
 
 Tesla data with custom RSI parameters and verbose output.
@@ -237,7 +241,7 @@ Tesla data with custom RSI parameters and verbose output.
 ### Example 3: Yahoo Finance with Portfolio Configuration
 
 ```bash
-tzu --run-strat=macd --symbol=MSFT --start=2023-01-01 --commission=0.001 --minCommission=1.0 --initialCash=50000
+tzu --backtest=macd --symbol=MSFT --start=2023-01-01 --commission=0.001 --minCommission=1.0 --initialCash=50000
 ```
 
 Tests with 0.1% commission, $1 minimum per trade, and $50K starting capital.
@@ -245,7 +249,7 @@ Tests with 0.1% commission, $1 minimum per trade, and $50K starting capital.
 ### Example 4: Simple Backtest with CSV
 
 ```bash
-tzu --run-strat=rsi --csvFile=data/AAPL.csv
+tzu --backtest=rsi --csvFile=data/AAPL.csv
 ```
 
 Uses RSI strategy with default parameters on local CSV file.
@@ -253,7 +257,7 @@ Uses RSI strategy with default parameters on local CSV file.
 ### Example 5: Explicit Yahoo Finance (Backward Compatible)
 
 ```bash
-tzu --run-strat=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --backtest=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
 Explicit `--yahoo` flag still works for backward compatibility.
@@ -261,7 +265,7 @@ Explicit `--yahoo` flag still works for backward compatibility.
 ### Example 6: Bitcoin from Yahoo Finance
 
 ```bash
-tzu --run-strat=macd -s BTC-USD --start=2024-01-01
+tzu --backtest=macd -s BTC-USD --start=2024-01-01
 ```
 
 Tests MACD on Bitcoin, endDate defaults to today.
@@ -271,7 +275,7 @@ Tests MACD on Bitcoin, endDate defaults to today.
 ```bash
 export COINBASE_API_KEY="your_key_here"
 export COINBASE_SECRET_KEY="your_secret_here"
-tzu --run-strat=psar --coinbase=ETH-USD --start=2024-01-01
+tzu --backtest=psar --coinbase=ETH-USD --start=2024-01-01
 ```
 
 Fetches Ethereum data from Coinbase (requires API credentials).
@@ -279,7 +283,7 @@ Fetches Ethereum data from Coinbase (requires API credentials).
 ### Example 8: YAML Strategy
 
 ```bash
-tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01
+tzu --strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01
 ```
 
 Tests a declarative YAML strategy. See [User Guide: Writing Custom Strategies with YAML](../user_guide/04b_custom_strategies_yaml.md).
@@ -287,7 +291,7 @@ Tests a declarative YAML strategy. See [User Guide: Writing Custom Strategies wi
 ### Example 9: YAML Strategy with CSV Data
 
 ```bash
-tzu --yaml-strategy=strategies/macd_crossover.yml --csvFile=data/MSFT.csv
+tzu --strategy=strategies/macd_crossover.yml --csvFile=data/MSFT.csv
 ```
 
 Tests a YAML strategy on local CSV data.
@@ -342,11 +346,11 @@ The CLI supports three data sources.
 
 ### Default: Yahoo Finance via Symbol Parameter (Recommended)
 
-The simplest way to use the CLI is with the `--symbol` (or `-s`) parameter and `--run-strat` to specify the strategy:
+The simplest way to use the CLI is with the `--symbol` (or `-s`) parameter and `--backtest` to specify the strategy:
 
 ```bash
-tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
-tzu -r rsi -s AAPL --start=2023-01-01  # Short form
+tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
+tzu -b rsi -s AAPL --start=2023-01-01  # Short form
 ```
 
 **Supported symbols:**
@@ -370,7 +374,7 @@ tzu -r rsi -s AAPL --start=2023-01-01  # Short form
 Load historical data from local CSV files.
 
 ```bash
-tzu --run-strat=rsi --csvFile=data/AAPL.csv
+tzu --backtest=rsi --csvFile=data/AAPL.csv
 ```
 
 **Requirements:**
@@ -383,7 +387,7 @@ tzu --run-strat=rsi --csvFile=data/AAPL.csv
 You can still use the explicit `--yahoo` flag:
 
 ```bash
-tzu --run-strat=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --backtest=rsi --yahoo=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
 This is functionally identical to using `--symbol` but more explicit.
@@ -395,7 +399,7 @@ Fetch cryptocurrency data from Coinbase Advanced Trade API.
 ```bash
 export COINBASE_API_KEY="your_api_key"
 export COINBASE_SECRET_KEY="your_secret_key"
-tzu --run-strat=rsi --coinbase=BTC-USD --start=2024-01-01
+tzu --backtest=rsi --coinbase=BTC-USD --start=2024-01-01
 ```
 
 **Supported pairs:**
@@ -428,13 +432,13 @@ Test a declarative YAML strategy without writing code.
 ### Command Syntax
 
 ```bash
-tzu --yaml-strategy=<FILE> [data-source] [portfolio-options]
+tzu --strategy=<FILE> [data-source] [portfolio-options]
 ```
 
 ### Example
 
 ```bash
-tzu --yaml-strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
+tzu --strategy=strategies/my_rsi.yml --symbol=AAPL --start=2023-01-01 --endDate=2023-12-31
 ```
 
 ### What It Does
@@ -482,7 +486,7 @@ See [User Guide: Writing Custom Strategies with YAML](../user_guide/04b_custom_s
 The CLI validates the strategy before running:
 
 ```bash
-$ tzu --yaml-strategy=invalid_strategy.yml --symbol=AAPL --start=2023-01-01
+$ tzu --strategy=invalid_strategy.yml --symbol=AAPL --start=2023-01-01
 
 Loading YAML strategy from: invalid_strategy.yml
 Validating strategy...
@@ -828,10 +832,10 @@ Only ONE mode can be active at a time:
 
 ```bash
 # ✅ Valid: Single mode
-tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
+tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
 
 # ✅ Valid: Single mode
-tzu --yaml-strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
+tzu --strategy=my_strategy.yml --symbol=AAPL --start=2023-01-01
 
 # ✅ Valid: Single mode
 tzu --batch=batch_config.yml
@@ -840,8 +844,8 @@ tzu --batch=batch_config.yml
 tzu --sweep=sweep_config.yml
 
 # ❌ Invalid: Multiple modes
-tzu --run-strat=rsi --yaml-strategy=my_strategy.yml --symbol=AAPL
-# Error: Can only use ONE of: --run-strat, --yaml-strategy, --batch, or --sweep
+tzu --backtest=rsi --strategy=my_strategy.yml --symbol=AAPL
+# Error: Can only use ONE of: --backtest, --strategy, --batch, or --sweep
 ```
 
 ## Automatic Parameter Generation
@@ -851,7 +855,7 @@ The CLI uses **automatic parameter generation** from the main function signature
 1. The `tzu` procedure accepts all strategy parameters as optional arguments
 2. cligen introspects the function signature at compile time
 3. Parameters become CLI options automatically:
-   - `runStrat: string` → required `--run-strat=` or `-r` option
+   - `backtest: string` → required `--backtest=` or `-r` option
    - `symbol: string` → optional `--symbol=` or `-s` option
    - `period = 14` → optional `--period=` with default 14
    - `verbose = false` → flag `-v` or `--verbose`
@@ -866,7 +870,7 @@ The CLI uses **automatic parameter generation** from the main function signature
 **Example from source code:**
 ```nim
 proc tzu(
-  runStrat = "",          # Required: strategy name
+  backtest = "",          # Required: strategy name
   symbol = "",            # Optional: Yahoo Finance symbol (default)
   csvFile = "",           # Optional: CSV file path
   yahoo = "",             # Optional: Explicit Yahoo Finance
@@ -889,7 +893,7 @@ proc tzu(
 ```
 
 This single function signature automatically generates:
-- `-r=` or `--runStrat=` (required)
+- `-r=` or `--backtest=` (required)
 - `--symbol=` or `-s` (optional, uses Yahoo Finance as default)
 - `--csvFile=` or `-c` (optional)
 - `--yahoo=` or `-y` (optional, explicit Yahoo Finance)
@@ -964,8 +968,8 @@ Use `tzu --help` to see the complete list with all available short options.
 The cligen-based CLI (v0.8.0) simplified the interface by removing:
 
 - **`scan` command:** Multi-symbol scanning removed. Use shell scripts for batch processing.
-- **`--export` option:** Removed. Pipe output to files instead: `tzu --run-strat=rsi --csvFile=data.csv > results.txt`
-- **Subcommand structure:** Strategies are now selected via `--run-strat` argument instead of subcommands.
+- **`--export` option:** Removed. Pipe output to files instead: `tzu --backtest=rsi --csvFile=data.csv > results.txt`
+- **Subcommand structure:** Strategies are now selected via `--backtest` argument instead of subcommands.
 
 **Migration from v0.7.0:**
 
@@ -976,7 +980,7 @@ tzutrader backtest data/AAPL.csv --strategy=rsi --rsi-period=10
 
 New syntax:
 ```bash
-tzu --run-strat=rsi --csvFile=data/AAPL.csv --period=10
+tzu --backtest=rsi --csvFile=data/AAPL.csv --period=10
 ```
 
 ## CSV File Requirements
@@ -1064,17 +1068,17 @@ Error messages describe the issue clearly.
 
 ### Built-in Strategy Mode
 
-The `--run-strat` mode uses pre-built strategies with limited customization (parameter values only). For custom strategies:
+The `--backtest` mode uses pre-built strategies with limited customization (parameter values only). For custom strategies:
 
-- **Use YAML strategies** (`--yaml-strategy`): No programming required, full flexibility with 30+ indicators
+- **Use YAML strategies** (`--strategy`): No programming required, full flexibility with 30+ indicators
 - **Write Nim code**: Maximum flexibility and performance (see [Strategy Reference](04_strategies.md))
 
 ### When to Use Each Approach
 
 | Need | Use CLI Mode | Or Write Nim Code |
 |------|--------------|-------------------|
-| Quick test of built-in strategy | `--run-strat` | ❌ |
-| Custom strategy without programming | `--yaml-strategy` | ❌ |
+| Quick test of built-in strategy | `--backtest` | ❌ |
+| Custom strategy without programming | `--strategy` | ❌ |
 | Test multiple parameter variations | `--batch` or `--sweep` | ❌ |
 | Complex custom logic | ❌ | ✅ |
 | State management across timeframes | ❌ | ✅ |
@@ -1098,7 +1102,7 @@ After installation, the `tzu` command is available globally:
 
 ```bash
 tzu --help           # Verify installation
-tzu --run-strat=rsi -s AAPL --start=2023-01-01  # Run backtest
+tzu --backtest=rsi -s AAPL --start=2023-01-01  # Run backtest
 ```
 
 ### Development Workflow
@@ -1116,7 +1120,7 @@ Both commands follow standard Nim conventions:
 
 - [User Guide: Writing Custom Strategies with YAML](../user_guide/04b_custom_strategies_yaml.md) - Create strategies without programming
 - [Reference: Declarative System](10_declarative.md) - Complete YAML strategy reference
-- [User Guide: Workflows](../user_guide/08_workflows.md) - Practical CLI usage examples  
+- [User Guide: Workflows](../user_guide/09_workflows.md) - Practical CLI usage examples  
 - [Backtesting Reference](06_backtesting.md) - Understanding metrics
 - [Strategy Reference](04_strategies.md) - Built-in strategies and their logic
 - [cligen documentation](https://github.com/c-blake/cligen) - CLI framework details

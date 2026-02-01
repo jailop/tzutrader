@@ -1,0 +1,34 @@
+## Simple Batch Test Example
+##
+## A minimal batch test for quick testing and validation.
+
+version: "1.0"
+
+metadata:
+  name: "Quick Strategy Test"
+  description: "Test RSI strategy on single symbol"
+  author: "TzuTrader"
+
+# Data source
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+  start_date: "2023-06-01"
+  end_date: "2023-12-31"
+
+# Portfolio
+portfolio:
+  initial_cash: 10000.0
+  commission: 0.001
+
+# Strategies
+strategies:
+  - file: "examples/yaml_strategies/rsi_simple.yml"
+    name: "RSI_Default"
+
+# Output
+output:
+  formats:
+    - csv
+  comparison_report: "quick_test_results.csv"

@@ -1,0 +1,47 @@
+# Intraday Momentum Screener
+# Find short-term trading opportunities using 5-minute bars
+
+metadata:
+  name: "Intraday Momentum Screener"
+  description: "Find short-term trading opportunities"
+  author: "TzuTrader"
+  tags:
+    - intraday
+    - momentum
+    - 5-minute
+
+strategies:
+  - kind: built_in
+    name: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+  
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 30
+      overbought: 70
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - NVDA
+    - TSLA
+  lookback: 3h
+  interval: 5m
+
+output:
+  format: terminal
+  detail_level: detailed
+
+filters:
+  signal_types:
+    - buy_signal
+  min_strength: strong
+  top_n: 3

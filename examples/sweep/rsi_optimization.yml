@@ -1,0 +1,60 @@
+## RSI Parameter Optimization Example
+##
+## This parameter sweep tests different RSI configurations to find
+## the optimal oversold/overbought thresholds and period.
+
+version: "1.0"
+
+metadata:
+  name: "RSI Parameter Optimization"
+  description: "Sweep RSI period and thresholds to find optimal settings"
+  author: "TzuTrader"
+  tags: ["sweep", "optimization", "rsi"]
+
+# Base strategy to optimize
+base_strategy: "examples/yaml_strategies/rsi_simple.yml"
+
+# Data configuration
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+  start_date: "2023-01-01"
+  end_date: "2024-01-01"
+
+# Portfolio configuration
+portfolio:
+  initial_cash: 100000.0
+  commission: 0.001
+  risk_free_rate: 0.02
+
+# Parameters to sweep
+parameters:
+  # RSI period: test 10, 14, 20, 30
+  - path: "indicators.rsi_14.period"
+    range:
+      type: list
+      values: [10, 14, 20, 30]
+  
+  # Oversold threshold: test from 20 to 40 in steps of 5
+  - path: "conditions.entry.right"
+    range:
+      type: linear
+      min: 20
+      max: 40
+      step: 5
+  
+  # Overbought threshold: test from 60 to 80 in steps of 5
+  - path: "conditions.exit.right"
+    range:
+      type: linear
+      min: 60
+      max: 80
+      step: 5
+
+# Output configuration
+output:
+  best_results: "rsi_best_params.csv"
+  full_results: "rsi_all_params.csv"
+
+# Total combinations: 4 periods × 5 oversold × 5 overbought = 100 tests

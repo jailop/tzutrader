@@ -1,0 +1,36 @@
+metadata:
+  name: "History Test With Signals"
+  description: "Test screener with looser parameters to generate signals"
+  version: "1.0"
+  author: "TzuTrader"
+
+strategies:
+  - kind: builtin
+    name: rsi
+    params:
+      period: 14
+      oversold: 40
+      overbought: 60
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - GOOGL
+    - MSFT
+    - TSLA
+    - NVDA
+  lookback: 90d
+  interval: 1d
+
+output:
+  format: terminal
+  detail_level: detailed
+  save_history: true
+  history_dir: "test_screener_history"
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: weak

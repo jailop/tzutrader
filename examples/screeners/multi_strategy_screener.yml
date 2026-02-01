@@ -1,0 +1,62 @@
+# Multi-Strategy Market Scanner
+# Scan market with multiple built-in strategies
+
+metadata:
+  name: "Multi-Strategy Market Scanner"
+  description: "Scan market with RSI, MACD, and Bollinger Band strategies"
+  author: "TzuTrader"
+  created: "2024-02-01"
+  tags:
+    - multi-strategy
+    - daily
+    - comprehensive
+
+strategies:
+  # RSI Mean Reversion
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 30
+      overbought: 70
+  
+  # MACD Trend Following
+  - kind: built_in
+    name: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+  
+  # Bollinger Bands
+  - kind: built_in
+    name: bollinger
+    params:
+      period: 20
+      stdDev: 2.0
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - TSLA
+    - NVDA
+    - META
+    - NFLX
+    - AMD
+  lookback: 6mo
+  interval: 1d
+
+output:
+  format: csv
+  detail_level: detailed
+  filepath: "screener_results.csv"
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: moderate
+  top_n: 20

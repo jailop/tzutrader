@@ -1,0 +1,86 @@
+# Filtered Momentum Strategy
+# Phase 3 Example: Multi-indicator strategy with nested AND/OR conditions
+
+version: "1.0"
+type: strategy
+
+metadata:
+  name: "Filtered Momentum Strategy"
+  description: "RSI momentum signals filtered by SMA trend and volume"
+  author: "TzuTrader Team"
+  created: "2026-01-31"
+  tags: ["momentum", "trend-following", "multi-indicator"]
+
+# Multiple indicators working together
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+      
+  - id: sma_50
+    type: sma
+    params:
+      period: 50
+      
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+  
+  - id: volume_sma
+    type: sma
+    params:
+      period: 20
+    source: volume
+
+# Entry: AND of multiple conditions including nested OR
+entry:
+  conditions:
+    all:  # ALL conditions must be met (AND logic)
+      # Condition 1: Long-term trend filter
+      - left: price
+        operator: ">"
+        right: sma_200
+      
+      # Condition 2: Short-term trend confirmation
+      - left: sma_50
+        operator: ">"
+        right: sma_200
+      
+      # Condition 3: At least ONE momentum signal (OR logic)
+      - any:
+          - left: rsi_14
+            operator: "<"
+            right: "30"
+          - left: price
+            operator: crosses_above
+            right: sma_50
+      
+      # Condition 4: Volume confirmation
+      - left: volume
+        operator: ">"
+        right: volume_sma
+
+# Exit: OR of multiple conditions
+exit:
+  conditions:
+    any:  # ANY condition triggers exit (OR logic)
+      # Exit 1: Overbought
+      - left: rsi_14
+        operator: ">"
+        right: "70"
+      
+      # Exit 2: Price breaks below short-term MA
+      - left: price
+        operator: crosses_below
+        right: sma_50
+      
+      # Exit 3: Weak volume
+      - left: volume
+        operator: "<"
+        right: volume_sma
+
+position_sizing:
+  type: percent
+  percent: 95.0  # Use 95% of available capital

@@ -1,0 +1,120 @@
+# Complex Nested Conditions Strategy
+# Phase 3 Example: Demonstrates deeply nested AND/OR/NOT logic
+
+version: "1.0"
+type: strategy
+
+metadata:
+  name: "Complex Multi-Condition Strategy"
+  description: "Advanced nested logic with AND of ORs and NOT conditions"
+  author: "TzuTrader Team"
+  created: "2026-01-31"
+  tags: ["advanced", "nested-logic", "multi-factor"]
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+  
+  - id: macd
+    type: macd
+    params:
+      fast: 12
+      slow: 26
+      signal: 9
+  
+  - id: sma_200
+    type: sma
+    params:
+      period: 200
+  
+  - id: bb_upper
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: upper
+  
+  - id: bb_lower
+    type: bollinger
+    params:
+      period: 20
+      numStdDev: 2.0
+    output: lower
+  
+  - id: volume_sma
+    type: sma
+    params:
+      period: 20
+    source: volume
+
+# Complex entry: (Trend AND (Momentum1 OR Momentum2) AND Volume) AND NOT Overbought
+entry:
+  conditions:
+    all:
+      # Group 1: Trend confirmation
+      - left: price
+        operator: ">"
+        right: sma_200
+      
+      # Group 2: At least one momentum signal (OR)
+      - any:
+          - left: rsi_14
+            operator: "<"
+            right: "35"
+          - all:
+              - left: macd
+                operator: ">"
+                right: "0"
+              - left: macd.signal
+                operator: ">"
+                right: "0"
+      
+      # Group 3: Volume confirmation
+      - left: volume
+        operator: ">"
+        right: volume_sma
+      
+      # Group 4: NOT in extreme overbought (using NOT logic)
+      - not:
+          left: rsi_14
+          operator: ">"
+          right: "80"
+      
+      # Group 5: Price not too extended above MA
+      - not:
+          left: price
+          operator: ">"
+          right: bb_upper
+
+# Complex exit: Strong overbought OR trend break OR weak setup
+exit:
+  conditions:
+    any:
+      # Exit pattern 1: Strong overbought with bearish divergence
+      - all:
+          - left: rsi_14
+            operator: ">"
+            right: "70"
+          - left: macd
+            operator: "<"
+            right: "0"
+      
+      # Exit pattern 2: Trend break
+      - left: price
+        operator: crosses_below
+        right: sma_200
+      
+      # Exit pattern 3: Weak volume AND below Bollinger middle
+      - all:
+          - left: volume
+            operator: "<"
+            right: volume_sma
+          - left: price
+            operator: "<"
+            right: bb_lower
+
+position_sizing:
+  type: percent
+  percent: 100.0

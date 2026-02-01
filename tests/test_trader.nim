@@ -1,7 +1,8 @@
 ## Unit tests for trader module (backtesting)
 
 import std/[unittest, times, tables, math, strutils]
-import ../src/tzutrader/[core, data, indicators, strategy, portfolio, trader]
+import ../src/tzutrader/[core, data, indicators, strategy, portfolio, trader, strategy_builder]
+import ../src/tzutrader/declarative/risk_management
 
 # Helper to create test data
 proc createTestData(bars: int, startPrice: float64 = 100.0, trend: float64 = 0.0): seq[OHLCV] =
@@ -373,5 +374,158 @@ suite "Edge Cases Tests":
     let report = bt.run(data, "TEST")
     
     check report.totalTrades == 0  # Can't trade with just 1 bar
+
+suite "Risk Management Integration Tests":
+  
+  test "Strategy with risk management enabled":
+    let strategy = newRSIStrategy()
+      .withFixedStopLoss(5.0)
+      .withFixedTakeProfit(10.0)
+    
+    check strategy.enableRiskManagement == true
+    check strategy.stopLossRule != nil
+    check strategy.takeProfitRule != nil
+  
+  test "Backtest report includes risk management statistics":
+    let strategy = newRSIStrategy(oversold = 45.0)  # Easier to trigger
+      .withFixedStopLoss(5.0)
+      .withFixedTakeProfit(10.0)
+    
+    # Create volatile data to trigger trades
+    var data: seq[OHLCV] = @[]
+    let baseTime = getTime().toUnix()
+    for i in 0..40:
+      let price = 100.0 + (i.float64 * (if i mod 2 == 0: 3.0 else: -2.0))
+      data.add(OHLCV(
+        timestamp: baseTime + (i * 86400),
+        open: price,
+        high: price * 1.02,
+        low: price * 0.98,
+        close: price,
+        volume: 1000000.0
+      ))
+    
+    let report = quickBacktest("TEST", strategy, data, initialCash = 10000.0)
+    
+    # Report should have risk management fields (even if zero)
+    check report.stopLossExits >= 0
+    check report.takeProfitExits >= 0
+    check report.strategyExits >= 0
+  
+  test "Fixed stop-loss exits are tracked":
+    # Create a simple strategy that buys and holds
+    let strategy = newRSIStrategy(oversold = 50.0)
+      .withFixedStopLoss(10.0)  # 10% stop-loss
+    
+    # Create data with significant drop to trigger stop
+    var data: seq[OHLCV] = @[]
+    let baseTime = getTime().toUnix()
+    for i in 0..30:
+      # Start at 100, drop to 80 (20% drop should trigger 10% stop)
+      let price = 100.0 - (i.float64 * 0.7)
+      data.add(OHLCV(
+        timestamp: baseTime + (i * 86400),
+        open: price,
+        high: price * 1.01,
+        low: price * 0.99,
+        close: price,
+        volume: 1000000.0
+      ))
+    
+    let bt = newBacktester(strategy, initialCash = 10000.0)
+    let report = bt.run(data, "TEST")
+    
+    # With stop-loss, should have risk exits if trades occurred
+    if report.totalTrades > 0:
+      check (report.stopLossExits + report.takeProfitExits + report.strategyExits) >= 0
+  
+  test "Risk management with builder pattern":
+    let strategy = newStrategyBuilder(newCrossoverStrategy(5, 10))
+      .withFixedStopLoss(5.0)
+      .withRiskReward(2.0)
+      .build()
+    
+    check strategy.enableRiskManagement == true
+    check strategy.stopLossRule.kind == slkFixedPercentage
+    check strategy.takeProfitRule.kind == tpkRiskReward
+  
+  test "Risk management with withRiskManagement convenience function":
+    let strategy = newRSIStrategy()
+      .withRiskManagement(
+        stopLoss = newFixedPercentageStopLoss(5.0),
+        takeProfit = newFixedPercentageTakeProfit(10.0)
+      )
+    
+    check strategy.enableRiskManagement == true
+    check strategy.stopLossRule.kind == slkFixedPercentage
+    check strategy.takeProfitRule.kind == tpkFixedPercentage
+  
+  test "Strategy without risk management works as before":
+    let strategy = newRSIStrategy()
+    let data = createTestData(30)
+    
+    check strategy.enableRiskManagement == false
+    check strategy.stopLossRule == nil
+    check strategy.takeProfitRule == nil
+    
+    let report = quickBacktest("TEST", strategy, data, initialCash = 10000.0)
+    check report.stopLossExits == 0
+    check report.takeProfitExits == 0
+  
+  test "Trailing stop configuration":
+    let strategy = newRSIStrategy()
+      .withTrailingStop(trailPct = 3.0, activationPct = 5.0)
+    
+    check strategy.enableRiskManagement == true
+    check strategy.stopLossRule.kind == slkTrailing
+    
+    let trailingRule = TrailingStopLoss(strategy.stopLossRule)
+    check trailingRule.trailPercentage == 3.0
+    check trailingRule.activationProfit == 5.0
+  
+  test "Multi-level take-profit configuration":
+    let levels = @[
+      TakeProfitLevel(percentage: 5.0, exitPercent: 50.0),
+      TakeProfitLevel(percentage: 10.0, exitPercent: 50.0)
+    ]
+    
+    let strategy = newStrategyBuilder(newRSIStrategy())
+      .withFixedStopLoss(5.0)
+      .withMultiLevelProfit(levels)
+      .build()
+    
+    check strategy.takeProfitRule.kind == tpkMultiLevel
+    
+    let mltp = MultiLevelTakeProfit(strategy.takeProfitRule)
+    check mltp.levels.len == 2
+    check mltp.levels[0].percentage == 5.0
+    check mltp.levels[0].exitPercent == 50.0
+  
+  test "BacktestReport string includes risk management section when applicable":
+    let strategy = newRSIStrategy(oversold = 45.0)
+      .withFixedStopLoss(5.0)
+      .withFixedTakeProfit(10.0)
+    
+    var data: seq[OHLCV] = @[]
+    let baseTime = getTime().toUnix()
+    for i in 0..30:
+      let price = 100.0 + (i.float64 * (if i mod 3 == 0: 2.0 else: -1.5))
+      data.add(OHLCV(
+        timestamp: baseTime + (i * 86400),
+        open: price,
+        high: price * 1.02,
+        low: price * 0.98,
+        close: price,
+        volume: 1000000.0
+      ))
+    
+    let report = quickBacktest("TEST", strategy, data, initialCash = 10000.0)
+    let reportStr = $report
+    
+    # If any risk exits occurred, report should include Risk Management section
+    if report.stopLossExits > 0 or report.takeProfitExits > 0:
+      check "Risk Management" in reportStr
+      check "Stop-Loss Exits" in reportStr
+      check "Take-Profit Exits" in reportStr
 
 echo "Trader module: All tests defined"

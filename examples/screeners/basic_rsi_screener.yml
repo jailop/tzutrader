@@ -1,0 +1,40 @@
+# Basic RSI Screener
+# Find oversold stocks using RSI indicator
+
+metadata:
+  name: "RSI Oversold Screener"
+  description: "Find oversold stocks using RSI"
+  author: "TzuTrader"
+  tags:
+    - rsi
+    - mean-reversion
+    - daily
+
+strategies:
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 30
+      overbought: 70
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - TSLA
+    - AMZN
+  lookback: 90d
+  interval: 1d
+
+output:
+  format: terminal
+  detail_level: summary
+
+filters:
+  signal_types:
+    - buy_signal
+  min_strength: moderate
+  top_n: 10

@@ -1,74 +1,43 @@
 # TzuTrader
 
-A high-performance Nim library for **backtesting trading strategies** and **building live trading bots**. Rewrite of Python's [pybottrader](https://github.com/datainquiry/pybottrader).
+An experimental algorithmic trading framework designed to develop, and test
+systematic trading strategies. Whether you're validating a new trading
+idea, optimizing strategy parameters, or screening markets for
+opportunities, TzuTrader provides tools to do it efficiently.
 
-[Documentation](https://jailop.codeberg.page/tzutrader/docs/)
+Why?
 
-**Key Features:**
+- Fast Development Cycle: Test trading ideas in minutes using the CLI or
+  declarative YAML configs—no coding required for basic strategies
+- Better Performance: Built in Nim for speed and memory
+  efficiency, with O(1) memory streaming indicators
+- Flexible Workflow: Start with simple built-in strategies, evolve to
+  YAML configs, or write custom strategies in Nim for maximum control
+- Comprehensive Toolset: Backtesting, market screening, batch testing,
+  parameter optimization, and basic portfolio simulation in one 
+  library
 
-- Backtest strategies on historical data
-- Implement strategies using Nim or using a declarative format in yaml
-  files.
-- Build live trading bots with the same code
-- Technical indicators with O(1) memory
-- Pre-built strategies (mean reversion, trend following, hybrid)
-- Fast, type-safe, streaming architecture
+[Read the docs...](https://jailop.codeberg.page/tzutrader/docs/)
 
-## Quick Start
+How it looks?
 
-### Installation
-
-```bash
-git clone https://codeberg.org/jailop/tzutrader.git
-cd tzutrader
-nimble install -y   # Installs library + tzu CLI command
-```
-
-**Requirements:** Nim 2.0.0+
-
-### CLI Tool
-
-After installation, the `tzu` command is available globally:
+CLI Tool:
 
 ```bash
-# Quick backtest with Yahoo Finance data
-tzu --run-strat=rsi --symbol=AAPL --start=2023-01-01
-
-# Using short options (-r for run-strat, -s for symbol, -e for endDate)
-tzu -r rsi -s AAPL --start=2023-01-01 -e 2023-12-31
+# Backtest with built-in strategy
+tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
 
 # With custom strategy parameters
-tzu --run-strat=macd -s AAPL --start=2023-01-01 --fast=10 --slow=20 --signal=5
+tzu --backtest=macd -s AAPL --start=2023-01-01 --fast=10 --slow=20 --signal=5
 
-# Using CSV file (no --start required)
-tzu --run-strat=bollinger --csvFile=data/AAPL.csv
+# Backtest YAML strategy file
+tzu --strategy=examples/rsi_strategy_example.yaml --symbol=AAPL --start=2023-01-01
 
-# Multiple custom parameters
-tzu -r rsi -s MSFT --start=2024-01-01 -p 10 -o 25 --overbought=75
-
-# Available strategies
-tzu --help
+# Screen multiple symbols and get alerts
+tzu --screen=examples/screeners/basic_rsi_screener.yml
 ```
 
-**Common Options:**
-- `-r`, `--run-strat=STRATEGY` - Strategy to backtest (required)
-- `-s`, `--symbol=SYMBOL` - Symbol for Yahoo Finance data
-- `--start=YYYY-MM-DD` - Start date (required for Yahoo Finance)
-- `-e`, `--endDate=YYYY-MM-DD` - End date (optional, defaults to today)
-- `-c`, `--csvFile=FILE` - Use CSV file instead of Yahoo Finance
-- `-p`, `--period=N` - Period for indicators (default varies by strategy)
-- `-i`, `--initialCash=N` - Starting capital (default: 100000.0)
-- `--commission=N` - Commission rate (default: 0.0)
-
-**Note:** `--start` has no short option to avoid conflicts. Use the full `--start=` form.
-
-**Development workflow:**
-```bash
-nimble build   # Build ./tzu in current directory
-nimble install # Install library and CLI globally
-```
-
-### Library Example
+Library Example:
 
 ```nim
 import tzutrader
@@ -89,47 +58,70 @@ let report = quickBacktest(
 echo report.summary()
 ```
 
-**Output:**
+YAML files:
+
 ```
-Backtest Report: AAPL
-Total Return:     23.45%
-Sharpe Ratio:     1.87
-Max Drawdown:     -8.23%
-Win Rate:         58.33%
+metadata:
+  name: "Simple RSI Mean Reversion"
+  description: "Classic RSI oversold/overbought strategy"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - rsi
+    - mean-reversion
+    - beginner-friendly
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100
 ```
 
-## Documentation
+## Limitations
 
-- **[User Guide](docs/user_guide/)** - Concepts and tutorials
-- **[Reference Guide](docs/reference_guide/)** - Technical specifications
-- **[API Documentation](docs/api/)** - Complete API reference (`nimble docs`)
+- At this moment only a few illustrative data sources are supported,
+  like CSV files and Yahoo Finance.
+- At this moment only OHLCV-based strategies are supported.
+- The API is not stable yet. Don't use this library for production (no
+  yet).
 
-**Quick Links:**
+## ⚠️ Disclaimers
 
-- [Getting Started](docs/user_guide/01_getting_started.md)
-- [Technical Indicators](docs/reference_guide/03_indicators.md)
-- [Strategy Development](docs/user_guide/04_strategies.md)
-- [CLI Reference](docs/reference_guide/09_cli.md)
+This software is provided for educational and research purposes
+only.
 
-## ⚠️ Disclaimer
-
-**This software is provided for educational and research purposes
-only.**
-
-- **No Financial Advice**: TzuTrader does not provide financial,
+- No Financial Advice: This software does not provide financial,
   investment, trading, or any other type of professional advice. Any
   strategies, indicators, or results shown are for informational
   purposes only.
-- **No Liability**: The authors and contributors are not responsible for
+- No Liability: The authors and contributors are not responsible for
   any financial losses, damages, or other consequences resulting from
-  the use of this library.
-- **Trading Risks**: Trading financial instruments involves substantial
+  the use of this software.
+- Trading Risks: Trading financial instruments involves substantial
   risk of loss. Past performance does not guarantee future results.
-- **Use at Your Own Risk**: Users are solely responsible for their
+  Backtested results do not represent actual trading and may not reflect
+  the impact of material market factors such as liquidity, slippage, and
+  transaction costs.
+- Use at Your Own Risk: Users are solely responsible for their
   trading decisions and should consult with qualified financial
   professionals before making any investment decisions.
 
 By using TzuTrader, you acknowledge that you understand these risks and
 accept full responsibility for your actions.
-
-

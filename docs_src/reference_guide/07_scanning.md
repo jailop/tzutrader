@@ -581,4 +581,4 @@ Scanning identifies candidates, but:
 - [CLI Reference](09_cli.md) - Using the scan command
 - [Export Reference](08_exports.md) - Exporting scan results
 - [User Guide: Comparing Strategies](../user_guide/07_scanning.md) - Conceptual introduction
-- [User Guide: Best Practices](../user_guide/09_best_practices.md) - Avoiding overfitting
+- [User Guide: Best Practices](../user_guide/10_best_practices.md) - Avoiding overfitting

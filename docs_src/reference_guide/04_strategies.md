@@ -620,4 +620,4 @@ if lastSignal != Buy and rsiVal < oversold:
 - [Indicators Reference](03_indicators.md) - Using technical indicators
 - [Backtesting Reference](06_backtesting.md) - Testing strategies
 - [User Guide: Building Strategies](../user_guide/04_strategies.md) - Conceptual introduction
-- [User Guide: Best Practices](../user_guide/09_best_practices.md) - Strategy development guidelines
+- [User Guide: Best Practices](../user_guide/10_best_practices.md) - Strategy development guidelines

@@ -1,0 +1,46 @@
+# Crypto Signal Screener
+# Find trading opportunities in crypto markets using hourly data
+
+metadata:
+  name: "Crypto Signal Screener"
+  description: "Find trading opportunities in crypto markets"
+  author: "TzuTrader"
+  tags:
+    - crypto
+    - hourly
+    - short-term
+
+strategies:
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 35
+      overbought: 65
+  
+  - kind: built_in
+    name: bollinger
+    params:
+      period: 20
+      stdDev: 2.0
+
+data:
+  source: coinbase
+  pairs:
+    - BTC-USD
+    - ETH-USD
+    - SOL-USD
+    - AVAX-USD
+  lookback: 7d
+  interval: 1h
+
+output:
+  format: terminal
+  detail_level: summary
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: moderate
+  top_n: 5

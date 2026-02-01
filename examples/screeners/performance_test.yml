@@ -1,0 +1,52 @@
+# Performance Test Screener
+# Test with larger symbol list
+
+metadata:
+  name: "Performance Test Screener"
+  description: "Test screening performance with 20 symbols"
+  author: "TzuTrader"
+
+strategies:
+  - kind: built_in
+    name: rsi
+    params:
+      period: 14
+      oversold: 35
+      overbought: 65
+
+data:
+  source: yahoo
+  symbols:
+    - AAPL
+    - MSFT
+    - GOOGL
+    - AMZN
+    - TSLA
+    - META
+    - NVDA
+    - NFLX
+    - AMD
+    - INTC
+    - JPM
+    - BAC
+    - WFC
+    - GS
+    - C
+    - XOM
+    - CVX
+    - COP
+    - SLB
+    - MPC
+  lookback: 60d
+  interval: 1d
+
+output:
+  format: terminal
+  detail_level: summary
+
+filters:
+  signal_types:
+    - buy_signal
+    - sell_signal
+  min_strength: weak
+  top_n: 10

@@ -506,7 +506,7 @@ If your dataset includes only stocks that survived to present day, results are o
 
 Backtests measure how a strategy performed on specific historical data. Optimizing parameters to maximize backtest results often creates strategies that fail in live trading because they're tuned to past noise rather than genuine patterns.
 
-See [User Guide: Best Practices](../user_guide/09_best_practices.md) for mitigating these issues.
+See [User Guide: Best Practices](../user_guide/10_best_practices.md) for mitigating these issues.
 
 ### Signal Timing
 
@@ -532,4 +532,4 @@ For very large datasets (millions of bars), consider streaming data rather than 
 - [Strategy Reference](04_strategies.md) - Strategy implementation
 - [Scanner Reference](07_scanning.md) - Multi-symbol backtesting
 - [User Guide: Backtesting](../user_guide/06_backtesting.md) - Conceptual introduction
-- [User Guide: Best Practices](../user_guide/09_best_practices.md) - Avoiding common mistakes
+- [User Guide: Best Practices](../user_guide/10_best_practices.md) - Avoiding common mistakes

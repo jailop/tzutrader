@@ -32,6 +32,8 @@ TzuTrader is a trading bot library for Nim that provides tools for building and 
 
 TzuTrader is designed for retail traders who have programming experience and want to build systematic trading approaches. The library focuses on simplicity and clarity rather than attempting to cover every possible trading scenario.
 
+**Why Nim?** TzuTrader is written in [Nim](https://nim-lang.org/), a modern language that combines Python-like readability with C-like performance. This means you get fast backtests with clear, maintainable code. You don't need to be a Nim expert to use TzuTrader—the library's API is designed to be self-explanatory. For more details about this choice, see **[Why Nim?](../about_nim.md)**
+
 ## Backtesting vs Live Trading
 
 Before deploying a trading bot with real money, traders test their strategies against historical data. This process, called backtesting, simulates how the strategy would have performed in the past.

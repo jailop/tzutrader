@@ -10,6 +10,9 @@ This guide teaches you how to write custom trading strategies in Nim, even if yo
     - **Use Nim** when you need: complex logic, custom calculations, state management, or integration with other code
     - **Use YAML** when you need: simple indicator-based rules without programming (see [Writing Custom Strategies with YAML](04b_custom_strategies_yaml.md))
 
+!!! info "New to Nim?"
+    Nim is a modern language with Python-like syntax but C-like performance. If you can read Python, you can read Nim! The examples in this guide are designed to be self-explanatory. For more about why TzuTrader uses Nim, see **[Why Nim?](../about_nim.md)**
+
 ## What is a Strategy?
 
 A trading strategy in TzuTrader is a Nim object that:

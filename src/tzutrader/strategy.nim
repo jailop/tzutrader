@@ -82,6 +82,8 @@ export base.analyze
 export base.onBar
 export base.reset
 export base.getPositionSizing  # Export position sizing method
+export base.setRiskManagement  # Export risk management configuration
+export base.getIndicatorValue  # Export indicator value accessor
 
 # Export all strategy types and constructors
 # Classic strategies

@@ -1005,14 +1005,14 @@ Contains all tested combinations with their results.
 ### Single Strategy
 
 ```bash
-./tzu --yaml-strategy=path/to/strategy.yml \
+./tzu --strategy=path/to/strategy.yml \
       --symbol=AAPL \
       --start=2023-01-01 \
       --end=2024-01-01
 ```
 
 **Options**:
-- `--yaml-strategy=FILE` - Path to YAML strategy file
+- `--strategy=FILE` - Path to YAML strategy file
 - `--symbol=SYMBOL` - Stock symbol to test
 - `--start=DATE` - Start date (YYYY-MM-DD)
 - `--end=DATE` - End date (YYYY-MM-DD)
@@ -1313,7 +1313,7 @@ Planned features for the declarative system:
 - [User Guide: Custom Strategies with Nim](../user_guide/04a_custom_strategies_nim.md)
 - [Reference: Indicators](03_indicators.md)
 - [Reference: CLI Tool](09_cli.md)
-- [User Guide: Workflows](../user_guide/08_workflows.md)
+- [User Guide: Workflows](../user_guide/09_workflows.md)
 
 ## Summary
 
