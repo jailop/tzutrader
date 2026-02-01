@@ -6,7 +6,7 @@ The scanner module runs a strategy across multiple symbols and ranks the results
 
 Scanning answers questions like: "Which tech stocks does my RSI strategy perform best on?" or "Does this MACD setup work better on volatile or stable stocks?"
 
-**Module:** `tzutrader/scanner.nim`
+Module: `tzutrader/scanner.nim`
 
 ## Why Scan Multiple Symbols
 
@@ -40,7 +40,7 @@ type
     verbose*: bool
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -59,7 +59,7 @@ proc newScanner*(strategy: Strategy, symbols: seq[string],
                  verbose: bool = false): Scanner
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -69,7 +69,7 @@ proc newScanner*(strategy: Strategy, symbols: seq[string],
 | `commission` | float64 | 0.0 | Commission rate (decimal) |
 | `verbose` | bool | false | Enable progress output |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -96,12 +96,12 @@ proc scan*(scanner: Scanner, dataMap: Table[string, seq[OHLCV]]): seq[ScanResult
 
 Scans symbols using pre-loaded data.
 
-**Parameters:**
+Parameters:
 - `dataMap`: Table mapping symbols to their OHLCV sequences
 
-**Returns:** Sequence of `ScanResult`, one per successfully scanned symbol
+Returns: Sequence of `ScanResult`, one per successfully scanned symbol
 
-**Process:**
+Process:
 
 1. For each symbol in the scanner's symbol list:
 2. Check if data exists in dataMap
@@ -110,7 +110,7 @@ Scans symbols using pre-loaded data.
 5. Generate signals using strategy.analyze
 6. Add ScanResult to output
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader, std/tables
@@ -136,12 +136,12 @@ proc scanFromCSV*(scanner: Scanner, csvDir: string): seq[ScanResult]
 
 Scans symbols by automatically loading CSV files from a directory.
 
-**Parameters:**
+Parameters:
 - `csvDir`: Directory containing CSV files
 
-**File naming convention:** Files must be named `{SYMBOL}.csv`
+File naming convention: Files must be named `{SYMBOL}.csv`
 
-**Process:**
+Process:
 
 1. For each symbol in the scanner's symbol list:
 2. Construct file path: `csvDir/{symbol}.csv`
@@ -150,7 +150,7 @@ Scans symbols by automatically loading CSV files from a directory.
 5. Add to data map
 6. Call `scan()` with the loaded data
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -167,7 +167,7 @@ let results = scanner.scanFromCSV("data/")
 echo results.summary()
 ```
 
-**Error handling:**
+Error handling:
 
 Missing files or read errors are logged if `verbose = true` but don't stop the scan. Symbols with errors are simply excluded from results.
 
@@ -183,7 +183,7 @@ type
     signals*: seq[Signal]
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -193,7 +193,7 @@ type
 
 The `report` field contains all metrics from the backtest. See [Backtesting Reference](06_backtesting.md) for complete `BacktestReport` specification.
 
-**Example:**
+Example:
 
 ```nim
 for result in results:
@@ -220,7 +220,7 @@ type
     TotalTrades
 ```
 
-**Ranking metrics:**
+Ranking metrics:
 
 - `TotalReturn`: Total percentage return (higher is better)
 - `AnnualizedReturn`: Annualized return percentage (higher is better)
@@ -236,16 +236,16 @@ type
 proc rankBy*(results: var seq[ScanResult], metric: RankBy, ascending: bool = false)
 ```
 
-Sorts results by the specified metric **in place**.
+Sorts results by the specified metric in place.
 
-**Parameters:**
+Parameters:
 - `results`: Scan results to rank (modified)
 - `metric`: Which metric to rank by
 - `ascending`: If `true`, rank low to high; if `false` (default), rank high to low
 
-**Default behavior:** Higher values rank first (descending) except for `MaxDrawdown` where lower values rank first.
+Default behavior: Higher values rank first (descending) except for `MaxDrawdown` where lower values rank first.
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -276,13 +276,13 @@ proc topN*(results: seq[ScanResult], n: int): seq[ScanResult]
 
 Returns the first N results (assumes results are already ranked).
 
-**Parameters:**
+Parameters:
 - `results`: Ranked scan results
 - `n`: Number of results to return
 
-**Returns:** Slice of top N results
+Returns: Slice of top N results
 
-**Example:**
+Example:
 
 ```nim
 # Get top 5 by return
@@ -307,7 +307,7 @@ proc filter*(results: seq[ScanResult],
 
 Filters results by performance criteria.
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -317,9 +317,9 @@ Filters results by performance criteria.
 | `minTrades` | int | 0 | Minimum number of trades |
 | `maxDrawdown` | float64 | +∞ | Maximum drawdown (%) |
 
-**Returns:** New sequence containing only results meeting all criteria
+Returns: New sequence containing only results meeting all criteria
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -338,7 +338,7 @@ let filtered = results.filter(
 echo "Symbols meeting criteria: ", filtered.len
 ```
 
-**Combining filter and rank:**
+Combining filter and rank:
 
 ```nim
 # Filter first, then rank the survivors
@@ -361,7 +361,7 @@ proc summary*(results: seq[ScanResult]): string
 
 Generates a formatted table summarizing all results.
 
-**Output format:**
+Output format:
 
 ```
 ==============================================================================
@@ -379,7 +379,7 @@ Average Sharpe: 1.24
 Average Win Rate: 56.93%
 ```
 
-**Example:**
+Example:
 
 ```nim
 let results = scanner.scanFromCSV("data/")
@@ -489,7 +489,7 @@ echo "Spread: ", best.report.totalReturn - worst.report.totalReturn, " percentag
 
 The current scanner implementation runs backtests sequentially. Each symbol is independent, making scanning a good candidate for parallelization. Future versions may add parallel execution.
 
-**Current workaround for faster scans:**
+Current workaround for faster scans:
 
 Split symbols across multiple scanner instances and run in separate processes, then combine results.
 
@@ -497,7 +497,7 @@ Split symbols across multiple scanner instances and run in separate processes, t
 
 The scanner stores complete backtest reports and signals for all symbols. For large symbol lists (hundreds) with long histories (years of daily data), memory usage can be significant.
 
-**Memory reduction strategies:**
+Memory reduction strategies:
 
 - Scan in batches (process 50 symbols at a time)
 - Discard signal sequences if not needed for analysis
@@ -507,9 +507,9 @@ The scanner stores complete backtest reports and signals for all symbols. For la
 
 Approximate timings (single-threaded, modern hardware):
 
-- **10 symbols, 1 year daily data:** ~1 second
-- **100 symbols, 5 years daily data:** ~30-60 seconds
-- **500 symbols, 10 years daily data:** ~5-10 minutes
+- 10 symbols, 1 year daily data: ~1 second
+- 100 symbols, 5 years daily data: ~30-60 seconds
+- 500 symbols, 10 years daily data: ~5-10 minutes
 
 Actual timing depends on strategy complexity (indicator calculations) and data volume.
 
@@ -551,29 +551,29 @@ See [Export Reference](08_exports.md) for export format specifications.
 
 ### What Good Results Look Like
 
-- **Consistency:** Multiple symbols show positive returns
-- **Sharpe ratios > 1.0:** Risk-adjusted returns are reasonable
-- **Trade counts:** Enough trades for statistical significance (20+)
-- **Win rates:** Typically 40-60% for trend strategies, 50-70% for mean reversion
-- **Drawdowns:** Manageable relative to returns
+- Consistency: Multiple symbols show positive returns
+- Sharpe ratios > 1.0: Risk-adjusted returns are reasonable
+- Trade counts: Enough trades for statistical significance (20+)
+- Win rates: Typically 40-60% for trend strategies, 50-70% for mean reversion
+- Drawdowns: Manageable relative to returns
 
 ### Red Flags
 
-- **Single winner:** Only one symbol profitable suggests overfitting
-- **Extreme metrics:** 100% win rate or 10+ Sharpe ratio indicates bugs
-- **No trades:** Strategy never triggered signals (parameters too conservative)
-- **Excessive trades:** Hundreds of trades suggest overtrading costs
-- **Huge variations:** 50% return on one symbol, -30% on another suggests randomness
+- Single winner: Only one symbol profitable suggests overfitting
+- Extreme metrics: 100% win rate or 10+ Sharpe ratio indicates bugs
+- No trades: Strategy never triggered signals (parameters too conservative)
+- Excessive trades: Hundreds of trades suggest overtrading costs
+- Huge variations: 50% return on one symbol, -30% on another suggests randomness
 
 ### Using Scan Results
 
 Scanning identifies candidates, but:
 
-1. **Verify on out-of-sample data:** Test top performers on recent data not included in scan
-2. **Understand why it works:** Investigate what market conditions favor the strategy
-3. **Check robustness:** Small parameter changes shouldn't drastically alter results
-4. **Consider transaction costs:** High-frequency strategies need lower commissions
-5. **Diversify:** Trade multiple symbols from scan results, not just #1
+1. Verify on out-of-sample data: Test top performers on recent data not included in scan
+2. Understand why it works: Investigate what market conditions favor the strategy
+3. Check robustness: Small parameter changes shouldn't drastically alter results
+4. Consider transaction costs: High-frequency strategies need lower commissions
+5. Diversify: Trade multiple symbols from scan results, not just #1
 
 ## See Also
 

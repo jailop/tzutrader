@@ -2,7 +2,7 @@
 
 ## Introduction
 
-TzuTrader's **Declarative YAML System** allows you to create trading strategies using human-readable configuration files instead of programming. This approach is ideal for:
+TzuTrader's Declarative YAML System allows you to create trading strategies using human-readable configuration files instead of programming. This approach is ideal for:
 
 - Traders who want to backtest their ideas without learning Nim
 - Quick prototyping and iteration
@@ -10,11 +10,12 @@ TzuTrader's **Declarative YAML System** allows you to create trading strategies 
 - Version control and collaboration
 - Testing parameter variations efficiently
 
-**Important**: Like TzuTrader's built-in strategies, the YAML examples are **reference implementations** to demonstrate capabilities. You should create your own strategies tailored to your specific trading philosophy and risk tolerance.
+Important: Like TzuTrader's built-in strategies, the YAML examples are reference implementations to demonstrate capabilities. You should create your own strategies tailored to your specific trading philosophy and risk tolerance.
 
 ## Why Use YAML vs Nim?
 
 ### Choose YAML When:
+
 - You want to quickly test a trading idea
 - You're not comfortable with programming
 - You need to collaborate with non-programmers
@@ -22,13 +23,14 @@ TzuTrader's **Declarative YAML System** allows you to create trading strategies 
 - You want to optimize parameters using automated sweeps
 
 ### Choose Nim When:
+
 - Your strategy requires complex custom logic
 - You need state management across multiple timeframes
 - You want maximum performance
 - You need features not available in the declarative system
 - You're building a production trading bot
 
-For most retail traders testing their ideas, **YAML is the perfect starting point**.
+For most retail traders testing their ideas, YAML is the perfect starting point.
 
 ## Your First YAML Strategy
 
@@ -179,7 +181,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
 
 ### Momentum Oscillators
 
-**RSI (Relative Strength Index)**
+RSI (Relative Strength Index)
 ```yaml
 - id: rsi_14
   type: rsi
@@ -187,7 +189,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
     period: 14  # Common: 7, 14, 21
 ```
 
-**Stochastic**
+Stochastic
 ```yaml
 - id: stoch_14_3
   type: stochastic
@@ -197,7 +199,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
     smoothD: 3
 ```
 
-**CCI (Commodity Channel Index)**
+CCI (Commodity Channel Index)
 ```yaml
 - id: cci_20
   type: cci
@@ -207,7 +209,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
 
 ### Moving Averages
 
-**SMA (Simple Moving Average)**
+SMA (Simple Moving Average)
 ```yaml
 - id: sma_50
   type: sma
@@ -215,7 +217,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
     period: 50  # Common: 20, 50, 200
 ```
 
-**EMA (Exponential Moving Average)**
+EMA (Exponential Moving Average)
 ```yaml
 - id: ema_20
   type: ema
@@ -223,7 +225,7 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
     period: 20
 ```
 
-**DEMA (Double Exponential Moving Average)**
+DEMA (Double Exponential Moving Average)
 ```yaml
 - id: dema_20
   type: dema
@@ -231,7 +233,8 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
     period: 20
 ```
 
-**TEMA (Triple Exponential Moving Average)**
+TEMA (Triple Exponential Moving Average)
+
 ```yaml
 - id: tema_20
   type: tema
@@ -241,7 +244,8 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
 
 ### Trend Indicators
 
-**MACD (Moving Average Convergence Divergence)**
+MACD (Moving Average Convergence Divergence)
+
 ```yaml
 - id: macd_std
   type: macd
@@ -252,11 +256,13 @@ TzuTrader provides 30+ technical indicators. Here are the most commonly used:
 ```
 
 MACD has multiple outputs you can reference:
+
 - `macd_std` - MACD line
 - `macd_std.signal` - Signal line
 - `macd_std.histogram` - Histogram
 
-**ADX (Average Directional Index)**
+ADX (Average Directional Index)
+
 ```yaml
 - id: adx_14
   type: adx
@@ -266,7 +272,8 @@ MACD has multiple outputs you can reference:
 
 ### Volatility Indicators
 
-**Bollinger Bands**
+Bollinger Bands
+
 ```yaml
 - id: bb_20
   type: bollinger
@@ -276,11 +283,13 @@ MACD has multiple outputs you can reference:
 ```
 
 Bollinger Bands have three bands you can reference:
+
 - `bb_20.upper` - Upper band
 - `bb_20.middle` - Middle band (SMA)
 - `bb_20.lower` - Lower band
 
-**ATR (Average True Range)**
+ATR (Average True Range)
+
 ```yaml
 - id: atr_14
   type: atr
@@ -290,7 +299,8 @@ Bollinger Bands have three bands you can reference:
 
 ### Volume Indicators
 
-**Volume SMA (for volume confirmation)**
+Volume SMA (for volume confirmation)
+
 ```yaml
 - id: vol_sma_20
   type: sma
@@ -299,7 +309,8 @@ Bollinger Bands have three bands you can reference:
   source: volume  # Apply SMA to volume instead of close
 ```
 
-**OBV (On-Balance Volume)**
+OBV (On-Balance Volume)
+
 ```yaml
 - id: obv
   type: obv
@@ -309,6 +320,7 @@ Bollinger Bands have three bands you can reference:
 ### Price Action
 
 You can reference raw price data directly:
+
 - `open` - Opening price
 - `high` - High price
 - `low` - Low price
@@ -335,9 +347,10 @@ Use these operators in your entry/exit conditions:
 ### Using Literal Values
 
 The `right` side of a condition can be:
-- **An indicator**: `rsi_14`, `sma_200`, `macd.signal`
-- **A literal number** (in quotes): `"30"`, `"0"`, `"100"`
-- **A price field**: `close`, `open`, `high`, `low`
+
+- An indicator: `rsi_14`, `sma_200`, `macd.signal`
+- A literal number (in quotes): `"30"`, `"0"`, `"100"`
+- A price field: `close`, `open`, `high`, `low`
 
 ```yaml
 # Indicator vs literal
@@ -387,7 +400,7 @@ indicators:
 
 ### Combining Multiple Conditions (AND)
 
-Use `all:` to require **all** conditions to be true:
+Use `all:` to require all conditions to be true:
 
 ```yaml
 # Entry requires RSI oversold AND price above 200-day SMA
@@ -402,11 +415,11 @@ entry:
         right: sma_200
 ```
 
-This only triggers when **both** conditions are met.
+This only triggers when both conditions are met.
 
 ### Alternative Conditions (OR)
 
-Use `any:` to trigger when **any** condition is true:
+Use `any:` to trigger when any condition is true:
 
 ```yaml
 # Exit when either RSI overbought OR MACD turns negative
@@ -421,7 +434,7 @@ exit:
         right: "0"
 ```
 
-This triggers when **either** condition is met.
+This triggers when either condition is met.
 
 ### Negating Conditions (NOT)
 
@@ -471,7 +484,7 @@ position_sizing:
   size: 100  # Always trade 100 shares
 ```
 
-**Good for**: Consistent risk per trade, simple strategies.
+Good for: Consistent risk per trade, simple strategies.
 
 ### Percentage of Capital
 
@@ -483,9 +496,10 @@ position_sizing:
   percent: 10.0  # Use 10% of capital per trade
 ```
 
-**Good for**: Adaptive position sizing, growing/shrinking with account.
+Good for: Adaptive position sizing, growing/shrinking with account.
 
-**Example**: 
+Example: 
+
 - With $10,000 capital and 10% sizing:
   - If stock is $50, buy 20 shares ($1,000)
   - If stock is $100, buy 10 shares ($1,000)
@@ -695,7 +709,7 @@ Test on different stocks to avoid overfitting:
 
 ## Batch Testing
 
-Instead of running tests one at a time, use **batch testing** to compare multiple strategies or parameters simultaneously.
+Instead of running tests one at a time, use batch testing to compare multiple strategies or parameters simultaneously.
 
 ### Create a Batch Configuration
 
@@ -768,7 +782,7 @@ See the [Batch Testing Guide](../reference_guide/10_declarative.md#batch-testing
 
 ## Parameter Optimization (Sweep)
 
-Automatically find the best parameters using **parameter sweep**.
+Automatically find the best parameters using parameter sweep.
 
 ### Create a Sweep Configuration
 
@@ -822,7 +836,7 @@ output:
   full_results: "results/all_params.csv"
 ```
 
-This tests **4 × 5 × 5 = 100** parameter combinations.
+This tests 4 × 5 × 5 = 100 parameter combinations.
 
 ### Run Parameter Sweep
 
@@ -1129,7 +1143,7 @@ entry:
 
 ### Error: "Indicator not found"
 
-**Problem**: You referenced an indicator ID that doesn't exist.
+Problem: You referenced an indicator ID that doesn't exist.
 
 ```yaml
 indicators:
@@ -1143,7 +1157,7 @@ entry:
     left: rsi_20  # Wrong! No indicator with this ID
 ```
 
-**Solution**: Use the exact ID you defined:
+Solution: Use the exact ID you defined:
 
 ```yaml
 entry:
@@ -1153,7 +1167,7 @@ entry:
 
 ### Error: "Invalid parameter type"
 
-**Problem**: Parameter has wrong type.
+Problem: Parameter has wrong type.
 
 ```yaml
 # Bad
@@ -1163,7 +1177,7 @@ entry:
     period: "14"  # String instead of int
 ```
 
-**Solution**: Remove quotes from numbers:
+Solution: Remove quotes from numbers:
 
 ```yaml
 # Good
@@ -1175,7 +1189,7 @@ entry:
 
 ### Error: "Missing required field"
 
-**Problem**: You forgot a required section.
+Problem: You forgot a required section.
 
 ```yaml
 metadata:
@@ -1190,7 +1204,7 @@ indicators:
 # Missing entry, exit, and position_sizing!
 ```
 
-**Solution**: Include all required sections:
+Solution: Include all required sections:
 
 ```yaml
 metadata: {...}
@@ -1202,9 +1216,10 @@ position_sizing: {...}  # Required
 
 ### No Trades Generated
 
-**Problem**: Your conditions are too restrictive or never true.
+Problem: Your conditions are too restrictive or never true.
 
-**Solutions**:
+Solutions:
+
 1. Simplify conditions (remove some from `all:`)
 2. Widen thresholds (e.g., RSI < 35 instead of < 25)
 3. Check if indicators have enough history (some need many bars)
@@ -1212,9 +1227,10 @@ position_sizing: {...}  # Required
 
 ### Too Many Trades
 
-**Problem**: Your conditions trigger too frequently.
+Problem: Your conditions trigger too frequently.
 
-**Solutions**:
+Solutions:
+
 1. Add more filters (use `all:` to require multiple conditions)
 2. Make thresholds more extreme (e.g., RSI < 25 instead of < 35)
 3. Add trend filter to avoid choppy markets
@@ -1224,9 +1240,9 @@ position_sizing: {...}  # Required
 
 ### Learn More
 
-- **[Reference: Declarative System](../reference_guide/10_declarative.md)** - Complete technical reference
-- **[Reference: Indicators](../reference_guide/03_indicators.md)** - All 30+ indicators documented
-- **[User Guide: Workflows](09_workflows.md)** - Complete workflow examples
+- [Reference: Declarative System](../reference_guide/10_declarative.md) - Complete technical reference
+- [Reference: Indicators](../reference_guide/03_indicators.md) - All 30+ indicators documented
+- [User Guide: Workflows](09_workflows.md) - Complete workflow examples
 
 ### Example Strategies
 
@@ -1262,6 +1278,7 @@ See `examples/sweep/README.md` for more examples.
 ### When to Switch to Nim
 
 If you find yourself wanting to:
+
 - Implement complex custom logic
 - Manage state across bars in sophisticated ways
 - Optimize performance for production
@@ -1273,14 +1290,14 @@ Then it's time to learn Nim and read the [Writing Custom Strategies with Nim](04
 
 YAML strategies in TzuTrader provide a powerful yet accessible way to backtest trading ideas:
 
-- ✅ No programming required
-- ✅ 30+ built-in technical indicators
-- ✅ Simple and complex condition logic
-- ✅ Flexible position sizing
-- ✅ Batch testing for comparison
-- ✅ Automated parameter optimization
-- ✅ Clear validation and error messages
+- No programming required
+- 30+ built-in technical indicators
+- Simple and complex condition logic
+- Flexible position sizing
+- Batch testing for comparison
+- Automated parameter optimization
+- Clear validation and error messages
 
-**Remember**: Built-in and example strategies are reference implementations. Always develop and validate your own strategies that align with your trading philosophy and risk tolerance.
+Remember: Built-in and example strategies are reference implementations. Always develop and validate your own strategies that align with your trading philosophy and risk tolerance.
 
 Start simple, test thoroughly, and iterate based on results. Happy trading!

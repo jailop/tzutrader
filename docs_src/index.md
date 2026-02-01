@@ -6,6 +6,103 @@ validating a new trading idea, optimizing strategy parameters, or
 screening markets for opportunities, TzuTrader provides tools to do it
 efficiently.
 
+## Why?
+
+- Fast Development Cycle: Test trading ideas in minutes using the CLI or
+  declarative YAML configs—no coding required for basic strategies
+- Better Performance: Built in Nim for speed and memory
+  efficiency, with O(1) memory streaming indicators
+- Flexible Workflow: Start with simple built-in strategies, evolve to
+  YAML configs, or write custom strategies in Nim for maximum control
+- Comprehensive Toolset: Backtesting, market screening, batch testing,
+  parameter optimization, and basic portfolio simulation in one 
+  library
+
+## How it looks?
+
+CLI Tool:
+
+```bash
+# Backtest with built-in strategy
+tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
+
+# With custom strategy parameters
+tzu --backtest=macd -s AAPL --start=2023-01-01 --fast=10 --slow=20 --signal=5
+
+# Backtest YAML strategy file
+tzu --strategy=examples/rsi_strategy_example.yaml --symbol=AAPL --start=2023-01-01
+
+# Screen multiple symbols and get alerts
+tzu --screen=examples/screeners/basic_rsi_screener.yml
+```
+
+Library Example:
+
+```nim
+import tzutrader
+
+# Load data and create strategy
+let data = readCSV("data/AAPL.csv")
+let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
+
+# Run backtest
+let report = quickBacktest(
+  symbol = "AAPL",
+  strategy = strategy,
+  data = data,
+  initialCash = 100000.0,
+  commission = 0.001
+)
+
+echo report.summary()
+```
+
+YAML files:
+
+```
+metadata:
+  name: "Simple RSI Mean Reversion"
+  description: "Classic RSI oversold/overbought strategy"
+  author: "TzuTrader"
+  created: "2026-01-31"
+  tags:
+    - rsi
+    - mean-reversion
+    - beginner-friendly
+
+indicators:
+  - id: rsi_14
+    type: rsi
+    params:
+      period: 14
+
+entry:
+  conditions:
+    left: rsi_14
+    operator: "<"
+    right: "30"
+
+exit:
+  conditions:
+    left: rsi_14
+    operator: ">"
+    right: "70"
+
+position_sizing:
+  type: fixed
+  size: 100
+```
+
+## Limitations
+
+- At this moment only a few illustrative data sources are supported,
+  like CSV files and Yahoo Finance.
+- At this moment only OHLCV-based strategies are supported.
+- The API is not stable yet. Don't use this library for production (no
+  yet).
+
+## Docomentation
+
 - The [User Guide](user_guide/01_getting_started.md) helps you
   understand concepts and use the library effectively. Written for
   retail traders with some programming experience, it emphasizes

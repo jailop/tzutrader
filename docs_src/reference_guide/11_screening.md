@@ -2,13 +2,13 @@
 
 ## Overview
 
-The screener module scans multiple symbols across one or more strategies to identify **current trading opportunities**. Unlike backtesting (which evaluates historical performance) or scanning (which ranks symbols by backtest results), screening focuses on finding actionable signals **right now**.
+The screener module scans multiple symbols across one or more strategies to identify current trading opportunities. Unlike backtesting (which evaluates historical performance) or scanning (which ranks symbols by backtest results), screening focuses on finding actionable signals right now.
 
 Screening answers questions like: "Which stocks are showing RSI oversold signals today?" or "What crypto pairs have MACD bullish crossovers in the last hour?"
 
-**Module:** `tzutrader/screener/`
+Module: `tzutrader/screener/`
 
-**Sub-modules:**
+Sub-modules:
 - `screener.nim` - Main screening logic
 - `alerts.nim` - Alert data structures and filtering
 - `schema.nim` - Configuration types
@@ -52,7 +52,7 @@ type
     atNeutral        ## No signal
 ```
 
-**Signal Types:**
+Signal Types:
 
 | Type | Description | Use Case |
 |------|-------------|----------|
@@ -72,7 +72,7 @@ type
     asStrong         ## Strong signal (high confidence)
 ```
 
-**Strength Levels:**
+Strength Levels:
 
 | Strength | Confidence | Use Case |
 |----------|-----------|----------|
@@ -99,7 +99,7 @@ type
     metadata*: Table[string, string]     ## Additional context/information
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -123,7 +123,7 @@ type
     totalStrategies*: int                ## Total strategies evaluated
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -151,7 +151,7 @@ type
       filePath*: string                    ## Path to YAML strategy file
 ```
 
-**Built-in Strategy Example:**
+Built-in Strategy Example:
 
 ```nim
 let rsiConfig = ScreenerStrategyConfig(
@@ -164,7 +164,7 @@ let rsiConfig = ScreenerStrategyConfig(
 )
 ```
 
-**YAML Strategy Example:**
+YAML Strategy Example:
 
 ```nim
 let customConfig = ScreenerStrategyConfig(
@@ -190,7 +190,7 @@ type
     unit*: TimeUnit    ## Time unit
 ```
 
-**Examples:**
+Examples:
 
 ```nim
 # 90 days
@@ -227,7 +227,7 @@ type
       lookbackCSV*: Option[LookbackPeriod] ## Optional filtering
 ```
 
-**Yahoo Finance Example:**
+Yahoo Finance Example:
 
 ```nim
 let yahooData = ScreenerDataConfig(
@@ -238,7 +238,7 @@ let yahooData = ScreenerDataConfig(
 )
 ```
 
-**Coinbase Example:**
+Coinbase Example:
 
 ```nim
 let coinbaseData = ScreenerDataConfig(
@@ -259,7 +259,7 @@ type
     topN*: Option[int]                     ## Return only top N signals
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -267,7 +267,7 @@ type
 | `minStrength` | AlertStrength | Minimum acceptable strength |
 | `topN` | Option[int] | Limit to top N results (sorted by strength) |
 
-**Example:**
+Example:
 
 ```nim
 let filters = ScreenerFilters(
@@ -299,7 +299,7 @@ type
     historyDir*: string                    ## History directory
 ```
 
-**Example:**
+Example:
 
 ```nim
 let output = ScreenerOutputConfig(
@@ -338,7 +338,7 @@ proc newAlert*(symbol: string, strategyName: string, alertType: AlertType,
 
 Create a new alert with current timestamp.
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -350,7 +350,7 @@ Create a new alert with current timestamp.
 | `indicators` | Table | empty | Indicator values |
 | `metadata` | Table | empty | Additional info |
 
-**Example:**
+Example:
 
 ```nim
 let alert = newAlert(
@@ -374,7 +374,7 @@ proc newAlertFromSignal*(signal: Signal, strategyName: string,
 
 Create an alert from a backtest Signal object.
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -383,7 +383,7 @@ Create an alert from a backtest Signal object.
 | `strength` | AlertStrength | asModerate | Signal strength |
 | `indicators` | Table | empty | Indicator values |
 
-**Example:**
+Example:
 
 ```nim
 # In strategy callback
@@ -411,7 +411,7 @@ proc filterByType*(alerts: seq[Alert], alertTypes: seq[AlertType]): seq[Alert]
 
 Filter alerts by alert type(s).
 
-**Example:**
+Example:
 
 ```nim
 let buySignals = alerts.filterByType(@[atBuySignal])
@@ -426,7 +426,7 @@ proc filterByStrength*(alerts: seq[Alert], minStrength: AlertStrength): seq[Aler
 
 Filter alerts by minimum strength.
 
-**Example:**
+Example:
 
 ```nim
 let strongAlerts = alerts.filterByStrength(asStrong)
@@ -441,7 +441,7 @@ proc filterBySymbol*(alerts: seq[Alert], symbols: seq[string]): seq[Alert]
 
 Filter alerts by symbol(s).
 
-**Example:**
+Example:
 
 ```nim
 let techAlerts = alerts.filterBySymbol(@["AAPL", "MSFT", "GOOGL"])
@@ -455,7 +455,7 @@ proc filterByStrategy*(alerts: seq[Alert], strategies: seq[string]): seq[Alert]
 
 Filter alerts by strategy name(s).
 
-**Example:**
+Example:
 
 ```nim
 let rsiAlerts = alerts.filterByStrategy(@["rsi"])
@@ -471,7 +471,7 @@ proc sortByStrength*(alerts: var seq[Alert], ascending: bool = false)
 
 Sort alerts by strength (descending by default).
 
-**Example:**
+Example:
 
 ```nim
 var alerts = @[...]
@@ -512,7 +512,7 @@ proc topN*(alerts: seq[Alert], n: int): seq[Alert]
 
 Get top N alerts (assumes already sorted).
 
-**Example:**
+Example:
 
 ```nim
 var alerts = @[...]
@@ -528,7 +528,7 @@ proc countByType*(alerts: seq[Alert]): Table[AlertType, int]
 
 Count alerts by type.
 
-**Example:**
+Example:
 
 ```nim
 let counts = alerts.countByType()
@@ -544,7 +544,7 @@ proc countByStrength*(alerts: seq[Alert]): Table[AlertStrength, int]
 
 Count alerts by strength.
 
-**Example:**
+Example:
 
 ```nim
 let counts = alerts.countByStrength()
@@ -562,7 +562,7 @@ proc newScreener*(config: ScreenerConfig): Screener
 
 Create a new screener from configuration.
 
-**Example:**
+Example:
 
 ```nim
 let config = parseScreenerYAMLFile("my_screener.yml")
@@ -577,11 +577,11 @@ proc run*(screener: var Screener): ScreenerResult
 
 Run the screener and generate alerts.
 
-**Returns:** `ScreenerResult` containing:
+Returns: `ScreenerResult` containing:
 - `alerts`: AlertCollection with all generated alerts
 - `summary`: ScreenerSummary with statistics
 
-**Example:**
+Example:
 
 ```nim
 var screener = newScreener(config)
@@ -601,14 +601,14 @@ proc parseScreenerYAMLFile*(filepath: string): ScreenerConfig
 
 Parse a screener YAML configuration file.
 
-**Parameters:**
+Parameters:
 - `filepath`: Path to YAML configuration file
 
-**Returns:** Parsed `ScreenerConfig`
+Returns: Parsed `ScreenerConfig`
 
-**Raises:** `ScreenerParseError` if parsing fails
+Raises: `ScreenerParseError` if parsing fails
 
-**Example:**
+Example:
 
 ```nim
 try:
@@ -627,11 +627,11 @@ proc validateConfig*(config: ScreenerConfig): ValidationResult
 
 Validate screener configuration.
 
-**Returns:** `ValidationResult` with:
+Returns: `ValidationResult` with:
 - `valid`: bool - Whether config is valid
 - `errors`: seq[string] - List of validation errors
 
-**Example:**
+Example:
 
 ```nim
 let config = parseScreenerYAMLFile("my_screener.yml")
@@ -653,7 +653,7 @@ proc parseLookbackPeriod*(s: string): LookbackPeriod
 
 Parse a lookback period string (e.g., "3h", "90d", "1y").
 
-**Examples:**
+Examples:
 
 ```nim
 let period1 = parseLookbackPeriod("90d")   # 90 days
@@ -669,7 +669,7 @@ proc lookbackToStartDate*(lookback: LookbackPeriod, currentTime: DateTime = now(
 
 Convert a lookback period to an absolute start date.
 
-**Example:**
+Example:
 
 ```nim
 let period = parseLookbackPeriod("90d")
@@ -685,7 +685,7 @@ proc lookbackToBarCount*(lookback: LookbackPeriod, interval: Interval): int
 
 Estimate the number of bars needed for a given lookback period and interval.
 
-**Example:**
+Example:
 
 ```nim
 let lookback = parseLookbackPeriod("3h")
@@ -703,13 +703,13 @@ proc formatResult*(result: ScreenerResult, output: ScreenerOutputConfig): string
 
 Format screener results according to output configuration.
 
-**Parameters:**
+Parameters:
 - `result`: ScreenerResult from screener.run()
 - `output`: ScreenerOutputConfig specifying format
 
-**Returns:** Formatted string (terminal, CSV, JSON, or Markdown)
+Returns: Formatted string (terminal, CSV, JSON, or Markdown)
 
-**Example:**
+Example:
 
 ```nim
 let result = screener.run()
@@ -731,11 +731,11 @@ proc saveScreenerHistory*(entry: ScreenerHistoryEntry, directory: string)
 
 Save screener results to history.
 
-**Parameters:**
+Parameters:
 - `entry`: ScreenerHistoryEntry to save
 - `directory`: Directory to save history files
 
-**Example:**
+Example:
 
 ```nim
 let entry = ScreenerHistoryEntry(
@@ -758,13 +758,13 @@ proc loadScreenerHistory*(directory: string, limit: int = 10): seq[ScreenerHisto
 
 Load recent screener history entries.
 
-**Parameters:**
+Parameters:
 - `directory`: Directory containing history files
 - `limit`: Maximum number of entries to load (default: 10)
 
-**Returns:** Sequence of history entries, newest first
+Returns: Sequence of history entries, newest first
 
-**Example:**
+Example:
 
 ```nim
 let history = loadScreenerHistory("screener_history", limit = 30)
@@ -783,12 +783,12 @@ proc compareScreenerResults*(current: seq[Alert], previous: seq[Alert]): tuple[
 
 Compare current screening results with previous run.
 
-**Returns:** Tuple with:
+Returns: Tuple with:
 - `new`: Alerts that are new (not in previous)
 - `removed`: Alerts from previous that are gone
 - `recurring`: Alerts that appear in both
 
-**Example:**
+Example:
 
 ```nim
 let history = loadScreenerHistory("screener_history", limit = 1)
@@ -813,7 +813,7 @@ proc toJson*(alert: Alert): JsonNode
 
 Convert Alert to JSON.
 
-**Example:**
+Example:
 
 ```nim
 let alert = newAlert(...)
@@ -829,7 +829,7 @@ proc toJson*(collection: AlertCollection): JsonNode
 
 Convert AlertCollection to JSON.
 
-**Example:**
+Example:
 
 ```nim
 let result = screener.run()
@@ -882,4 +882,4 @@ if config.output.saveHistory:
 
 ## See Also
 
-- **[User Guide: Market Screening](../user_guide/08_screening.md)** - How to use the screener
+- [User Guide: Market Screening](../user_guide/08_screening.md) - How to use the screener

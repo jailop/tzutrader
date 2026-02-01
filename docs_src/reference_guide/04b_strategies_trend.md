@@ -6,33 +6,33 @@ Trend following strategies attempt to capture sustained directional moves in pri
 
 TzuTrader provides 7 trend following strategies, each using different methods to identify and follow trends:
 
-1. **Moving Average Crossover** - Golden/death cross signals
-2. **MACD Strategy** - Momentum-based trend detection
-3. **KAMA Strategy** - Adaptive moving average
-4. **Aroon Strategy** - Time-based trend identification
-5. **Parabolic SAR** - Trailing stop trend follower
-6. **Triple MA Strategy** - Multi-timeframe confirmation
-7. **ADX Trend Strategy** - Strength-filtered trends
+1. Moving Average Crossover - Golden/death cross signals
+2. MACD Strategy - Momentum-based trend detection
+3. KAMA Strategy - Adaptive moving average
+4. Aroon Strategy - Time-based trend identification
+5. Parabolic SAR - Trailing stop trend follower
+6. Triple MA Strategy - Multi-timeframe confirmation
+7. ADX Trend Strategy - Strength-filtered trends
 
-**Module:** `tzutrader/strategy.nim`
+Module: `tzutrader/strategy.nim`
 
 ## KAMA Strategy
 
 Adaptive trend following strategy using the Kaufman Adaptive Moving Average, which adjusts its responsiveness based on market efficiency.
 
-**Trading Logic:**
-- **Buy:** Price crosses above KAMA
-- **Sell:** Price crosses below KAMA
-- **Stay:** No crossover
+Trading Logic:
+- Buy: Price crosses above KAMA
+- Sell: Price crosses below KAMA
+- Stay: No crossover
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newKAMAStrategy*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 30,
                       symbol: string = ""): KAMAStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -41,7 +41,7 @@ proc newKAMAStrategy*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 3
 | `slowPeriod` | int | 30 | Slow smoothing constant | 20-50 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -53,31 +53,31 @@ type
     lastPriceAbove*: bool
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 KAMA automatically adapts its smoothing based on market efficiency. In trending markets with directional price movement, KAMA becomes more responsive (follows price closely). In choppy, ranging markets, KAMA smooths more aggressively (reduces false signals).
 
-**Efficiency Ratio:**
+Efficiency Ratio:
 
 KAMA calculates an "efficiency ratio" comparing net price change to total price movement:
 - High efficiency (trending): Net change ≈ total movement → KAMA responsive
 - Low efficiency (ranging): Net change << total movement → KAMA smooth
 
-**Compared to Fixed-Period MAs:**
+Compared to Fixed-Period MAs:
 
 - Fixed MAs use the same smoothing regardless of conditions
 - KAMA adapts: fast in trends, slow in ranges
 - KAMA reduces whipsaws in choppy markets
 - KAMA requires more historical data for stable results
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter period** (5-8): More responsive efficiency calculation
-- **Longer period** (15-20): Smoother efficiency measurement
-- **Faster fastPeriod** (2): More aggressive in trends
-- **Slower slowPeriod** (40-50): More conservative in ranges
+- Shorter period (5-8): More responsive efficiency calculation
+- Longer period (15-20): Smoother efficiency measurement
+- Faster fastPeriod (2): More aggressive in trends
+- Slower slowPeriod (40-50): More conservative in ranges
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -110,19 +110,19 @@ echo "Win rate: ", report.winRate, "%"
 
 Trend identification strategy using the Aroon indicator, which measures time since recent highs and lows to identify trend strength and direction.
 
-**Trading Logic:**
-- **Buy:** Aroon Up crosses above threshold while Aroon Down < 50
-- **Sell:** Aroon Down crosses above threshold while Aroon Up < 50
-- **Stay:** No clear trend signal
+Trading Logic:
+- Buy: Aroon Up crosses above threshold while Aroon Down < 50
+- Sell: Aroon Down crosses above threshold while Aroon Up < 50
+- Stay: No clear trend signal
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newAroonStrategy*(period: int = 25, threshold: float64 = 70.0,
                        symbol: string = ""): AroonStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -130,7 +130,7 @@ proc newAroonStrategy*(period: int = 25, threshold: float64 = 70.0,
 | `threshold` | float64 | 70.0 | Minimum strength for signal | 50-90 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -141,29 +141,29 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Aroon is unique because it measures time rather than price. An Aroon Up value of 100 means a new high just occurred; 0 means the high occurred N periods ago. This time-based approach excels at identifying when trends are starting or ending.
 
-**Aroon Indicator Values:**
+Aroon Indicator Values:
 
-- **Aroon Up = 100**: New high just occurred (strong uptrend potential)
-- **Aroon Down = 100**: New low just occurred (strong downtrend potential)
-- **Both near 50**: No clear trend, consolidation
-- **Both near 0**: Price stuck in middle of range
+- Aroon Up = 100: New high just occurred (strong uptrend potential)
+- Aroon Down = 100: New low just occurred (strong downtrend potential)
+- Both near 50: No clear trend, consolidation
+- Both near 0: Price stuck in middle of range
 
-**Signal Generation:**
+Signal Generation:
 
 The strategy waits for one Aroon line to cross above the threshold (indicating trend strength) while the opposite line is below 50 (confirming no counter-trend). This ensures clear directional signals.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter period** (14-20): More sensitive to recent highs/lows
-- **Longer period** (30-50): Identifies longer-term trends
-- **Lower threshold** (50-60): More signals, earlier entries
-- **Higher threshold** (80-90): Fewer signals, stronger confirmation
+- Shorter period (14-20): More sensitive to recent highs/lows
+- Longer period (30-50): Identifies longer-term trends
+- Lower threshold (50-60): More signals, earlier entries
+- Higher threshold (80-90): Fewer signals, stronger confirmation
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -191,12 +191,12 @@ let report = quickBacktest("AAPL", standard, data)
 
 Trend following strategy using the Parabolic Stop and Reverse indicator, which provides both entry signals and trailing stop levels.
 
-**Trading Logic:**
-- **Buy:** SAR flips from above to below price (SAR crosses below)
-- **Sell:** SAR flips from below to above price (SAR crosses above)
-- **Stay:** No SAR flip
+Trading Logic:
+- Buy: SAR flips from above to below price (SAR crosses below)
+- Sell: SAR flips from below to above price (SAR crosses above)
+- Stay: No SAR flip
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newParabolicSARStrategy*(acceleration: float64 = 0.02,
@@ -204,7 +204,7 @@ proc newParabolicSARStrategy*(acceleration: float64 = 0.02,
                               symbol: string = ""): ParabolicSARStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -212,7 +212,7 @@ proc newParabolicSARStrategy*(acceleration: float64 = 0.02,
 | `maxAcceleration` | float64 | 0.2 | Maximum acceleration factor | 0.1-0.3 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -223,18 +223,18 @@ type
     lastSARBelow*: bool
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Parabolic SAR is always in the market - either long or short. The SAR (Stop and Reverse) value provides a trailing stop level that accelerates as the trend continues. When price crosses the SAR, the position flips and the SAR jumps to the other side of price.
 
-**Acceleration Mechanism:**
+Acceleration Mechanism:
 
 - SAR starts with the initial acceleration factor
 - Each time a new extreme is reached, acceleration increases by the step
 - Acceleration caps at maxAcceleration
 - This causes SAR to accelerate toward price as trends mature
 
-**Parabolic SAR Characteristics:**
+Parabolic SAR Characteristics:
 
 - Always provides a stop level (trailing stop)
 - Accelerates with trend age
@@ -242,15 +242,15 @@ Parabolic SAR is always in the market - either long or short. The SAR (Stop and 
 - Gaps between bars are handled properly
 - Works best in strong trending markets
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Lower acceleration** (0.01-0.015): Slower, wider stops, longer trades
-- **Standard acceleration** (0.02): Balanced approach
-- **Higher acceleration** (0.03-0.05): Faster, tighter stops, shorter trades
-- **Lower maxAcceleration** (0.1): More conservative trailing
-- **Higher maxAcceleration** (0.3): More aggressive trailing
+- Lower acceleration (0.01-0.015): Slower, wider stops, longer trades
+- Standard acceleration (0.02): Balanced approach
+- Higher acceleration (0.03-0.05): Faster, tighter stops, shorter trades
+- Lower maxAcceleration (0.1): More conservative trailing
+- Higher maxAcceleration (0.3): More aggressive trailing
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -276,7 +276,7 @@ let report = quickBacktest("AAPL", standard, data)
 echo "PSAR always in market, trades: ", report.totalTrades
 ```
 
-**Using SAR for Stops:**
+Using SAR for Stops:
 
 ```nim
 # Access current SAR value for stop placement
@@ -291,19 +291,19 @@ for bar in data:
 
 Multi-timeframe trend confirmation strategy using three moving averages that must align for signals.
 
-**Trading Logic:**
-- **Buy:** Fast MA > Mid MA > Slow MA (all aligned upward)
-- **Sell:** Fast MA < Mid MA < Slow MA (all aligned downward)
-- **Stay:** MAs not fully aligned
+Trading Logic:
+- Buy: Fast MA > Mid MA > Slow MA (all aligned upward)
+- Sell: Fast MA < Mid MA < Slow MA (all aligned downward)
+- Stay: MAs not fully aligned
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newTripleMAStrategy*(fastPeriod: int = 10, midPeriod: int = 20,
                          slowPeriod: int = 50, symbol: string = ""): TripleMAStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -312,7 +312,7 @@ proc newTripleMAStrategy*(fastPeriod: int = 10, midPeriod: int = 20,
 | `slowPeriod` | int | 50 | Slow MA period | 30-200 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -326,11 +326,11 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 The Triple MA strategy requires all three moving averages to align before generating a signal. This triple confirmation dramatically reduces false signals but also lags price more than single or dual MA strategies.
 
-**Alignment Concept:**
+Alignment Concept:
 
 In a confirmed uptrend:
 - Fast MA (10) follows price closely
@@ -338,26 +338,26 @@ In a confirmed uptrend:
 - Slow MA (50) confirms longer-term trend
 - When Fast > Mid > Slow, all timeframes agree: strong uptrend
 
-**Compared to Dual MA Crossover:**
+Compared to Dual MA Crossover:
 
 - Dual MA: 2 MAs must align (faster signals, more false positives)
 - Triple MA: 3 MAs must align (slower signals, higher quality)
 - Triple MA trades less frequently but with more conviction
 - Triple MA better for position trading, worse for active trading
 
-**Parameter Selection:**
+Parameter Selection:
 
 Common combinations:
-- **Short-term**: 5/10/20 (more responsive, more trades)
-- **Medium-term**: 10/20/50 (balanced approach, default)
-- **Long-term**: 20/50/200 (very conservative, few high-quality signals)
-- **Aggressive**: 5/15/30 (faster signals)
+- Short-term: 5/10/20 (more responsive, more trades)
+- Medium-term: 10/20/50 (balanced approach, default)
+- Long-term: 20/50/200 (very conservative, few high-quality signals)
+- Aggressive: 5/15/30 (faster signals)
 
 Spacing matters:
 - Tight spacing (10/15/20): Faster alignment, more trades
 - Wide spacing (10/30/100): Slower alignment, stronger confirmation
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -386,7 +386,7 @@ echo "Triple MA high-conviction trades: ", report.totalTrades
 echo "Win rate: ", report.winRate, "%"
 ```
 
-**Monitoring Alignment:**
+Monitoring Alignment:
 
 ```nim
 # Check MA alignment without full signal
@@ -408,19 +408,19 @@ for bar in data:
 
 Strength-filtered trend following strategy that only trades when the ADX indicator shows sufficient trend strength.
 
-**Trading Logic:**
-- **Buy:** ADX > threshold AND +DI > -DI (strong uptrend)
-- **Sell:** ADX > threshold AND -DI > +DI (strong downtrend)
-- **Stay:** ADX below threshold (weak/no trend)
+Trading Logic:
+- Buy: ADX > threshold AND +DI > -DI (strong uptrend)
+- Sell: ADX > threshold AND -DI > +DI (strong downtrend)
+- Stay: ADX below threshold (weak/no trend)
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newADXTrendStrategy*(adxPeriod: int = 14, adxThreshold: float64 = 25.0,
                          diPeriod: int = 14, symbol: string = ""): ADXTrendStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -429,7 +429,7 @@ proc newADXTrendStrategy*(adxPeriod: int = 14, adxThreshold: float64 = 25.0,
 | `diPeriod` | int | 14 | Directional indicator period | 10-20 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -441,24 +441,24 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 ADX measures trend strength without indicating direction. The strategy uses ADX to filter out weak trends and ranging markets, only trading when ADX exceeds the threshold. The +DI and -DI lines then determine the direction.
 
-**ADX Interpretation:**
+ADX Interpretation:
 
-- **ADX < 20**: Weak or absent trend, ranging market → stay out
-- **ADX 20-25**: Trend developing → consider signals
-- **ADX 25-40**: Strong trend → trade with confidence
-- **ADX > 40**: Very strong trend → watch for exhaustion
+- ADX < 20: Weak or absent trend, ranging market → stay out
+- ADX 20-25: Trend developing → consider signals
+- ADX 25-40: Strong trend → trade with confidence
+- ADX > 40: Very strong trend → watch for exhaustion
 
-**Directional Indicators:**
+Directional Indicators:
 
-- **+DI > -DI**: Uptrend (bullish)
-- **-DI > +DI**: Downtrend (bearish)
+- +DI > -DI: Uptrend (bullish)
+- -DI > +DI: Downtrend (bearish)
 - Both DI values show the relative strength of up vs down moves
 
-**Why Filter by ADX:**
+Why Filter by ADX:
 
 Trend following strategies perform poorly in ranging markets. By requiring ADX > threshold, the strategy avoids:
 - Choppy, sideways price action
@@ -467,17 +467,17 @@ Trend following strategies perform poorly in ranging markets. By requiring ADX >
 
 Trade less, but trade better.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Lower threshold** (20): More trades, catches developing trends, more false signals
-- **Standard threshold** (25): Balanced approach, proven historically
-- **Higher threshold** (30-40): Fewer trades, only very strong trends, higher quality
+- Lower threshold (20): More trades, catches developing trends, more false signals
+- Standard threshold (25): Balanced approach, proven historically
+- Higher threshold (30-40): Fewer trades, only very strong trends, higher quality
 
-- **Shorter periods** (10-12): More responsive, faster signals
-- **Standard periods** (14): Classic Wilder settings
-- **Longer periods** (18-20): Smoother, more reliable but laggier
+- Shorter periods (10-12): More responsive, faster signals
+- Standard periods (14): Classic Wilder settings
+- Longer periods (18-20): Smoother, more reliable but laggier
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -506,7 +506,7 @@ echo "ADX filtered trades: ", report.totalTrades
 echo "Win rate: ", report.winRate, "%"
 ```
 
-**Combining with Other Strategies:**
+Combining with Other Strategies:
 
 ```nim
 # Use ADX as a filter for another strategy
@@ -527,23 +527,23 @@ for bar in data:
 
 | Strategy | Lag | Signal Frequency | Works in Ranges | Provides Stops | Complexity |
 |----------|-----|------------------|-----------------|----------------|------------|
-| **MA Crossover** | High | Low | No | No | Low |
-| **MACD** | Medium | Medium | No | No | Low |
-| **KAMA** | Medium | Medium | Better | No | Medium |
-| **Aroon** | Low | Medium | No | No | Medium |
-| **Parabolic SAR** | Low | High | No | Yes | Low |
-| **Triple MA** | Very High | Very Low | No | No | Low |
-| **ADX Trend** | Medium | Low | Excellent | No | Medium |
+| MA Crossover | High | Low | No | No | Low |
+| MACD | Medium | Medium | No | No | Low |
+| KAMA | Medium | Medium | Better | No | Medium |
+| Aroon | Low | Medium | No | No | Medium |
+| Parabolic SAR | Low | High | No | Yes | Low |
+| Triple MA | Very High | Very Low | No | No | Low |
+| ADX Trend | Medium | Low | Excellent | No | Medium |
 
-**When to Use Each:**
+When to Use Each:
 
-- **MA Crossover**: Classic approach, well-understood, reliable
-- **MACD**: More responsive than MA, good momentum indication
-- **KAMA**: Markets that alternate between trending and ranging
-- **Aroon**: Catching trend starts early, time-based signals
-- **Parabolic SAR**: Need built-in trailing stops, always-in-market approach
-- **Triple MA**: High-conviction long-term position trading
-- **ADX Trend**: Must avoid ranging markets, quality over quantity
+- MA Crossover: Classic approach, well-understood, reliable
+- MACD: More responsive than MA, good momentum indication
+- KAMA: Markets that alternate between trending and ranging
+- Aroon: Catching trend starts early, time-based signals
+- Parabolic SAR: Need built-in trailing stops, always-in-market approach
+- Triple MA: High-conviction long-term position trading
+- ADX Trend: Must avoid ranging markets, quality over quantity
 
 ## Common Patterns
 
@@ -584,14 +584,14 @@ else:
 
 ## Performance Considerations
 
-**Trend Following Challenges:**
+Trend Following Challenges:
 
-1. **Lag**: All trend indicators lag price by design
-2. **Whipsaws**: Ranging markets generate false signals
-3. **Late entry**: Often enter after move has begun
-4. **Early exit**: Can exit before trend fully completes
+1. Lag: All trend indicators lag price by design
+2. Whipsaws: Ranging markets generate false signals
+3. Late entry: Often enter after move has begun
+4. Early exit: Can exit before trend fully completes
 
-**Mitigation Strategies:**
+Mitigation Strategies:
 
 - Use ADX filter to avoid ranging markets
 - Combine multiple timeframes (Triple MA)

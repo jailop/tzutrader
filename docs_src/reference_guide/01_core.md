@@ -4,7 +4,7 @@
 
 This reference provides complete technical specifications for TzuTrader's core types and data structures. These types form the foundation of the library and are used throughout all modules.
 
-**Module:** `tzutrader/core.nim`
+Module: `tzutrader/core.nim`
 
 ## OHLCV Type
 
@@ -64,9 +64,9 @@ Validates OHLCV constraints.
 proc isValid*(ohlcv: OHLCV): bool
 ```
 
-**Returns:** `true` if all constraints are satisfied, `false` otherwise
+Returns: `true` if all constraints are satisfied, `false` otherwise
 
-**Example:**
+Example:
 ```nim
 let bar = OHLCV(timestamp: 1609459200, open: 100.0, high: 105.0, 
                 low: 95.0, close: 102.0, volume: 1000000.0)
@@ -81,13 +81,13 @@ Calculates the typical price of the bar.
 proc typicalPrice*(ohlcv: OHLCV): float64
 ```
 
-**Formula:**
+Formula:
 
 $$\text{Typical Price} = \frac{\text{high} + \text{low} + \text{close}}{3}$$
 
-**Returns:** Average of high, low, and close prices
+Returns: Average of high, low, and close prices
 
-**Example:**
+Example:
 ```nim
 let bar = OHLCV(timestamp: 1609459200, open: 100.0, high: 105.0,
                 low: 95.0, close: 102.0, volume: 1000000.0)
@@ -102,7 +102,7 @@ Calculates the true range for ATR calculation.
 proc trueRange*(curr, prev: OHLCV): float64
 ```
 
-**Formula:**
+Formula:
 
 $$\text{True Range} = \max(\text{TR}_1, \text{TR}_2, \text{TR}_3)$$
 
@@ -116,13 +116,13 @@ $$
 \end{align}
 $$
 
-**Parameters:**
+Parameters:
 - `curr`: Current bar
 - `prev`: Previous bar
 
-**Returns:** Maximum of the three range calculations
+Returns: Maximum of the three range calculations
 
-**Example:**
+Example:
 ```nim
 let prev = OHLCV(timestamp: 1609459200, open: 100.0, high: 105.0,
                  low: 95.0, close: 102.0, volume: 1000000.0)
@@ -139,11 +139,11 @@ Calculates absolute price change.
 proc change*(ohlcv: OHLCV): float64
 ```
 
-**Formula:**
+Formula:
 
 $$\text{Change} = \text{close} - \text{open}$$
 
-**Returns:** Absolute price change (positive = up, negative = down)
+Returns: Absolute price change (positive = up, negative = down)
 
 #### `changePercent() -> float64`
 
@@ -153,11 +153,11 @@ Calculates percentage price change.
 proc changePercent*(ohlcv: OHLCV): float64
 ```
 
-**Formula:**
+Formula:
 
 $$\text{Change\%} = \frac{\text{close} - \text{open}}{\text{open}} \times 100$$
 
-**Returns:** Percentage change (0.0 if open = 0)
+Returns: Percentage change (0.0 if open = 0)
 
 ### String Representation
 
@@ -165,9 +165,9 @@ $$\text{Change\%} = \frac{\text{close} - \text{open}}{\text{open}} \times 100$$
 proc `$`*(ohlcv: OHLCV): string
 ```
 
-**Format:** `OHLCV(YYYY-MM-DD HH:MM:SS O:xxx H:xxx L:xxx C:xxx V:xxx)`
+Format: `OHLCV(YYYY-MM-DD HH:MM:SS O:xxx H:xxx L:xxx C:xxx V:xxx)`
 
-**Example:**
+Example:
 ```nim
 echo bar
 # Output: OHLCV(2021-01-01 00:00:00 O:100.0 H:105.0 L:95.0 C:102.0 V:1000000.0)
@@ -234,15 +234,15 @@ proc newSignal*(position: Position, symbol: string, price: float64,
                 reason: string = ""): Signal
 ```
 
-**Parameters:**
+Parameters:
 - `position`: Trading action (Buy, Sell, or Stay)
 - `symbol`: Symbol identifier
 - `price`: Current market price
 - `reason`: Optional explanation (default: "")
 
-**Returns:** New Signal with current timestamp
+Returns: New Signal with current timestamp
 
-**Example:**
+Example:
 ```nim
 let signal = newSignal(Buy, "AAPL", 150.25, "RSI oversold: 28.5 < 30.0")
 ```
@@ -253,9 +253,9 @@ let signal = newSignal(Buy, "AAPL", 150.25, "RSI oversold: 28.5 < 30.0")
 proc `$`*(signal: Signal): string
 ```
 
-**Format:** `Signal(Position SYMBOL @PRICE at TIMESTAMP [reason: REASON])`
+Format: `Signal(Position SYMBOL @PRICE at TIMESTAMP [reason: REASON])`
 
-**Example:**
+Example:
 ```nim
 echo signal
 # Output: Signal(Buy AAPL @150.25 at 2024-01-15 09:30:00 reason: RSI oversold: 28.5 < 30.0)
@@ -298,16 +298,16 @@ proc newTransaction*(symbol: string, action: Position,
                      quantity, price, commission: float64): Transaction
 ```
 
-**Parameters:**
+Parameters:
 - `symbol`: Symbol identifier
 - `action`: Buy or Sell
 - `quantity`: Number of shares
 - `price`: Execution price per share
 - `commission`: Total commission paid
 
-**Returns:** New Transaction with current timestamp
+Returns: New Transaction with current timestamp
 
-**Example:**
+Example:
 ```nim
 let tx = newTransaction("AAPL", Buy, 100.0, 150.25, 15.025)
 ```
@@ -328,9 +328,9 @@ $$\text{Net Proceeds} = (\text{quantity} \times \text{price}) - \text{commission
 proc `$`*(tx: Transaction): string
 ```
 
-**Format:** `Transaction(ACTION QUANTITY SYMBOL @PRICE fee:COMMISSION at TIMESTAMP)`
+Format: `Transaction(ACTION QUANTITY SYMBOL @PRICE fee:COMMISSION at TIMESTAMP)`
 
-**Example:**
+Example:
 ```nim
 echo tx
 # Output: Transaction(Buy 100.0 AAPL @150.25 fee:15.025 at 2024-01-15 09:30:00)
@@ -365,7 +365,7 @@ proc newStrategyConfig*(name: string,
                         params: Table[string, float64] = initTable[string, float64]()): StrategyConfig
 ```
 
-**Example:**
+Example:
 ```nim
 import std/tables
 
@@ -397,7 +397,7 @@ type
   DataError* = object of TzuTraderError
 ```
 
-**Usage:**
+Usage:
 ```nim
 raise newException(DataError, "Invalid CSV format at line 42")
 ```
@@ -411,7 +411,7 @@ type
   StrategyError* = object of TzuTraderError
 ```
 
-**Usage:**
+Usage:
 ```nim
 raise newException(StrategyError, "Insufficient data for indicator calculation")
 ```
@@ -425,7 +425,7 @@ type
   PortfolioError* = object of TzuTraderError
 ```
 
-**Usage:**
+Usage:
 ```nim
 raise newException(PortfolioError, "Insufficient cash for purchase")
 ```
@@ -440,7 +440,7 @@ All core types support JSON serialization for data persistence and interoperabil
 proc toJson*(ohlcv: OHLCV): JsonNode
 ```
 
-**Example:**
+Example:
 ```nim
 let bar = OHLCV(timestamp: 1609459200, open: 100.0, high: 105.0,
                 low: 95.0, close: 102.0, volume: 1000000.0)
@@ -474,7 +474,7 @@ proc fromJson*(node: JsonNode, T: typedesc[OHLCV]): OHLCV
 proc fromJson*(node: JsonNode, T: typedesc[Signal]): Signal
 ```
 
-**Example:**
+Example:
 ```nim
 let json = parseJson("""{"timestamp": 1609459200, "open": 100.0, ...}""")
 let bar = fromJson(json, OHLCV)
@@ -524,7 +524,7 @@ echo dt.format("yyyy-MM-dd HH:mm:ss ZZZ")
                   Portfolio
 ```
 
-**Flow:**
+Flow:
 1. Strategies analyze `OHLCV` data
 2. Strategies generate `Signal` objects
 3. Portfolios execute signals, creating `Transaction` records

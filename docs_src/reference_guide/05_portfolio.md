@@ -6,19 +6,19 @@ The portfolio module tracks cash, positions, transactions, and performance metri
 
 While strategies decide what to trade, portfolios manage the mechanics of trading and keep score.
 
-**Module:** `tzutrader/portfolio.nim`
+Module: `tzutrader/portfolio.nim`
 
 ## Portfolio Fundamentals
 
 A portfolio represents your trading account: how much cash you have, what positions you hold, and your trading history. The `Portfolio` object maintains this state throughout a backtest or live trading session.
 
-**Core responsibilities:**
+Core responsibilities:
 
-- **Cash management:** Track available capital
-- **Position tracking:** Monitor open positions and their values
-- **Order execution:** Process buy and sell orders with commissions
-- **P&L calculation:** Compute realized and unrealized profits/losses
-- **Performance measurement:** Generate comprehensive metrics
+- Cash management: Track available capital
+- Position tracking: Monitor open positions and their values
+- Order execution: Process buy and sell orders with commissions
+- P&L calculation: Compute realized and unrealized profits/losses
+- Performance measurement: Generate comprehensive metrics
 
 ## Portfolio Type
 
@@ -36,7 +36,7 @@ type
     totalRealizedPnL*: float64
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -56,7 +56,7 @@ proc newPortfolio*(initialCash: float64 = 100000.0,
                    minCommission: float64 = 0.0): Portfolio
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -64,13 +64,13 @@ proc newPortfolio*(initialCash: float64 = 100000.0,
 | `commission` | float64 | 0.0 | Commission rate (decimal) |
 | `minCommission` | float64 | 0.0 | Minimum fee per trade ($) |
 
-**Commission models:**
+Commission models:
 
-- **Percentage:** `commission = 0.001` (0.1% per trade)
-- **Minimum:** `minCommission = 1.0` ($1 minimum, even for small trades)
-- **Combined:** Charge percentage or minimum, whichever is higher
+- Percentage: `commission = 0.001` (0.1% per trade)
+- Minimum: `minCommission = 1.0` ($1 minimum, even for small trades)
+- Combined: Charge percentage or minimum, whichever is higher
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -110,7 +110,7 @@ type
     realizedPnL*: float64
 ```
 
-**Fields:**
+Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -133,13 +133,13 @@ type
     Flat = "FLAT"
 ```
 
-**Values:**
+Values:
 
 - `Long`: Own the asset (buy to open, sell to close)
-- `Short`: Borrowed asset (sell to open, buy to close) - **Not currently implemented**
+- `Short`: Borrowed asset (sell to open, buy to close) - Not currently implemented
 - `Flat`: No position
 
-**Note:** TzuTrader currently supports only long positions. Short selling may be added in future versions.
+Note: TzuTrader currently supports only long positions. Short selling may be added in future versions.
 
 ### Position Methods
 
@@ -151,11 +151,11 @@ proc marketValue*(pos: PositionInfo): float64
 
 Calculates current market value of the position.
 
-**Formula (Long):**
+Formula (Long):
 
 $$\text{Market Value} = \text{quantity} \times \text{currentPrice}$$
 
-**Example:**
+Example:
 
 ```nim
 # Position: 100 shares at $150
@@ -172,7 +172,7 @@ proc totalPnL*(pos: PositionInfo): float64
 
 Returns total P&L combining realized and unrealized.
 
-**Formula:**
+Formula:
 
 $$\text{Total P\&L} = \text{realizedPnL} + \text{unrealizedPnL}$$
 
@@ -184,7 +184,7 @@ proc updatePrice*(pos: var PositionInfo, currentPrice: float64)
 
 Updates position with new market price and recalculates unrealized P&L.
 
-**Unrealized P&L Formula (Long):**
+Unrealized P&L Formula (Long):
 
 $$\text{Unrealized P\&L} = (\text{currentPrice} - \text{entryPrice}) \times \text{quantity}$$
 
@@ -199,16 +199,16 @@ proc buy*(p: Portfolio, symbol: string, quantity: float64, price: float64,
 
 Executes a buy order (opens or adds to long position).
 
-**Parameters:**
+Parameters:
 
 - `symbol`: Symbol to buy
 - `quantity`: Number of shares (must be > 0)
 - `price`: Price per share
 - `timestamp`: Optional timestamp (uses current time if 0)
 
-**Returns:** `true` if executed, `false` if insufficient cash
+Returns: `true` if executed, `false` if insufficient cash
 
-**Execution logic:**
+Execution logic:
 
 1. Calculate total cost including commission:
 
@@ -219,13 +219,13 @@ $$\text{Total Cost} = (\text{quantity} \times \text{price}) + \text{commission}$
 4. Create or update position with new average entry price
 5. Record transaction
 
-**Average Entry Price:**
+Average Entry Price:
 
 When adding to an existing position, the entry price becomes a quantity-weighted average:
 
 $$\text{New Entry} = \frac{(\text{existing qty} \times \text{existing price}) + (\text{new qty} \times \text{new price})}{\text{existing qty} + \text{new qty}}$$
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -254,16 +254,16 @@ proc sell*(p: Portfolio, symbol: string, quantity: float64, price: float64,
 
 Executes a sell order (closes or reduces long position).
 
-**Parameters:**
+Parameters:
 
 - `symbol`: Symbol to sell
 - `quantity`: Number of shares (must be > 0)
 - `price`: Price per share
 - `timestamp`: Optional timestamp
 
-**Returns:** `true` if executed, `false` if insufficient position
+Returns: `true` if executed, `false` if insufficient position
 
-**Execution logic:**
+Execution logic:
 
 1. Verify position exists and has sufficient quantity
 2. Calculate proceeds after commission:
@@ -278,7 +278,7 @@ $$\text{Realized P\&L} = (\text{price} - \text{entryPrice}) \times \text{quantit
 5. Reduce or close position
 6. Record transaction
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -299,7 +299,7 @@ proc closePosition*(p: Portfolio, symbol: string, price: float64,
 
 Closes the entire position in one trade.
 
-**Example:**
+Example:
 
 ```nim
 # Close entire AAPL position at current price
@@ -325,7 +325,7 @@ proc getPosition*(p: Portfolio, symbol: string): PositionInfo
 
 Returns position info (flat position if none exists).
 
-**Example:**
+Example:
 
 ```nim
 if portfolio.hasPosition("AAPL"):
@@ -345,15 +345,15 @@ proc equity*(p: Portfolio, currentPrices: Table[string, float64] = initTable[str
 
 Calculates total portfolio value (cash plus position values).
 
-**Formula:**
+Formula:
 
 $$\text{Equity} = \text{cash} + \sum_{i} (\text{quantity}_i \times \text{price}_i)$$
 
-**Parameters:**
+Parameters:
 
 - `currentPrices`: Optional table of current prices for marking positions to market
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader, std/tables
@@ -378,7 +378,7 @@ proc marketValue*(p: Portfolio): float64
 
 Returns total value of all positions (excludes cash).
 
-**Example:**
+Example:
 
 ```nim
 echo "Cash: $", portfolio.cash
@@ -396,7 +396,7 @@ proc unrealizedPnL*(p: Portfolio): float64
 
 Returns total unrealized P&L across all open positions.
 
-**Formula:**
+Formula:
 
 $$\text{Unrealized P\&L} = \sum_{i} (\text{currentPrice}_i - \text{entryPrice}_i) \times \text{quantity}_i$$
 
@@ -416,11 +416,11 @@ proc totalPnL*(p: Portfolio): float64
 
 Returns combined realized and unrealized P&L.
 
-**Formula:**
+Formula:
 
 $$\text{Total P\&L} = \text{realizedPnL} + \text{unrealizedPnL}$$
 
-**Example:**
+Example:
 
 ```nim
 echo "Unrealized: $", portfolio.unrealizedPnL()
@@ -439,7 +439,7 @@ proc calculateCommission*(p: Portfolio, quantity: float64, price: float64): floa
 
 Calculates commission for a hypothetical trade.
 
-**Formula:**
+Formula:
 
 $$\text{Commission} = \max(\text{tradeValue} \times \text{rate}, \text{minCommission})$$
 
@@ -447,7 +447,7 @@ where:
 
 $$\text{tradeValue} = |\text{quantity}| \times \text{price}$$
 
-**Example:**
+Example:
 
 ```nim
 let portfolio = newPortfolio(
@@ -472,7 +472,7 @@ proc updatePrices*(p: Portfolio, prices: Table[string, float64])
 
 Updates all position prices with current market prices.
 
-**Usage:**
+Usage:
 
 During backtesting, call this method at each bar to mark positions to market:
 
@@ -498,12 +498,12 @@ proc calculatePerformance*(p: Portfolio,
 
 Calculates comprehensive performance statistics.
 
-**Parameters:**
+Parameters:
 
 - `currentPrices`: Current market prices for open positions
 - `riskFreeRate`: Annual risk-free rate for Sharpe ratio (default 2%)
 
-**Returns:** `PerformanceMetrics` object
+Returns: `PerformanceMetrics` object
 
 ### PerformanceMetrics Type
 
@@ -523,7 +523,7 @@ type
     profitFactor*: float64
 ```
 
-**Metric Formulas:**
+Metric Formulas:
 
 #### Total Return
 
@@ -547,7 +547,7 @@ where:
 - $\sigma_r$ = standard deviation of returns
 - $\sqrt{252}$ = annualization factor (252 trading days)
 
-**Note:** The portfolio's Sharpe calculation uses transaction-based returns. For more accurate Sharpe ratios based on time-series returns, use the backtester's equity curve.
+Note: The portfolio's Sharpe calculation uses transaction-based returns. For more accurate Sharpe ratios based on time-series returns, use the backtester's equity curve.
 
 #### Maximum Drawdown
 
@@ -555,7 +555,7 @@ $$\text{Max Drawdown} = \max_t \left( \frac{\text{Peak}_t - \text{Equity}_t}{\te
 
 where $\text{Peak}_t$ is the highest equity observed up to time $t$.
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader, std/tables
@@ -589,7 +589,7 @@ type
 
 See [Core Types Reference](01_core.md) for complete Transaction specification.
 
-**Accessing history:**
+Accessing history:
 
 ```nim
 echo "Transaction history:"

@@ -2,23 +2,23 @@
 
 ## ⚠️ Disclaimer
 
-**Educational Use Only**: The TzuTrader CLI is for backtesting and research purposes only. It does not provide financial advice. Trading involves substantial risk, and past performance does not guarantee future results. Users are solely responsible for their trading decisions.
+Educational Use Only: The TzuTrader CLI is for backtesting and research purposes only. It does not provide financial advice. Trading involves substantial risk, and past performance does not guarantee future results. Users are solely responsible for their trading decisions.
 
 ## Overview
 
 The TzuTrader CLI provides a command-line interface for running backtests without writing code. It's particularly useful for quick parameter testing, batch processing historical data, and automating repetitive analysis tasks.
 
-**Binary:** `tzu`  
-**Version:** 0.8.0  
-**Powered by:** [cligen](https://github.com/c-blake/cligen) - automatic CLI generation
+Binary: `tzu`  
+Version: 0.8.0  
+Powered by: [cligen](https://github.com/c-blake/cligen) - automatic CLI generation
 
 ## When to Use the CLI
 
 The CLI tool serves specific use cases where writing Nim code would be overhead:
 
-- **Quick backtests:** Testing a strategy against a single symbol's historical data
-- **Parameter exploration:** Trying different parameter values to see their effect
-- **Batch processing:** Automating backtests in scripts or pipelines
+- Quick backtests: Testing a strategy against a single symbol's historical data
+- Parameter exploration: Trying different parameter values to see their effect
+- Batch processing: Automating backtests in scripts or pipelines
 
 For more complex needs—custom strategies, multi-symbol scanning, advanced portfolio logic, or integration with other systems—writing Nim code using the library directly provides greater flexibility.
 
@@ -60,7 +60,7 @@ tzu --batch=<BATCH_CONFIG.yml>
 tzu --sweep=<SWEEP_CONFIG.yml>
 ```
 
-**Key Parameters:**
+Key Parameters:
 - `--backtest=<STRATEGY>` or `-b`: Built-in strategy to backtest
 - `--strategy=<FILE>` or `-t`: Path to YAML strategy file
 - `--batch=<FILE>`: Path to batch testing configuration
@@ -70,7 +70,7 @@ tzu --sweep=<SWEEP_CONFIG.yml>
 - `--start=<YYYY-MM-DD>`: Start date (required for online sources, no short option)
 - `--endDate=<YYYY-MM-DD>` or `-e`: End date (optional)
 
-**Note**: Only ONE mode can be used at a time (--backtest, --strategy, --batch, --sweep, or --screen).
+Note: Only ONE mode can be used at a time (--backtest, --strategy, --batch, --sweep, or --screen).
 
 This design ensures:
 - Clear separation between different testing modes
@@ -86,7 +86,7 @@ Get help on all available modes and parameters:
 tzu --help
 ```
 
-**Output shows:**
+Output shows:
 ```
 Usage:
   tzu [optional-params]
@@ -122,7 +122,7 @@ If no mode is specified, the CLI shows usage examples:
 tzu
 ```
 
-**Output:**
+Output:
 ```
 Error: Must specify one command: --backtest, --strategy, --batch, --sweep, or --screen
 
@@ -153,15 +153,15 @@ The help output shows all available parameters for all strategies, including:
 - Short flags (e.g., `-r`, `-s`, `-e`, `-p`, `-v`)
 - Long flags (e.g., `--backtest`, `--symbol`, `--period`, `--verbose`)
 
-**All parameters are shown in a single help screen** since all strategies now share the same parameter namespace.
+All parameters are shown in a single help screen since all strategies now share the same parameter namespace.
 
-**Example:**
+Example:
 
 ```bash
 tzu --help
 ```
 
-**Output shows all available options:**
+Output shows all available options:
 ```
 Options:
   -r=, --backtest=          string    Strategy to backtest
@@ -177,7 +177,7 @@ Options:
   ... (and many more)
 ```
 
-**The help is automatically generated from the function signature**, so it's always accurate and up-to-date.
+The help is automatically generated from the function signature, so it's always accurate and up-to-date.
 
 ## Common Parameters (All Strategies)
 
@@ -185,15 +185,15 @@ Every strategy accepts these common parameters:
 
 ### Data Source Parameters
 
-**Option 1: Simple Yahoo Finance (Default)**
+Option 1: Simple Yahoo Finance (Default)
 
 | Parameter | Short | Type | Description |
 |-----------|-------|------|-------------|
 | `--symbol` | `-s` | string | Symbol to backtest (uses Yahoo Finance automatically) |
-| `--start` | *none* | string | Start date (YYYY-MM-DD format) - **no short option** |
+| `--start` | *none* | string | Start date (YYYY-MM-DD format) - no short option |
 | `--endDate` | `-e` | string | End date (YYYY-MM-DD format, default: today) |
 
-**Option 2: Explicit Data Source (Mutually Exclusive)**
+Option 2: Explicit Data Source (Mutually Exclusive)
 
 | Parameter | Short | Type | Description |
 |-----------|-------|------|-------------|
@@ -201,7 +201,7 @@ Every strategy accepts these common parameters:
 | `--yahoo` | `-y` | string | Yahoo Finance symbol (requires `--start`) |
 | `--coinbase` | | string | Coinbase trading pair (requires `--start` and env vars) |
 
-**Portfolio Configuration Parameters:**
+Portfolio Configuration Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -210,7 +210,7 @@ Every strategy accepts these common parameters:
 | `--minCommission` | float | 0.0 | Minimum commission per trade (e.g., 1.0 = $1 minimum) |
 | `--riskFreeRate` | float | 0.02 | Risk-free rate for Sharpe ratio calculation (0.02 = 2%) |
 
-**Output Parameters:**
+Output Parameters:
 
 | Parameter | Short | Type | Default | Description |
 |-----------|-------|------|---------|-------------|
@@ -353,19 +353,19 @@ tzu --backtest=rsi --symbol=AAPL --start=2023-01-01
 tzu -b rsi -s AAPL --start=2023-01-01  # Short form
 ```
 
-**Supported symbols:**
+Supported symbols:
 - Stocks: AAPL, MSFT, TSLA, etc.
 - ETFs: SPY, QQQ, VTI, etc.
 - Crypto: BTC-USD, ETH-USD, etc.
 - Indices: ^GSPC (S&P 500), ^DJI (Dow Jones), etc.
 
-**Advantages:**
+Advantages:
 - Simplest syntax (no explicit data source flag needed)
 - No API key required
 - Always up-to-date data
 - Wide symbol coverage (stocks, crypto, indices, forex)
 
-**Limitations:**
+Limitations:
 - Rate limits apply (avoid hammering the API)
 - Historical data availability varies by symbol
 
@@ -377,7 +377,7 @@ Load historical data from local CSV files.
 tzu --backtest=rsi --csvFile=data/AAPL.csv
 ```
 
-**Requirements:**
+Requirements:
 - CSV file must exist locally
 - Must contain columns: timestamp, open, high, low, close, volume
 - See [Data Management Reference](02_data.md) for format details
@@ -402,28 +402,28 @@ export COINBASE_SECRET_KEY="your_secret_key"
 tzu --backtest=rsi --coinbase=BTC-USD --start=2024-01-01
 ```
 
-**Supported pairs:**
+Supported pairs:
 - BTC-USD, ETH-USD, SOL-USD, etc.
 - See [Coinbase documentation](https://docs.cloud.coinbase.com/) for full list
 
-**Requirements:**
+Requirements:
 - Coinbase account with API credentials
 - Set environment variables: `COINBASE_API_KEY` and `COINBASE_SECRET_KEY`
 
-**Parameters:**
+Parameters:
 - `--coinbase=PAIR` (required)
 - `--start=YYYY-MM-DD` (required)
 - `--endDate=YYYY-MM-DD` (optional)
 
-**Advantages:**
+Advantages:
 - Official Coinbase data
 - High-resolution crypto data
 
-**Limitations:**
+Limitations:
 - Requires API key
 - Only cryptocurrency trading pairs
 
-**Note:** Alpha Vantage is NOT currently implemented as a data source.
+Note: Alpha Vantage is NOT currently implemented as a data source.
 
 ## YAML Strategy Mode
 
@@ -732,7 +732,7 @@ output:
   full_results: "results/all_params.csv"
 ```
 
-**This configuration tests**: 4 × 5 × 5 = **100 combinations**
+This configuration tests: 4 × 5 × 5 = 100 combinations
 
 See [Reference: Declarative System - Parameter Sweep](10_declarative.md#parameter-sweep-grid-search) for complete documentation.
 
@@ -791,7 +791,7 @@ Top 10 Parameter Combinations by Total Return
 
 ### CSV Output
 
-**Full Results** (`results/all_params.csv`):
+Full Results (`results/all_params.csv`):
 ```csv
 Strategy,Symbol,Total Return %,Sharpe Ratio,Max Drawdown %,Trades,indicators.rsi_14.period,conditions.entry.right,conditions.exit.right
 Sweep_1,AAPL,12.50,1.20,-10.50,18,10,20,60
@@ -799,17 +799,17 @@ Sweep_2,AAPL,14.20,1.35,-9.80,20,10,20,65
 ...
 ```
 
-**Best Results** (`results/best_params.csv`):
+Best Results (`results/best_params.csv`):
 Top 50 combinations ranked by total return.
 
 ### Optimization Strategy
 
 For efficient parameter optimization:
 
-1. **Start with coarse sweep**: Wide ranges, big steps
-2. **Identify promising regions**: Look at top 10 results
-3. **Run fine-grained sweep**: Narrow ranges around winners
-4. **Validate on different data**: Test winners on out-of-sample period
+1. Start with coarse sweep: Wide ranges, big steps
+2. Identify promising regions: Look at top 10 results
+3. Run fine-grained sweep: Narrow ranges around winners
+4. Validate on different data: Test winners on out-of-sample period
 
 Example workflow:
 ```bash
@@ -850,7 +850,7 @@ tzu --backtest=rsi --strategy=my_strategy.yml --symbol=AAPL
 
 ## Automatic Parameter Generation
 
-The CLI uses **automatic parameter generation** from the main function signature:
+The CLI uses automatic parameter generation from the main function signature:
 
 1. The `tzu` procedure accepts all strategy parameters as optional arguments
 2. cligen introspects the function signature at compile time
@@ -861,13 +861,13 @@ The CLI uses **automatic parameter generation** from the main function signature
    - `verbose = false` → flag `-v` or `--verbose`
 4. Doc comments become help text automatically
 
-**Benefits:**
+Benefits:
 - Parameters stay in sync with code (no manual documentation drift)
 - Type safety: cligen validates int/float/string/bool at parse time
 - Zero boilerplate: adding a parameter requires zero CLI wiring code
 - All strategies share the same parameter namespace
 
-**Example from source code:**
+Example from source code:
 ```nim
 proc tzu(
   backtest = "",          # Required: strategy name
@@ -898,7 +898,7 @@ This single function signature automatically generates:
 - `--csvFile=` or `-c` (optional)
 - `--yahoo=` or `-y` (optional, explicit Yahoo Finance)
 - `--coinbase=` (optional)
-- `--start=` (required for online data sources, **no short option**)
+- `--start=` (required for online data sources, no short option)
 - `--endDate=` or `-e` (optional, default: today)
 - `--period=` or `-p` (default: 14)
 - `--oversold=` or `-o` (default: 30.0)
@@ -913,17 +913,17 @@ This single function signature automatically generates:
 - `-v` or `--verbose` (flag)
 - Complete help text with descriptions
 
-**Note:** `--start` has no short option to avoid conflicts with `-s` (symbol).
+Note: `--start` has no short option to avoid conflicts with `-s` (symbol).
 
 ## Built-in Strategy Parameters
 
-TzuTrader includes 16 pre-built strategies. All their parameters are available as command-line options. Use the **self-documenting help system** to see all available options:
+TzuTrader includes 16 pre-built strategies. All their parameters are available as command-line options. Use the self-documenting help system to see all available options:
 
 ```bash
 tzu --help
 ```
 
-**Important**: The built-in strategies are **reference implementations** to demonstrate trading concepts. They are not optimized for production use. You should:
+Important: The built-in strategies are reference implementations to demonstrate trading concepts. They are not optimized for production use. You should:
 - Understand how each strategy works before using it
 - Test thoroughly on historical data
 - Create custom strategies tailored to your needs
@@ -933,45 +933,45 @@ See [User Guide: Writing Custom Strategies with YAML](../user_guide/04b_custom_s
 
 The help output shows all parameters for all built-in strategies in one unified interface, including:
 
-**RSI Strategy:**
+RSI Strategy:
 - `--period` (default: 14)
 - `--oversold` (default: 30.0)
 - `--overbought` (default: 70.0)
 
-**MACD Strategy:**
+MACD Strategy:
 - `--fast` (default: 12)
 - `--slow` (default: 26)
 - `--signal` (default: 9)
 
-**Stochastic Strategy:**
+Stochastic Strategy:
 - `--kPeriod` (default: 14)
 - `--dPeriod` (default: 3)
 - `--oversold` (default: 20.0)
 - `--overbought` (default: 80.0)
 
-**Bollinger Bands:**
+Bollinger Bands:
 - `--period` (default: 20)
 - `--stdDev` (default: 2.0)
 
-**Crossover:**
+Crossover:
 - `--fastPeriod` (default: 50)
 - `--slowPeriod` (default: 200)
 
-**And many more...**
+And many more...
 
 Use `tzu --help` to see the complete list with all available short options.
 
-**This approach ensures documentation never goes out of date.**
+This approach ensures documentation never goes out of date.
 
 ## Removed Features (vs v0.7.0)
 
 The cligen-based CLI (v0.8.0) simplified the interface by removing:
 
-- **`scan` command:** Multi-symbol scanning removed. Use shell scripts for batch processing.
-- **`--export` option:** Removed. Pipe output to files instead: `tzu --backtest=rsi --csvFile=data.csv > results.txt`
-- **Subcommand structure:** Strategies are now selected via `--backtest` argument instead of subcommands.
+- `scan` command: Multi-symbol scanning removed. Use shell scripts for batch processing.
+- `--export` option: Removed. Pipe output to files instead: `tzu --backtest=rsi --csvFile=data.csv > results.txt`
+- Subcommand structure: Strategies are now selected via `--backtest` argument instead of subcommands.
 
-**Migration from v0.7.0:**
+Migration from v0.7.0:
 
 Old syntax:
 ```bash
@@ -987,7 +987,7 @@ tzu --backtest=rsi --csvFile=data/AAPL.csv --period=10
 
 The CLI expects CSV files in a specific format. See the [Data Management Reference](02_data.md) for complete specifications.
 
-**Required columns:**
+Required columns:
 - `timestamp` or `date`
 - `open`
 - `high`
@@ -995,7 +995,7 @@ The CLI expects CSV files in a specific format. See the [Data Management Referen
 - `close`
 - `volume`
 
-**Example format:**
+Example format:
 
 ```csv
 timestamp,open,high,low,close,volume
@@ -1009,16 +1009,16 @@ Timestamps should be Unix timestamps (seconds since epoch) or dates in common fo
 
 The CLI displays a `BacktestReport` with:
 
-- **Period:** Date range and number of days
-- **Capital:** Initial and final values
-- **Returns:** Total return, annualized return, Sharpe ratio
-- **Risk:** Max drawdown and duration
-- **Trades:** Total, winning, losing, win rate
-- **Trade Statistics:** Profit factor, avg win/loss, best/worst trade
+- Period: Date range and number of days
+- Capital: Initial and final values
+- Returns: Total return, annualized return, Sharpe ratio
+- Risk: Max drawdown and duration
+- Trades: Total, winning, losing, win rate
+- Trade Statistics: Profit factor, avg win/loss, best/worst trade
 
 See [Backtesting Reference](06_backtesting.md) for detailed metric definitions.
 
-**Example output:**
+Example output:
 
 ```
 Backtest Report: AAPL
@@ -1057,10 +1057,10 @@ Trade Statistics
 
 The CLI exits with non-zero status codes on errors:
 
-**Common errors:**
-- **File not found:** Check CSV file path
-- **Invalid CSV format:** Verify column names match requirements
-- **Insufficient data:** Ensure CSV has enough bars for indicator calculation (e.g., RSI needs >14 bars for period=14)
+Common errors:
+- File not found: Check CSV file path
+- Invalid CSV format: Verify column names match requirements
+- Insufficient data: Ensure CSV has enough bars for indicator calculation (e.g., RSI needs >14 bars for period=14)
 
 Error messages describe the issue clearly.
 
@@ -1070,8 +1070,8 @@ Error messages describe the issue clearly.
 
 The `--backtest` mode uses pre-built strategies with limited customization (parameter values only). For custom strategies:
 
-- **Use YAML strategies** (`--strategy`): No programming required, full flexibility with 30+ indicators
-- **Write Nim code**: Maximum flexibility and performance (see [Strategy Reference](04_strategies.md))
+- Use YAML strategies (`--strategy`): No programming required, full flexibility with 30+ indicators
+- Write Nim code: Maximum flexibility and performance (see [Strategy Reference](04_strategies.md))
 
 ### When to Use Each Approach
 

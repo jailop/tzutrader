@@ -6,25 +6,25 @@ Mean reversion strategies assume that prices tend to return to an average level 
 
 TzuTrader provides 6 mean reversion strategies, each using different methods to identify extremes:
 
-1. **RSI Strategy** - Classic overbought/oversold based on momentum
-2. **Bollinger Bands Strategy** - Volatility-adjusted price extremes
-3. **Stochastic Strategy** - Position within recent price range
-4. **MFI Strategy** - Volume-weighted momentum extremes
-5. **CCI Strategy** - Statistical deviation from typical price
-6. **Filtered Mean Reversion** - RSI with trend filter
+1. RSI Strategy - Classic overbought/oversold based on momentum
+2. Bollinger Bands Strategy - Volatility-adjusted price extremes
+3. Stochastic Strategy - Position within recent price range
+4. MFI Strategy - Volume-weighted momentum extremes
+5. CCI Strategy - Statistical deviation from typical price
+6. Filtered Mean Reversion - RSI with trend filter
 
-**Module:** `tzutrader/strategy.nim`
+Module: `tzutrader/strategy.nim`
 
 ## Stochastic Strategy
 
 Mean reversion strategy using the Stochastic Oscillator to identify overbought/oversold conditions based on where price closes within its recent range.
 
-**Trading Logic:**
-- **Buy:** %K crosses above %D while both are in oversold zone
-- **Sell:** %K crosses below %D while both are in overbought zone
-- **Stay:** No crossover or values in neutral zone
+Trading Logic:
+- Buy: %K crosses above %D while both are in oversold zone
+- Sell: %K crosses below %D while both are in overbought zone
+- Stay: No crossover or values in neutral zone
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newStochasticStrategy*(period: int = 14, kSmooth: int = 3, dSmooth: int = 3,
@@ -32,7 +32,7 @@ proc newStochasticStrategy*(period: int = 14, kSmooth: int = 3, dSmooth: int = 3
                            symbol: string = ""): StochasticStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -43,7 +43,7 @@ proc newStochasticStrategy*(period: int = 14, kSmooth: int = 3, dSmooth: int = 3
 | `overbought` | float64 | 80.0 | Sell threshold | 70-90 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -58,19 +58,19 @@ type
     lastD*: float64
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 The Stochastic compares the closing price to the recent price range. Values near 100 mean price is at the top of its range (overbought); values near 0 mean price is at the bottom (oversold). The strategy waits for both %K and %D to be in extreme zones and then trades on crossovers, providing confirmation.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter periods** (9-12): More sensitive, more trades, faster signals
-- **Longer periods** (16-21): Smoother, fewer trades, more reliable extremes
-- **Higher smoothing** (4-5): Reduces whipsaws but delays signals
-- **Tighter thresholds** (30/70): Trade more frequently with less extreme moves
-- **Wider thresholds** (10/90): Wait for very extreme conditions
+- Shorter periods (9-12): More sensitive, more trades, faster signals
+- Longer periods (16-21): Smoother, fewer trades, more reliable extremes
+- Higher smoothing (4-5): Reduces whipsaws but delays signals
+- Tighter thresholds (30/70): Trade more frequently with less extreme moves
+- Wider thresholds (10/90): Wait for very extreme conditions
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -107,19 +107,19 @@ echo "Win rate: ", report.winRate, "%"
 
 Volume-weighted momentum strategy that combines price and volume to identify overbought/oversold conditions. Often called "volume-weighted RSI."
 
-**Trading Logic:**
-- **Buy:** MFI falls below oversold threshold
-- **Sell:** MFI rises above overbought threshold
-- **Stay:** MFI between thresholds
+Trading Logic:
+- Buy: MFI falls below oversold threshold
+- Sell: MFI rises above overbought threshold
+- Stay: MFI between thresholds
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newMFIStrategy*(period: int = 14, oversold: float64 = 20.0,
                      overbought: float64 = 80.0, symbol: string = ""): MFIStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -128,7 +128,7 @@ proc newMFIStrategy*(period: int = 14, oversold: float64 = 20.0,
 | `overbought` | float64 | 80.0 | Sell threshold | 70-90 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -140,18 +140,18 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 MFI incorporates volume into momentum measurement. High prices with low volume produce lower MFI values (weak buying), while high prices with high volume produce higher MFI (strong buying). This makes MFI particularly effective at identifying when volume confirms or contradicts price action.
 
-**Compared to RSI:**
+Compared to RSI:
 
 - RSI uses only price data
 - MFI weights by volume, capturing buying/selling pressure
 - MFI more reliable in liquid markets with consistent volume
 - MFI better at detecting accumulation/distribution phases
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -181,19 +181,19 @@ let report = quickBacktest("AAPL", standard, data)
 
 Statistical mean reversion strategy that measures how far the typical price deviates from its statistical average.
 
-**Trading Logic:**
-- **Buy:** CCI falls below oversold threshold
-- **Sell:** CCI rises above overbought threshold
-- **Stay:** CCI between thresholds
+Trading Logic:
+- Buy: CCI falls below oversold threshold
+- Sell: CCI rises above overbought threshold
+- Stay: CCI between thresholds
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newCCIStrategy*(period: int = 20, oversold: float64 = -100.0,
                      overbought: float64 = 100.0, symbol: string = ""): CCIStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -202,7 +202,7 @@ proc newCCIStrategy*(period: int = 20, oversold: float64 = -100.0,
 | `overbought` | float64 | 100.0 | Sell threshold | +50 to +150 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -214,22 +214,22 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 CCI is unbounded and can reach extreme values. The ±100 thresholds are chosen so approximately 70-80% of values fall within this range. When CCI exceeds these levels, price is statistically far from its mean and likely to revert.
 
-**Statistical Interpretation:**
+Statistical Interpretation:
 
 Unlike RSI (0-100 bounded), CCI can range from -∞ to +∞. Values beyond ±100 represent statistical outliers. The strategy assumes these outliers will revert to the mean.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter periods** (14-18): More responsive, more trades
-- **Longer periods** (25-30): Smoother, fewer false signals
-- **Tighter thresholds** (±75): Trade more moderate deviations
-- **Wider thresholds** (±150): Wait for extreme statistical outliers
+- Shorter periods (14-18): More responsive, more trades
+- Longer periods (25-30): Smoother, fewer false signals
+- Tighter thresholds (±75): Trade more moderate deviations
+- Wider thresholds (±150): Wait for extreme statistical outliers
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -259,12 +259,12 @@ let report = quickBacktest("AAPL", standard, data)
 
 Advanced mean reversion strategy that combines RSI with a trend filter to avoid counter-trend trades.
 
-**Trading Logic:**
-- **Buy:** RSI < oversold AND price > MA (oversold in uptrend)
-- **Sell:** RSI > overbought AND price < MA (overbought in downtrend)
-- **Stay:** RSI signal doesn't align with trend
+Trading Logic:
+- Buy: RSI < oversold AND price > MA (oversold in uptrend)
+- Sell: RSI > overbought AND price < MA (overbought in downtrend)
+- Stay: RSI signal doesn't align with trend
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newFilteredMeanReversionStrategy*(rsiPeriod: int = 14, maPeriod: int = 50,
@@ -273,7 +273,7 @@ proc newFilteredMeanReversionStrategy*(rsiPeriod: int = 14, maPeriod: int = 50,
                                        symbol: string = ""): FilteredMeanReversionStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -283,7 +283,7 @@ proc newFilteredMeanReversionStrategy*(rsiPeriod: int = 14, maPeriod: int = 50,
 | `overbought` | float64 | 70.0 | RSI sell threshold | 65-80 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -297,11 +297,11 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 This strategy improves upon pure RSI by adding a trend filter. It only takes buy signals when price is above the moving average (uptrend) and only takes sell signals when price is below the moving average (downtrend). This dramatically reduces losing counter-trend trades.
 
-**Why Filter?**
+Why Filter?
 
 Pure RSI strategies suffer from taking counter-trend trades:
 - Buying oversold conditions in downtrends (price continues falling)
@@ -309,14 +309,14 @@ Pure RSI strategies suffer from taking counter-trend trades:
 
 The trend filter ensures you're "buying dips" in uptrends and "selling rallies" in downtrends rather than fighting the overall trend.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter MA** (20-30): More responsive, more trades, tighter trend definition
-- **Medium MA** (50): Balanced approach, standard trend filter
-- **Longer MA** (100-200): Only trade in strong established trends
-- **RSI thresholds**: Use standard 30/70 or experiment with 25/75 for more trades
+- Shorter MA (20-30): More responsive, more trades, tighter trend definition
+- Medium MA (50): Balanced approach, standard trend filter
+- Longer MA (100-200): Only trade in strong established trends
+- RSI thresholds: Use standard 30/70 or experiment with 25/75 for more trades
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -347,7 +347,7 @@ echo "Filtered strategy trades: ", report.totalTrades
 echo "Win rate: ", report.winRate, "%"
 ```
 
-**Comparison with Pure RSI:**
+Comparison with Pure RSI:
 
 ```nim
 # Compare filtered vs unfiltered
@@ -363,7 +363,7 @@ echo "Pure RSI - Trades: ", report1.totalTrades, " Win Rate: ", report1.winRate,
 echo "Filtered - Trades: ", report2.totalTrades, " Win Rate: ", report2.winRate, "%"
 ```
 
-**Expected Results:**
+Expected Results:
 
 Filtered mean reversion typically shows:
 - Fewer total trades (filter removes counter-trend signals)
@@ -375,21 +375,21 @@ Filtered mean reversion typically shows:
 
 | Strategy | Complexity | Signal Frequency | Volume Required | Best Timeframe |
 |----------|------------|------------------|-----------------|----------------|
-| **RSI** | Low | Medium | No | Days-Weeks |
-| **Bollinger** | Low | Medium | No | Days-Weeks |
-| **Stochastic** | Medium | High | No | Minutes-Days |
-| **MFI** | Medium | Medium | Yes | Days-Weeks |
-| **CCI** | Low | Medium | No | Days-Weeks |
-| **Filtered MR** | High | Low | No | Days-Weeks |
+| RSI | Low | Medium | No | Days-Weeks |
+| Bollinger | Low | Medium | No | Days-Weeks |
+| Stochastic | Medium | High | No | Minutes-Days |
+| MFI | Medium | Medium | Yes | Days-Weeks |
+| CCI | Low | Medium | No | Days-Weeks |
+| Filtered MR | High | Low | No | Days-Weeks |
 
-**When to Use Each:**
+When to Use Each:
 
-- **RSI**: Default choice, works across most markets
-- **Bollinger Bands**: Volatile markets, prefer volatility adaptation
-- **Stochastic**: Short-term trading, need fast signals
-- **MFI**: Liquid markets, volume is meaningful
-- **CCI**: Commodity trading, statistical approach
-- **Filtered Mean Reversion**: Want higher win rate, trending markets
+- RSI: Default choice, works across most markets
+- Bollinger Bands: Volatile markets, prefer volatility adaptation
+- Stochastic: Short-term trading, need fast signals
+- MFI: Liquid markets, volume is meaningful
+- CCI: Commodity trading, statistical approach
+- Filtered Mean Reversion: Want higher win rate, trending markets
 
 ## Common Patterns
 

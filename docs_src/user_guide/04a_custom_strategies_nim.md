@@ -2,24 +2,31 @@
 
 ## Introduction
 
-While TzuTrader includes 16 pre-built strategies, they are **reference examples** to help you understand how strategies work. As a retail or small investor, you'll likely want to create strategies tailored to your specific trading ideas, risk tolerance, and market conditions.
+While TzuTrader includes 16 pre-built strategies, they are reference examples to help you understand how strategies work. As a retail or small investor, you'll likely want to create strategies tailored to your specific trading ideas, risk tolerance, and market conditions.
 
 This guide teaches you how to write custom trading strategies in Nim, even if you're not an expert programmer.
 
 !!! tip "When to Use Nim vs YAML"
-    - **Use Nim** when you need: complex logic, custom calculations, state management, or integration with other code
-    - **Use YAML** when you need: simple indicator-based rules without programming (see [Writing Custom Strategies with YAML](04b_custom_strategies_yaml.md))
+    - Use Nim when you need: complex logic, custom calculations, state management, or integration with other code
+    - Use YAML when you need: simple indicator-based rules without programming (see [Writing Custom Strategies with YAML](04b_custom_strategies_yaml.md))
 
 !!! info "New to Nim?"
-    Nim is a modern language with Python-like syntax but C-like performance. If you can read Python, you can read Nim! The examples in this guide are designed to be self-explanatory. For more about why TzuTrader uses Nim, see **[Why Nim?](../about_nim.md)**
+    Nim is a modern language with Python-like syntax but C-like performance.
+    If you can read Python, you can read Nim! The examples in this guide are
+    designed to be self-explanatory. For more about why TzuTrader uses Nim,
+    see [Why Nim?](../about_nim.md)
+
+!!! Review the API documentation
+    This section can be outdated because the library's API is evolving.
+    As a safe reference, consult the API documentation.
 
 ## What is a Strategy?
 
 A trading strategy in TzuTrader is a Nim object that:
 
-1. **Analyzes market data** - Looks at prices, volumes, and technical indicators
-2. **Generates signals** - Decides whether to Buy, Sell, or Stay (do nothing)
-3. **Manages state** - Remembers previous conditions across multiple bars
+1. Analyzes market data - Looks at prices, volumes, and technical indicators
+2. Generates signals - Decides whether to Buy, Sell, or Stay (do nothing)
+3. Manages state - Remembers previous conditions across multiple bars
 
 Every strategy implements the `Strategy` interface, which provides a standard way to process market data and generate trading signals.
 
@@ -43,7 +50,7 @@ method signal*(s: Strategy, bar: OHLCV): Signal {.base.} =
   discard
 ```
 
-**Key concepts:**
+Key concepts:
 
 - `update()` - Called first to update indicators with new data
 - `signal()` - Called second to generate Buy/Sell/Stay decision
@@ -66,7 +73,7 @@ type
     initialized: bool      # Have we seen at least one bar?
 ```
 
-**What this does:**
+What this does:
 
 - Inherits from `Strategy` to get the standard interface
 - Stores `prevHigh` and `prevLow` to remember yesterday's range
@@ -84,7 +91,7 @@ proc newMomentumBreakoutStrategy*(): MomentumBreakoutStrategy =
   )
 ```
 
-**What this does:**
+What this does:
 
 - Creates and initializes a new strategy instance
 - Sets default values for all fields
@@ -106,7 +113,7 @@ method update*(s: MomentumBreakoutStrategy, bar: OHLCV) =
     s.initialized = true
 ```
 
-**What this does:**
+What this does:
 
 - Stores current bar's high/low for the next bar's signal
 - On first bar, just initializes values without trading
@@ -150,7 +157,7 @@ method signal*(s: MomentumBreakoutStrategy, bar: OHLCV): Signal =
     )
 ```
 
-**What this does:**
+What this does:
 
 - Compares current close to yesterday's high/low range
 - Returns Buy signal when price breaks above
@@ -180,7 +187,8 @@ let report = quickBacktest(
 echo report.summary()
 ```
 
-**Output:**
+Output:
+
 ```
 Backtest Report: AAPL
 Total Return:     15.23%
@@ -247,6 +255,7 @@ when isMainModule:
 ```
 
 Save this as `momentum_strategy.nim` and run:
+
 ```bash
 nim c -r momentum_strategy.nim
 ```
@@ -332,7 +341,7 @@ when isMainModule:
   echo "Aggressive: ", report2.summary()
 ```
 
-**Key points:**
+Key points:
 
 - Indicators are created in the constructor
 - `update()` feeds data to the indicator
@@ -407,7 +416,7 @@ method signal*(s: RSIMACDStrategy, bar: OHLCV): Signal =
     )
 ```
 
-**Benefits of multi-indicator strategies:**
+Benefits of multi-indicator strategies:
 
 - Reduces false signals (confirmation required)
 - Combines different market perspectives (momentum + trend)
@@ -472,7 +481,7 @@ method signal*(s: ThreeBarMomentumStrategy, bar: OHLCV): Signal =
     )
 ```
 
-**State management tips:**
+State management tips:
 
 - Store necessary data in strategy object fields
 - Update state in `update()` method
@@ -659,15 +668,15 @@ if not s.rsi.isReady():
 
 ## Next Steps
 
-- **Try the examples**: Modify the strategies above and test with your own data
-- **Read pre-built strategies**: Check `src/tzutrader/strategy.nim` for more examples
-- **Learn indicators**: See [Technical Indicators](03_indicators.md) for all available indicators
-- **Try YAML strategies**: For simpler rules, see [Writing Custom Strategies with YAML](04b_custom_strategies_yaml.md)
-- **Optimize parameters**: Use parameter sweeps to find best settings (see [CLI Reference](../reference_guide/09_cli.md))
+- Try the examples: Modify the strategies above and test with your own data
+- Read pre-built strategies: Check `src/tzutrader/strategy.nim` for more examples
+- Learn indicators: See [Technical Indicators](03_indicators.md) for all available indicators
+- Try YAML strategies: For simpler rules, see [Writing Custom Strategies with YAML](04b_custom_strategies_yaml.md)
+- Optimize parameters: Use parameter sweeps to find best settings (see [CLI Reference](../reference_guide/09_cli.md))
 
 ## Summary
 
-**Creating a custom strategy in Nim requires:**
+Creating a custom strategy in Nim requires:
 
 1. Define a type inheriting from `Strategy`
 2. Create a constructor (`newMyStrategy()`)
@@ -675,12 +684,10 @@ if not s.rsi.isReady():
 4. Implement `signal()` to generate Buy/Sell/Stay signals
 5. Test with `quickBacktest()`
 
-**Remember:**
+Remember:
 
 - Pre-built strategies are just examples - customize them!
 - Start simple, add complexity gradually
 - Always test with realistic commissions
 - Use meaningful signal reasons for debugging
 - Combine indicators for confirmation
-
-Happy trading! 🚀

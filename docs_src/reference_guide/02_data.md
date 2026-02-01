@@ -6,7 +6,7 @@ Data management in TzuTrader handles loading, validating, and streaming historic
 
 Most backtesting workflows use CSV files containing historical OHLCV data. The data module handles parsing, validation, and providing bar-by-bar access to this data.
 
-**Module:** `tzutrader/data.nim`
+Module: `tzutrader/data.nim`
 
 ## CSV File Format
 
@@ -36,7 +36,7 @@ timestamp,open,high,low,close,volume
 
 TzuTrader accepts Unix timestamps (seconds since January 1, 1970 UTC). Many data sources provide dates in other formats:
 
-**Converting from date strings:**
+Converting from date strings:
 
 ```nim
 import std/times
@@ -47,7 +47,7 @@ let timestamp = dt.toTime().toUnix()
 # timestamp = 1609459200
 ```
 
-**Converting from datetime objects:**
+Converting from datetime objects:
 
 Most programming languages can convert datetime objects to Unix timestamps. For example, in Python:
 
@@ -61,7 +61,7 @@ timestamp = int(dt.timestamp())
 
 CSV files should include a header row with column names. TzuTrader skips the first line by default when reading files.
 
-**If your file has no header:** Use `readCSV(filename, hasHeader = false)`
+If your file has no header: Use `readCSV(filename, hasHeader = false)`
 
 ### Data Ordering
 
@@ -83,19 +83,19 @@ Before backtesting, verify:
 proc readCSV*(filename: string, hasHeader: bool = true): seq[OHLCV]
 ```
 
-**Parameters:**
+Parameters:
 - `filename`: Path to CSV file
 - `hasHeader`: Whether first line contains column names (default: `true`)
 
-**Returns:** Sequence of OHLCV bars in file order
+Returns: Sequence of OHLCV bars in file order
 
-**Errors:** Raises `DataError` if:
+Errors: Raises `DataError` if:
 - File doesn't exist
 - CSV format is invalid (wrong number of columns)
 - Values cannot be parsed as numbers
 - Data violates OHLCV constraints
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -115,12 +115,12 @@ except DataError as e:
 proc writeCSV*(data: seq[OHLCV], filename: string, includeHeader: bool = true)
 ```
 
-**Parameters:**
+Parameters:
 - `data`: OHLCV sequence to write
 - `filename`: Output file path
 - `includeHeader`: Include column header row (default: `true`)
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -139,11 +139,11 @@ For memory-efficient processing or when you need to process data bar-by-bar, use
 proc newCSVDataStream*(filename: string, symbol: string = ""): CSVDataStream
 ```
 
-**Parameters:**
+Parameters:
 - `filename`: Path to CSV file
 - `symbol`: Optional symbol identifier (extracted from filename if omitted)
 
-**Example:**
+Example:
 
 ```nim
 let stream = newCSVDataStream("data/AAPL.csv")
@@ -172,7 +172,7 @@ proc next*(stream: CSVDataStream): OHLCV  # Get next bar and advance
 proc peek*(stream: CSVDataStream): OHLCV  # Get current bar without advancing
 ```
 
-**Example:**
+Example:
 
 ```nim
 let stream = newCSVDataStream("data/AAPL.csv")
@@ -190,7 +190,7 @@ proc len*(stream: CSVDataStream): int  # Total bars in stream
 proc remaining*(stream: CSVDataStream): int  # Unprocessed bars remaining
 ```
 
-**Example:**
+Example:
 
 ```nim
 let stream = newCSVDataStream("data/AAPL.csv")
@@ -204,12 +204,12 @@ echo "Remaining: ", stream.remaining()
 
 ### When to Use Streaming
 
-**Use `readCSV()`** when:
+Use `readCSV()` when:
 - Dataset fits comfortably in memory
 - You need random access to bars
 - Running a single backtest
 
-**Use `CSVDataStream`** when:
+Use `CSVDataStream` when:
 - Processing very large files (millions of bars)
 - Memory is constrained
 - Implementing custom bar-by-bar logic
@@ -227,7 +227,7 @@ proc generateMockOHLCV*(symbol: string, startTime, endTime: int64,
                        volatility: float64 = 0.02): seq[OHLCV]
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -238,9 +238,9 @@ proc generateMockOHLCV*(symbol: string, startTime, endTime: int64,
 | `startPrice` | float64 | 100.0 | Initial price ($) |
 | `volatility` | float64 | 0.02 | Daily volatility (0.02 = 2%) |
 
-**Returns:** Sequence of valid OHLCV bars with random price walks
+Returns: Sequence of valid OHLCV bars with random price walks
 
-**Algorithm:**
+Algorithm:
 
 The generator creates a random walk with:
 - Normally distributed returns based on volatility
@@ -248,7 +248,7 @@ The generator creates a random walk with:
 - Random volume around a baseline
 - Valid OHLCV constraints (high ≥ all prices ≥ low)
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader, std/times
@@ -270,14 +270,14 @@ echo "Generated ", data.len, " bars"
 writeCSV(data, "mock_data.csv")
 ```
 
-**Uses for mock data:**
+Uses for mock data:
 
-- **Strategy development:** Test logic before acquiring real data
-- **Unit testing:** Verify strategy behavior with known inputs
-- **Parameter exploration:** Understand strategy mechanics in controlled conditions
-- **Documentation:** Create reproducible examples
+- Strategy development: Test logic before acquiring real data
+- Unit testing: Verify strategy behavior with known inputs
+- Parameter exploration: Understand strategy mechanics in controlled conditions
+- Documentation: Create reproducible examples
 
-**Limitations:**
+Limitations:
 
 Mock data lacks real market characteristics:
 - No trends (pure random walk)
@@ -317,7 +317,7 @@ let daySeconds = Int1d.toSeconds()  # 86400
 let hourSeconds = Int1h.toSeconds()  # 3600
 ```
 
-**Usage example:**
+Usage example:
 
 ```nim
 import tzutrader
@@ -352,7 +352,7 @@ These limits reflect typical data provider constraints. Your specific data sourc
 
 All OHLCV bars are validated on creation using the `isValid()` method from the core module.
 
-**Validation checks:**
+Validation checks:
 
 $$
 \begin{align}
@@ -369,7 +369,7 @@ $$
 \end{align}
 $$
 
-**Handling invalid data:**
+Handling invalid data:
 
 When `readCSV()` encounters invalid data, it raises a `DataError`. Fix the source data rather than trying to work around validation:
 
@@ -499,19 +499,19 @@ This ensures backtests across symbols use the same time periods, preventing look
 
 TzuTrader's CSV format is intentionally simple to support data from any source. Common sources include:
 
-**Free sources:**
+Free sources:
 - Yahoo Finance (via download or API)
 - Alpha Vantage (API)
 - Quandl/Nasdaq Data Link (API)
 - Exchange websites (many provide historical data)
 
-**Paid sources:**
+Paid sources:
 - Interactive Brokers
 - TD Ameritrade
 - Polygon.io
 - IEX Cloud
 
-**Converting from other formats:**
+Converting from other formats:
 
 Most data providers offer CSV exports. Ensure your conversion:
 1. Uses Unix timestamps or converts dates to Unix time
@@ -528,14 +528,14 @@ type
   DataError* = object of TzuTraderError
 ```
 
-**Common error scenarios:**
+Common error scenarios:
 
 - File not found: Check file paths
 - Invalid CSV format: Verify column count and structure
 - Parse errors: Ensure numeric values are valid numbers
 - Constraint violations: Fix OHLCV relationships in source data
 
-**Defensive programming:**
+Defensive programming:
 
 ```nim
 import tzutrader
@@ -556,11 +556,12 @@ proc loadDataSafely(filename: string): seq[OHLCV] =
 
 ## Performance Considerations
 
-**Loading speed:** CSV parsing is fast. Files with millions of rows load in seconds on modern hardware.
+Loading speed: CSV parsing is fast. Files with millions of rows load in seconds on modern hardware.
 
-**Memory usage:** Each OHLCV bar uses approximately 56 bytes (6 float64/int64 fields). One million bars requires ~56 MB.
+Memory usage: Each OHLCV bar uses approximately 56 bytes (6 float64/int64 fields). One million bars requires ~56 MB.
 
-**Optimization tips:**
+Optimization tips:
+
 - Use `CSVDataStream` for very large files to avoid loading everything into memory
 - Filter data to the needed timeframe before processing
 - Consider binary formats (like MessagePack or custom binary) for frequently-accessed large datasets

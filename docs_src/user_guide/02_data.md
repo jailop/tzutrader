@@ -4,11 +4,11 @@
 
 Trading strategies analyze price movements to make decisions. The standard format for representing price data is OHLCV, which stands for:
 
-- **Open**: The first traded price during a time period
-- **High**: The highest traded price during the period
-- **Low**: The lowest traded price during the period
-- **Close**: The last traded price during the period
-- **Volume**: The total number of shares or contracts traded
+- Open: The first traded price during a time period
+- High: The highest traded price during the period
+- Low: The lowest traded price during the period
+- Close: The last traded price during the period
+- Volume: The total number of shares or contracts traded
 
 Each OHLCV bar represents one time period, which could be one minute, one hour, one day, or any other interval. Day traders might use 5-minute bars, while long-term investors typically use daily bars.
 
@@ -29,7 +29,7 @@ timestamp,open,high,low,close,volume
 1609632000,106.0,108.0,104.0,105.0,900000.0
 ```
 
-**Column descriptions:**
+Column descriptions:
 
 - `timestamp`: Unix timestamp (seconds since January 1, 1970 UTC)
 - `open`, `high`, `low`, `close`: Prices as decimal numbers
@@ -37,12 +37,12 @@ timestamp,open,high,low,close,volume
 
 ### Important Requirements
 
-1. **Header row**: The first line must be the column names
-2. **Order matters**: Columns must appear in the exact order shown above
-3. **No missing values**: Every field must have a value
-4. **Chronological order**: Bars should be ordered by time (earliest first)
-5. **Valid prices**: High must be >= low, and both must be >= 0
-6. **Consistent intervals**: Gaps in time should represent actual market closures
+1. Header row: The first line must be the column names
+2. Order matters: Columns must appear in the exact order shown above
+3. No missing values: Every field must have a value
+4. Chronological order: Bars should be ordered by time (earliest first)
+5. Valid prices: High must be >= low, and both must be >= 0
+6. Consistent intervals: Gaps in time should represent actual market closures
 
 ## Loading Data from CSV
 
@@ -129,32 +129,32 @@ For actual backtesting, you need real historical price data. Several sources pro
 
 ### Free Sources
 
-1. **Yahoo Finance**: Download CSV files manually for most stocks
+1. Yahoo Finance: Download CSV files manually for most stocks
    - Go to finance.yahoo.com
    - Search for a symbol
    - Click "Historical Data" tab
    - Select date range and frequency
    - Click "Download"
 
-2. **Alpha Vantage**: Free API with rate limits (5 calls/minute, 500 calls/day)
+2. Alpha Vantage: Free API with rate limits (5 calls/minute, 500 calls/day)
 
-3. **Polygon.io**: Free tier with delayed data
+3. Polygon.io: Free tier with delayed data
 
 ### Paid Sources
 
-1. **Interactive Brokers**: Historical data included with account
-2. **Alpaca**: Free historical data for account holders
-3. **Tiingo**: Affordable plans for retail traders
+1. Interactive Brokers: Historical data included with account
+2. Alpaca: Free historical data for account holders
+3. Tiingo: Affordable plans for retail traders
 
 ### Data Considerations
 
 When obtaining data, consider:
 
-- **Survivorship bias**: Historical databases often exclude delisted stocks, making backtests overly optimistic
-- **Splits and dividends**: Ensure price data is adjusted for corporate actions
-- **Data quality**: Check for gaps, errors, and unusual values
-- **Time zones**: Verify timestamps match your expectations
-- **Costs**: Understand fees before committing to a data provider
+- Survivorship bias: Historical databases often exclude delisted stocks, making backtests overly optimistic
+- Splits and dividends: Ensure price data is adjusted for corporate actions
+- Data quality: Check for gaps, errors, and unusual values
+- Time zones: Verify timestamps match your expectations
+- Costs: Understand fees before committing to a data provider
 
 ## Common Data Issues
 
@@ -182,6 +182,7 @@ The `isValid()` function checks:
 ### Missing Data
 
 Gaps in timestamps can indicate:
+
 1. Market closures (weekends, holidays) - expected
 2. Data provider issues - problematic
 3. Low liquidity periods - context-dependent

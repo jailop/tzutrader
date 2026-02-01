@@ -57,6 +57,7 @@ let report = quickBacktest(
 ```
 
 Smaller accounts face different constraints than large accounts:
+
 - Lower capital means fewer shares per trade
 - Commission costs have proportionally larger impact
 - Minimum commission fees matter more
@@ -73,6 +74,7 @@ let report3 = quickBacktest(..., commission = 0.0025)   # 0.25% (higher cost)
 ```
 
 Commission impacts strategy performance significantly:
+
 - High-frequency strategies suffer more from commission costs
 - Lower commission makes more trades economically viable
 - Always use realistic commission assumptions
@@ -132,9 +134,9 @@ Total Return: 8.25%
 Annualized Return: 8.25%
 ```
 
-**Total Return** measures overall gain or loss as a percentage. A value of 8.25% means capital grew from $100,000 to $108,245.50.
+Total Return measures overall gain or loss as a percentage. A value of 8.25% means capital grew from $100,000 to $108,245.50.
 
-**Annualized Return** expresses returns on a yearly basis. If the test ran for 6 months and returned 4%, the annualized return would be approximately 8%. This allows comparing strategies tested over different time periods.
+Annualized Return expresses returns on a yearly basis. If the test ran for 6 months and returned 4%, the annualized return would be approximately 8%. This allows comparing strategies tested over different time periods.
 
 ### Risk Metrics
 
@@ -143,7 +145,8 @@ Sharpe Ratio: 0.87
 Maximum Drawdown: -12.34%
 ```
 
-**Sharpe Ratio** measures risk-adjusted returns. It compares the strategy's excess returns to its volatility:
+Sharpe Ratio measures risk-adjusted returns. It compares the strategy's excess returns to its volatility:
+
 - Below 1.0: Modest risk-adjusted returns
 - 1.0 - 2.0: Good risk-adjusted returns
 - Above 2.0: Excellent risk-adjusted returns
@@ -151,9 +154,10 @@ Maximum Drawdown: -12.34%
 
 The Sharpe ratio helps identify strategies that generate returns efficiently without excessive volatility.
 
-**Maximum Drawdown** shows the largest peak-to-valley decline during the test period. A value of -12.34% means at some point, the portfolio declined 12.34% from a previous high before recovering.
+Maximum Drawdown shows the largest peak-to-valley decline during the test period. A value of -12.34% means at some point, the portfolio declined 12.34% from a previous high before recovering.
 
 Drawdown measures worst-case experience:
+
 - Small drawdowns (-5% or less): Low risk
 - Moderate drawdowns (-10% to -20%): Typical for stock strategies
 - Large drawdowns (-30% or more): High risk, may be difficult to tolerate
@@ -170,18 +174,20 @@ Average Loss: -$412.30
 Profit Factor: 1.45
 ```
 
-**Total Trades** counts executed transactions. More trades mean:
+Total Trades counts executed transactions. More trades mean:
+
 - Higher commission costs
 - More market exposure
 - Potentially more reliable statistics (larger sample)
 
-**Win Rate** shows the percentage of profitable trades. This example's 58.33% means 14 out of 24 trades made money.
+Win Rate shows the percentage of profitable trades. This example's 58.33% means 14 out of 24 trades made money.
 
 Win rate alone doesn't determine profitability - a strategy with 30% win rate can be profitable if winning trades are much larger than losing trades.
 
-**Average Win/Loss** shows typical profit and loss per trade. This example makes $825.50 on average when winning but only loses $412.30 on average when losing. The asymmetry contributes to overall profitability.
+Average Win/Loss shows typical profit and loss per trade. This example makes $825.50 on average when winning but only loses $412.30 on average when losing. The asymmetry contributes to overall profitability.
 
-**Profit Factor** is the ratio of gross profits to gross losses. Values above 1.0 indicate profitability:
+Profit Factor is the ratio of gross profits to gross losses. Values above 1.0 indicate profitability:
+
 - 1.0 - 1.5: Modestly profitable
 - 1.5 - 2.0: Good profitability
 - Above 2.0: Strong profitability
@@ -194,19 +200,22 @@ This example's 1.45 means for every dollar lost, the strategy made $1.45 in winn
 
 There's no universal standard, but consider these guidelines:
 
-**Returns:**
+Returns:
+
 - Compare to buy-and-hold benchmark (simply holding the security)
 - Compare to market indices (S&P 500 returns ~10% annually long-term)
 - Consider risk-free rate (treasury bonds at ~4-5% currently)
 
 A strategy returning 8% annually might seem modest, but if it does so with lower volatility than buy-and-hold, it may be valuable.
 
-**Risk Metrics:**
+Risk Metrics:
+
 - Sharpe ratio above 1.0 is generally acceptable
 - Maximum drawdown should be tolerable based on your risk tolerance
 - Drawdown recovery time matters (how long to regain losses)
 
-**Trading Activity:**
+Trading Activity:
+
 - Enough trades for statistical significance (ideally 30+)
 - Win rate between 40-60% is typical (extremes may indicate issues)
 - Profit factor above 1.3 shows meaningful edge
@@ -215,11 +224,11 @@ A strategy returning 8% annually might seem modest, but if it does so with lower
 
 Be skeptical of results showing:
 
-- **Very high returns (50%+ annually)**: Likely overfitted or unrealistic
-- **Very high win rates (80%+)**: May indicate look-ahead bias
-- **Very few trades (<10)**: Insufficient sample size
-- **Perfect equity curve**: Probably a coding error
-- **Returns much higher than buy-and-hold with similar risk**: Unusual, verify carefully
+- Very high returns (50%+ annually): Likely overfitted or unrealistic
+- Very high win rates (80%+): May indicate look-ahead bias
+- Very few trades (<10): Insufficient sample size
+- Perfect equity curve: Probably a coding error
+- Returns much higher than buy-and-hold with similar risk: Unusual, verify carefully
 
 ## Common Backtesting Pitfalls
 
@@ -231,7 +240,8 @@ Overfitting occurs when you optimize a strategy to perform well on historical da
 - Adding rules specifically to avoid historical losses
 - Using very short test periods
 
-**Mitigation:**
+Mitigation:
+
 - Use out-of-sample testing (test on data not used for development)
 - Limit parameter optimization
 - Prefer simple strategies over complex ones
@@ -251,7 +261,8 @@ TzuTrader processes data chronologically to prevent this, but be careful when wr
 
 Testing only stocks that still exist today ignores companies that failed or were delisted. This makes results appear better than they would have been in real-time.
 
-**Mitigation:**
+Mitigation:
+
 - Use datasets that include delisted securities
 - Be aware this bias exists in free data sources
 - Discount backtest results accordingly

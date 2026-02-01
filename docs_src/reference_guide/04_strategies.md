@@ -6,7 +6,7 @@ Strategies in TzuTrader analyze market data and generate trading signals. The fr
 
 A strategy's core responsibility is simple: given market data, decide whether to buy, sell, or stay out. TzuTrader handles everything else—executing trades, managing positions, tracking performance.
 
-**Module:** `tzutrader/strategy.nim`
+Module: `tzutrader/strategy.nim`
 
 ## Strategy Categories
 
@@ -15,30 +15,30 @@ TzuTrader's 16 pre-built strategies are organized into categories. Each category
 ### [Mean Reversion Strategies](04a_strategies_mean_reversion.md) (6 strategies)
 
 Strategies that trade price extremes, assuming reversion to average:
-- **RSI Strategy** - Classic overbought/oversold (documented below)
-- **Bollinger Bands Strategy** - Volatility-adjusted extremes (documented below)
-- **Stochastic Strategy** - Position within recent range
-- **MFI Strategy** - Volume-weighted momentum
-- **CCI Strategy** - Statistical deviation from mean
-- **Filtered Mean Reversion** - RSI with trend filter
+- RSI Strategy - Classic overbought/oversold (documented below)
+- Bollinger Bands Strategy - Volatility-adjusted extremes (documented below)
+- Stochastic Strategy - Position within recent range
+- MFI Strategy - Volume-weighted momentum
+- CCI Strategy - Statistical deviation from mean
+- Filtered Mean Reversion - RSI with trend filter
 
 ### [Trend Following Strategies](04b_strategies_trend.md) (7 strategies)
 
 Strategies that ride sustained directional moves:
-- **Moving Average Crossover** - Golden/death crosses (documented below)
-- **MACD Strategy** - Momentum-based trend detection (documented below)
-- **KAMA Strategy** - Adaptive moving average
-- **Aroon Strategy** - Time-based trend identification
-- **Parabolic SAR** - Trailing stop trend follower
-- **Triple MA Strategy** - Multi-timeframe confirmation
-- **ADX Trend Strategy** - Strength-filtered trends
+- Moving Average Crossover - Golden/death crosses (documented below)
+- MACD Strategy - Momentum-based trend detection (documented below)
+- KAMA Strategy - Adaptive moving average
+- Aroon Strategy - Time-based trend identification
+- Parabolic SAR - Trailing stop trend follower
+- Triple MA Strategy - Multi-timeframe confirmation
+- ADX Trend Strategy - Strength-filtered trends
 
 ### [Hybrid & Volatility Strategies](04c_strategies_hybrid.md) (3 strategies)
 
 Strategies combining multiple confirmations or trading volatility:
-- **Keltner Channel Strategy** - ATR-based (dual mode: breakout/reversion)
-- **Volume Breakout Strategy** - Price + volume confirmation
-- **Dual Momentum Strategy** - ROC + trend filter
+- Keltner Channel Strategy - ATR-based (dual mode: breakout/reversion)
+- Volume Breakout Strategy - Price + volume confirmation
+- Dual Momentum Strategy - ROC + trend filter
 
 This document covers the strategy interface and the original 4 strategies. See the linked category guides for documentation on the additional 12 strategies.
 
@@ -52,7 +52,7 @@ All strategies inherit from the base `Strategy` class and implement the streamin
 method onBar*(s: Strategy, bar: OHLCV): Signal
 ```
 
-**Streaming-only design:**
+Streaming-only design:
 - Strategies process bars one at a time as they arrive
 - Same code works for backtesting and live trading
 - O(1) memory usage - never grows with data size
@@ -67,7 +67,7 @@ type
     symbol*: string
 ```
 
-**Fields:**
+Fields:
 - `name`: Human-readable strategy identifier
 - `symbol`: Target symbol (optional, can trade multiple symbols)
 
@@ -79,21 +79,21 @@ type
 method onBar*(s: Strategy, bar: OHLCV): Signal
 ```
 
-**Purpose:** Process a single bar and generate a trading signal.
+Purpose: Process a single bar and generate a trading signal.
 
-**Parameters:**
+Parameters:
 - `bar`: Single OHLCV bar to process
 
-**Returns:** Signal with position recommendation (Buy, Sell, or Stay)
+Returns: Signal with position recommendation (Buy, Sell, or Stay)
 
-**Use cases:**
+Use cases:
 - Backtesting (process historical data sequentially)
 - Live trading (process real-time data)
 - Strategy development and testing
 
-**State management:** Strategies maintain internal state (indicator values, last signals, etc.) across `onBar()` calls.
+State management: Strategies maintain internal state (indicator values, last signals, etc.) across `onBar()` calls.
 
-**Example:**
+Example:
 
 ```nim
 let strategy = newRSIStrategy()
@@ -112,14 +112,14 @@ for bar in data:
 method reset*(s: Strategy)
 ```
 
-**Purpose:** Clear strategy state for starting fresh.
+Purpose: Clear strategy state for starting fresh.
 
-**When to call:**
+When to call:
 - Before beginning a new streaming session
 - Between backtests using the same strategy instance
 - When switching symbols
 
-**What gets reset:**
+What gets reset:
 - Indicator states
 - Bar history
 - Last signal tracking
@@ -135,19 +135,19 @@ The original four strategies cover the fundamental trading approaches:
 
 Mean reversion strategy using the Relative Strength Index.
 
-**Trading Logic:**
-- **Buy:** RSI falls below oversold threshold
-- **Sell:** RSI rises above overbought threshold
-- **Stay:** RSI between thresholds
+Trading Logic:
+- Buy: RSI falls below oversold threshold
+- Sell: RSI rises above overbought threshold
+- Stay: RSI between thresholds
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newRSIStrategy*(period: int = 14, oversold: float64 = 30.0, 
                      overbought: float64 = 70.0, symbol: string = ""): RSIStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -156,7 +156,7 @@ proc newRSIStrategy*(period: int = 14, oversold: float64 = 30.0,
 | `overbought` | float64 | 70.0 | Sell threshold | 65-80 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -168,22 +168,22 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 The RSI strategy assumes markets oscillate around a mean. When RSI drops below 30 (default), the market is "oversold" and likely to bounce back—time to buy. When RSI exceeds 70, the market is "overbought" and likely to retreat—time to sell.
 
-**Signal Generation:**
+Signal Generation:
 
 Signals are generated only when RSI crosses thresholds. The `lastSignal` field prevents repeated signals at the same threshold. You get one buy signal when entering oversold territory, not continuous buy signals while remaining oversold.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter periods** (9-12): More responsive, more trades, more false signals
-- **Longer periods** (16-21): Smoother, fewer trades, fewer false signals
-- **Tighter thresholds** (25/75): Trade more frequently with smaller moves
-- **Wider thresholds** (20/80): Wait for extreme conditions, trade less
+- Shorter periods (9-12): More responsive, more trades, more false signals
+- Longer periods (16-21): Smoother, fewer trades, fewer false signals
+- Tighter thresholds (25/75): Trade more frequently with smaller moves
+- Wider thresholds (20/80): Wait for extreme conditions, trade less
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -216,19 +216,19 @@ echo "Aggressive: ", reportAggressive.totalTrades, " trades, ",
 
 Trend-following strategy based on two moving averages.
 
-**Trading Logic:**
-- **Buy:** Fast MA crosses above slow MA (golden cross)
-- **Sell:** Fast MA crosses below slow MA (death cross)
-- **Stay:** No crossover
+Trading Logic:
+- Buy: Fast MA crosses above slow MA (golden cross)
+- Sell: Fast MA crosses below slow MA (death cross)
+- Stay: No crossover
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newCrossoverStrategy*(fastPeriod: int = 50, slowPeriod: int = 200,
                            symbol: string = ""): CrossoverStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -236,7 +236,7 @@ proc newCrossoverStrategy*(fastPeriod: int = 50, slowPeriod: int = 200,
 | `slowPeriod` | int | 200 | Slow MA period | 50-300 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -248,26 +248,26 @@ type
     lastFastAbove*: bool
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 The crossover strategy identifies trend changes. When the fast MA (which responds quickly to price) crosses above the slow MA (which changes gradually), it suggests an uptrend is beginning. The opposite crossing suggests a downtrend.
 
-**Classic Combinations:**
+Classic Combinations:
 
-- **50/200 (Golden Cross):** The most famous combination, used by institutions
-- **10/30:** Shorter-term trading, more signals
-- **20/50:** Medium-term trading, balanced
-- **Fast/Slow ratio ~4x:** Provides clear separation
+- 50/200 (Golden Cross): The most famous combination, used by institutions
+- 10/30: Shorter-term trading, more signals
+- 20/50: Medium-term trading, balanced
+- Fast/Slow ratio ~4x: Provides clear separation
 
-**Signal Generation:**
+Signal Generation:
 
 Crossovers are discrete events. You get one buy signal when the cross occurs, not continuous signals while fast remains above slow. The `lastFastAbove` field tracks the relationship state.
 
-**Lag Consideration:**
+Lag Consideration:
 
 Moving averages lag price by design. By the time a crossover occurs, the trend may already be well underway. The strategy sacrifices early entry for confirmation that a trend exists.
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -289,19 +289,19 @@ echo "Win rate: ", report.winRate, "%"
 
 Momentum strategy using Moving Average Convergence Divergence.
 
-**Trading Logic:**
-- **Buy:** MACD line crosses above signal line (bullish crossover)
-- **Sell:** MACD line crosses below signal line (bearish crossover)
-- **Stay:** No crossover
+Trading Logic:
+- Buy: MACD line crosses above signal line (bullish crossover)
+- Sell: MACD line crosses below signal line (bearish crossover)
+- Stay: No crossover
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newMACDStrategy*(fastPeriod: int = 12, slowPeriod: int = 26,
                       signalPeriod: int = 9, symbol: string = ""): MACDStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -310,7 +310,7 @@ proc newMACDStrategy*(fastPeriod: int = 12, slowPeriod: int = 26,
 | `signalPeriod` | int | 9 | Signal line period | 7-12 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -322,23 +322,23 @@ type
     lastMACDAbove*: bool
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 MACD captures momentum shifts by comparing two exponential moving averages. The MACD line (difference between fast and slow EMAs) represents momentum direction and strength. The signal line (EMA of MACD) smooths these movements. Crossovers indicate momentum changes.
 
-**Compared to Crossover Strategy:**
+Compared to Crossover Strategy:
 
 While moving average crossovers directly compare price averages, MACD compares the *difference* between averages to a smoothed version of that difference. This makes MACD more responsive to acceleration and deceleration in price movement.
 
-**Standard Parameters:**
+Standard Parameters:
 
 The 12/26/9 combination was developed for daily stock charts in the 1970s. These parameters remain widely used, but different assets and timeframes may benefit from adjustment.
 
-**Signal Generation:**
+Signal Generation:
 
 Like crossover strategies, MACD generates discrete signals at crossover points. The `lastMACDAbove` field prevents signal repetition.
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -359,19 +359,19 @@ echo report
 
 Mean reversion strategy using Bollinger Bands volatility envelopes.
 
-**Trading Logic:**
-- **Buy:** Price touches or falls below lower band
-- **Sell:** Price touches or exceeds upper band
-- **Stay:** Price within bands
+Trading Logic:
+- Buy: Price touches or falls below lower band
+- Sell: Price touches or exceeds upper band
+- Stay: Price within bands
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newBollingerStrategy*(period: int = 20, stdDev: float64 = 2.0,
                            symbol: string = ""): BollingerStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -379,7 +379,7 @@ proc newBollingerStrategy*(period: int = 20, stdDev: float64 = 2.0,
 | `stdDev` | float64 | 2.0 | Standard deviations for bands | 1.5-2.5 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -389,19 +389,19 @@ type
     lastPosition*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Bollinger Bands create a volatility-adjusted envelope around a moving average. When price reaches the outer bands, it's statistically "far" from the mean and likely to revert. The bands expand during volatile periods and contract during quiet periods, automatically adjusting to market conditions.
 
-**Statistical Interpretation:**
+Statistical Interpretation:
 
 With 2 standard deviations, approximately 95% of price observations should fall within the bands. When price breaches a band, it's an outlier event—the strategy bets on regression to the mean.
 
-**Volatility Adaptation:**
+Volatility Adaptation:
 
 Unlike RSI thresholds (which are fixed numbers), Bollinger Bands adapt to the stock's current volatility. A volatile stock gets wider bands, a stable stock gets narrower bands. This makes the strategy work across different assets without parameter tuning.
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -527,15 +527,15 @@ for bar in data:
 
 ### Custom Strategy Guidelines
 
-**Keep it simple:** Complex strategies with many parameters often overfit historical data and fail in live trading.
+Keep it simple: Complex strategies with many parameters often overfit historical data and fail in live trading.
 
-**Handle NaN values:** Indicators return NaN when insufficient data exists. Check for NaN before making decisions.
+Handle NaN values: Indicators return NaN when insufficient data exists. Check for NaN before making decisions.
 
-**Provide reasons:** The `reason` field helps debug strategy behavior and understand why signals were generated.
+Provide reasons: The `reason` field helps debug strategy behavior and understand why signals were generated.
 
-**Use streaming indicators:** Create indicator instances in your strategy and update them in `onBar()`. Don't reimplement indicator logic.
+Use streaming indicators: Create indicator instances in your strategy and update them in `onBar()`. Don't reimplement indicator logic.
 
-**State management:** Indicators maintain their own state internally. No manual state management needed.
+State management: Indicators maintain their own state internally. No manual state management needed.
 
 ## Signal Objects
 
@@ -553,7 +553,7 @@ type
 
 See [Core Types Reference](01_core.md) for complete Signal specification.
 
-**Signal interpretation:**
+Signal interpretation:
 
 - `Buy`: Enter or add to a long position
 - `Sell`: Exit or reduce a long position (not short selling)
@@ -561,15 +561,15 @@ See [Core Types Reference](01_core.md) for complete Signal specification.
 
 ## Performance Considerations
 
-**Streaming architecture benefits:**
+Streaming architecture benefits:
 
 The streaming-only design provides:
-- **O(1) memory**: Constant memory usage regardless of data size
-- **O(1) updates**: Each bar processed in constant time
-- **Live trading ready**: Same code for backtesting and production
-- **No reprocessing**: State maintained across updates
+- O(1) memory: Constant memory usage regardless of data size
+- O(1) updates: Each bar processed in constant time
+- Live trading ready: Same code for backtesting and production
+- No reprocessing: State maintained across updates
 
-**Memory usage:**
+Memory usage:
 
 Indicators use fixed-size circular buffers. Total memory per strategy is typically < 10KB regardless of how much data is processed.
 
@@ -611,9 +611,9 @@ if lastSignal != Buy and rsiVal < oversold:
 
 ### Strategy Category Guides
 
-- **[Mean Reversion Strategies](04a_strategies_mean_reversion.md)** - Complete reference for RSI, Bollinger, Stochastic, MFI, CCI, and Filtered Mean Reversion strategies
-- **[Trend Following Strategies](04b_strategies_trend.md)** - Complete reference for MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, and ADX Trend strategies
-- **[Hybrid & Volatility Strategies](04c_strategies_hybrid.md)** - Complete reference for Keltner Channel, Volume Breakout, and Dual Momentum strategies
+- [Mean Reversion Strategies](04a_strategies_mean_reversion.md) - Complete reference for RSI, Bollinger, Stochastic, MFI, CCI, and Filtered Mean Reversion strategies
+- [Trend Following Strategies](04b_strategies_trend.md) - Complete reference for MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, and ADX Trend strategies
+- [Hybrid & Volatility Strategies](04c_strategies_hybrid.md) - Complete reference for Keltner Channel, Volume Breakout, and Dual Momentum strategies
 
 ### Other References
 

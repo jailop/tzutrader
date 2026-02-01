@@ -4,9 +4,9 @@
 
 The TzuTrader Declarative System allows you to define trading strategies using YAML configuration files instead of programming. This reference guide provides complete technical specifications for all features.
 
-**Related Guides:**
-- **User Guide**: [Writing Custom Strategies with YAML](../user_guide/04b_custom_strategies_yaml.md) - Tutorial and examples
-- **User Guide**: [Writing Custom Strategies with Nim](../user_guide/04a_custom_strategies_nim.md) - Programming approach
+Related Guides:
+- User Guide: [Writing Custom Strategies with YAML](../user_guide/04b_custom_strategies_yaml.md) - Tutorial and examples
+- User Guide: [Writing Custom Strategies with Nim](../user_guide/04a_custom_strategies_nim.md) - Programming approach
 
 ## System Architecture
 
@@ -102,8 +102,8 @@ position_sizing:
   params:
     period: 20  # Required: number of periods
 ```
-**Output**: Single value (the moving average)
-**Range**: Follows price
+Output: Single value (the moving average)
+Range: Follows price
 
 #### EMA - Exponential Moving Average
 ```yaml
@@ -113,8 +113,8 @@ position_sizing:
     period: 20    # Required: number of periods
     alpha: 2.0    # Optional: smoothing factor (default: 2.0)
 ```
-**Output**: Single value
-**Range**: Follows price
+Output: Single value
+Range: Follows price
 
 #### DEMA - Double Exponential Moving Average
 ```yaml
@@ -123,9 +123,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Follows price
-**Use**: Less lag than EMA
+Output: Single value
+Range: Follows price
+Use: Less lag than EMA
 
 #### TEMA - Triple Exponential Moving Average
 ```yaml
@@ -134,9 +134,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Follows price
-**Use**: Even less lag than DEMA
+Output: Single value
+Range: Follows price
+Use: Even less lag than DEMA
 
 #### TRIMA - Triangular Moving Average
 ```yaml
@@ -145,9 +145,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Follows price
-**Use**: Double-smoothed moving average
+Output: Single value
+Range: Follows price
+Use: Double-smoothed moving average
 
 #### KAMA - Kaufman Adaptive Moving Average
 ```yaml
@@ -158,9 +158,9 @@ position_sizing:
     fastPeriod: 2     # Optional: fast EMA period (default: 2)
     slowPeriod: 30    # Optional: slow EMA period (default: 30)
 ```
-**Output**: Single value
-**Range**: Follows price
-**Use**: Adapts to market volatility
+Output: Single value
+Range: Follows price
+Use: Adapts to market volatility
 
 ### Momentum Oscillators
 
@@ -171,9 +171,9 @@ position_sizing:
   params:
     period: 14  # Required: lookback period
 ```
-**Output**: Single value
-**Range**: 0 to 100
-**Common thresholds**: Oversold < 30, Overbought > 70
+Output: Single value
+Range: 0 to 100
+Common thresholds: Oversold < 30, Overbought > 70
 
 #### Stochastic Oscillator
 ```yaml
@@ -183,12 +183,12 @@ position_sizing:
     kPeriod: 14   # Required: %K period
     dPeriod: 3    # Required: %D period (SMA of %K)
 ```
-**Outputs**:
+Outputs:
 - `stoch_14_3` - %K line
 - `stoch_14_3.d` - %D line
 
-**Range**: 0 to 100
-**Common thresholds**: Oversold < 20, Overbought > 80
+Range: 0 to 100
+Common thresholds: Oversold < 20, Overbought > 80
 
 #### StochRSI - Stochastic RSI
 ```yaml
@@ -200,12 +200,12 @@ position_sizing:
     kPeriod: 3      # Required: %K smoothing
     dPeriod: 3      # Required: %D smoothing
 ```
-**Outputs**:
+Outputs:
 - `stochrsi` - %K line
 - `stochrsi.d` - %D line
 
-**Range**: 0 to 100
-**Use**: More sensitive than regular Stochastic
+Range: 0 to 100
+Use: More sensitive than regular Stochastic
 
 #### CCI - Commodity Channel Index
 ```yaml
@@ -214,9 +214,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Unbounded (typically -200 to +200)
-**Common thresholds**: Oversold < -100, Overbought > +100
+Output: Single value
+Range: Unbounded (typically -200 to +200)
+Common thresholds: Oversold < -100, Overbought > +100
 
 #### MFI - Money Flow Index
 ```yaml
@@ -225,10 +225,10 @@ position_sizing:
   params:
     period: 14  # Required
 ```
-**Output**: Single value
-**Range**: 0 to 100
-**Use**: Volume-weighted RSI
-**Common thresholds**: Oversold < 20, Overbought > 80
+Output: Single value
+Range: 0 to 100
+Use: Volume-weighted RSI
+Common thresholds: Oversold < 20, Overbought > 80
 
 #### CMO - Chande Momentum Oscillator
 ```yaml
@@ -237,9 +237,9 @@ position_sizing:
   params:
     period: 14  # Required
 ```
-**Output**: Single value
-**Range**: -100 to +100
-**Use**: Similar to RSI but unbounded
+Output: Single value
+Range: -100 to +100
+Use: Similar to RSI but unbounded
 
 #### MOM - Momentum
 ```yaml
@@ -248,9 +248,9 @@ position_sizing:
   params:
     period: 10  # Required
 ```
-**Output**: Single value
-**Range**: Unbounded
-**Use**: Rate of price change
+Output: Single value
+Range: Unbounded
+Use: Rate of price change
 
 ### Trend Indicators
 
@@ -263,13 +263,13 @@ position_sizing:
     slow: 26     # Required: slow EMA period
     signal: 9    # Required: signal line period
 ```
-**Outputs**:
+Outputs:
 - `macd_std` - MACD line (fast EMA - slow EMA)
 - `macd_std.signal` - Signal line (EMA of MACD)
 - `macd_std.histogram` - Histogram (MACD - signal)
 
-**Range**: Unbounded
-**Common signals**: Line crossovers, zero crossovers
+Range: Unbounded
+Common signals: Line crossovers, zero crossovers
 
 #### PPO - Percentage Price Oscillator
 ```yaml
@@ -280,13 +280,13 @@ position_sizing:
     slowPeriod: 26      # Required
     signalPeriod: 9     # Required
 ```
-**Outputs**:
+Outputs:
 - `ppo` - PPO line
 - `ppo.signal` - Signal line
 - `ppo.histogram` - Histogram
 
-**Range**: Percentage
-**Use**: MACD in percentage terms
+Range: Percentage
+Use: MACD in percentage terms
 
 #### ADX - Average Directional Index
 ```yaml
@@ -295,10 +295,10 @@ position_sizing:
   params:
     period: 14  # Required
 ```
-**Output**: Single value
-**Range**: 0 to 100
-**Use**: Trend strength (not direction)
-**Common thresholds**: Weak < 25, Strong > 25
+Output: Single value
+Range: 0 to 100
+Use: Trend strength (not direction)
+Common thresholds: Weak < 25, Strong > 25
 
 #### AROON - Aroon Indicator
 ```yaml
@@ -307,12 +307,12 @@ position_sizing:
   params:
     period: 25  # Required
 ```
-**Outputs**:
+Outputs:
 - `aroon_25` - Aroon Up
 - `aroon_25.down` - Aroon Down
 
-**Range**: 0 to 100
-**Use**: Identify trend changes
+Range: 0 to 100
+Use: Identify trend changes
 
 #### PSAR - Parabolic SAR
 ```yaml
@@ -322,9 +322,9 @@ position_sizing:
     acceleration: 0.02  # Optional: acceleration factor (default: 0.02)
     maximum: 0.20       # Optional: maximum acceleration (default: 0.20)
 ```
-**Output**: Single value
-**Range**: Price level
-**Use**: Trailing stop and reverse
+Output: Single value
+Range: Price level
+Use: Trailing stop and reverse
 
 ### Volatility Indicators
 
@@ -336,13 +336,13 @@ position_sizing:
     period: 20        # Required: SMA period
     numStdDev: 2.0    # Required: number of standard deviations
 ```
-**Outputs**:
+Outputs:
 - `bb_20.upper` - Upper band
 - `bb_20.middle` - Middle band (SMA)
 - `bb_20.lower` - Lower band
 
-**Range**: Price levels
-**Use**: Volatility and overbought/oversold
+Range: Price levels
+Use: Volatility and overbought/oversold
 
 #### ATR - Average True Range
 ```yaml
@@ -351,9 +351,9 @@ position_sizing:
   params:
     period: 14  # Required
 ```
-**Output**: Single value
-**Range**: Positive (price units)
-**Use**: Volatility measurement, stop loss placement
+Output: Single value
+Range: Positive (price units)
+Use: Volatility measurement, stop loss placement
 
 #### NATR - Normalized ATR
 ```yaml
@@ -362,9 +362,9 @@ position_sizing:
   params:
     period: 14  # Required
 ```
-**Output**: Single value
-**Range**: Percentage
-**Use**: ATR normalized by price
+Output: Single value
+Range: Percentage
+Use: ATR normalized by price
 
 #### STDEV - Standard Deviation
 ```yaml
@@ -373,9 +373,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Positive
-**Use**: Volatility measurement
+Output: Single value
+Range: Positive
+Use: Volatility measurement
 
 #### TRANGE - True Range
 ```yaml
@@ -383,9 +383,9 @@ position_sizing:
   type: trange
   params: {}  # No parameters
 ```
-**Output**: Single value
-**Range**: Positive
-**Use**: Single-bar volatility
+Output: Single value
+Range: Positive
+Use: Single-bar volatility
 
 #### MV - Variance
 ```yaml
@@ -394,9 +394,9 @@ position_sizing:
   params:
     period: 20  # Required
 ```
-**Output**: Single value
-**Range**: Positive
-**Use**: Statistical variance
+Output: Single value
+Range: Positive
+Use: Statistical variance
 
 ### Volume Indicators
 
@@ -406,9 +406,9 @@ position_sizing:
   type: obv
   params: {}  # No parameters
 ```
-**Output**: Cumulative value
-**Range**: Unbounded (cumulative)
-**Use**: Volume flow confirmation
+Output: Cumulative value
+Range: Unbounded (cumulative)
+Use: Volume flow confirmation
 
 #### AD - Accumulation/Distribution
 ```yaml
@@ -416,9 +416,9 @@ position_sizing:
   type: ad
   params: {}  # No parameters
 ```
-**Output**: Cumulative value
-**Range**: Unbounded (cumulative)
-**Use**: Volume-price relationship
+Output: Cumulative value
+Range: Unbounded (cumulative)
+Use: Volume-price relationship
 
 #### Volume SMA
 ```yaml
@@ -428,9 +428,9 @@ position_sizing:
     period: 20
   source: volume  # Apply to volume instead of price
 ```
-**Output**: Single value
-**Range**: Volume units
-**Use**: Average volume comparison
+Output: Single value
+Range: Volume units
+Use: Average volume comparison
 
 ### Price Data
 
@@ -471,12 +471,12 @@ entry:
 | Crosses above | `crosses_above` | Left crosses above Right | `ema_20 crosses_above ema_50` |
 | Crosses below | `crosses_below` | Left crosses below Right | `ema_20 crosses_below ema_50` |
 
-**Crossover Detection**:
+Crossover Detection:
 - Requires indicator values from current and previous bar
 - `crosses_above`: Previous (Left < Right) AND Current (Left > Right)
 - `crosses_below`: Previous (Left > Right) AND Current (Left < Right)
 
-**Valid crossover operands**: Only use with indicators or price fields, not with literal values.
+Valid crossover operands: Only use with indicators or price fields, not with literal values.
 
 ## Condition Logic
 
@@ -489,15 +489,15 @@ conditions:
   right: indicator_or_value
 ```
 
-**Left side**: Indicator ID, price field (open/high/low/close/volume), or sub-field (e.g., `macd.signal`)
+Left side: Indicator ID, price field (open/high/low/close/volume), or sub-field (e.g., `macd.signal`)
 
-**Operator**: Any comparison operator
+Operator: Any comparison operator
 
-**Right side**: Indicator ID, price field, sub-field, or literal value in quotes (e.g., `"30"`)
+Right side: Indicator ID, price field, sub-field, or literal value in quotes (e.g., `"30"`)
 
 ### Compound Conditions: AND
 
-Use `all:` to require **all** conditions to be true:
+Use `all:` to require all conditions to be true:
 
 ```yaml
 conditions:
@@ -517,7 +517,7 @@ All three conditions must be true for entry/exit.
 
 ### Compound Conditions: OR
 
-Use `any:` to trigger when **any** condition is true:
+Use `any:` to trigger when any condition is true:
 
 ```yaml
 conditions:
@@ -578,9 +578,9 @@ position_sizing:
   size: 100
 ```
 
-**Use case**: Simple strategies, consistent position sizes
+Use case: Simple strategies, consistent position sizes
 
-**Example**: Always buy/sell 100 shares regardless of price or capital
+Example: Always buy/sell 100 shares regardless of price or capital
 
 ### Percentage of Capital
 
@@ -592,14 +592,14 @@ position_sizing:
   percent: 10.0
 ```
 
-**Use case**: Adaptive position sizing, risk management
+Use case: Adaptive position sizing, risk management
 
-**Calculation**: 
+Calculation: 
 ```
 shares = floor(equity * (percent / 100) / price)
 ```
 
-**Example**: With $10,000 equity and 10% sizing:
+Example: With $10,000 equity and 10% sizing:
 - Stock at $50: buy 20 shares ($1,000)
 - Stock at $100: buy 10 shares ($1,000)
 
@@ -862,9 +862,9 @@ range:
   values: [10, 14, 20, 30, 50]
 ```
 
-**Generates**: Exactly 5 test values
+Generates: Exactly 5 test values
 
-**Use case**: Non-linear values, specific candidates
+Use case: Non-linear values, specific candidates
 
 #### Linear Range
 
@@ -878,21 +878,21 @@ range:
   step: 5
 ```
 
-**Generates**: [10, 15, 20, 25, 30] - 5 values
+Generates: [10, 15, 20, 25, 30] - 5 values
 
-**Use case**: Evenly spaced parameter ranges
+Use case: Evenly spaced parameter ranges
 
 ### Combination Count
 
-Total tests = **product of all parameter value counts**
+Total tests = product of all parameter value counts
 
-**Examples**:
-- 1 parameter with 5 values = **5 tests**
-- 2 parameters with 5 values each = **25 tests**
-- 3 parameters with 5 values each = **125 tests**
-- 4 parameters with 4 values each = **256 tests**
+Examples:
+- 1 parameter with 5 values = 5 tests
+- 2 parameters with 5 values each = 25 tests
+- 3 parameters with 5 values each = 125 tests
+- 4 parameters with 4 values each = 256 tests
 
-**Execution time** ≈ combinations × symbols × ~2 seconds per test
+Execution time ≈ combinations × symbols × ~2 seconds per test
 
 ### Example Sweep Configuration
 
@@ -944,7 +944,7 @@ output:
   full_results: "results/all_rsi_params.csv"
 ```
 
-**This configuration tests**: 4 × 5 × 5 = **100 combinations**
+This configuration tests: 4 × 5 × 5 = 100 combinations
 
 ### Running Parameter Sweeps
 
@@ -1011,7 +1011,7 @@ Contains all tested combinations with their results.
       --end=2024-01-01
 ```
 
-**Options**:
+Options:
 - `--strategy=FILE` - Path to YAML strategy file
 - `--symbol=SYMBOL` - Stock symbol to test
 - `--start=DATE` - Start date (YYYY-MM-DD)
@@ -1026,7 +1026,7 @@ Contains all tested combinations with their results.
 ./tzu --batch=path/to/batch_config.yml
 ```
 
-**Options**:
+Options:
 - `--batch=FILE` - Path to batch configuration file
 - `--verbose` - Show detailed progress
 
@@ -1036,7 +1036,7 @@ Contains all tested combinations with their results.
 ./tzu --sweep=path/to/sweep_config.yml
 ```
 
-**Options**:
+Options:
 - `--sweep=FILE` - Path to sweep configuration file
 - `--verbose` - Show detailed progress
 
@@ -1046,13 +1046,13 @@ The declarative system provides detailed error messages with source location inf
 
 ### Validation Errors
 
-**Missing required field**:
+Missing required field:
 ```
 Error: Missing required field 'metadata.name'
   in file: my_strategy.yml
 ```
 
-**Invalid parameter type**:
+Invalid parameter type:
 ```
 Error: Parameter 'period' must be an integer, got string
   in file: my_strategy.yml
@@ -1060,7 +1060,7 @@ Error: Parameter 'period' must be an integer, got string
   indicator: rsi_14
 ```
 
-**Unknown indicator type**:
+Unknown indicator type:
 ```
 Error: Unknown indicator type: 'rsi2'
   in file: my_strategy.yml
@@ -1068,7 +1068,7 @@ Error: Unknown indicator type: 'rsi2'
   Did you mean: 'rsi'?
 ```
 
-**Invalid operator**:
+Invalid operator:
 ```
 Error: Unknown comparison operator: '>=='
   in file: my_strategy.yml
@@ -1078,7 +1078,7 @@ Error: Unknown comparison operator: '>=='
 
 ### Runtime Errors
 
-**Indicator not found**:
+Indicator not found:
 ```
 Error: Indicator 'rsi_20' not defined
   in file: my_strategy.yml
@@ -1086,7 +1086,7 @@ Error: Indicator 'rsi_20' not defined
   Available indicators: rsi_14, sma_50, macd_std
 ```
 
-**Invalid condition reference**:
+Invalid condition reference:
 ```
 Error: Cannot resolve reference 'macd.invalid'
   in file: my_strategy.yml
@@ -1094,7 +1094,7 @@ Error: Cannot resolve reference 'macd.invalid'
   Valid outputs for macd: (no suffix), .signal, .histogram
 ```
 
-**Crossover with literal**:
+Crossover with literal:
 ```
 Error: Operator 'crosses_above' requires indicator on both sides
   in file: my_strategy.yml
@@ -1107,81 +1107,81 @@ Error: Operator 'crosses_above' requires indicator on both sides
 
 ### Strategy Design
 
-1. **Start simple**: Begin with 1-2 indicators and simple conditions
-2. **Test incrementally**: Add complexity gradually
-3. **Use descriptive IDs**: `rsi_14` not `ind1`
-4. **Document metadata**: Include clear name and description
+1. Start simple: Begin with 1-2 indicators and simple conditions
+2. Test incrementally: Add complexity gradually
+3. Use descriptive IDs: `rsi_14` not `ind1`
+4. Document metadata: Include clear name and description
 
 ### Parameter Selection
 
-1. **Reasonable ranges**: RSI 10-30, not 1-1000
-2. **Standard values first**: RSI 14, MA 20/50/200
-3. **Avoid extreme thresholds**: RSI < 5 rarely triggers
-4. **Consider market context**: Different values for different regimes
+1. Reasonable ranges: RSI 10-30, not 1-1000
+2. Standard values first: RSI 14, MA 20/50/200
+3. Avoid extreme thresholds: RSI < 5 rarely triggers
+4. Consider market context: Different values for different regimes
 
 ### Testing Strategy
 
-1. **Multiple timeframes**: Test 6-month, 1-year, 2-year periods
-2. **Multiple symbols**: Test on 3-5 stocks from different sectors
-3. **Out-of-sample validation**: Optimize on one period, test on another
-4. **Walk-forward testing**: Rolling optimization and validation
+1. Multiple timeframes: Test 6-month, 1-year, 2-year periods
+2. Multiple symbols: Test on 3-5 stocks from different sectors
+3. Out-of-sample validation: Optimize on one period, test on another
+4. Walk-forward testing: Rolling optimization and validation
 
 ### Batch Testing
 
-1. **Use overrides**: Test parameter variations without file duplication
-2. **Compare fairly**: Same data period and portfolio settings
-3. **Look at multiple metrics**: Return, Sharpe, drawdown, win rate
-4. **Export results**: Keep CSV files for later analysis
+1. Use overrides: Test parameter variations without file duplication
+2. Compare fairly: Same data period and portfolio settings
+3. Look at multiple metrics: Return, Sharpe, drawdown, win rate
+4. Export results: Keep CSV files for later analysis
 
 ### Parameter Optimization
 
-1. **Coarse then fine**: Start with wide ranges, narrow down
-2. **Limit combinations**: Keep under 500 for reasonable execution time
-3. **Watch for overfitting**: Too many parameters = curve fitting
-4. **Validate winners**: Test optimized parameters on fresh data
-5. **Multiple symbols**: If it works on AAPL, MSFT, and GOOGL, it's more robust
+1. Coarse then fine: Start with wide ranges, narrow down
+2. Limit combinations: Keep under 500 for reasonable execution time
+3. Watch for overfitting: Too many parameters = curve fitting
+4. Validate winners: Test optimized parameters on fresh data
+5. Multiple symbols: If it works on AAPL, MSFT, and GOOGL, it's more robust
 
 ### Avoiding Overfitting
 
-1. **Fewer parameters**: 2-3 parameters maximum
-2. **Reasonable ranges**: Don't test nonsensical values
-3. **Multiple markets**: Optimize and validate on different symbols
-4. **Simple strategies**: Complex ≠ better
-5. **Realistic expectations**: 100% return with 0% drawdown = overfit
+1. Fewer parameters: 2-3 parameters maximum
+2. Reasonable ranges: Don't test nonsensical values
+3. Multiple markets: Optimize and validate on different symbols
+4. Simple strategies: Complex ≠ better
+5. Realistic expectations: 100% return with 0% drawdown = overfit
 
 ## Performance Considerations
 
 ### Execution Speed
 
-- **Single backtest**: ~2 seconds for 1 year of daily data
-- **Batch test (10 variants × 3 symbols)**: ~60 seconds
-- **Parameter sweep (100 combinations)**: ~3.5 minutes
+- Single backtest: ~2 seconds for 1 year of daily data
+- Batch test (10 variants × 3 symbols): ~60 seconds
+- Parameter sweep (100 combinations): ~3.5 minutes
 
 ### Memory Usage
 
-- **Single strategy**: < 10 MB
-- **Batch test (50 combinations)**: < 50 MB
-- **Large sweep (1000 combinations)**: < 100 MB
+- Single strategy: < 10 MB
+- Batch test (50 combinations): < 50 MB
+- Large sweep (1000 combinations): < 100 MB
 
 ### Optimization Tips
 
-1. **Use list ranges for non-linear values**: More targeted than linear
-2. **Reduce date range for initial testing**: 6 months instead of 5 years
-3. **Start with coarse sweep**: Find promising region quickly
-4. **Use multiple sweep stages**: Coarse → fine-grained
-5. **Test one symbol first**: Validate before expanding to multiple symbols
+1. Use list ranges for non-linear values: More targeted than linear
+2. Reduce date range for initial testing: 6 months instead of 5 years
+3. Start with coarse sweep: Find promising region quickly
+4. Use multiple sweep stages: Coarse → fine-grained
+5. Test one symbol first: Validate before expanding to multiple symbols
 
 ## Troubleshooting
 
 ### No Trades Generated
 
-**Causes**:
+Causes:
 - Conditions too restrictive (too many `all:` conditions)
 - Thresholds too extreme (RSI < 10)
 - Insufficient data history (indicators need warmup period)
 - Indicator never crosses threshold
 
-**Solutions**:
+Solutions:
 - Simplify conditions (remove some from `all:`)
 - Widen thresholds (RSI < 35 instead of < 25)
 - Use longer date range (1+ years)
@@ -1189,25 +1189,25 @@ Error: Operator 'crosses_above' requires indicator on both sides
 
 ### Too Many Trades
 
-**Causes**:
+Causes:
 - Conditions too loose
 - No trend filter in choppy market
 - Thresholds too wide
 
-**Solutions**:
+Solutions:
 - Add more filters (use `all:` with multiple conditions)
 - Add trend filter (e.g., only trade when above 200-day SMA)
 - Narrow thresholds
 
 ### Poor Performance
 
-**Causes**:
+Causes:
 - Strategy not suited for symbol or timeframe
 - Overfitting to specific market condition
 - Parameters need optimization
 - Missing risk management
 
-**Solutions**:
+Solutions:
 - Test on multiple symbols and timeframes
 - Simplify strategy
 - Use parameter sweep to find better settings
@@ -1215,12 +1215,12 @@ Error: Operator 'crosses_above' requires indicator on both sides
 
 ### Sweep Takes Too Long
 
-**Causes**:
+Causes:
 - Too many parameter combinations
 - Long date range
 - Multiple symbols
 
-**Solutions**:
+Solutions:
 - Reduce parameter ranges (coarse sweep first)
 - Use shorter date range for initial testing
 - Start with single symbol
@@ -1246,13 +1246,13 @@ parameters:
       values: [10, 14, 20]
 ```
 
-This tests 3 periods × 3 symbols = **9 combinations**
+This tests 3 periods × 3 symbols = 9 combinations
 
 Results show which parameters work well across all symbols.
 
 ### Two-Stage Optimization
 
-**Stage 1: Coarse Search**
+Stage 1: Coarse Search
 ```yaml
 parameters:
   - path: "indicators.rsi_14.period"
@@ -1263,7 +1263,7 @@ parameters:
 
 Finds promising region (e.g., period 20 works best).
 
-**Stage 2: Fine Search**
+Stage 2: Fine Search
 ```yaml
 parameters:
   - path: "indicators.rsi_14.period"
@@ -1289,20 +1289,20 @@ This shows whether optimization helps and which strategy is fundamentally better
 
 Planned features for the declarative system:
 
-1. **Risk Management** (Phase 3)
+1. Risk Management (Phase 3)
    - Stop loss configuration
    - Take profit targets
    - Position sizing based on ATR
 
-2. **Custom Expressions** (Phase 3)
+2. Custom Expressions (Phase 3)
    - Define custom indicators with formulas
    - `formula: "(rsi_14 + rsi_21) / 2"`
 
-3. **Walk-Forward Testing** (Phase 5)
+3. Walk-Forward Testing (Phase 5)
    - Automated rolling optimization
    - Out-of-sample validation
 
-4. **HTML Reports** (Phase 5)
+4. HTML Reports (Phase 5)
    - Interactive visualizations
    - Equity curves
    - Trade analysis
@@ -1319,13 +1319,13 @@ Planned features for the declarative system:
 
 The TzuTrader Declarative System provides:
 
-- ✅ 30+ built-in technical indicators
-- ✅ Flexible condition logic (AND/OR/NOT)
-- ✅ Two position sizing methods
-- ✅ Comprehensive validation with clear errors
-- ✅ Batch testing for strategy comparison
-- ✅ Parameter sweep for optimization
-- ✅ CSV export for analysis
-- ✅ Zero programming required
+- 30+ built-in technical indicators
+- Flexible condition logic (AND/OR/NOT)
+- Two position sizing methods
+- Comprehensive validation with clear errors
+- Batch testing for strategy comparison
+- Parameter sweep for optimization
+- CSV export for analysis
+- Zero programming required
 
 Whether you're a trader testing ideas or a developer prototyping strategies, the declarative system provides a powerful, flexible, and user-friendly interface.

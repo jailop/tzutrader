@@ -2,33 +2,63 @@
 
 ## What Makes a Trading Strategy
 
-A trading strategy is a set of rules that determine when to buy, sell, or hold a security. These rules are based on market conditions, technical indicators, price patterns, or other factors.
+A trading strategy is a set of rules that determine when to buy, sell,
+or hold a security. These rules are based on market conditions,
+technical indicators, price patterns, or other factors.
 
-A complete trading strategy specifies when to open a position, when to close it, how much capital to allocate, and when to cut losses. In TzuTrader, strategies analyze market data and generate signals indicating whether to Buy, Sell, or Stay (do nothing). The backtesting engine then executes trades based on these signals.
+A complete trading strategy specifies when to open a position, when to
+close it, how much capital to allocate, and when to cut losses. In
+TzuTrader, strategies analyze market data and generate signals
+indicating whether to Buy, Sell, or Stay (do nothing). The backtesting
+engine then executes trades based on these signals.
 
 ## Three Approaches to Working with Strategies
 
-TzuTrader offers three ways to work with trading strategies, each suited to different needs and skill levels.
+TzuTrader offers three ways to work with trading strategies, each suited
+to different needs and skill levels.
 
-The simplest approach is to use the pre-built strategies that come with TzuTrader. These sixteen strategies demonstrate various trading approaches and serve as learning examples. They show you how different strategies work, provide reference implementations for common trading patterns, and offer starting points for developing your own ideas. However, these are educational examples rather than production-ready systems. Think of them as textbook examples that help you learn and experiment.
+The simplest approach is to use the pre-built strategies that come with
+TzuTrader. These sixteen strategies demonstrate various trading
+approaches and serve as learning examples. They show you how different
+strategies work, provide reference implementations for common trading
+patterns, and offer starting points for developing your own ideas.
+However, these are educational examples rather than production-ready
+systems. Think of them as textbook examples that help you learn and
+experiment.
 
-If you want to create your own strategies without programming, YAML strategies provide an excellent middle ground. You define strategies in human-readable configuration files, access over thirty technical indicators, and leverage powerful features like batch testing and automated parameter optimization. For most retail traders who want to backtest their own ideas, this is the most practical approach. The YAML system handles all the complexity while letting you focus on your trading logic.
+If you want to create your own strategies without programming, YAML
+strategies provide an excellent middle ground. You define strategies in
+human-readable configuration files, access over thirty technical
+indicators, and leverage powerful features like batch testing and
+automated parameter optimization. For most retail traders who want to
+backtest their own ideas, this is the most practical approach. The YAML
+system handles all the complexity while letting you focus on your
+trading logic.
 
-When you need maximum flexibility and control, writing strategies in Nim gives you access to all language features and optimal performance. This approach is best suited for complex strategies requiring custom logic, sophisticated state management, or when building production trading bots. Most traders won't need this level of control, but it's available when your requirements outgrow what YAML can express.
+When you need maximum flexibility and control, writing strategies in Nim
+gives you access to all language features and optimal performance. This
+approach is best suited for complex strategies requiring custom logic,
+sophisticated state management, or when building production trading
+bots. Most traders won't need this level of control, but it's available
+when your requirements outgrow what YAML can express.
 
-This guide focuses on the pre-built strategies, explaining how each one works and when you might want to use it. If you're ready to create your own strategies, see the guides on writing custom strategies with YAML or Nim.
+This guide focuses on the pre-built strategies, explaining how each one
+works and when you might want to use it. If you're ready to create your
+own strategies, see the guides on writing custom strategies with YAML or
+Nim.
 
 ## Strategy Signals
 
 A signal is a trading recommendation produced by a strategy. It contains:
 
-- **Position**: Buy, Sell, or Stay
-- **Symbol**: Which security to trade
-- **Price**: Current market price
-- **Timestamp**: When the signal was generated
-- **Reason**: Why the signal was generated (for analysis)
+- Position: Buy, Sell, or Stay
+- Symbol: Which security to trade
+- Price: Current market price
+- Timestamp: When the signal was generated
+- Reason: Why the signal was generated (for analysis)
 
 Example:
+
 ```
 Signal(Buy AAPL @$150.25 at 2024-01-15 - RSI oversold: 28.5 < 30.0)
 ```
@@ -37,7 +67,8 @@ Signal(Buy AAPL @$150.25 at 2024-01-15 - RSI oversold: 28.5 < 30.0)
 
 TzuTrader includes 16 pre-built strategies covering all major trading approaches:
 
-**Mean Reversion Strategies (6):**
+Mean Reversion Strategies (6):
+
 - RSI Strategy - Classic overbought/oversold
 - Bollinger Bands Strategy - Volatility-based mean reversion
 - Stochastic Strategy - Momentum oscillator crossovers
@@ -45,7 +76,8 @@ TzuTrader includes 16 pre-built strategies covering all major trading approaches
 - CCI Strategy - Statistical deviation from mean
 - Filtered Mean Reversion - RSI with trend filter
 
-**Trend Following Strategies (7):**
+Trend Following Strategies (7):
+
 - Moving Average Crossover - Golden/death crosses
 - MACD Strategy - Momentum-based trend detection
 - KAMA Strategy - Adaptive moving average
@@ -54,10 +86,12 @@ TzuTrader includes 16 pre-built strategies covering all major trading approaches
 - Triple MA Strategy - Multi-timeframe confirmation
 - ADX Trend Strategy - Strength-filtered trends
 
-**Volatility Strategies (1):**
+Volatility Strategies (1):
+
 - Keltner Channel Strategy - ATR-based breakout/reversion
 
-**Hybrid Strategies (2):**
+Hybrid Strategies (2):
+
 - Volume Breakout Strategy - Price + volume confirmation
 - Dual Momentum Strategy - ROC + trend filter
 
@@ -79,22 +113,26 @@ let strategy = newRSIStrategy(
 )
 ```
 
-**Trading logic:**
-- **Buy signal**: RSI drops below the oversold threshold (default 30)
-- **Sell signal**: RSI rises above the overbought threshold (default 70)
-- **Stay**: RSI is between thresholds
+Trading logic:
 
-**When to use:**
+- Buy signal: RSI drops below the oversold threshold (default 30)
+- Sell signal: RSI rises above the overbought threshold (default 70)
+- Stay: RSI is between thresholds
+
+When to use:
+
 - Range-bound markets (price oscillates without clear trend)
 - Mean reversion opportunities (price tends to return to average)
 - Shorter timeframes (minutes to days)
 
-**Characteristics:**
+Characteristics:
+
 - Generates frequent signals in volatile markets
 - Can underperform in strong trends (price stays overbought/oversold)
 - Simple to understand and implement
 
-**Example:**
+Example:
+
 ```nim
 let data = readCSV("data/AAPL.csv")
 let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
@@ -113,27 +151,32 @@ let strategy = newCrossoverStrategy(
 )
 ```
 
-**Trading logic:**
-- **Buy signal**: Fast MA crosses above slow MA (golden cross)
-- **Sell signal**: Fast MA crosses below slow MA (death cross)
-- **Stay**: No crossover occurred
+Trading logic:
 
-**When to use:**
+- Buy signal: Fast MA crosses above slow MA (golden cross)
+- Sell signal: Fast MA crosses below slow MA (death cross)
+- Stay: No crossover occurred
+
+When to use:
+
 - Trending markets (price moves in one direction for extended periods)
 - Longer timeframes (days to weeks)
 - Following major trends
 
-**Characteristics:**
+Characteristics:
+
 - Generates infrequent signals (only at crossovers)
 - Lags price movements (MAs use historical data)
 - Works well in strong trends, poorly in choppy markets
 
-**Common period combinations:**
-- **50/200**: Classic long-term crossover
-- **10/30**: Medium-term trading
-- **5/20**: Short-term trading
+Common period combinations:
 
-**Example:**
+- 50/200: Classic long-term crossover
+- 10/30: Medium-term trading
+- 5/20: Short-term trading
+
+Example:
+
 ```nim
 let strategy = newCrossoverStrategy(fastPeriod = 50, slowPeriod = 200)
 let report = quickBacktest("AAPL", strategy, data, 100000.0, 0.001)
@@ -151,22 +194,26 @@ let strategy = newMACDStrategy(
 )
 ```
 
-**Trading logic:**
-- **Buy signal**: MACD line crosses above signal line (bullish crossover)
-- **Sell signal**: MACD line crosses below signal line (bearish crossover)
-- **Stay**: No crossover occurred
+Trading logic:
 
-**When to use:**
+- Buy signal: MACD line crosses above signal line (bullish crossover)
+- Sell signal: MACD line crosses below signal line (bearish crossover)
+- Stay: No crossover occurred
+
+When to use:
+
 - Detecting momentum shifts
 - Confirming trend changes
 - Medium timeframes (hours to days)
 
-**Characteristics:**
+Characteristics:
+
 - More responsive than simple MA crossover
 - Combines trend and momentum information
 - Standard parameters (12/26/9) work across many markets
 
-**Example:**
+Example:
+
 ```nim
 let strategy = newMACDStrategy(fastPeriod = 12, slowPeriod = 26, signalPeriod = 9)
 let report = quickBacktest("AAPL", strategy, data, 100000.0, 0.001)
@@ -183,22 +230,26 @@ let strategy = newBollingerStrategy(
 )
 ```
 
-**Trading logic:**
-- **Buy signal**: Price touches or drops below lower band
-- **Sell signal**: Price touches or rises above upper band
-- **Stay**: Price is within bands
+Trading logic:
 
-**When to use:**
+- Buy signal: Price touches or drops below lower band
+- Sell signal: Price touches or rises above upper band
+- Stay: Price is within bands
+
+When to use:
+
 - Range-bound markets
 - Identifying extremes
 - Mean reversion opportunities
 
-**Characteristics:**
+Characteristics:
+
 - Adapts to volatility automatically (bands widen in volatile markets)
 - Works best in ranging markets
 - Can generate false signals during breakouts
 
-**Example:**
+Example:
+
 ```nim
 let strategy = newBollingerStrategy(period = 20, stdDev = 2.0)
 let report = quickBacktest("AAPL", strategy, data, 100000.0, 0.001)
@@ -208,28 +259,29 @@ let report = quickBacktest("AAPL", strategy, data, 100000.0, 0.001)
 
 TzuTrader provides 12 additional strategies beyond the original four. Here's a quick overview:
 
-**Mean Reversion Strategies:**
+Mean Reversion Strategies:
 
-- **Stochastic Strategy** - Uses %K/%D crossovers in overbought/oversold zones. More sensitive than RSI for short-term trading.
-- **MFI Strategy** - Volume-weighted RSI. Best for liquid markets where volume confirms price action.
-- **CCI Strategy** - Statistical deviation-based. Originally designed for commodities, works well for cyclical patterns.
-- **Filtered Mean Reversion** - RSI with trend filter. Only buys dips in uptrends, sells rallies in downtrends.
+- Stochastic Strategy - Uses %K/%D crossovers in overbought/oversold zones. More sensitive than RSI for short-term trading.
+- MFI Strategy - Volume-weighted RSI. Best for liquid markets where volume confirms price action.
+- CCI Strategy - Statistical deviation-based. Originally designed for commodities, works well for cyclical patterns.
+- Filtered Mean Reversion - RSI with trend filter. Only buys dips in uptrends, sells rallies in downtrends.
 
-**Trend Following Strategies:**
+Trend Following Strategies:
 
-- **Aroon Strategy** - Time-based trend detection. Catches trend starts early by measuring time since highs/lows.
-- **KAMA Strategy** - Adaptive moving average. Automatically adjusts to market conditions - fast in trends, slow in ranges.
-- **Parabolic SAR** - Provides both signals and trailing stops. Always in the market, accelerates as trends mature.
-- **Triple MA Strategy** - Requires alignment of three MAs. Fewer but higher-quality signals for position trading.
-- **ADX Trend Strategy** - Filters trades by trend strength. Only trades when ADX shows strong trending conditions.
+- Aroon Strategy - Time-based trend detection. Catches trend starts early by measuring time since highs/lows.
+- KAMA Strategy - Adaptive moving average. Automatically adjusts to market conditions - fast in trends, slow in ranges.
+- Parabolic SAR - Provides both signals and trailing stops. Always in the market, accelerates as trends mature.
+- Triple MA Strategy - Requires alignment of three MAs. Fewer but higher-quality signals for position trading.
+- ADX Trend Strategy - Filters trades by trend strength. Only trades when ADX shows strong trending conditions.
 
-**Hybrid/Volatility Strategies:**
+Hybrid/Volatility Strategies:
 
-- **Keltner Channel** - ATR-based bands with dual modes. Trade breakouts in low volatility or reversions in high volatility.
-- **Volume Breakout** - Requires price breakout AND volume confirmation. Reduces false breakout signals significantly.
-- **Dual Momentum** - Combines ROC momentum with MA trend filter. Only trades momentum moves aligned with the trend.
+- Keltner Channel - ATR-based bands with dual modes. Trade breakouts in low volatility or reversions in high volatility.
+- Volume Breakout - Requires price breakout AND volume confirmation. Reduces false breakout signals significantly.
+- Dual Momentum - Combines ROC momentum with MA trend filter. Only trades momentum moves aligned with the trend.
 
 For complete documentation including parameters, examples, and detailed trading logic, see:
+
 - [Mean Reversion Strategies Reference](../reference_guide/04a_strategies_mean_reversion.md)
 - [Trend Following Strategies Reference](../reference_guide/04b_strategies_trend.md)
 - [Hybrid Strategies Reference](../reference_guide/04c_strategies_hybrid.md)
@@ -239,48 +291,56 @@ For complete documentation including parameters, examples, and detailed trading 
 Different market conditions favor different strategies:
 
 ### Trending Markets
-- **Best**: Moving Average Crossover, MACD, Triple MA, ADX Trend, Parabolic SAR, KAMA
-- **Why**: These strategies ride trends and filter out noise
-- **Consider**: ADX Trend filters weak trends; Triple MA requires strong alignment
-- **Avoid**: RSI, Bollinger Bands, CCI, Stochastic (give premature exit signals)
+
+- Best: Moving Average Crossover, MACD, Triple MA, ADX Trend, Parabolic SAR, KAMA
+- Why: These strategies ride trends and filter out noise
+- Consider: ADX Trend filters weak trends; Triple MA requires strong alignment
+- Avoid: RSI, Bollinger Bands, CCI, Stochastic (give premature exit signals)
 
 ### Range-Bound Markets
-- **Best**: RSI, Bollinger Bands, Stochastic, MFI, CCI, Keltner (reversion mode)
-- **Why**: These strategies profit from price oscillations
-- **Consider**: MFI adds volume confirmation; Stochastic catches short-term swings
-- **Avoid**: Moving Average Crossover, MACD, Aroon (generate false signals)
+
+- Best: RSI, Bollinger Bands, Stochastic, MFI, CCI, Keltner (reversion mode)
+- Why: These strategies profit from price oscillations
+- Consider: MFI adds volume confirmation; Stochastic catches short-term swings
+- Avoid: Moving Average Crossover, MACD, Aroon (generate false signals)
 
 ### High Volatility
-- **Best**: Bollinger Bands, Keltner Channel, Parabolic SAR
-- **Why**: These adapt to volatility automatically
-- **Consider**: Wider bands/stops in volatile conditions
-- **Considerations**: Wider stops, smaller positions
+
+- Best: Bollinger Bands, Keltner Channel, Parabolic SAR
+- Why: These adapt to volatility automatically
+- Consider: Wider bands/stops in volatile conditions
+- Considerations: Wider stops, smaller positions
 
 ### Low Volatility
-- **Best**: Volume Breakout, Keltner (breakout mode), Aroon
-- **Why**: Low volatility often precedes significant moves
-- **Consider**: Volume Breakout waits for volume confirmation
-- **Considerations**: May need patience for signals
+
+- Best: Volume Breakout, Keltner (breakout mode), Aroon
+- Why: Low volatility often precedes significant moves
+- Consider: Volume Breakout waits for volume confirmation
+- Considerations: May need patience for signals
 
 ### Mixed/Uncertain Conditions
-- **Best**: KAMA, Filtered Mean Reversion, Dual Momentum, ADX Trend
-- **Why**: These adapt to conditions or use multiple filters
-- **Consider**: KAMA adjusts automatically; ADX only trades strong trends
-- **Avoid**: Single-indicator strategies without filters
+
+- Best: KAMA, Filtered Mean Reversion, Dual Momentum, ADX Trend
+- Why: These adapt to conditions or use multiple filters
+- Consider: KAMA adjusts automatically; ADX only trades strong trends
+- Avoid: Single-indicator strategies without filters
 
 ### By Trading Style
 
-**Day Trading (Short Timeframes):**
+Day Trading (Short Timeframes):
+
 - Stochastic, MFI, CCI (fast oscillators)
 - Volume Breakout (intraday momentum)
 - Keltner Channel breakout mode
 
-**Swing Trading (Medium Timeframes):**
+Swing Trading (Medium Timeframes):
+
 - RSI, MACD, Bollinger Bands
 - Dual Momentum, Filtered Mean Reversion
 - Aroon, KAMA
 
-**Position Trading (Long Timeframes):**
+Position Trading (Long Timeframes):
+
 - Moving Average Crossover (50/200)
 - Triple MA Strategy
 - ADX Trend, Parabolic SAR
@@ -334,7 +394,8 @@ method onBar*(s: MyCustomStrategy, bar: OHLCV): Signal =
   )
 ```
 
-**Key points:**
+Key points:
+
 - Store strategy parameters and indicators in the type definition
 - Implement `onBar()` to process each bar
 - Update indicators inside `onBar()` as data arrives
@@ -401,6 +462,7 @@ This strategy only generates signals when both short-term and long-term RSI agre
 ### Start Simple
 
 Begin with straightforward logic. Add complexity only if it clearly improves results. Simple strategies are:
+
 - Easier to understand
 - Less likely to overfit
 - More robust across different markets
@@ -422,6 +484,7 @@ Good reasons help you understand why the strategy made decisions and identify is
 ### Test Incrementally
 
 Don't write a complete complex strategy and then test it. Instead:
+
 1. Start with basic logic
 2. Backtest and verify it works
 3. Add one feature
@@ -448,27 +511,44 @@ Only use information available at the time of the decision. For example, don't u
 
 ## Next Steps
 
-Now that you understand how pre-built strategies work, you have several paths forward.
+Now that you understand how pre-built strategies work, you have several
+paths forward.
 
-If you're ready to create your own strategies, you have two options. The YAML approach lets you define strategies in configuration files without programming, access over thirty technical indicators, and use automated parameter optimization. This is the recommended approach for most retail traders. See the guide on Writing Custom Strategies with YAML to get started.
+If you're ready to create your own strategies, you have two options. The
+YAML approach lets you define strategies in configuration files without
+programming, access over thirty technical indicators, and use automated
+parameter optimization. This is the recommended approach for most retail
+traders. See the guide on Writing Custom Strategies with YAML to get
+started.
 
-For strategies that require complex custom logic, sophisticated state management, or maximum performance, you can write strategies directly in Nim. This gives you complete control and access to all language features. See the guide on Writing Custom Strategies with Nim when you need this level of flexibility.
+For strategies that require complex custom logic, sophisticated state
+management, or maximum performance, you can write strategies directly in
+Nim. This gives you complete control and access to all language
+features. See the guide on Writing Custom Strategies with Nim when you
+need this level of flexibility.
 
-The next chapter covers portfolio management and how strategies interact with capital allocation, position sizing, and performance tracking.
+The next chapter covers portfolio management and how strategies interact
+with capital allocation, position sizing, and performance tracking.
 
 ## Key Takeaways
 
 - A trading strategy defines rules for when to buy, sell, or hold
 - TzuTrader includes 16 pre-built strategies across 4 categories:
-  - **6 Mean Reversion strategies**: RSI, Bollinger, Stochastic, MFI, CCI, Filtered Mean Reversion
-  - **7 Trend Following strategies**: MA Crossover, MACD, KAMA, Aroon, Parabolic SAR, Triple MA, ADX Trend
-  - **1 Volatility strategy**: Keltner Channel (dual mode)
-  - **2 Hybrid strategies**: Volume Breakout, Dual Momentum
+  - 6 Mean Reversion strategies: RSI, Bollinger, Stochastic, MFI,
+    CCI, Filtered Mean Reversion
+  - 7 Trend Following strategies: MA Crossover, MACD, KAMA, Aroon,
+    Parabolic SAR, Triple MA, ADX Trend
+  - 1 Volatility strategy: Keltner Channel (dual mode)
+  - 2 Hybrid strategies: Volume Breakout, Dual Momentum
 - Choose strategies that match market conditions and your trading style
-- Trending markets favor trend-following; ranging markets favor mean reversion
-- Strategies with filters (ADX Trend, Dual Momentum, Filtered Mean Reversion) reduce false signals
-- TzuTrader uses streaming architecture - same code for backtesting and live trading
-- Create custom strategies by inheriting from the Strategy base class and implementing `onBar()`
+- Trending markets favor trend-following; ranging markets favor mean
+  reversion
+- Strategies with filters (ADX Trend, Dual Momentum, Filtered Mean
+  Reversion) reduce false signals
+- TzuTrader uses streaming architecture - same code for backtesting and
+  live trading
+- Create custom strategies by inheriting from the Strategy base class
+  and implementing `onBar()`
 - Start simple and add complexity only when justified
 - Test incrementally and handle edge cases properly
 - Avoid look-ahead bias in your trading logic

@@ -2,9 +2,13 @@
 
 ## What is Portfolio Management?
 
-Portfolio management involves tracking capital, positions, and trades. A portfolio starts with initial cash and changes as trades are executed - cash decreases when buying, positions are opened, and both adjust when selling.
+Portfolio management involves tracking capital, positions, and trades. A
+portfolio starts with initial cash and changes as trades are executed -
+cash decreases when buying, positions are opened, and both adjust when
+selling.
 
 Effective portfolio management includes:
+
 - Tracking available cash and open positions
 - Calculating profit and loss (realized and unrealized)
 - Managing commission costs
@@ -27,7 +31,8 @@ let portfolio = newPortfolio(
 )
 ```
 
-**Parameters:**
+Parameters:
+
 - `initialCash`: Starting capital (default $100,000)
 - `commission`: Commission rate as decimal (0.001 = 0.1%)
 - `minCommission`: Minimum commission per trade (default $0)
@@ -65,7 +70,8 @@ let portfolio = newPortfolio(
 # Large trade: $50,000 * 0.001 = $50.00, charged $50.00 (above minimum)
 ```
 
-**Impact on strategy:**
+Impact on strategy:
+
 - High-frequency strategies pay more commission
 - Small position sizes become economically unviable with high commissions
 - Always use realistic commission assumptions in backtests
@@ -96,12 +102,14 @@ else:
 ```
 
 The `buy()` method:
+
 - Returns `true` if successful, `false` if insufficient cash
 - Deducts cost plus commission from cash
 - Creates or increases position
 - Records transaction in history
 
-**Cost calculation:**
+Cost calculation:
+
 ```
 Total cost = (quantity × price) + commission
 Commission = max(quantity × price × commission_rate, min_commission)
@@ -127,12 +135,14 @@ else:
 ```
 
 The `sell()` method:
+
 - Returns `true` if successful, `false` if insufficient shares
 - Adds proceeds minus commission to cash
 - Reduces or closes position
 - Records transaction and realized P&L
 
-**Proceeds calculation:**
+Proceeds calculation:
+
 ```
 Proceeds = (quantity × price) - commission
 ```
@@ -165,7 +175,8 @@ if portfolio.hasPosition("AAPL"):
   echo "Unrealized P&L: $", position.unrealizedPnL
 ```
 
-**Position information includes:**
+Position information includes:
+
 - `quantity`: Number of shares held
 - `entryPrice`: Average purchase price
 - `currentPrice`: Latest market price
@@ -217,8 +228,8 @@ let shares = targetAmount / price
 discard portfolio.buy(symbol, shares, price)
 ```
 
-**Pros:** Simple, consistent exposure
-**Cons:** Doesn't adapt to account size changes
+Pros: Simple, consistent exposure
+Cons: Doesn't adapt to account size changes
 
 #### Fixed Percentage
 
@@ -231,8 +242,8 @@ let shares = amount / price
 discard portfolio.buy(symbol, shares, price)
 ```
 
-**Pros:** Adapts to account size, compounds gains
-**Cons:** Position sizes vary over time
+Pros: Adapts to account size, compounds gains
+Cons: Position sizes vary over time
 
 #### All-In
 
@@ -243,8 +254,8 @@ let shares = portfolio.cash / price
 discard portfolio.buy(symbol, shares, price)
 ```
 
-**Pros:** Maximum exposure, simple
-**Cons:** High risk, no diversification
+Pros: Maximum exposure, simple
+Cons: High risk, no diversification
 
 Choose based on risk tolerance and strategy type. Conservative traders use smaller percentages (5-10%), aggressive traders use larger allocations.
 
@@ -280,7 +291,8 @@ let totalEquity = portfolio.equity(prices)
 echo "Total equity: $", totalEquity
 ```
 
-**Calculation:**
+Calculation:
+
 ```
 Equity = cash + sum(position_quantity × current_price for all positions)
 ```
@@ -303,7 +315,7 @@ echo "Total Trades: ", metrics.totalTrades
 echo "Profit Factor: ", metrics.profitFactor
 ```
 
-**Key metrics explained:**
+Key metrics explained:
 
 ### Total Return
 
@@ -363,6 +375,7 @@ for tx in portfolio.transactions:
 ```
 
 Each transaction includes:
+
 - Timestamp
 - Symbol
 - Action (Buy or Sell)
@@ -371,6 +384,7 @@ Each transaction includes:
 - Commission
 
 This history is useful for:
+
 - Audit trails
 - Tax reporting
 - Strategy analysis
@@ -465,6 +479,7 @@ let report = quickBacktest(
 ```
 
 The backtester:
+
 - Creates a portfolio
 - Executes buy/sell signals
 - Updates prices each bar
@@ -484,7 +499,8 @@ The next chapter covers comparing strategies across multiple symbols using the S
 - Use `buy()`, `sell()`, and `closePosition()` to execute trades
 - Track realized P&L (closed trades) and unrealized P&L (open positions)
 - Total equity = cash + position values at current prices
-- Position sizing affects risk - consider fixed dollars, fixed percentages, or all-in
+- Position sizing affects risk - consider fixed dollars, fixed
+  percentages, or all-in
 - Performance metrics provide comprehensive strategy evaluation
 - Concentration risk matters - avoid putting all capital in one position
 - Diversification reduces risk but requires more capital

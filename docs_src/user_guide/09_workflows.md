@@ -2,11 +2,15 @@
 
 ## Parameter Optimization
 
-Parameter optimization involves testing different parameter values to find the combination that produces the best results. While this can improve performance, it carries significant risk of overfitting.
+Parameter optimization involves testing different parameter values to
+find the combination that produces the best results. While this can
+improve performance, it carries significant risk of overfitting.
 
 ### The Dangers of Optimization
 
-Testing many parameter combinations will eventually find settings that performed well historically, but this doesn't guarantee future performance:
+Testing many parameter combinations will eventually find settings that
+performed well historically, but this doesn't guarantee future
+performance:
 
 ```nim
 # DON'T do this naively
@@ -26,13 +30,14 @@ for period in 5..55:
 echo "Best period: ", bestPeriod, " with ", bestReturn, "% return"
 ```
 
-The problem: you tested 50 variations and picked the best one for this specific dataset. It likely won't perform as well on new data.
+The problem: you tested 50 variations and picked the best one for this
+specific dataset. It likely won't perform as well on new data.
 
 ### Responsible Optimization Approach
 
 If you must optimize, follow these guidelines:
 
-**1. Use Out-of-Sample Testing**
+1. Use Out-of-Sample Testing
 
 Split data into in-sample (for optimization) and out-of-sample (for validation):
 
@@ -66,7 +71,7 @@ echo "Out-of-sample return: ", outSampleReport.totalReturn, "%"
 # If out-of-sample is much worse, the parameters are overfit
 ```
 
-**2. Limit Parameter Space**
+2. Limit Parameter Space
 
 Test fewer values, focusing on reasonable ranges:
 
@@ -86,7 +91,7 @@ for period in 5..50:              # 46 values
       # Almost guaranteed to overfit
 ```
 
-**3. Optimize on Multiple Symbols**
+3. Optimize on Multiple Symbols
 
 Instead of optimizing for one symbol, optimize for average performance across many:
 
@@ -122,7 +127,8 @@ This reduces overfitting to any single symbol's characteristics.
 
 ### Walk-Forward Testing
 
-Walk-forward testing simulates how you would actually use a strategy: optimize on past data, trade on new data, re-optimize periodically.
+Walk-forward testing simulates how you would actually use a strategy:
+optimize on past data, trade on new data, re-optimize periodically.
 
 ```nim
 # Example structure (simplified)
@@ -251,7 +257,7 @@ done
 echo "Parameter sweep complete. Analyze results/ directory."
 ```
 
-**Warning:** This approach generates many results. Be careful about overfitting.
+Warning: This approach generates many results. Be careful about overfitting.
 
 ## Exporting for Further Analysis
 
@@ -472,16 +478,20 @@ This helps track whether a strategy's edge is degrading over time.
 
 ## Next Steps
 
-The final chapter covers best practices for strategy development, testing methodology, and considerations for moving from backtesting to live trading.
+The final chapter covers best practices for strategy development,
+testing methodology, and considerations for moving from backtesting to
+live trading.
 
 ## Key Takeaways
 
-- Parameter optimization is risky - use out-of-sample testing and limit parameter space
+- Parameter optimization is risky - use out-of-sample testing and limit
+  parameter space
 - Test parameters across multiple symbols to reduce overfitting
 - Walk-forward testing simulates realistic parameter adaptation
 - Use CLI batch scripts for automated testing workflows
 - Export results to JSON or CSV for analysis in external tools
-- Python, R, and spreadsheets can perform additional analysis on exported data
+- Python, R, and spreadsheets can perform additional analysis on
+  exported data
 - Automated report generation streamlines repeated testing
 - Continuous testing helps monitor strategy performance over time
 - Always validate optimized parameters on unseen data before deployment

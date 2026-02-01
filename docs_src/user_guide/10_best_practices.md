@@ -6,9 +6,9 @@
 
 Before writing any code, develop a hypothesis about why a strategy should work:
 
-**Good hypothesis**: "Stocks showing RSI below 30 are temporarily oversold and tend to revert to mean prices within days."
+Good hypothesis: "Stocks showing RSI below 30 are temporarily oversold and tend to revert to mean prices within days."
 
-**Bad hypothesis**: "I'll test different indicators until I find something that worked well historically."
+Bad hypothesis: "I'll test different indicators until I find something that worked well historically."
 
 The first approach has economic logic behind it. The second is data mining that will likely produce overfit results.
 
@@ -16,7 +16,8 @@ The first approach has economic logic behind it. The second is data mining that 
 
 Your backtest results are only as good as your data:
 
-**Data quality checklist:**
+Data quality checklist:
+
 - [ ] Data covers sufficient time period (at least 2-3 years)
 - [ ] Data includes various market conditions (bull, bear, sideways)
 - [ ] Historical data is adjusted for splits and dividends
@@ -48,12 +49,14 @@ If the strategy performs well on tech stocks but fails elsewhere, you don't have
 ### Document Everything
 
 Keep records of:
+
 - Strategy logic and reasoning
 - Parameters tested and why
 - Backtest results (including failures)
 - Modifications made and their effects
 
 This documentation helps you:
+
 - Avoid retesting the same ideas
 - Understand what worked and why
 - Learn from failures
@@ -62,11 +65,13 @@ This documentation helps you:
 ### Set Realistic Expectations
 
 Institutional traders target:
-- **Conservative**: 8-12% annual returns
-- **Moderate**: 12-20% annual returns
-- **Aggressive**: 20%+ annual returns (higher risk)
+
+- Conservative: 8-12% annual returns
+- Moderate: 12-20% annual returns
+- Aggressive: 20%+ annual returns (higher risk)
 
 If your backtest shows 50%+ annual returns, something is probably wrong:
+
 - Data quality issue
 - Look-ahead bias
 - Unrealistic assumptions
@@ -78,12 +83,13 @@ Commission costs significantly impact strategy profitability, especially for act
 
 ### Current Commission Rates
 
-**Discount brokers** (Interactive Brokers, Charles Schwab, TD Ameritrade):
+Discount brokers (Interactive Brokers, Charles Schwab, TD Ameritrade):
+
 - $0 commission for stocks
 - But: payment for order flow means slightly worse fills
 - Effective cost: ~0.01-0.05% per trade
 
-**Pro tip**: Zero-commission doesn't mean zero cost. You still pay bid-ask spread.
+Pro tip: Zero-commission doesn't mean zero cost. You still pay bid-ask spread.
 
 ### Conservative Assumptions
 
@@ -105,7 +111,8 @@ let portfolio = newPortfolio(
 )
 ```
 
-**Why conservative?**
+Why conservative?
+
 - Accounts for slippage (difference between expected and actual fill price)
 - Includes bid-ask spread costs
 - Provides safety margin
@@ -125,7 +132,8 @@ Slippage is the difference between expected and actual execution price:
 # Over 100 trades/year: $500 in slippage costs
 ```
 
-**Slippage increases with:**
+Slippage increases with:
+
 - Larger position sizes
 - Less liquid stocks
 - Market volatility
@@ -147,12 +155,14 @@ let amount = portfolio.equity(prices) * positionSize
 let shares = amount / currentPrice
 ```
 
-**Advantages:**
+Advantages:
+
 - Compounds gains automatically
 - Reduces exposure as portfolio shrinks (loss mitigation)
 - Simple to implement
 
-**Disadvantages:**
+Disadvantages:
+
 - Position sizes vary over time
 - May become too small (or large) over time
 
@@ -202,12 +212,11 @@ let stopPrice = entryPrice - stopDistance
 # When price hits stopPrice, exit position
 ```
 
-**Trade-offs:**
+Trade-offs:
+
 - Too tight: Stopped out by normal volatility
 - Too loose: Large losses when wrong
 - No stop: Unlimited loss potential
-
-TzuTrader doesn't automatically implement stops (strategies control all exits), but you can build this into custom strategies.
 
 ### Drawdown Management
 
@@ -226,15 +235,17 @@ Many traders halt trading when drawdown exceeds a threshold (e.g., -20%) to reas
 ### Diversification
 
 Spread risk across:
-- **Multiple symbols**: 5-15 positions for retail accounts
-- **Multiple sectors**: Don't concentrate in one industry
-- **Multiple timeframes**: Mix short and longer-term positions (if comfortable)
+
+- Multiple symbols: 5-15 positions for retail accounts
+- Multiple sectors: Don't concentrate in one industry
+- Multiple timeframes: Mix short and longer-term positions (if comfortable)
 
 ## When a Strategy Isn't Working
 
 ### Recognize the Signs
 
 Stop trading a strategy when:
+
 - Actual results diverge significantly from backtest
 - Market conditions have fundamentally changed
 - Drawdown exceeds your tolerance
@@ -245,21 +256,18 @@ Stop trading a strategy when:
 
 Common failure modes:
 
-**1. Overfitting**
-- Symptoms: Great backtest, poor live results
-- Solution: Simplify strategy, use out-of-sample testing
-
-**2. Market Regime Change**
-- Symptoms: Strategy worked for years, suddenly fails
-- Solution: Adapt strategy or wait for favorable conditions
-
-**3. Execution Issues**
-- Symptoms: Backtested trades at better prices than reality
-- Solution: Use more conservative assumptions, improve execution
-
-**4. Psychological Factors**
-- Symptoms: Can't follow the rules consistently
-- Solution: Simplify strategy, reduce position sizes, increase confidence through testing
+1. Overfitting
+    - Symptoms: Great backtest, poor live results
+    - Solution: Simplify strategy, use out-of-sample testing
+2. Market Regime Change
+    - Symptoms: Strategy worked for years, suddenly fails
+    - Solution: Adapt strategy or wait for favorable conditions
+3. Execution Issues
+    - Symptoms: Backtested trades at better prices than reality
+    - Solution: Use more conservative assumptions, improve execution
+4. Psychological Factors
+    - Symptoms: Can't follow the rules consistently
+    - Solution: Simplify strategy, reduce position sizes, increase confidence through testing
 
 ### Iterative Improvement
 
@@ -285,17 +293,19 @@ Make one change at a time and validate it improves results.
 
 Before risking real capital, run your strategy in paper trading mode (simulated trading with live data).
 
-**What to test:**
+What to test:
+
 - Execution logic works correctly
 - Data feeds are reliable
 - Commission costs match assumptions
 - You can emotionally handle the strategy
 
-**Duration:** At least 1-3 months of paper trading before using real capital.
+Duration: At least 1-3 months of paper trading before using real capital.
 
 ### Start Small
 
 When going live:
+
 - Use 10-25% of planned capital initially
 - Verify results match expectations
 - Gradually increase capital as confidence grows
@@ -327,6 +337,7 @@ Significant deviation signals a problem.
 ### Accept That Live Trading Differs
 
 Live trading includes factors backtests don't capture:
+
 - Emotional stress
 - Partial fills
 - System outages
@@ -341,55 +352,56 @@ Expect live results to be somewhat worse than backtests. If they're much worse, 
 
 Testing hundreds of indicators/parameters until finding something that worked:
 
-**Problem:** You're guaranteed to find something that "worked" by chance.
+Problem: You're guaranteed to find something that "worked" by chance.
 
-**Solution:** Have a hypothesis first, limit testing, use out-of-sample validation.
+Solution: Have a hypothesis first, limit testing, use out-of-sample validation.
 
 ### Mistake 2: Ignoring Transaction Costs
 
 Assuming you can trade without friction:
 
-**Problem:** Costs eliminate profits from active strategies.
+Problem: Costs eliminate profits from active strategies.
 
-**Solution:** Always include realistic commissions and slippage.
+Solution: Always include realistic commissions and slippage.
 
 ### Mistake 3: Optimizing for One Metric
 
 Maximizing returns while ignoring risk:
 
-**Problem:** High returns often come with unacceptable risk.
+Problem: High returns often come with unacceptable risk.
 
-**Solution:** Consider multiple metrics (returns, Sharpe, drawdown).
+Solution: Consider multiple metrics (returns, Sharpe, drawdown).
 
 ### Mistake 4: Survivorship Bias
 
 Testing only on stocks that still exist today:
 
-**Problem:** Ignores failed companies, inflates results.
+Problem: Ignores failed companies, inflates results.
 
-**Solution:** Use datasets including delisted securities.
+Solution: Use datasets including delisted securities.
 
 ### Mistake 5: Small Sample Size
 
 Drawing conclusions from few trades:
 
-**Problem:** Results may be due to luck.
+Problem: Results may be due to luck.
 
-**Solution:** Require at least 30-50 trades before trusting results.
+Solution: Require at least 30-50 trades before trusting results.
 
 ### Mistake 6: Ignoring Market Conditions
 
 Assuming one strategy works in all environments:
 
-**Problem:** Different conditions favor different approaches.
+Problem: Different conditions favor different approaches.
 
-**Solution:** Recognize strategy limitations, adapt or wait.
+Solution: Recognize strategy limitations, adapt or wait.
 
 ## General Trading Wisdom
 
 ### Trading is a Business
 
 Treat it professionally:
+
 - Keep detailed records
 - Track expenses (data, software, education)
 - Monitor performance objectively
@@ -399,6 +411,7 @@ Treat it professionally:
 ### Simplicity Often Wins
 
 Complex strategies with many rules:
+
 - Are harder to understand
 - Break more easily
 - Often perform worse than simple approaches
@@ -409,6 +422,7 @@ Start simple. Add complexity only when clearly justified.
 ### Continuous Learning
 
 Markets evolve. Successful traders:
+
 - Read current research
 - Learn from mistakes
 - Test new ideas
@@ -418,12 +432,14 @@ Markets evolve. Successful traders:
 ### Know Your Limitations
 
 Retail traders have disadvantages:
+
 - Slower execution than institutions
 - Limited capital
 - Higher relative costs
 - Less sophisticated infrastructure
 
 But also advantages:
+
 - Flexibility (can trade anything)
 - No redemption pressure
 - Simpler compliance
@@ -434,15 +450,19 @@ Play to your strengths.
 ## Final Thoughts
 
 TzuTrader provides tools for building and testing trading bots. The library handles the mechanics of backtesting, but success depends on:
+
 - Sound strategy logic
 - Rigorous testing methodology
 - Realistic assumptions
 - Proper risk management
 - Disciplined execution
 
-No library can guarantee profitable trading. Markets are challenging, and most traders fail. However, systematic approaches using tools like TzuTrader offer better chances than discretionary trading or guesswork.
+No library can guarantee profitable trading. Markets are challenging,
+and most traders fail. However, systematic approaches using tools like
+TzuTrader offer better chances than discretionary trading or guesswork.
 
 If you're serious about algorithmic trading:
+
 1. Study market structure and behavior
 2. Develop clear hypotheses
 3. Test rigorously with realistic assumptions
@@ -455,24 +475,25 @@ Trading should never risk money you can't afford to lose. TzuTrader is an educat
 
 ### Further Reading
 
-**Books:**
+Books:
 - "Evidence-Based Technical Analysis" by David Aronson
 - "Algorithmic Trading" by Ernest Chan
 - "Trading Systems and Methods" by Perry Kaufman
 - "Quantitative Trading" by Ernest Chan
 
-**Papers:**
+Papers:
 - Academic finance journals (SSRN, Journal of Finance)
 - Strategy research from quantitative firms
 
-**Online:**
+Online:
 - QuantConnect forums
 - Elite Trader forums
 - r/algotrading subreddit
 
 ### Continuing with TzuTrader
 
-**Next steps:**
+Next steps:
+
 - Review the Reference Guide for detailed API specifications
 - Examine the examples/ directory for working code
 - Read the API documentation for function details

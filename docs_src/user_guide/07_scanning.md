@@ -5,11 +5,12 @@
 Testing a strategy on a single symbol provides limited information. The strategy might work well on that particular security due to luck or unique characteristics, but fail on others.
 
 Scanning multiple symbols helps you:
-- **Identify robust strategies**: Strategies that work across many symbols are more likely to continue working
-- **Avoid overfitting**: A strategy tuned to one symbol may not generalize
-- **Find best opportunities**: Compare which symbols work best with your strategy
-- **Understand limitations**: See where and why a strategy fails
-- **Build confidence**: Consistent performance across symbols is more convincing than one good result
+
+- Identify robust strategies: Strategies that work across many symbols are more likely to continue working
+- Avoid overfitting: A strategy tuned to one symbol may not generalize
+- Find best opportunities: Compare which symbols work best with your strategy
+- Understand limitations: See where and why a strategy fails
+- Build confidence: Consistent performance across symbols is more convincing than one good result
 
 ## The Scanner Module
 
@@ -120,7 +121,7 @@ RankBy.MaxDrawdown        # Smallest drawdown (ascending)
 RankBy.TotalTrades        # Most trading activity
 ```
 
-**Note:** MaxDrawdown ranks ascending (smaller drawdown is better), all others rank descending (higher is better).
+Note: MaxDrawdown ranks ascending (smaller drawdown is better), all others rank descending (higher is better).
 
 ## Filtering Results
 
@@ -153,7 +154,8 @@ let filtered = scanner.filter(
 echo "Symbols meeting all criteria: ", filtered.len
 ```
 
-**Filter parameters:**
+Filter parameters:
+
 - `minReturn`: Minimum total return percentage
 - `minSharpe`: Minimum Sharpe ratio
 - `minWinRate`: Minimum win rate percentage
@@ -186,6 +188,7 @@ echo scanner.summary(results)
 ```
 
 Output example:
+
 ```
 === Scanner Results ===
 Strategy: RSI Strategy
@@ -218,6 +221,7 @@ for result in results:
 ```
 
 Each `ScanResult` contains:
+
 - `symbol`: The symbol tested
 - `report`: Full BacktestReport with all metrics
 - `data`: Historical data used
@@ -241,13 +245,15 @@ echo "Average return: ", avgReturn, "%"
 echo "Std deviation: ", stdDev, "%"
 ```
 
-**Green flags:**
+Green flags:
+
 - Most symbols are profitable
 - Returns are relatively consistent (low std dev)
 - Sharpe ratios are positive across symbols
 - Similar number of trades per symbol
 
-**Red flags:**
+Red flags:
+
 - Only one or two symbols are profitable
 - Huge variance in returns
 - Some symbols have excessive trades, others have very few
@@ -354,6 +360,8 @@ echo "MACD average return: ", macdAvg, "%"
 This helps identify which strategy approach works better for your symbol universe.
 
 ## Using the CLI for Scanning
+
+**Note**: This section is outdated. Check the command line tool help.
 
 The CLI tool provides scanning without writing code:
 

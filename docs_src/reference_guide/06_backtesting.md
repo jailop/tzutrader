@@ -6,18 +6,18 @@ Backtesting simulates how a trading strategy would have performed on historical 
 
 The backtesting system handles the mechanics of trade execution, position sizing, commission calculation, and performance measurement so you can focus on strategy logic.
 
-**Module:** `tzutrader/trader.nim`
+Module: `tzutrader/trader.nim`
 
 ## Understanding Backtesting
 
 A backtest processes historical data bar by bar, asking the strategy for a trading signal at each step. When the strategy issues a buy or sell signal, the backtester executes it through the portfolio, which manages cash, positions, and accounting.
 
-**Key concepts:**
+Key concepts:
 
-- **Bar-by-bar execution:** The engine processes data sequentially, mimicking real-time trading
-- **No lookahead:** Strategies see only past data at each bar, preventing unrealistic future knowledge
-- **Position sizing:** The backtester calculates how many shares to buy based on available cash
-- **Automatic closing:** Final positions are closed at the last bar's price for complete accounting
+- Bar-by-bar execution: The engine processes data sequentially, mimicking real-time trading
+- No lookahead: Strategies see only past data at each bar, preventing unrealistic future knowledge
+- Position sizing: The backtester calculates how many shares to buy based on available cash
+- Automatic closing: Final positions are closed at the last bar's price for complete accounting
 
 The backtesting engine doesn't make trading decisions—it provides the infrastructure for testing strategies you define.
 
@@ -30,7 +30,7 @@ proc newBacktester*(strategy: Strategy, initialCash: float64 = 100000.0,
                    commission: float64 = 0.0, verbose: bool = false): Backtester
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -39,9 +39,9 @@ proc newBacktester*(strategy: Strategy, initialCash: float64 = 100000.0,
 | `commission` | float64 | 0.0 | Commission rate (0.001 = 0.1%) |
 | `verbose` | bool | false | Enable detailed logging |
 
-**Returns:** Configured Backtester instance
+Returns: Configured Backtester instance
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -61,14 +61,14 @@ let backtester = newBacktester(
 proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
 ```
 
-**Parameters:**
+Parameters:
 
 - `data`: Historical OHLCV bars (must be in chronological order)
 - `symbol`: Symbol identifier for reporting (optional)
 
-**Returns:** Complete `BacktestReport` with all performance metrics
+Returns: Complete `BacktestReport` with all performance metrics
 
-**Process:**
+Process:
 
 1. Resets strategy and portfolio state
 2. Iterates through each historical bar
@@ -79,7 +79,7 @@ proc run*(bt: Backtester, data: seq[OHLCV], symbol: string = ""): BacktestReport
 7. Closes final positions at last bar
 8. Calculates comprehensive performance metrics
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -105,7 +105,7 @@ proc quickBacktest*(symbol: string, strategy: Strategy, data: seq[OHLCV],
                    verbose: bool = false): BacktestReport
 ```
 
-**Example:**
+Example:
 
 ```nim
 let report = quickBacktest("AAPL", strategy, data, initialCash = 50000.0)
@@ -120,7 +120,7 @@ proc quickBacktestCSV*(symbol: string, strategy: Strategy, csvPath: string,
                        verbose: bool = false): BacktestReport
 ```
 
-**Example:**
+Example:
 
 ```nim
 let report = quickBacktestCSV("AAPL", strategy, "data/AAPL.csv")
@@ -179,7 +179,7 @@ type
 | `totalReturn` | float64 | $$\frac{\text{final} - \text{initial}}{\text{initial}} \times 100$$ | Total percentage gain/loss |
 | `annualizedReturn` | float64 | $$\left(\frac{\text{final}}{\text{initial}}\right)^{\frac{1}{years}} - 1 \times 100$$ | Return scaled to annual rate |
 
-**Annualized Return:**
+Annualized Return:
 
 The annualized return normalizes returns to a yearly basis, making it easier to compare strategies tested over different time periods. A 50% return over 6 months annualizes to roughly 104%, while the same return over 2 years annualizes to about 22%.
 
@@ -189,7 +189,7 @@ The annualized return normalizes returns to a yearly basis, making it easier to 
 |-------|------|-------------|
 | `sharpeRatio` | float64 | Risk-adjusted return measure |
 
-**Sharpe Ratio Formula:**
+Sharpe Ratio Formula:
 
 $$\text{Sharpe} = \frac{\bar{r} - r_f}{\sigma_r} \times \sqrt{252}$$
 
@@ -199,12 +199,12 @@ where:
 - $\sigma_r$ is the standard deviation of returns
 - $\sqrt{252}$ annualizes the ratio (assuming 252 trading days)
 
-**Interpretation:**
+Interpretation:
 
-- **> 1.0:** Generally acceptable performance
-- **> 2.0:** Good risk-adjusted performance
-- **> 3.0:** Excellent (rare for retail strategies)
-- **< 0:** Strategy lost money or had very high volatility
+- > 1.0: Generally acceptable performance
+- > 2.0: Good risk-adjusted performance
+- > 3.0: Excellent (rare for retail strategies)
+- < 0: Strategy lost money or had very high volatility
 
 Higher Sharpe ratios indicate better risk-adjusted returns. However, the Sharpe ratio assumes normally distributed returns, which financial data often violates.
 
@@ -215,13 +215,13 @@ Higher Sharpe ratios indicate better risk-adjusted returns. However, the Sharpe 
 | `maxDrawdown` | float64 | Largest peak-to-trough decline (%) |
 | `maxDrawdownDuration` | int64 | Longest drawdown period (seconds) |
 
-**Maximum Drawdown Formula:**
+Maximum Drawdown Formula:
 
 $$\text{Max Drawdown} = \max_{t} \left( \frac{\text{Peak}_t - \text{Equity}_t}{\text{Peak}_t} \times 100 \right)$$
 
 where $\text{Peak}_t$ is the highest equity value observed up to time $t$.
 
-**Understanding Drawdown:**
+Understanding Drawdown:
 
 Drawdown measures how much the equity curve declined from its peak before recovering. A -15% max drawdown means at some point, the portfolio lost 15% from its highest value.
 
@@ -236,11 +236,11 @@ Drawdown duration indicates how long it took to recover. Long drawdown periods t
 | `losingTrades` | int | Number of unprofitable trades |
 | `winRate` | float64 | Percentage of winning trades |
 
-**Win Rate Formula:**
+Win Rate Formula:
 
 $$\text{Win Rate} = \frac{\text{Winning Trades}}{\text{Total Trades}} \times 100$$
 
-**Important Note:** Win rate alone doesn't determine profitability. A strategy with 40% win rate can be highly profitable if winners are much larger than losers.
+Important Note: Win rate alone doesn't determine profitability. A strategy with 40% win rate can be highly profitable if winners are much larger than losers.
 
 #### Profit Metrics
 
@@ -253,16 +253,16 @@ $$\text{Win Rate} = \frac{\text{Winning Trades}}{\text{Total Trades}} \times 100
 | `worstTrade` | float64 | Largest losing trade ($) |
 | `avgTradeReturn` | float64 | Average P&L across all trades ($) |
 
-**Profit Factor Formula:**
+Profit Factor Formula:
 
 $$\text{Profit Factor} = \frac{\sum \text{Winning Trades}}{\left|\sum \text{Losing Trades}\right|}$$
 
-**Interpretation:**
+Interpretation:
 
-- **> 1.0:** Strategy is profitable overall
-- **< 1.0:** Strategy loses money
-- **≈ 2.0:** Good performance (winners are 2x losers)
-- **> 3.0:** Excellent performance
+- > 1.0: Strategy is profitable overall
+- < 1.0: Strategy loses money
+- ≈ 2.0: Good performance (winners are 2x losers)
+- > 3.0: Excellent performance
 
 Profit factor captures both win rate and average win/loss magnitude. A profit factor of 2.0 means you make $2 for every $1 you lose.
 
@@ -308,7 +308,7 @@ type
     equity*: float64
 ```
 
-**Fields:**
+Fields:
 
 - `timestamp`: When the trade occurred (Unix timestamp)
 - `symbol`: Symbol traded
@@ -318,7 +318,7 @@ type
 - `cash`: Cash balance after trade
 - `equity`: Total portfolio equity after trade
 
-**Accessing Trade Logs:**
+Accessing Trade Logs:
 
 ```nim
 let backtester = newBacktester(strategy)
@@ -333,7 +333,7 @@ for trade in backtester.tradeLogs:
 
 The backtester records portfolio equity at every bar, creating an equity curve for visualization.
 
-**Access:**
+Access:
 
 ```nim
 let backtester = newBacktester(strategy)
@@ -343,7 +343,7 @@ for (timestamp, equity) in backtester.equityCurve:
   echo timestamp.fromUnix.format("yyyy-MM-dd"), ": $", equity
 ```
 
-**Usage:**
+Usage:
 
 Export the equity curve to CSV for plotting in Excel, Python, or other visualization tools:
 
@@ -359,17 +359,17 @@ csvFile.close()
 
 The backtester uses a simple position sizing rule:
 
-**Buy orders:** Use 95% of available cash to leave a buffer for commissions and prevent insufficient-fund rejections.
+Buy orders: Use 95% of available cash to leave a buffer for commissions and prevent insufficient-fund rejections.
 
-**Formula:**
+Formula:
 
 $$\text{Quantity} = \left\lfloor \frac{\text{Cash} \times 0.95}{\text{Price}} \right\rfloor$$
 
 The floor function ensures we buy whole shares (no fractional shares).
 
-**Sell orders:** Close the entire position.
+Sell orders: Close the entire position.
 
-**Custom Position Sizing:**
+Custom Position Sizing:
 
 For custom position sizing logic, implement it within your strategy's signal generation. Return `Stay` when you don't want to trade, even if your indicator suggests otherwise.
 
@@ -377,7 +377,7 @@ For custom position sizing logic, implement it within your strategy's signal gen
 
 Commissions reduce proceeds from sells and increase costs for buys.
 
-**Buy Transaction Total Cost:**
+Buy Transaction Total Cost:
 
 $$\text{Total Cost} = (\text{Quantity} \times \text{Price}) + \text{Commission}$$
 
@@ -385,11 +385,11 @@ where:
 
 $$\text{Commission} = (\text{Quantity} \times \text{Price}) \times \text{Rate}$$
 
-**Sell Transaction Net Proceeds:**
+Sell Transaction Net Proceeds:
 
 $$\text{Net Proceeds} = (\text{Quantity} \times \text{Price}) - \text{Commission}$$
 
-**Impact on Performance:**
+Impact on Performance:
 
 Even small commission rates significantly affect high-frequency strategies. A strategy that trades weekly with 0.1% commissions pays roughly 10% annually in transaction costs (50 round trips × 0.2%).
 
@@ -492,9 +492,9 @@ echo "Best: ", bestSymbol, " with ", bestReturn, "% return"
 
 The backtester assumes trades execute at the signal price without slippage or market impact. Real trading involves:
 
-- **Slippage:** Execution price differs from signal price
-- **Market impact:** Large orders move prices against you
-- **Liquidity:** Not all prices are available in sufficient size
+- Slippage: Execution price differs from signal price
+- Market impact: Large orders move prices against you
+- Liquidity: Not all prices are available in sufficient size
 
 For liquid stocks with small position sizes, these effects are minimal. For large positions or illiquid stocks, they matter significantly.
 
@@ -514,12 +514,12 @@ Strategies generate signals based on the current bar's data. In live trading, yo
 
 ## Performance Considerations
 
-**Backtesting speed:** Typical backtests run in milliseconds to seconds depending on:
+Backtesting speed: Typical backtests run in milliseconds to seconds depending on:
 - Data size (number of bars)
 - Strategy complexity (indicator calculations)
 - Number of trades executed
 
-**Memory usage:** Moderate. The backtester stores:
+Memory usage: Moderate. The backtester stores:
 - Equity curve (one point per bar)
 - Trade logs (one entry per trade)
 - Portfolio state

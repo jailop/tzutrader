@@ -1,36 +1,24 @@
 # Market Screener User Guide
 
-## Table of Contents
-
-1. [What is a Market Screener?](#what-is-a-market-screener)
-2. [Quick Start](#quick-start)
-3. [How to Use the Screener CLI](#how-to-use-the-screener-cli)
-4. [YAML Configuration Guide](#yaml-configuration-guide)
-5. [Time Period Configuration](#time-period-configuration)
-6. [Interpreting Screener Results](#interpreting-screener-results)
-7. [Best Practices](#best-practices)
-8. [Advanced Features](#advanced-features)
-9. [Troubleshooting](#troubleshooting)
-
----
-
 ## What is a Market Screener?
 
-A **market screener** is a tool that automatically scans multiple financial instruments (stocks, cryptocurrencies, etc.) across one or more trading strategies to identify potential trading opportunities **right now**.
+A market screener is a tool that automatically scans multiple financial
+instruments (stocks, cryptocurrencies, etc.) across one or more trading
+strategies to identify potential trading opportunities right now.
 
 ### Screener vs. Backtest
 
 | Feature | Backtesting | Screening |
 |---------|------------|-----------|
-| **Purpose** | Test strategy performance over history | Find current trading opportunities |
-| **Output** | Historical performance metrics | Latest signals and alerts |
-| **Timeframe** | Past data (days/months/years) | Most recent data (latest bars) |
-| **Use Case** | Strategy evaluation & optimization | Daily/weekly opportunity discovery |
-| **Symbols** | Usually 1 symbol at a time | Many symbols simultaneously |
+| Purpose | Test strategy performance over history | Find current trading opportunities |
+| Output | Historical performance metrics | Latest signals and alerts |
+| Timeframe | Past data (days/months/years) | Most recent data (latest bars) |
+| Use Case | Strategy evaluation & optimization | Daily/weekly opportunity discovery |
+| Symbols | Usually 1 symbol at a time | Many symbols simultaneously |
 
-**Example:**
-- **Backtest**: "How would RSI strategy have performed on AAPL in 2023?"
-- **Screen**: "Which stocks are currently showing RSI oversold signals?"
+Example:
+- Backtest: "How would RSI strategy have performed on AAPL in 2023?"
+- Screen: "Which stocks are currently showing RSI oversold signals?"
 
 ---
 
@@ -187,10 +175,10 @@ metadata:
     - stocks
 ```
 
-- **name**: Display name for the screener
-- **description**: What the screener does
-- **author**: Who created it
-- **tags**: Categories for organization
+- name: Display name for the screener
+- description: What the screener does
+- author: Who created it
+- tags: Categories for organization
 
 ### Strategies Section
 
@@ -206,11 +194,12 @@ strategies:
       overbought: 70
 ```
 
-**Available built-in strategies:**
-- **Mean Reversion**: rsi, bollinger, stochastic, mfi, cci
-- **Trend Following**: macd, crossover, kama, aroon, psar, triplem, adx
-- **Volatility**: keltner
-- **Hybrid**: volume, dualmomentum, filteredrsi
+Available built-in strategies:
+
+- Mean Reversion: rsi, bollinger, stochastic, mfi, cci
+- Trend Following: macd, crossover, kama, aroon, psar, triplem, adx
+- Volatility: keltner
+- Hybrid: volume, dualmomentum, filteredrsi
 
 #### Multiple Strategies
 
@@ -283,15 +272,17 @@ output:
   filepath: "results.csv"   # Optional: save to file
 ```
 
-**Format Options:**
-- **terminal**: Colored terminal output (default)
-- **csv**: CSV file for Excel/analysis
-- **json**: JSON for programmatic use
-- **markdown**: Markdown tables for reports
+Format Options:
 
-**Detail Levels:**
-- **summary**: Key info only (symbol, type, strength, price)
-- **detailed**: All indicators and metadata
+- terminal: Colored terminal output (default)
+- csv: CSV file for Excel/analysis
+- json: JSON for programmatic use
+- markdown: Markdown tables for reports
+
+Detail Levels:
+
+- summary: Key info only (symbol, type, strength, price)
+- detailed: All indicators and metadata
 
 ### Filters Section
 
@@ -304,18 +295,18 @@ filters:
   top_n: 10
 ```
 
-**Signal Types:**
+Signal Types:
 - `buy_signal` - Buy opportunities
 - `sell_signal` - Sell opportunities
 - `exit_long` - Exit long positions
 - `exit_short` - Exit short positions
 
-**Signal Strength:**
+Signal Strength:
 - `weak` - Low confidence signals
 - `moderate` - Medium confidence signals
 - `strong` - High confidence signals
 
-**Top N:**
+Top N:
 - Limit results to top N strongest signals
 - Omit or set to 0 for all results
 
@@ -327,16 +318,16 @@ filters:
 
 The `lookback` parameter specifies how much historical data to fetch:
 
-**Format:** `<number><unit>`
+Format: `<number><unit>`
 
-**Units:**
+Units:
 - `m` - minutes (e.g., `30m` = 30 minutes)
 - `h` - hours (e.g., `3h` = 3 hours)
 - `d` - days (e.g., `90d` = 90 days)
 - `mo` - months (e.g., `6mo` = 6 months)
 - `y` - years (e.g., `1y` = 1 year)
 
-**Examples:**
+Examples:
 ```yaml
 lookback: 90d   # 90 days of data
 lookback: 6mo   # 6 months of data
@@ -347,7 +338,8 @@ lookback: 3h    # 3 hours of data
 
 The `interval` parameter specifies the timeframe for each data point:
 
-**Common Intervals:**
+Common Intervals:
+
 - `1m` - 1-minute bars
 - `5m` - 5-minute bars
 - `15m` - 15-minute bars
@@ -368,9 +360,10 @@ Each strategy requires a minimum number of bars:
 | Bollinger | ~20 | Period bars |
 | Moving Average | Period | Exactly period bars |
 
-**Best Practice:** Request 20-50% more data than the minimum to ensure accurate calculations.
+Best Practice: Request 20-50% more data than the minimum to ensure accurate calculations.
 
-**Example Calculation:**
+Example Calculation:
+
 ```yaml
 # MACD needs ~35 bars minimum
 # Add 50% buffer: 35 × 1.5 = 52 bars
@@ -382,6 +375,7 @@ interval: 1d
 ### Trading Days vs Calendar Days
 
 When using daily intervals:
+
 - Markets are closed weekends/holidays
 - ~252 trading days per year (not 365)
 - `90d` lookback ≈ 63 trading days
@@ -408,13 +402,14 @@ AAPL    rsi            BUY   STRONG    $178.25  RSI: 28.5
 TSLA    rsi            SELL  MODERATE  $245.80  RSI: 72.3
 ```
 
-**Understanding the Output:**
-- **Symbol**: The ticker being signaled
-- **Strategy**: Which strategy generated the signal
-- **Type**: BUY, SELL, EXIT LONG, EXIT SHORT
-- **Strength**: WEAK, MODERATE, STRONG
-- **Price**: Current/latest price
-- **Indicators**: Key indicator values
+Understanding the Output:
+
+- Symbol: The ticker being signaled
+- Strategy: Which strategy generated the signal
+- Type: BUY, SELL, EXIT LONG, EXIT SHORT
+- Strength: WEAK, MODERATE, STRONG
+- Price: Current/latest price
+- Indicators: Key indicator values
 
 ### CSV Output
 
@@ -455,9 +450,9 @@ Perfect for APIs, webhooks, or automated systems.
 
 ### 1. Match Timeframe to Trading Style
 
-- **Day Trading**: 5m-15m bars, 1-3 hour lookback
-- **Swing Trading**: 1h-4h bars, 1-7 day lookback
-- **Position Trading**: 1d bars, 3-12 month lookback
+- Day Trading: 5m-15m bars, 1-3 hour lookback
+- Swing Trading: 1h-4h bars, 1-7 day lookback
+- Position Trading: 1d bars, 3-12 month lookback
 
 ### 2. Use Multiple Strategies for Confirmation
 
@@ -485,10 +480,10 @@ symbols: [AAPL, MSFT, GOOGL, ..., <100+ symbols>]
 
 ### 4. Adjust for Market Conditions
 
-- **Volatile markets**: Increase min_strength threshold
-- **Quiet markets**: Lower thresholds or expand symbol list
-- **Trending markets**: Favor trend-following strategies
-- **Ranging markets**: Favor mean-reversion strategies
+- Volatile markets: Increase min_strength threshold
+- Quiet markets: Lower thresholds or expand symbol list
+- Trending markets: Favor trend-following strategies
+- Ranging markets: Favor mean-reversion strategies
 
 ### 5. Filter Results Appropriately
 
@@ -501,9 +496,9 @@ filters:
 
 ### 6. Consider Data Provider Limits
 
-- **Yahoo Finance**: Good for daily, limited intraday
-- **Coinbase**: Real-time crypto, hourly available
-- **Premium providers**: Better for high-frequency screening
+- Yahoo Finance: Good for daily, limited intraday
+- Coinbase: Real-time crypto, hourly available
+- Premium providers: Better for high-frequency screening
 
 ### 7. Automate Regular Screening
 
@@ -539,7 +534,7 @@ output:
   historyDir: "screener_history"
 ```
 
-**Benefits:**
+Benefits:
 - Compare signals across multiple runs
 - Track signal frequency by symbol
 - Identify persistent opportunities
@@ -602,9 +597,9 @@ symbols: [XOM, CVX, COP, SLB, EOG]
 
 ### "Not enough data" Error
 
-**Cause:** Lookback period too short for strategy requirements
+Cause: Lookback period too short for strategy requirements
 
-**Fix:**
+Fix:
 ```yaml
 # Before (insufficient)
 lookback: 30d
@@ -615,12 +610,13 @@ lookback: 90d
 
 ### No Signals Generated
 
-**Possible Causes:**
+Possible Causes:
+
 1. Filters too restrictive
 2. No current opportunities
 3. Strategy configuration incorrect
 
-**Fixes:**
+Fixes:
 ```yaml
 # Try lowering thresholds
 filters:
@@ -638,12 +634,14 @@ strategies:
 
 ### Slow Performance
 
-**Causes:**
+Causes:
+
 - Too many symbols
 - Very long lookback
 - Complex strategies
 
-**Fixes:**
+Fixes:
+
 ```yaml
 # Reduce symbol count
 symbols: [AAPL, MSFT, GOOGL]  # Start small
@@ -659,18 +657,20 @@ strategies:
 
 ### Intraday Data Not Available
 
-**Cause:** Data provider doesn't support requested interval
+Cause: Data provider doesn't support requested interval
 
-**Fix:**
+Fix:
+
 - Use daily data instead (`interval: 1d`)
 - Switch to provider with intraday support
 - Check provider API documentation
 
 ### "Invalid time period" Error
 
-**Cause:** Malformed lookback or interval string
+Cause: Malformed lookback or interval string
 
-**Fix:**
+Fix:
+
 ```yaml
 # Correct formats
 lookback: 90d   # ✓ Correct
@@ -688,7 +688,8 @@ lookback: 6m      # ✗ Ambiguous (6 minutes or months?)
 
 ### Common Screening Patterns
 
-**Daily End-of-Day Scan:**
+Daily End-of-Day Scan:
+
 ```yaml
 data:
   lookback: 6mo
@@ -699,7 +700,8 @@ filters:
   top_n: 10
 ```
 
-**Intraday Momentum:**
+Intraday Momentum:
+
 ```yaml
 data:
   lookback: 3h
@@ -710,7 +712,8 @@ filters:
   top_n: 3
 ```
 
-**Crypto Multi-Timeframe:**
+Crypto Multi-Timeframe:
+
 ```yaml
 data:
   source: coinbase
@@ -731,27 +734,30 @@ filters:
 
 ### Signal Strength Guide
 
-- **WEAK**: Low conviction, use for research only
-- **MODERATE**: Reasonable confidence, good for watchlists
-- **STRONG**: High conviction, actionable signals
+- WEAK: Low conviction, use for research only
+- MODERATE: Reasonable confidence, good for watchlists
+- STRONG: High conviction, actionable signals
 
 ### Recommended Filters
 
-**Conservative (High Quality):**
+Conservative (High Quality):
+
 ```yaml
 filters:
   min_strength: strong
   top_n: 5
 ```
 
-**Balanced (Good Mix):**
+Balanced (Good Mix):
+
 ```yaml
 filters:
   min_strength: moderate
   top_n: 10
 ```
 
-**Aggressive (More Opportunities):**
+Aggressive (More Opportunities):
+
 ```yaml
 filters:
   min_strength: weak
@@ -762,4 +768,4 @@ filters:
 
 ## See Also
 
-- **[CLI Reference](../reference_guide/09_cli.md)** - Command-line options
+- [CLI Reference](../reference_guide/09_cli.md) - Command-line options

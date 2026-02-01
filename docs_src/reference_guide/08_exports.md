@@ -6,14 +6,14 @@ After running backtests or multi-symbol scans, you typically need to save result
 
 Exporting serves several purposes:
 
-- **Record keeping:** Archive backtest results for future comparison
-- **Analysis:** Import data into spreadsheets, databases, or statistical software
-- **Reporting:** Share results with colleagues or document trading research
-- **Monitoring:** Track strategy performance over time as market conditions change
+- Record keeping: Archive backtest results for future comparison
+- Analysis: Import data into spreadsheets, databases, or statistical software
+- Reporting: Share results with colleagues or document trading research
+- Monitoring: Track strategy performance over time as market conditions change
 
 The export module handles formatting details so you can focus on analyzing results rather than writing serialization code.
 
-**Module:** `tzutrader/exports.nim`
+Module: `tzutrader/exports.nim`
 
 ## JSON Export
 
@@ -25,14 +25,14 @@ JSON format preserves the complete structure of reports and results with human-r
 proc exportJson*(report: BacktestReport, filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `report` | BacktestReport | Report to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -44,7 +44,7 @@ let report = quickBacktest("AAPL", strategy, data)
 exportJson(report, "results/aapl_backtest.json")
 ```
 
-**JSON Structure:**
+JSON Structure:
 
 ```json
 {
@@ -72,7 +72,7 @@ exportJson(report, "results/aapl_backtest.json")
 }
 ```
 
-**Field Details:**
+Field Details:
 
 All fields correspond directly to the `BacktestReport` structure documented in the [Backtesting Engine reference](06_backtesting.md#field-reference). Timestamps are Unix seconds, monetary values are in the base currency (typically USD), and percentages are expressed as whole numbers (23.45 = 23.45%).
 
@@ -82,14 +82,14 @@ All fields correspond directly to the `BacktestReport` structure documented in t
 proc exportJson*(results: seq[ScanResult], filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `results` | seq[ScanResult] | Scan results to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -105,7 +105,7 @@ let results = scanner.run()
 exportJson(results, "results/scan_results.json")
 ```
 
-**JSON Structure:**
+JSON Structure:
 
 ```json
 [
@@ -152,14 +152,14 @@ The export includes the full `BacktestReport` for each symbol plus the number of
 proc exportTradeLog*(logs: seq[TradeLog], filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `logs` | seq[TradeLog] | Trade logs to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -174,7 +174,7 @@ let logs = backtester.portfolio.tradeLogs
 exportTradeLog(logs, "results/aapl_trades.json")
 ```
 
-**JSON Structure:**
+JSON Structure:
 
 ```json
 [
@@ -213,14 +213,14 @@ CSV exports flatten the data structure—each backtest becomes one row with all 
 proc exportCsv*(report: BacktestReport, filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `report` | BacktestReport | Report to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -229,7 +229,7 @@ let report = quickBacktestCSV("AAPL", strategy, "data/AAPL.csv")
 exportCsv(report, "results/aapl_backtest.csv")
 ```
 
-**CSV Structure:**
+CSV Structure:
 
 ```csv
 symbol,start_time,end_time,initial_cash,final_value,total_return,annualized_return,sharpe_ratio,max_drawdown,max_drawdown_duration,win_rate,total_trades,winning_trades,losing_trades,avg_win,avg_loss,profit_factor,best_trade,worst_trade,avg_trade_return,total_commission
@@ -244,14 +244,14 @@ The file includes a header row with column names followed by one data row per re
 proc exportCsv*(results: seq[ScanResult], filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `results` | seq[ScanResult] | Scan results to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -268,7 +268,7 @@ let results = scanner.run()
 exportCsv(results, "results/scan_comparison.csv")
 ```
 
-**CSV Structure:**
+CSV Structure:
 
 ```csv
 symbol,start_time,end_time,initial_cash,final_value,total_return,annualized_return,sharpe_ratio,max_drawdown,max_drawdown_duration,win_rate,total_trades,winning_trades,losing_trades,avg_win,avg_loss,profit_factor,best_trade,worst_trade,avg_trade_return,total_commission
@@ -285,14 +285,14 @@ Each symbol's backtest becomes one row, making it easy to sort by metrics like t
 proc exportTradeLogCsv*(logs: seq[TradeLog], filename: string)
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `logs` | seq[TradeLog] | Trade logs to export |
 | `filename` | string | Output file path |
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -304,7 +304,7 @@ let logs = backtester.portfolio.tradeLogs
 exportTradeLogCsv(logs, "results/aapl_trades.csv")
 ```
 
-**CSV Structure:**
+CSV Structure:
 
 ```csv
 timestamp,symbol,action,quantity,price,cash,equity
@@ -321,21 +321,21 @@ Choose export formats based on your workflow and analysis needs:
 
 ### Use JSON When:
 
-- **Programmatic processing:** You'll parse results with scripts or applications
-- **Web applications:** Serving backtest data through APIs
-- **Complex structures:** Maintaining relationships between nested data
-- **Future flexibility:** You might need additional fields later
-- **Single reports:** Exporting one backtest for detailed review
+- Programmatic processing: You'll parse results with scripts or applications
+- Web applications: Serving backtest data through APIs
+- Complex structures: Maintaining relationships between nested data
+- Future flexibility: You might need additional fields later
+- Single reports: Exporting one backtest for detailed review
 
 JSON preserves all data relationships and extends easily when you add new metrics to your backtesting system.
 
 ### Use CSV When:
 
-- **Spreadsheet analysis:** Opening files in Excel, Google Sheets, or LibreOffice
-- **Database import:** Loading data into SQL or NoSQL databases
-- **Statistical software:** Analyzing results in R, Python pandas, or Julia
-- **Comparative analysis:** Reviewing many backtests side-by-side
-- **Simple reporting:** Sharing results with non-technical stakeholders
+- Spreadsheet analysis: Opening files in Excel, Google Sheets, or LibreOffice
+- Database import: Loading data into SQL or NoSQL databases
+- Statistical software: Analyzing results in R, Python pandas, or Julia
+- Comparative analysis: Reviewing many backtests side-by-side
+- Simple reporting: Sharing results with non-technical stakeholders
 
 CSV's tabular format makes it immediately accessible in the widest range of analysis tools.
 
@@ -390,7 +390,7 @@ These functions convert objects to JSON nodes without writing to disk, useful fo
 - Sending results over network APIs
 - Creating in-memory data pipelines
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader, std/json
@@ -419,7 +419,7 @@ These functions generate CSV header and data rows without writing to disk, usefu
 - Streaming results to databases
 - Building custom CSV formats with additional columns
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -464,13 +464,13 @@ This organization makes it easy to return to past research and understand what y
 
 ## Performance Considerations
 
-**File sizes:**
+File sizes:
 
 - JSON files are 2-3x larger than CSV for the same data due to formatting and field names
 - Trade logs with hundreds of trades create substantial files (10,000 trades ≈ 1-2 MB JSON)
 - Use compression (gzip) for archiving large result sets
 
-**Write performance:**
+Write performance:
 
 Both JSON and CSV exports are I/O-bound. For extremely large scan results (thousands of symbols), consider:
 

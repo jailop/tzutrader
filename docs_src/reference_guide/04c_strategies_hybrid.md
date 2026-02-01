@@ -6,27 +6,27 @@ Hybrid strategies combine multiple technical analysis approaches to create more 
 
 TzuTrader provides 3 hybrid/volatility strategies:
 
-1. **Keltner Channel Strategy** - ATR-based volatility (dual mode: breakout/reversion)
-2. **Volume Breakout Strategy** - Price movement + volume confirmation
-3. **Dual Momentum Strategy** - ROC momentum + SMA trend filter
+1. Keltner Channel Strategy - ATR-based volatility (dual mode: breakout/reversion)
+2. Volume Breakout Strategy - Price movement + volume confirmation
+3. Dual Momentum Strategy - ROC momentum + SMA trend filter
 
-**Module:** `tzutrader/strategy.nim`
+Module: `tzutrader/strategy.nim`
 
 ## Keltner Channel Strategy
 
 Volatility-based strategy using ATR channels that can operate in two modes: breakout or mean reversion.
 
-**Trading Logic (Breakout Mode):**
-- **Buy:** Price breaks above upper band
-- **Sell:** Price breaks below lower band
-- **Stay:** Price within bands
+Trading Logic (Breakout Mode):
+- Buy: Price breaks above upper band
+- Sell: Price breaks below lower band
+- Stay: Price within bands
 
-**Trading Logic (Reversion Mode):**
-- **Buy:** Price touches or falls below lower band
-- **Sell:** Price touches or exceeds upper band
-- **Stay:** Price within bands
+Trading Logic (Reversion Mode):
+- Buy: Price touches or falls below lower band
+- Sell: Price touches or exceeds upper band
+- Stay: Price within bands
 
-**Constructor:**
+Constructor:
 
 ```nim
 type KeltnerMode* = enum
@@ -38,7 +38,7 @@ proc newKeltnerStrategy*(period: int = 20, atrPeriod: int = 10,
                         symbol: string = ""): KeltnerStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -48,7 +48,7 @@ proc newKeltnerStrategy*(period: int = 20, atrPeriod: int = 10,
 | `mode` | KeltnerMode | kcBreakout | Trading mode (breakout/reversion) | — |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -62,7 +62,7 @@ type
     lastPosition*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Keltner Channels consist of three lines:
 - Middle line: Simple moving average (typically 20-period EMA)
@@ -71,21 +71,21 @@ Keltner Channels consist of three lines:
 
 The bands expand during volatile periods and contract during quiet periods, automatically adapting to market conditions.
 
-**Dual Mode Operation:**
+Dual Mode Operation:
 
-**Breakout Mode:**
+Breakout Mode:
 - Assumes breakouts beyond bands indicate new trends
 - Buys when price exceeds upper band (strength)
 - Sells when price breaks lower band (weakness)
 - Works best in low-volatility environments before trending moves
 
-**Reversion Mode:**
+Reversion Mode:
 - Assumes extreme prices revert to the mean
 - Buys when price touches lower band (oversold)
 - Sells when price touches upper band (overbought)
 - Works best in high-volatility ranging markets
 
-**Keltner vs Bollinger Bands:**
+Keltner vs Bollinger Bands:
 
 Both create volatility envelopes, but:
 - Bollinger uses standard deviation (price volatility)
@@ -93,16 +93,16 @@ Both create volatility envelopes, but:
 - Keltner typically smoother, fewer extreme breaches
 - Keltner better handles gaps and limit moves
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter period** (10-15): More responsive, tighter bands
-- **Longer period** (30-50): Smoother, wider bands
-- **Higher multiplier** (2.5-3.0): Wider bands, fewer touches, stronger signals
-- **Lower multiplier** (1.5): Tighter bands, more touches, more trades
-- **Breakout mode**: Use lower multiplier (1.5-2.0) to catch early breakouts
-- **Reversion mode**: Use higher multiplier (2.5-3.0) for extreme conditions
+- Shorter period (10-15): More responsive, tighter bands
+- Longer period (30-50): Smoother, wider bands
+- Higher multiplier (2.5-3.0): Wider bands, fewer touches, stronger signals
+- Lower multiplier (1.5): Tighter bands, more touches, more trades
+- Breakout mode: Use lower multiplier (1.5-2.0) to catch early breakouts
+- Reversion mode: Use higher multiplier (2.5-3.0) for extreme conditions
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -141,7 +141,7 @@ echo "Breakout mode - Trades: ", reportBreakout.totalTrades
 echo "Reversion mode - Trades: ", reportReversion.totalTrades
 ```
 
-**Accessing Band Values:**
+Accessing Band Values:
 
 ```nim
 # Monitor band levels
@@ -161,7 +161,7 @@ for bar in data:
     echo "Bandwidth: ", bandwidth, " (", (bandwidth / middleLine * 100), "%)"
 ```
 
-**Strategy Selection by Market:**
+Strategy Selection by Market:
 
 ```nim
 # Determine which mode based on volatility
@@ -190,12 +190,12 @@ else:
 
 Hybrid strategy that requires both price breakouts and volume confirmation, reducing false breakout signals.
 
-**Trading Logic:**
-- **Buy:** Price breaks above recent high AND volume > average volume × multiplier
-- **Sell:** Price breaks below recent low AND volume > average volume × multiplier
-- **Stay:** No breakout or insufficient volume
+Trading Logic:
+- Buy: Price breaks above recent high AND volume > average volume × multiplier
+- Sell: Price breaks below recent low AND volume > average volume × multiplier
+- Stay: No breakout or insufficient volume
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newVolumeBreakoutStrategy*(period: int = 20, volumePeriod: int = 20,
@@ -203,7 +203,7 @@ proc newVolumeBreakoutStrategy*(period: int = 20, volumePeriod: int = 20,
                                 symbol: string = ""): VolumeBreakoutStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -212,7 +212,7 @@ proc newVolumeBreakoutStrategy*(period: int = 20, volumePeriod: int = 20,
 | `volumeMultiplier` | float64 | 1.5 | Volume threshold multiplier | 1.2-2.5 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -226,7 +226,7 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Most breakout strategies fail because breakouts on low volume tend to reverse (false breakouts). This strategy solves this by requiring volume confirmation. A true breakout occurs when:
 
@@ -235,14 +235,14 @@ Most breakout strategies fail because breakouts on low volume tend to reverse (f
 
 Both conditions must be met simultaneously.
 
-**Volume Confirmation Theory:**
+Volume Confirmation Theory:
 
-- **High volume breakout**: Institutional participation, likely to continue
-- **Low volume breakout**: Retail/technical traders, likely to fail
+- High volume breakout: Institutional participation, likely to continue
+- Low volume breakout: Retail/technical traders, likely to fail
 - Volume threshold ensures "real money" is driving the move
 - Higher multipliers require stronger volume confirmation
 
-**Why Dual Confirmation Matters:**
+Why Dual Confirmation Matters:
 
 Single factor breakouts have ~40-50% success rates:
 - Price breakout alone: Can be false breakout
@@ -250,15 +250,15 @@ Single factor breakouts have ~40-50% success rates:
 
 Combined: ~60-70% success rate when both confirm.
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter period** (10-15): Tighter range, more breakout opportunities
-- **Longer period** (30-50): Wider range, only significant breakouts
-- **Lower volume multiplier** (1.2-1.3): More trades, earlier entries, more false signals
-- **Standard multiplier** (1.5): Balanced confirmation
-- **Higher multiplier** (2.0-2.5): Fewer trades, very strong confirmation, late entries
+- Shorter period (10-15): Tighter range, more breakout opportunities
+- Longer period (30-50): Wider range, only significant breakouts
+- Lower volume multiplier (1.2-1.3): More trades, earlier entries, more false signals
+- Standard multiplier (1.5): Balanced confirmation
+- Higher multiplier (2.0-2.5): Fewer trades, very strong confirmation, late entries
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -287,7 +287,7 @@ echo "Volume-confirmed breakouts: ", report.totalTrades
 echo "Win rate: ", report.winRate, "%"
 ```
 
-**Analyzing Volume Patterns:**
+Analyzing Volume Patterns:
 
 ```nim
 # Track volume vs breakouts
@@ -318,12 +318,12 @@ echo "Volume rejected: ", breakoutsWithoutVolume
 
 Hybrid strategy combining rate-of-change momentum with moving average trend filtering.
 
-**Trading Logic:**
-- **Buy:** ROC > threshold AND price > MA (positive momentum in uptrend)
-- **Sell:** ROC < -threshold AND price < MA (negative momentum in downtrend)
-- **Stay:** Momentum and trend don't align
+Trading Logic:
+- Buy: ROC > threshold AND price > MA (positive momentum in uptrend)
+- Sell: ROC < -threshold AND price < MA (negative momentum in downtrend)
+- Stay: Momentum and trend don't align
 
-**Constructor:**
+Constructor:
 
 ```nim
 proc newDualMomentumStrategy*(rocPeriod: int = 12, maPeriod: int = 50,
@@ -331,7 +331,7 @@ proc newDualMomentumStrategy*(rocPeriod: int = 12, maPeriod: int = 50,
                               symbol: string = ""): DualMomentumStrategy
 ```
 
-**Parameters:**
+Parameters:
 
 | Parameter | Type | Default | Description | Typical Range |
 |-----------|------|---------|-------------|---------------|
@@ -340,7 +340,7 @@ proc newDualMomentumStrategy*(rocPeriod: int = 12, maPeriod: int = 50,
 | `threshold` | float64 | 0.0 | ROC threshold for signals | -2.0 to +2.0 |
 | `symbol` | string | "" | Target symbol | — |
 
-**Type:**
+Type:
 
 ```nim
 type
@@ -353,15 +353,15 @@ type
     lastSignal*: Position
 ```
 
-**Strategy Behavior:**
+Strategy Behavior:
 
 Dual Momentum combines two dimensions:
-1. **Momentum (ROC)**: Is price accelerating up or down?
-2. **Trend (MA)**: Is the overall trend up or down?
+1. Momentum (ROC): Is price accelerating up or down?
+2. Trend (MA): Is the overall trend up or down?
 
 Signals only occur when both agree, ensuring you trade momentum in the direction of the trend rather than counter-trend momentum.
 
-**Why Two Confirmations:**
+Why Two Confirmations:
 
 Pure momentum strategies (ROC alone) suffer from:
 - Taking counter-trend trades that get steamrolled
@@ -370,23 +370,23 @@ Pure momentum strategies (ROC alone) suffer from:
 
 The trend filter ensures momentum is moving with, not against, the bigger picture.
 
-**ROC Interpretation:**
+ROC Interpretation:
 
-- **ROC > 0**: Price higher than N periods ago (positive momentum)
-- **ROC < 0**: Price lower than N periods ago (negative momentum)
-- **ROC magnitude**: Speed of price change
-- **Threshold**: Minimum momentum required (reduces noise)
+- ROC > 0: Price higher than N periods ago (positive momentum)
+- ROC < 0: Price lower than N periods ago (negative momentum)
+- ROC magnitude: Speed of price change
+- Threshold: Minimum momentum required (reduces noise)
 
-**Parameter Selection:**
+Parameter Selection:
 
-- **Shorter ROC** (9-10): More responsive momentum
-- **Longer ROC** (15-20): Smoother momentum, fewer whipsaws
-- **Shorter MA** (20-30): Tighter trend definition, more trades
-- **Longer MA** (100-200): Only trade in major trends
-- **Positive threshold** (+1% to +2%): Require minimum upward momentum
-- **Zero threshold**: Any momentum in trend direction qualifies
+- Shorter ROC (9-10): More responsive momentum
+- Longer ROC (15-20): Smoother momentum, fewer whipsaws
+- Shorter MA (20-30): Tighter trend definition, more trades
+- Longer MA (100-200): Only trade in major trends
+- Positive threshold (+1% to +2%): Require minimum upward momentum
+- Zero threshold: Any momentum in trend direction qualifies
 
-**Example:**
+Example:
 
 ```nim
 import tzutrader
@@ -422,7 +422,7 @@ echo "Dual confirmation trades: ", report.totalTrades
 echo "Win rate: ", report.winRate, "%"
 ```
 
-**Monitoring Alignment:**
+Monitoring Alignment:
 
 ```nim
 # Track when momentum and trend align
@@ -446,7 +446,7 @@ for bar in data:
       echo "Full bearish alignment"
 ```
 
-**Comparing with Single-Factor:**
+Comparing with Single-Factor:
 
 ```nim
 # Compare dual momentum vs pure ROC
@@ -484,20 +484,20 @@ echo "Filter rate: ", (1.0 - dualSignals.float64 / pureSignals.float64) * 100.0,
 
 | Strategy | Primary Signal | Filter/Confirmation | Mode Options | Complexity | Best For |
 |----------|----------------|---------------------|--------------|------------|----------|
-| **Keltner** | Price bands | ATR volatility | Breakout/Reversion | Medium | Volatility-driven markets |
-| **Volume Breakout** | Price breakout | Volume surge | Single mode | Medium | Liquid, high-volume markets |
-| **Dual Momentum** | ROC momentum | MA trend | Single mode | Medium | Trending markets with pullbacks |
+| Keltner | Price bands | ATR volatility | Breakout/Reversion | Medium | Volatility-driven markets |
+| Volume Breakout | Price breakout | Volume surge | Single mode | Medium | Liquid, high-volume markets |
+| Dual Momentum | ROC momentum | MA trend | Single mode | Medium | Trending markets with pullbacks |
 
-**Strategy Selection:**
+Strategy Selection:
 
-- **Keltner (Breakout)**: Low volatility → breakout expected
-- **Keltner (Reversion)**: High volatility → mean reversion expected
-- **Volume Breakout**: Need volume confirmation, liquid markets only
-- **Dual Momentum**: Want momentum with trend, avoid counter-trend trades
+- Keltner (Breakout): Low volatility → breakout expected
+- Keltner (Reversion): High volatility → mean reversion expected
+- Volume Breakout: Need volume confirmation, liquid markets only
+- Dual Momentum: Want momentum with trend, avoid counter-trend trades
 
 ## Benefits of Hybrid Approaches
 
-**Reduced False Signals:**
+Reduced False Signals:
 
 Single-factor strategies produce many false signals:
 - Price breakouts without volume often fail
@@ -506,7 +506,7 @@ Single-factor strategies produce many false signals:
 
 Hybrid strategies filter these out.
 
-**Higher Win Rates:**
+Higher Win Rates:
 
 By requiring multiple confirmations:
 - Keltner: Price extreme + volatility adaptation
@@ -515,7 +515,7 @@ By requiring multiple confirmations:
 
 Win rates typically improve 10-20% vs single-factor approaches.
 
-**Trade-offs:**
+Trade-offs:
 
 - Fewer total trades (stricter requirements)
 - Potentially later entries (waiting for confirmation)

@@ -16,11 +16,13 @@ TzuTrader includes indicators across several categories:
 
 Trend indicators help identify the direction and strength of price movements. They answer the question: "Is the price generally going up, down, or sideways?"
 
-**Examples:**
+Examples:
+
 - Moving averages (SMA, EMA, WMA)
 - MACD (Moving Average Convergence Divergence)
 
-**Use cases:**
+Use cases:
+
 - Identifying trend direction
 - Determining trend strength
 - Spotting trend reversals
@@ -29,11 +31,13 @@ Trend indicators help identify the direction and strength of price movements. Th
 
 Momentum indicators measure the speed and strength of price changes. They help identify whether buying or selling pressure is building or waning.
 
-**Examples:**
+Examples:
+
 - RSI (Relative Strength Index)
 - ROC (Rate of Change)
 
-**Use cases:**
+Use cases:
+
 - Identifying overbought/oversold conditions
 - Detecting divergences (price vs. momentum)
 - Confirming trend strength
@@ -42,12 +46,14 @@ Momentum indicators measure the speed and strength of price changes. They help i
 
 Volatility indicators measure how much and how quickly prices are changing. High volatility means prices are moving dramatically, while low volatility suggests stable prices.
 
-**Examples:**
+Examples:
+
 - ATR (Average True Range)
 - Bollinger Bands
 - Standard Deviation
 
-**Use cases:**
+Use cases:
+
 - Setting stop-loss distances
 - Adjusting position sizes
 - Identifying breakout opportunities
@@ -56,12 +62,14 @@ Volatility indicators measure how much and how quickly prices are changing. High
 
 Volume indicators analyze trading activity. They help confirm price movements and identify potential reversals.
 
-**Examples:**
+Examples:
+
 - OBV (On-Balance Volume)
 - AD (Accumulation/Distribution)
 - MFI (Money Flow Index)
 
-**Use cases:**
+Use cases:
+
 - Confirming price trends
 - Detecting divergences
 - Identifying accumulation/distribution
@@ -70,25 +78,29 @@ Volume indicators analyze trading activity. They help confirm price movements an
 
 TzuTrader includes 25 technical indicators across all major categories:
 
-**Advanced Moving Averages:**
+Advanced Moving Averages:
+
 - TRIMA (Triangular MA) - Double-smoothed for minimal noise
 - DEMA (Double Exponential MA) - Reduced lag
 - TEMA (Triple Exponential MA) - Minimal lag
 - KAMA (Kaufman Adaptive MA) - Adapts to market conditions
 
-**Advanced Momentum:**
+Advanced Momentum:
+
 - STOCH (Stochastic Oscillator)
 - CCI (Commodity Channel Index)
 - CMO (Chande Momentum Oscillator)
 - STOCHRSI (Stochastic RSI)
 - MOM (Simple Momentum)
 
-**Volatility & Volume:**
+Volatility & Volume:
+
 - TRANGE (True Range)
 - NATR (Normalized ATR)
 - AROON (Aroon Indicator)
 
-**Trend Analysis:**
+Trend Analysis:
+
 - ADX (Average Directional Index)
 - PPO (Percentage Price Oscillator)
 
@@ -96,7 +108,7 @@ For complete details on all indicators, see the [Indicators Reference Guide](../
 
 ## Streaming Architecture
 
-TzuTrader uses a **streaming-only architecture** where indicators update one data point at a time:
+TzuTrader uses a streaming-only architecture where indicators update one data point at a time:
 
 ```nim
 import tzutrader
@@ -110,30 +122,20 @@ for price in incomingPrices:
     echo "Current SMA: ", currentSMA
 ```
 
-**When to use (always!):**
+When to use (always!):
+
 - Backtesting (process historical data sequentially)
 - Live trading (process real-time data as it arrives)
 - Analysis and research
 
-**Advantages:**
-- **O(1) Memory**: Constant memory usage, never grows
-- **O(1) Updates**: Each new data point processed in constant time
-- **Unified API**: Same code for backtesting and live trading
-- **Historical Access**: Access previous values via `sma[-1]`, `sma[-2]`, etc.
-- **Production Ready**: Can run indefinitely without memory issues
-```
+Advantages:
 
-**When to use:**
-- Live trading bots
-- Real-time monitoring
-- Memory-constrained environments
-- Processing data as it arrives
-
-**Advantages:**
-- Lower memory usage
-- Works with live data streams
-- More realistic for bot development
-
+- O(1) Memory: Constant memory usage, never grows
+- O(1) Updates: Each new data point processed in constant time
+- Unified API: Same code for backtesting and live trading
+- Historical Access: Access previous values via `sma[-1]`, `sma[-2]`, etc.
+- Production Ready: Can run indefinitely without memory issues
+ 
 ## Common Indicators Explained
 
 This section explains the most fundamental indicators. TzuTrader provides 25 indicators in total—this section covers the essential ones to understand first. For complete coverage of all indicators, see the [Reference Guide](../reference_guide/03_indicators.md).
@@ -160,12 +162,14 @@ for price in [100.0, 102.0, 104.0, 106.0, 108.0, 110.0]:
 # After 5th price: SMA = (100 + 102 + 104 + 106 + 108) / 5 = 104.0
 ```
 
-**Characteristics:**
+Characteristics:
+
 - Treats all prices equally
 - Smooth, but lags current price
 - Easy to understand and interpret
 
-**Use cases:**
+Use cases:
+
 - Identifying trend direction (price above MA = uptrend)
 - Support and resistance levels
 - Crossover strategies
@@ -183,17 +187,19 @@ for price in prices:
     echo "EMA: ", emaVal
 ```
 
-**Characteristics:**
+Characteristics:
+
 - More responsive to recent prices
 - Less lag than SMA
 - More complex calculation
 
-**Use cases:**
+Use cases:
+
 - Faster trend identification
 - Short-term trading
 - MACD calculation
 
-**SMA vs EMA:** SMA is simpler and smoother. EMA responds faster to price changes but can be more volatile. For long-term trends, SMA works well. For short-term trading, EMA may be preferable.
+SMA vs EMA: SMA is simpler and smoother. EMA responds faster to price changes but can be more volatile. For long-term trends, SMA works well. For short-term trading, EMA may be preferable.
 
 ### RSI (Relative Strength Index)
 
@@ -211,22 +217,26 @@ for price in [100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0, 108.0]:
     echo "RSI: ", rsiVal
 ```
 
-**Interpretation:**
-- **Above 70**: Overbought (may reverse downward)
-- **Below 30**: Oversold (may reverse upward)
-- **50**: Neutral
+Interpretation:
 
-**Characteristics:**
+- Above 70: Overbought (may reverse downward)
+- Below 30: Oversold (may reverse upward)
+- 50: Neutral
+
+Characteristics:
+
 - Oscillates between 0 and 100
 - Identifies momentum extremes
 - Works best in ranging markets
 
-**Use cases:**
+Use cases:
+
 - Mean reversion strategies (buy low, sell high)
 - Divergence detection (price makes new high but RSI doesn't)
 - Confirmation of trend strength
 
-**Limitations:**
+Limitations:
+
 - Can stay overbought/oversold during strong trends
 - Requires sufficient data (period + 1 bars minimum)
 - Threshold levels (30/70) are conventional, not universal
@@ -235,9 +245,9 @@ for price in [100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0, 108.0]:
 
 MACD shows the relationship between two moving averages. It consists of three components:
 
-1. **MACD Line**: Fast EMA minus slow EMA
-2. **Signal Line**: EMA of the MACD line
-3. **Histogram**: MACD line minus signal line
+1. MACD Line: Fast EMA minus slow EMA
+2. Signal Line: EMA of the MACD line
+3. Histogram: MACD line minus signal line
 
 ```nim
 import tzutrader
@@ -252,18 +262,21 @@ for price in prices:
     echo "Histogram: ", macdResult.histogram
 ```
 
-**Interpretation:**
-- **MACD crosses above signal**: Bullish (potential buy)
-- **MACD crosses below signal**: Bearish (potential sell)
-- **Histogram expanding**: Trend strengthening
-- **Histogram contracting**: Trend weakening
+Interpretation:
 
-**Use cases:**
+- MACD crosses above signal: Bullish (potential buy)
+- MACD crosses below signal: Bearish (potential sell)
+- Histogram expanding: Trend strengthening
+- Histogram contracting: Trend weakening
+
+Use cases:
+
 - Trend following strategies
 - Crossover signals
 - Momentum confirmation
 
-**Characteristics:**
+Characteristics:
+
 - Combines trend and momentum
 - No upper/lower bounds
 - Requires substantial historical data
@@ -279,18 +292,21 @@ let prices = @[/* ... */]
 let (upper, middle, lower) = bollinger(prices, period = 20, stdDev = 2.0)
 ```
 
-**Interpretation:**
-- **Price at upper band**: Potentially overbought
-- **Price at lower band**: Potentially oversold
-- **Bands narrow**: Low volatility (squeeze)
-- **Bands wide**: High volatility
+Interpretation:
 
-**Use cases:**
+- Price at upper band: Potentially overbought
+- Price at lower band: Potentially oversold
+- Bands narrow: Low volatility (squeeze)
+- Bands wide: High volatility
+
+Use cases:
+
 - Mean reversion (buy at lower band, sell at upper band)
 - Breakout detection (price moves outside bands)
 - Volatility assessment
 
-**Characteristics:**
+Characteristics:
+
 - Adapts to volatility automatically
 - Provides context (bands are relative to recent price action)
 - Works in both trending and ranging markets
@@ -310,16 +326,19 @@ let closes = data.mapIt(it.close)
 let atrValues = atr(highs, lows, closes, period = 14)
 ```
 
-**Interpretation:**
+Interpretation:
+
 - Higher ATR = Higher volatility
 - Lower ATR = Lower volatility
 
-**Use cases:**
+Use cases:
+
 - Setting stop-loss distances (e.g., 2x ATR)
 - Position sizing (reduce size when volatility increases)
 - Identifying consolidation vs. breakout periods
 
-**Characteristics:**
+Characteristics:
+
 - Not directional (doesn't indicate trend)
 - Absolute value (depends on price level)
 - Smoothed, not reactive to single outliers
@@ -328,16 +347,19 @@ let atrValues = atr(highs, lows, closes, period = 14)
 
 Most indicators have a "period" parameter that controls how much historical data they use. Shorter periods are more responsive but noisier. Longer periods are smoother but lag more.
 
-**Common conventions:**
-- **Short term**: 5-20 periods
-- **Medium term**: 20-50 periods
-- **Long term**: 50-200 periods
+Common conventions:
 
-**Example:**
+- Short term: 5-20 periods
+- Medium term: 20-50 periods
+- Long term: 50-200 periods
+
+Example:
+
 - SMA(10) responds quickly but gives many signals
 - SMA(200) is very smooth but slow to react
 
-**Guidance:**
+Guidance:
+
 - Start with conventional values (RSI: 14, SMA: 50/200, MACD: 12/26/9)
 - Match period to your trading timeframe (day traders use shorter periods)
 - Avoid excessive optimization (testing hundreds of period combinations)
@@ -348,13 +370,15 @@ The "best" period depends on the market, timeframe, and strategy. No single valu
 
 It's tempting to test many indicator combinations and choose the one that performed best historically. This practice, called over-optimization or curve-fitting, creates strategies that work great on past data but fail on new data.
 
-**Warning signs:**
+Warning signs:
+
 - Testing 50+ parameter combinations
 - Choosing parameters based solely on backtest results
 - Complex rules added to handle specific historical events
 - Strategy performs much better than simple buy-and-hold
 
-**Better approach:**
+Better approach:
+
 - Use conventional indicator settings as a starting point
 - Make small, logical adjustments if needed
 - Test on out-of-sample data (data not used for development)
@@ -363,23 +387,24 @@ It's tempting to test many indicator combinations and choose the one that perfor
 ## Combining Indicators
 
 Strategies often combine multiple indicators to confirm signals. For example:
+
 - Use MACD for trend direction
 - Use RSI to time entries
 - Use ATR for stop-loss placement
 
 However, more indicators don't guarantee better results. Each additional indicator adds complexity and can lead to fewer trading opportunities.
 
-**Guideline:** Start with one or two indicators. Add more only if they clearly improve results and make logical sense together.
+Guideline: Start with one or two indicators. Add more only if they clearly improve results and make logical sense together.
 
 ## Indicator Limitations
 
 Technical indicators have inherent limitations:
 
-1. **Historical data only**: Indicators use past prices to predict future movements, which isn't always reliable
-2. **Lag**: Most indicators lag price, meaning signals occur after moves have started
-3. **False signals**: No indicator is 100% accurate
-4. **Market regime dependence**: Indicators that work in trending markets may fail in ranging markets
-5. **No context**: Indicators don't know about earnings reports, economic data, or other fundamental factors
+1. Historical data only: Indicators use past prices to predict future movements, which isn't always reliable
+2. Lag: Most indicators lag price, meaning signals occur after moves have started
+3. False signals: No indicator is 100% accurate
+4. Market regime dependence: Indicators that work in trending markets may fail in ranging markets
+5. No context: Indicators don't know about earnings reports, economic data, or other fundamental factors
 
 Indicators are tools for systematic decision-making, not crystal balls. They work best when combined with proper risk management and realistic expectations.
 
