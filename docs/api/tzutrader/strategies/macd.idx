@@ -1,0 +1,6 @@
+nimTitle	macd	tzutrader/strategies/macd.html	module src/tzutrader/strategies/macd		0
+nim	MACDStrategy	tzutrader/strategies/macd.html#MACDStrategy	type MACDStrategy		9
+nim	newMACDStrategy	tzutrader/strategies/macd.html#newMACDStrategy,int,int,int,string	proc newMACDStrategy(fastPeriod: int = 12; slowPeriod: int = 26;\n                signalPeriod: int = 9; symbol: string = ""): MACDStrategy		18
+nim	analyze	tzutrader/strategies/macd.html#analyze.e,MACDStrategy,seq[OHLCV]	method analyze(s: MACDStrategy; data: seq[OHLCV]): seq[Signal]		41
+nim	onBar	tzutrader/strategies/macd.html#onBar.e,MACDStrategy,OHLCV	method onBar(s: MACDStrategy; bar: OHLCV): Signal		45
+nim	reset	tzutrader/strategies/macd.html#reset.e,MACDStrategy	method reset(s: MACDStrategy)		80

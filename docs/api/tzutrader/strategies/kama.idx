@@ -1,0 +1,6 @@
+nimTitle	kama	tzutrader/strategies/kama.html	module src/tzutrader/strategies/kama		0
+nim	KAMAStrategy	tzutrader/strategies/kama.html#KAMAStrategy	type KAMAStrategy		9
+nim	newKAMAStrategy	tzutrader/strategies/kama.html#newKAMAStrategy,int,int,int,string	proc newKAMAStrategy(period: int = 10; fastPeriod: int = 2; slowPeriod: int = 30;\n                symbol: string = ""): KAMAStrategy		19
+nim	analyze	tzutrader/strategies/kama.html#analyze.e,KAMAStrategy,seq[OHLCV]	method analyze(s: KAMAStrategy; data: seq[OHLCV]): seq[Signal]		42
+nim	onBar	tzutrader/strategies/kama.html#onBar.e,KAMAStrategy,OHLCV	method onBar(s: KAMAStrategy; bar: OHLCV): Signal		46
+nim	reset	tzutrader/strategies/kama.html#reset.e,KAMAStrategy	method reset(s: KAMAStrategy)		96

@@ -1,0 +1,6 @@
+nimTitle	cci	tzutrader/strategies/cci.html	module src/tzutrader/strategies/cci		0
+nim	CCIStrategy	tzutrader/strategies/cci.html#CCIStrategy	type CCIStrategy		9
+nim	newCCIStrategy	tzutrader/strategies/cci.html#newCCIStrategy,int,float64,float64,string	proc newCCIStrategy(period: int = 20; oversoldLevel: float64 = -100.0;\n               overboughtLevel: float64 = 100.0; symbol: string = ""): CCIStrategy		19
+nim	analyze	tzutrader/strategies/cci.html#analyze.e,CCIStrategy,seq[OHLCV]	method analyze(s: CCIStrategy; data: seq[OHLCV]): seq[Signal]		43
+nim	onBar	tzutrader/strategies/cci.html#onBar.e,CCIStrategy,OHLCV	method onBar(s: CCIStrategy; bar: OHLCV): Signal		47
+nim	reset	tzutrader/strategies/cci.html#reset.e,CCIStrategy	method reset(s: CCIStrategy)		92

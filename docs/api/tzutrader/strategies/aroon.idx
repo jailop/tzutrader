@@ -1,0 +1,6 @@
+nimTitle	aroon	tzutrader/strategies/aroon.html	module src/tzutrader/strategies/aroon		0
+nim	AroonStrategy	tzutrader/strategies/aroon.html#AroonStrategy	type AroonStrategy		9
+nim	newAroonStrategy	tzutrader/strategies/aroon.html#newAroonStrategy,int,float64,float64,string	proc newAroonStrategy(period: int = 25; upThreshold: float64 = 70.0;\n                 downThreshold: float64 = 30.0; symbol: string = ""): AroonStrategy		18
+nim	analyze	tzutrader/strategies/aroon.html#analyze.e,AroonStrategy,seq[OHLCV]	method analyze(s: AroonStrategy; data: seq[OHLCV]): seq[Signal]		41
+nim	onBar	tzutrader/strategies/aroon.html#onBar.e,AroonStrategy,OHLCV	method onBar(s: AroonStrategy; bar: OHLCV): Signal		45
+nim	reset	tzutrader/strategies/aroon.html#reset.e,AroonStrategy	method reset(s: AroonStrategy)		92

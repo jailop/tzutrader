@@ -1,0 +1,40 @@
+nimTitle	strategy_builder	tzutrader/declarative/strategy_builder.html	module src/tzutrader/declarative/strategy_builder		0
+nim	ikMA	tzutrader/declarative/strategy_builder.html#ikMA	IndicatorKind.ikMA		11
+nim	ikEMA	tzutrader/declarative/strategy_builder.html#ikEMA	IndicatorKind.ikEMA		11
+nim	ikRSI	tzutrader/declarative/strategy_builder.html#ikRSI	IndicatorKind.ikRSI		11
+nim	ikMACD	tzutrader/declarative/strategy_builder.html#ikMACD	IndicatorKind.ikMACD		11
+nim	ikBollinger	tzutrader/declarative/strategy_builder.html#ikBollinger	IndicatorKind.ikBollinger		11
+nim	ikSTOCH	tzutrader/declarative/strategy_builder.html#ikSTOCH	IndicatorKind.ikSTOCH		11
+nim	ikCCI	tzutrader/declarative/strategy_builder.html#ikCCI	IndicatorKind.ikCCI		11
+nim	ikMFI	tzutrader/declarative/strategy_builder.html#ikMFI	IndicatorKind.ikMFI		11
+nim	ikADX	tzutrader/declarative/strategy_builder.html#ikADX	IndicatorKind.ikADX		11
+nim	ikATR	tzutrader/declarative/strategy_builder.html#ikATR	IndicatorKind.ikATR		11
+nim	ikOBV	tzutrader/declarative/strategy_builder.html#ikOBV	IndicatorKind.ikOBV		11
+nim	ikAROON	tzutrader/declarative/strategy_builder.html#ikAROON	IndicatorKind.ikAROON		11
+nim	ikPSAR	tzutrader/declarative/strategy_builder.html#ikPSAR	IndicatorKind.ikPSAR		11
+nim	ikTRIMA	tzutrader/declarative/strategy_builder.html#ikTRIMA	IndicatorKind.ikTRIMA		11
+nim	ikDEMA	tzutrader/declarative/strategy_builder.html#ikDEMA	IndicatorKind.ikDEMA		11
+nim	ikTEMA	tzutrader/declarative/strategy_builder.html#ikTEMA	IndicatorKind.ikTEMA		11
+nim	ikKAMA	tzutrader/declarative/strategy_builder.html#ikKAMA	IndicatorKind.ikKAMA		11
+nim	ikMV	tzutrader/declarative/strategy_builder.html#ikMV	IndicatorKind.ikMV		11
+nim	ikSTDEV	tzutrader/declarative/strategy_builder.html#ikSTDEV	IndicatorKind.ikSTDEV		11
+nim	ikTRANGE	tzutrader/declarative/strategy_builder.html#ikTRANGE	IndicatorKind.ikTRANGE		11
+nim	ikNATR	tzutrader/declarative/strategy_builder.html#ikNATR	IndicatorKind.ikNATR		11
+nim	ikAD	tzutrader/declarative/strategy_builder.html#ikAD	IndicatorKind.ikAD		11
+nim	ikMOM	tzutrader/declarative/strategy_builder.html#ikMOM	IndicatorKind.ikMOM		11
+nim	ikCMO	tzutrader/declarative/strategy_builder.html#ikCMO	IndicatorKind.ikCMO		11
+nim	ikSTOCHRSI	tzutrader/declarative/strategy_builder.html#ikSTOCHRSI	IndicatorKind.ikSTOCHRSI		11
+nim	ikPPO	tzutrader/declarative/strategy_builder.html#ikPPO	IndicatorKind.ikPPO		11
+nim	IndicatorKind	tzutrader/declarative/strategy_builder.html#IndicatorKind	enum IndicatorKind		11
+nim	IndicatorInstance	tzutrader/declarative/strategy_builder.html#IndicatorInstance	type IndicatorInstance		28
+nim	DeclarativeStrategy	tzutrader/declarative/strategy_builder.html#DeclarativeStrategy	type DeclarativeStrategy		90
+nim	BuildError	tzutrader/declarative/strategy_builder.html#BuildError	object BuildError		99
+nim	createIndicator	tzutrader/declarative/strategy_builder.html#createIndicator,IndicatorYAML	proc createIndicator(indicatorDef: IndicatorYAML): IndicatorInstance		124
+nim	getValue	tzutrader/declarative/strategy_builder.html#getValue,IndicatorInstance,string	proc getValue(ind: IndicatorInstance; subfield: string = ""): float64		261
+nim	updateIndicator	tzutrader/declarative/strategy_builder.html#updateIndicator,IndicatorInstance,OHLCV,string	proc updateIndicator(ind: IndicatorInstance; bar: OHLCV; source: string = "close")		355
+nim	parseReference	tzutrader/declarative/strategy_builder.html#parseReference,DeclarativeStrategy,string,OHLCV	proc parseReference(s: DeclarativeStrategy; refStr: string; bar: OHLCV): float64		427
+nim	evaluateCondition	tzutrader/declarative/strategy_builder.html#evaluateCondition,DeclarativeStrategy,ConditionYAML,OHLCV	proc evaluateCondition(s: DeclarativeStrategy; condition: ConditionYAML; bar: OHLCV): bool		476
+nim	buildStrategy	tzutrader/declarative/strategy_builder.html#buildStrategy,StrategyYAML	proc buildStrategy(strategyDef: StrategyYAML): DeclarativeStrategy		550
+nim	onBar	tzutrader/declarative/strategy_builder.html#onBar.e,DeclarativeStrategy,OHLCV	method onBar(s: DeclarativeStrategy; bar: OHLCV): Signal		579
+nim	reset	tzutrader/declarative/strategy_builder.html#reset.e,DeclarativeStrategy	method reset(s: DeclarativeStrategy)		617
+nim	getPositionSizing	tzutrader/declarative/strategy_builder.html#getPositionSizing.e,DeclarativeStrategy	method getPositionSizing(s: DeclarativeStrategy): tuple[sizingType: PositionSizingType,\n    value: float]		622

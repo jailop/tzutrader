@@ -1,0 +1,6 @@
+nimTitle	triple_ma	tzutrader/strategies/triple_ma.html	module src/tzutrader/strategies/triple_ma		0
+nim	TripleMAStrategy	tzutrader/strategies/triple_ma.html#TripleMAStrategy	type TripleMAStrategy		9
+nim	newTripleMAStrategy	tzutrader/strategies/triple_ma.html#newTripleMAStrategy,int,int,int,string	proc newTripleMAStrategy(fastPeriod: int = 20; mediumPeriod: int = 50;\n                    slowPeriod: int = 200; symbol: string = ""): TripleMAStrategy		21
+nim	onBar	tzutrader/strategies/triple_ma.html#onBar.e,TripleMAStrategy,OHLCV	method onBar(s: TripleMAStrategy; bar: OHLCV): Signal		49
+nim	reset	tzutrader/strategies/triple_ma.html#reset.e,TripleMAStrategy	method reset(s: TripleMAStrategy)		91
+nim	name	tzutrader/strategies/triple_ma.html#name.e,TripleMAStrategy	method name(s: TripleMAStrategy): string		99

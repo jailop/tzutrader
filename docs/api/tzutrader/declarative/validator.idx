@@ -1,0 +1,18 @@
+nimTitle	validator	tzutrader/declarative/validator.html	module src/tzutrader/declarative/validator		0
+nim	ValidationError	tzutrader/declarative/validator.html#ValidationError	object ValidationError		5
+nim	wlInfo	tzutrader/declarative/validator.html#wlInfo	WarningLevel.wlInfo		8
+nim	wlLow	tzutrader/declarative/validator.html#wlLow	WarningLevel.wlLow		8
+nim	wlMedium	tzutrader/declarative/validator.html#wlMedium	WarningLevel.wlMedium		8
+nim	wlHigh	tzutrader/declarative/validator.html#wlHigh	WarningLevel.wlHigh		8
+nim	WarningLevel	tzutrader/declarative/validator.html#WarningLevel	enum WarningLevel		8
+nim	ValidationWarning	tzutrader/declarative/validator.html#ValidationWarning	object ValidationWarning		15
+nim	ValidationResult	tzutrader/declarative/validator.html#ValidationResult	object ValidationResult		21
+nim	newValidationResult	tzutrader/declarative/validator.html#newValidationResult	proc newValidationResult(): ValidationResult		27
+nim	addError	tzutrader/declarative/validator.html#addError,ValidationResult,string	proc addError(vr: var ValidationResult; msg: string)		31
+nim	addWarning	tzutrader/declarative/validator.html#addWarning,ValidationResult,WarningLevel,string,string	proc addWarning(vr: var ValidationResult; level: WarningLevel; msg: string;\n           suggestion: string = "")		36
+nim	validateMetadata	tzutrader/declarative/validator.html#validateMetadata,MetadataYAML	proc validateMetadata(metadata: MetadataYAML): ValidationResult		42
+nim	validateIndicators	tzutrader/declarative/validator.html#validateIndicators,seq[IndicatorYAML]	proc validateIndicators(indicators: seq[IndicatorYAML]): ValidationResult		49
+nim	validateCondition	tzutrader/declarative/validator.html#validateCondition,ConditionYAML,HashSet[string]	proc validateCondition(condition: ConditionYAML; indicatorIds: HashSet[string]): ValidationResult		71
+nim	validateRule	tzutrader/declarative/validator.html#validateRule,RuleYAML,HashSet[string]	proc validateRule(rule: RuleYAML; indicatorIds: HashSet[string]): ValidationResult		130
+nim	generateWarnings	tzutrader/declarative/validator.html#generateWarnings,ValidationResult,StrategyYAML	proc generateWarnings(vr: var ValidationResult; strategy: StrategyYAML)		136
+nim	validateStrategy	tzutrader/declarative/validator.html#validateStrategy,StrategyYAML	proc validateStrategy(strategy: StrategyYAML): ValidationResult		138

@@ -1,0 +1,6 @@
+nimTitle	stochastic	tzutrader/strategies/stochastic.html	module src/tzutrader/strategies/stochastic		0
+nim	StochasticStrategy	tzutrader/strategies/stochastic.html#StochasticStrategy	type StochasticStrategy		9
+nim	newStochasticStrategy	tzutrader/strategies/stochastic.html#newStochasticStrategy,int,int,float64,float64,string	proc newStochasticStrategy(kPeriod: int = 14; dPeriod: int = 3;\n                      oversold: float64 = 20.0; overbought: float64 = 80.0;\n                      symbol: string = ""): StochasticStrategy		21
+nim	analyze	tzutrader/strategies/stochastic.html#analyze.e,StochasticStrategy,seq[OHLCV]	method analyze(s: StochasticStrategy; data: seq[OHLCV]): seq[Signal]		49
+nim	onBar	tzutrader/strategies/stochastic.html#onBar.e,StochasticStrategy,OHLCV	method onBar(s: StochasticStrategy; bar: OHLCV): Signal		53
+nim	reset	tzutrader/strategies/stochastic.html#reset.e,StochasticStrategy	method reset(s: StochasticStrategy)		102

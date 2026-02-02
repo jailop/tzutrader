@@ -1,0 +1,13 @@
+nimTitle	base	tzutrader/strategies/base.html	module src/tzutrader/strategies/base		0
+nim	pstDefault	tzutrader/strategies/base.html#pstDefault	PositionSizingType.pstDefault		8
+nim	pstFixed	tzutrader/strategies/base.html#pstFixed	PositionSizingType.pstFixed		8
+nim	pstPercent	tzutrader/strategies/base.html#pstPercent	PositionSizingType.pstPercent		8
+nim	PositionSizingType	tzutrader/strategies/base.html#PositionSizingType	enum PositionSizingType		8
+nim	Strategy	tzutrader/strategies/base.html#Strategy	type Strategy		14
+nim	name	tzutrader/strategies/base.html#name.e,Strategy	method name(s: Strategy): string		27
+nim	analyze	tzutrader/strategies/base.html#analyze.e,Strategy,seq[OHLCV]	method analyze(s: Strategy; data: seq[OHLCV]): seq[Signal]		31
+nim	onBar	tzutrader/strategies/base.html#onBar.e,Strategy,OHLCV	method onBar(s: Strategy; bar: OHLCV): Signal		46
+nim	reset	tzutrader/strategies/base.html#reset.e,Strategy	method reset(s: Strategy)		56
+nim	getPositionSizing	tzutrader/strategies/base.html#getPositionSizing.e,Strategy	method getPositionSizing(s: Strategy): tuple[sizingType: PositionSizingType,\n                                      value: float]		60
+nim	setRiskManagement	tzutrader/strategies/base.html#setRiskManagement.e,Strategy,StopLossRule,TakeProfitRule	method setRiskManagement(s: Strategy; stopLoss: StopLossRule = nil;\n                  takeProfit: TakeProfitRule = nil)		73
+nim	getIndicatorValue	tzutrader/strategies/base.html#getIndicatorValue.e,Strategy,string	method getIndicatorValue(s: Strategy; indicatorId: string): float		97

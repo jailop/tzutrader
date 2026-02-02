@@ -1,0 +1,6 @@
+nimTitle	parabolic_sar	tzutrader/strategies/parabolic_sar.html	module src/tzutrader/strategies/parabolic_sar		0
+nim	ParabolicSARStrategy	tzutrader/strategies/parabolic_sar.html#ParabolicSARStrategy	type ParabolicSARStrategy		9
+nim	newParabolicSARStrategy	tzutrader/strategies/parabolic_sar.html#newParabolicSARStrategy,float64,float64,string	proc newParabolicSARStrategy(acceleration: float64 = 0.02; maximum: float64 = 0.2;\n                        symbol: string = ""): ParabolicSARStrategy		18
+nim	onBar	tzutrader/strategies/parabolic_sar.html#onBar.e,ParabolicSARStrategy,OHLCV	method onBar(s: ParabolicSARStrategy; bar: OHLCV): Signal		38
+nim	reset	tzutrader/strategies/parabolic_sar.html#reset.e,ParabolicSARStrategy	method reset(s: ParabolicSARStrategy)		73
+nim	name	tzutrader/strategies/parabolic_sar.html#name.e,ParabolicSARStrategy	method name(s: ParabolicSARStrategy): string		79

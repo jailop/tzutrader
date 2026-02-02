@@ -1,0 +1,6 @@
+nimTitle	bollinger	tzutrader/strategies/bollinger.html	module src/tzutrader/strategies/bollinger		0
+nim	BollingerStrategy	tzutrader/strategies/bollinger.html#BollingerStrategy	type BollingerStrategy		9
+nim	newBollingerStrategy	tzutrader/strategies/bollinger.html#newBollingerStrategy,int,float64,string	proc newBollingerStrategy(period: int = 20; stdDev: float64 = 2.0;\n                     symbol: string = ""): BollingerStrategy		17
+nim	analyze	tzutrader/strategies/bollinger.html#analyze.e,BollingerStrategy,seq[OHLCV]	method analyze(s: BollingerStrategy; data: seq[OHLCV]): seq[Signal]		37
+nim	onBar	tzutrader/strategies/bollinger.html#onBar.e,BollingerStrategy,OHLCV	method onBar(s: BollingerStrategy; bar: OHLCV): Signal		41
+nim	reset	tzutrader/strategies/bollinger.html#reset.e,BollingerStrategy	method reset(s: BollingerStrategy)		77

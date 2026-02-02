@@ -1,0 +1,6 @@
+nimTitle	mfi	tzutrader/strategies/mfi.html	module src/tzutrader/strategies/mfi		0
+nim	MFIStrategy	tzutrader/strategies/mfi.html#MFIStrategy	type MFIStrategy		9
+nim	newMFIStrategy	tzutrader/strategies/mfi.html#newMFIStrategy,int,float64,float64,string	proc newMFIStrategy(period: int = 14; oversold: float64 = 20.0;\n               overbought: float64 = 80.0; symbol: string = ""): MFIStrategy		18
+nim	analyze	tzutrader/strategies/mfi.html#analyze.e,MFIStrategy,seq[OHLCV]	method analyze(s: MFIStrategy; data: seq[OHLCV]): seq[Signal]		41
+nim	onBar	tzutrader/strategies/mfi.html#onBar.e,MFIStrategy,OHLCV	method onBar(s: MFIStrategy; bar: OHLCV): Signal		45
+nim	reset	tzutrader/strategies/mfi.html#reset.e,MFIStrategy	method reset(s: MFIStrategy)		85

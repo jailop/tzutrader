@@ -1,0 +1,4 @@
+nimTitle	parser	tzutrader/screener/parser.html	module src/tzutrader/screener/parser		0
+nim	ScreenerParseError	tzutrader/screener/parser.html#ScreenerParseError	object ScreenerParseError		9
+nim	parseScreenerYAML	tzutrader/screener/parser.html#parseScreenerYAML,string	proc parseScreenerYAML(yamlContent: string): ScreenerConfig		311
+nim	parseScreenerYAMLFile	tzutrader/screener/parser.html#parseScreenerYAMLFile,string	proc parseScreenerYAMLFile(filename: string): ScreenerConfig		382

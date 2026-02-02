@@ -1,0 +1,16 @@
+nimTitle	exports	tzutrader/exports.html	module src/tzutrader/exports		0
+nim	toJson	tzutrader/exports.html#toJson,BacktestReport	proc toJson(report: BacktestReport): JsonNode		9
+nim	toJson	tzutrader/exports.html#toJson,ScanResult	proc toJson(scanResult: ScanResult): JsonNode		38
+nim	toJson	tzutrader/exports.html#toJson,seq[ScanResult]	proc toJson(results: seq[ScanResult]): JsonNode		49
+nim	exportJson	tzutrader/exports.html#exportJson,BacktestReport,string	proc exportJson(report: BacktestReport; filename: string)		58
+nim	exportJson	tzutrader/exports.html#exportJson,seq[ScanResult],string	proc exportJson(results: seq[ScanResult]; filename: string)		67
+nim	toCsvHeader	tzutrader/exports.html#toCsvHeader	proc toCsvHeader(): string		76
+nim	toCsvRow	tzutrader/exports.html#toCsvRow,BacktestReport	proc toCsvRow(report: BacktestReport): string		88
+nim	exportCsv	tzutrader/exports.html#exportCsv,BacktestReport,string	proc exportCsv(report: BacktestReport; filename: string)		115
+nim	exportCsv	tzutrader/exports.html#exportCsv,seq[ScanResult],string	proc exportCsv(results: seq[ScanResult]; filename: string)		125
+nim	toJson	tzutrader/exports.html#toJson,TradeLog	proc toJson(log: TradeLog): JsonNode		138
+nim	exportTradeLog	tzutrader/exports.html#exportTradeLog,seq[TradeLog],string	proc exportTradeLog(logs: seq[TradeLog]; filename: string)		153
+nim	exportTradeLogCsv	tzutrader/exports.html#exportTradeLogCsv,seq[TradeLog],string	proc exportTradeLogCsv(logs: seq[TradeLog]; filename: string)		165
+nimgrp	exportcsv	tzutrader/exports.html#exportCsv-procs-all	proc		115
+nimgrp	exportjson	tzutrader/exports.html#exportJson-procs-all	proc		58
+nimgrp	tojson	tzutrader/exports.html#toJson-procs-all	proc		9

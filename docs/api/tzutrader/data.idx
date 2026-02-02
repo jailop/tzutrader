@@ -1,0 +1,73 @@
+nimTitle	data	tzutrader/data.html	module src/tzutrader/data		0
+nim	Int1m	tzutrader/data.html#Int1m	Interval.Int1m		9
+nim	Int5m	tzutrader/data.html#Int5m	Interval.Int5m		9
+nim	Int15m	tzutrader/data.html#Int15m	Interval.Int15m		9
+nim	Int30m	tzutrader/data.html#Int30m	Interval.Int30m		9
+nim	Int1h	tzutrader/data.html#Int1h	Interval.Int1h		9
+nim	Int1d	tzutrader/data.html#Int1d	Interval.Int1d		9
+nim	Int1wk	tzutrader/data.html#Int1wk	Interval.Int1wk		9
+nim	Int1mo	tzutrader/data.html#Int1mo	Interval.Int1mo		9
+nim	Interval	tzutrader/data.html#Interval	enum Interval		9
+nim	DataStreamer	tzutrader/data.html#DataStreamer	type DataStreamer		20
+nim	DataStream	tzutrader/data.html#DataStream	type DataStream		28
+nim	Quote	tzutrader/data.html#Quote	object Quote		37
+nim	toSeconds	tzutrader/data.html#toSeconds,Interval	proc toSeconds(interval: Interval): int64		52
+nim	maxHistory	tzutrader/data.html#maxHistory,Interval	proc maxHistory(interval: Interval): int64		64
+nim	newDataStream	tzutrader/data.html#newDataStream,string,Interval,bool	proc newDataStream(symbol: string; interval: Interval = Int1d; useCache: bool = true): DataStream		77
+nim	clearCache	tzutrader/data.html#clearCache,DataStream	proc clearCache(ds: DataStream)		91
+nim	isCached	tzutrader/data.html#isCached,DataStream,int64,int64	proc isCached(ds: DataStream; startTime, endTime: int64): bool		97
+nim	addToCache	tzutrader/data.html#addToCache,DataStream,seq[OHLCV]	proc addToCache(ds: DataStream; data: seq[OHLCV])		103
+nim	getCached	tzutrader/data.html#getCached,DataStream,int64,int64	proc getCached(ds: DataStream; startTime, endTime: int64): seq[OHLCV]		115
+nim	generateMockOHLCV	tzutrader/data.html#generateMockOHLCV,string,int64,int64,Interval,float64,float64	proc generateMockOHLCV(symbol: string; startTime, endTime: int64; interval: Interval;\n                  startPrice: float64 = 100.0; volatility: float64 = 0.02): seq[\n    OHLCV]		127
+nim	generateMockQuote	tzutrader/data.html#generateMockQuote,string,float64	proc generateMockQuote(symbol: string; price: float64 = 100.0): Quote		176
+nim	fetchHistoryYfnim	tzutrader/data.html#fetchHistoryYfnim,DataStream,int64,int64	proc fetchHistoryYfnim(ds: DataStream; startTime, endTime: int64): seq[OHLCV]		232
+nim	fetchQuoteYfnim	tzutrader/data.html#fetchQuoteYfnim,string	proc fetchQuoteYfnim(symbol: string): Quote		253
+nim	fetch	tzutrader/data.html#fetch,DataStream,int64,int64	proc fetch(ds: DataStream; startTime, endTime: int64): seq[OHLCV]		265
+nim	fetch	tzutrader/data.html#fetch,DataStream,int	proc fetch(ds: DataStream; days: int): seq[OHLCV]		279
+nim	latest	tzutrader/data.html#latest,DataStream	proc latest(ds: DataStream): OHLCV		285
+nim	getQuote	tzutrader/data.html#getQuote,string	proc getQuote(symbol: string): Quote		293
+nim	fetchMultiple	tzutrader/data.html#fetchMultiple,seq[string],int64,int64,Interval	proc fetchMultiple(symbols: seq[string]; startTime, endTime: int64;\n              interval: Interval = Int1d): Table[string, seq[OHLCV]]		299
+nim	getQuotes	tzutrader/data.html#getQuotes,seq[string]	proc getQuotes(symbols: seq[string]): Table[string, Quote]		308
+nim	stream	tzutrader/data.html#stream.i,DataStream,int64,int64	iterator stream(ds: DataStream; startTime, endTime: int64): OHLCV		317
+nim	`$`	tzutrader/data.html#$,Interval	proc `$`(interval: Interval): string		325
+nim	`$`	tzutrader/data.html#$,Quote	proc `$`(quote: Quote): string		337
+nim	`$`	tzutrader/data.html#$,DataStream	proc `$`(ds: DataStream): string		347
+nim	writeCSV	tzutrader/data.html#writeCSV,seq[OHLCV],string,bool	proc writeCSV(data: seq[OHLCV]; filename: string; includeHeader: bool = true)		353
+nim	readCSV	tzutrader/data.html#readCSV,string,bool	proc readCSV(filename: string; hasHeader: bool = true): seq[OHLCV]		378
+nim	CSVDataStream	tzutrader/data.html#CSVDataStream	type CSVDataStream		429
+nim	newCSVDataStream	tzutrader/data.html#newCSVDataStream,string,string	proc newCSVDataStream(filename: string; symbol: string = ""): CSVDataStream		437
+nim	reset	tzutrader/data.html#reset,CSVDataStream	proc reset(stream: CSVDataStream)		455
+nim	next	tzutrader/data.html#next,CSVDataStream	proc next(stream: CSVDataStream): OHLCV		459
+nim	hasNext	tzutrader/data.html#hasNext,CSVDataStream	proc hasNext(stream: CSVDataStream): bool		467
+nim	peek	tzutrader/data.html#peek,CSVDataStream	proc peek(stream: CSVDataStream): OHLCV		471
+nim	len	tzutrader/data.html#len,CSVDataStream	proc len(stream: CSVDataStream): int		478
+nim	remaining	tzutrader/data.html#remaining,CSVDataStream	proc remaining(stream: CSVDataStream): int		482
+nim	items	tzutrader/data.html#items.i,CSVDataStream	iterator items(stream: CSVDataStream): OHLCV		486
+nim	`$`	tzutrader/data.html#$,CSVDataStream	proc `$`(stream: CSVDataStream): string		492
+nim	next	tzutrader/data.html#next.e,DataStreamer	method next(ds: DataStreamer): Option[OHLCV]		498
+nim	result	tzutrader/data.html#result.e,DataStreamer	method result(ds: DataStreamer): Option[OHLCV]		506
+nim	reset	tzutrader/data.html#reset.e,DataStreamer	method reset(ds: DataStreamer)		513
+nim	len	tzutrader/data.html#len.e,DataStreamer	method len(ds: DataStreamer): int		517
+nim	hasNext	tzutrader/data.html#hasNext.e,DataStreamer	method hasNext(ds: DataStreamer): bool		521
+nim	CSVFileStreamer	tzutrader/data.html#CSVFileStreamer	type CSVFileStreamer		526
+nim	newCSVFileStreamer	tzutrader/data.html#newCSVFileStreamer,string,string	proc newCSVFileStreamer(filename: string; symbol: string = ""): CSVFileStreamer		530
+nim	`$`	tzutrader/data.html#$,CSVFileStreamer	proc `$`(stream: CSVFileStreamer): string		552
+nim	YFHistory	tzutrader/data.html#YFHistory	type YFHistory		559
+nim	newYFHistory	tzutrader/data.html#newYFHistory,string,string,string,Interval	proc newYFHistory(symbol: string; start: string; endStr: string = "";\n             interval: Interval = Int1d): YFHistory		566
+nim	`$`	tzutrader/data.html#$,YFHistory	proc `$`(stream: YFHistory): string		613
+nim	OneMinute	tzutrader/data.html#OneMinute	CoinbaseGranularity.OneMinute		621
+nim	FiveMinute	tzutrader/data.html#FiveMinute	CoinbaseGranularity.FiveMinute		621
+nim	FifteenMinute	tzutrader/data.html#FifteenMinute	CoinbaseGranularity.FifteenMinute		621
+nim	ThirtyMinute	tzutrader/data.html#ThirtyMinute	CoinbaseGranularity.ThirtyMinute		621
+nim	OneHour	tzutrader/data.html#OneHour	CoinbaseGranularity.OneHour		621
+nim	TwoHour	tzutrader/data.html#TwoHour	CoinbaseGranularity.TwoHour		621
+nim	SixHour	tzutrader/data.html#SixHour	CoinbaseGranularity.SixHour		621
+nim	OneDay	tzutrader/data.html#OneDay	CoinbaseGranularity.OneDay		621
+nim	CoinbaseGranularity	tzutrader/data.html#CoinbaseGranularity	enum CoinbaseGranularity		621
+nim	CBHistory	tzutrader/data.html#CBHistory	type CBHistory		632
+nim	newCBHistory	tzutrader/data.html#newCBHistory,string,string,string,Interval	proc newCBHistory(symbol: string; start: string; endStr: string = "";\n             interval: Interval = Int1d): CBHistory		722
+nim	`$`	tzutrader/data.html#$,CBHistory	proc `$`(stream: CBHistory): string		793
+nim	items	tzutrader/data.html#items.i,DataStreamer	iterator items(ds: DataStreamer): OHLCV		800
+nimgrp	fetch	tzutrader/data.html#fetch-procs-all	proc		265
+nimgrp	$	tzutrader/data.html#$-procs-all	proc		325
+nimgrp	items	tzutrader/data.html#items-iterators-all	iterator		486

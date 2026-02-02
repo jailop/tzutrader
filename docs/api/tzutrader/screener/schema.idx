@@ -1,0 +1,48 @@
+nimTitle	schema	tzutrader/screener/schema.html	module src/tzutrader/screener/schema		0
+nim	tuMinutes	tzutrader/screener/schema.html#tuMinutes	TimeUnit.tuMinutes		7
+nim	tuHours	tzutrader/screener/schema.html#tuHours	TimeUnit.tuHours		7
+nim	tuDays	tzutrader/screener/schema.html#tuDays	TimeUnit.tuDays		7
+nim	tuWeeks	tzutrader/screener/schema.html#tuWeeks	TimeUnit.tuWeeks		7
+nim	tuMonths	tzutrader/screener/schema.html#tuMonths	TimeUnit.tuMonths		7
+nim	tuYears	tzutrader/screener/schema.html#tuYears	TimeUnit.tuYears		7
+nim	TimeUnit	tzutrader/screener/schema.html#TimeUnit	enum TimeUnit		7
+nim	LookbackPeriod	tzutrader/screener/schema.html#LookbackPeriod	object LookbackPeriod		16
+nim	skBuiltIn	tzutrader/screener/schema.html#skBuiltIn	ScreenerStrategyKind.skBuiltIn		21
+nim	skYamlFile	tzutrader/screener/schema.html#skYamlFile	ScreenerStrategyKind.skYamlFile		21
+nim	ScreenerStrategyKind	tzutrader/screener/schema.html#ScreenerStrategyKind	enum ScreenerStrategyKind		21
+nim	ScreenerStrategyConfig	tzutrader/screener/schema.html#ScreenerStrategyConfig	object ScreenerStrategyConfig		26
+nim	dsYahoo	tzutrader/screener/schema.html#dsYahoo	DataSourceType.dsYahoo		35
+nim	dsCoinbase	tzutrader/screener/schema.html#dsCoinbase	DataSourceType.dsCoinbase		35
+nim	dsCsv	tzutrader/screener/schema.html#dsCsv	DataSourceType.dsCsv		35
+nim	DataSourceType	tzutrader/screener/schema.html#DataSourceType	enum DataSourceType		35
+nim	ScreenerDataConfig	tzutrader/screener/schema.html#ScreenerDataConfig	object ScreenerDataConfig		41
+nim	ofTerminal	tzutrader/screener/schema.html#ofTerminal	OutputFormat.ofTerminal		56
+nim	ofCsv	tzutrader/screener/schema.html#ofCsv	OutputFormat.ofCsv		56
+nim	ofJson	tzutrader/screener/schema.html#ofJson	OutputFormat.ofJson		56
+nim	ofMarkdown	tzutrader/screener/schema.html#ofMarkdown	OutputFormat.ofMarkdown		56
+nim	OutputFormat	tzutrader/screener/schema.html#OutputFormat	enum OutputFormat		56
+nim	dlSummary	tzutrader/screener/schema.html#dlSummary	DetailLevel.dlSummary		63
+nim	dlDetailed	tzutrader/screener/schema.html#dlDetailed	DetailLevel.dlDetailed		63
+nim	DetailLevel	tzutrader/screener/schema.html#DetailLevel	enum DetailLevel		63
+nim	ScreenerOutputConfig	tzutrader/screener/schema.html#ScreenerOutputConfig	object ScreenerOutputConfig		68
+nim	ScreenerFilters	tzutrader/screener/schema.html#ScreenerFilters	object ScreenerFilters		76
+nim	ScreenerConfig	tzutrader/screener/schema.html#ScreenerConfig	object ScreenerConfig		82
+nim	ScreenerConfigError	tzutrader/screener/schema.html#ScreenerConfigError	object ScreenerConfigError		90
+nim	newLookbackPeriod	tzutrader/screener/schema.html#newLookbackPeriod,int,TimeUnit	proc newLookbackPeriod(value: int; unit: TimeUnit): LookbackPeriod		93
+nim	newBuiltInStrategy	tzutrader/screener/schema.html#newBuiltInStrategy,string,Table[string,ParamValue]	proc newBuiltInStrategy(name: string; params: Table[string, ParamValue] = initTable[\n    string, ParamValue]()): ScreenerStrategyConfig		97
+nim	newYamlStrategy	tzutrader/screener/schema.html#newYamlStrategy,string	proc newYamlStrategy(filePath: string): ScreenerStrategyConfig		107
+nim	newYahooDataConfig	tzutrader/screener/schema.html#newYahooDataConfig,seq[string],LookbackPeriod,Interval	proc newYahooDataConfig(symbols: seq[string]; lookback: LookbackPeriod;\n                   interval: Interval = Int1d): ScreenerDataConfig		114
+nim	newCoinbaseDataConfig	tzutrader/screener/schema.html#newCoinbaseDataConfig,seq[string],LookbackPeriod,Interval	proc newCoinbaseDataConfig(pairs: seq[string]; lookback: LookbackPeriod;\n                      interval: Interval = Int1h): ScreenerDataConfig		124
+nim	newCsvDataConfig	tzutrader/screener/schema.html#newCsvDataConfig,string,Option[LookbackPeriod]	proc newCsvDataConfig(directory: string;\n                 lookback: Option[LookbackPeriod] = none(LookbackPeriod)): ScreenerDataConfig		134
+nim	newOutputConfig	tzutrader/screener/schema.html#newOutputConfig,OutputFormat,DetailLevel,Option[string],bool,string	proc newOutputConfig(format: OutputFormat = ofTerminal;\n                detailLevel: DetailLevel = dlSummary;\n                filepath: Option[string] = none(string);\n                saveHistory: bool = false;\n                historyDir: string = "screener_history"): ScreenerOutputConfig		144
+nim	newScreenerFilters	tzutrader/screener/schema.html#newScreenerFilters,seq[AlertType],AlertStrength,Option[int]	proc newScreenerFilters(signalTypes: seq[AlertType] = @[atBuySignal, atSellSignal];\n                   minStrength: AlertStrength = asModerate;\n                   topN: Option[int] = none(int)): ScreenerFilters		158
+nim	newScreenerConfig	tzutrader/screener/schema.html#newScreenerConfig,MetadataYAML,seq[ScreenerStrategyConfig],ScreenerDataConfig,ScreenerOutputConfig,ScreenerFilters	proc newScreenerConfig(metadata: MetadataYAML;\n                  strategies: seq[ScreenerStrategyConfig];\n                  data: ScreenerDataConfig;\n                  output: ScreenerOutputConfig = newOutputConfig();\n                  filters: ScreenerFilters = newScreenerFilters()): ScreenerConfig		168
+nim	parseLookbackPeriod	tzutrader/screener/schema.html#parseLookbackPeriod,string	proc parseLookbackPeriod(s: string): LookbackPeriod		182
+nim	parseTimeInterval	tzutrader/screener/schema.html#parseTimeInterval,string	proc parseTimeInterval(s: string): Interval		228
+nim	lookbackToStartDate	tzutrader/screener/schema.html#lookbackToStartDate,LookbackPeriod,DateTime	proc lookbackToStartDate(lookback: LookbackPeriod; currentTime: DateTime = now()): DateTime		250
+nim	lookbackToBarCount	tzutrader/screener/schema.html#lookbackToBarCount,LookbackPeriod,Interval	proc lookbackToBarCount(lookback: LookbackPeriod; interval: Interval): int		273
+nim	`$`	tzutrader/screener/schema.html#$,LookbackPeriod	proc `$`(lookback: LookbackPeriod): string		295
+nim	`$`	tzutrader/screener/schema.html#$,OutputFormat	proc `$`(format: OutputFormat): string		301
+nim	`$`	tzutrader/screener/schema.html#$,DetailLevel	proc `$`(level: DetailLevel): string		309
+nim	ScreenerSummary	tzutrader/screener/schema.html#ScreenerSummary	object ScreenerSummary		316
+nimgrp	$	tzutrader/screener/schema.html#$-procs-all	proc		295

@@ -1,0 +1,9 @@
+nimTitle	keltner	tzutrader/strategies/keltner.html	module src/tzutrader/strategies/keltner		0
+nim	Breakout	tzutrader/strategies/keltner.html#Breakout	KeltnerMode.Breakout		9
+nim	Reversion	tzutrader/strategies/keltner.html#Reversion	KeltnerMode.Reversion		9
+nim	KeltnerMode	tzutrader/strategies/keltner.html#KeltnerMode	enum KeltnerMode		9
+nim	KeltnerChannelStrategy	tzutrader/strategies/keltner.html#KeltnerChannelStrategy	type KeltnerChannelStrategy		15
+nim	newKeltnerChannelStrategy	tzutrader/strategies/keltner.html#newKeltnerChannelStrategy,int,int,float64,KeltnerMode,string	proc newKeltnerChannelStrategy(emaPeriod: int = 20; atrPeriod: int = 10;\n                          multiplier: float64 = 2.0;\n                          mode: KeltnerMode = Breakout; symbol: string = ""): KeltnerChannelStrategy		28
+nim	onBar	tzutrader/strategies/keltner.html#onBar.e,KeltnerChannelStrategy,OHLCV	method onBar(s: KeltnerChannelStrategy; bar: OHLCV): Signal		56
+nim	reset	tzutrader/strategies/keltner.html#reset.e,KeltnerChannelStrategy	method reset(s: KeltnerChannelStrategy)		112
+nim	name	tzutrader/strategies/keltner.html#name.e,KeltnerChannelStrategy	method name(s: KeltnerChannelStrategy): string		120

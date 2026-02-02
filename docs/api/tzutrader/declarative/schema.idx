@@ -1,0 +1,72 @@
+nimTitle	schema	tzutrader/declarative/schema.html	module src/tzutrader/declarative/schema		0
+nim	SourceLocation	tzutrader/declarative/schema.html#SourceLocation	object SourceLocation		4
+nim	MetadataYAML	tzutrader/declarative/schema.html#MetadataYAML	object MetadataYAML		9
+nim	pkInt	tzutrader/declarative/schema.html#pkInt	ParamKind.pkInt		17
+nim	pkFloat	tzutrader/declarative/schema.html#pkFloat	ParamKind.pkFloat		17
+nim	pkString	tzutrader/declarative/schema.html#pkString	ParamKind.pkString		17
+nim	pkBool	tzutrader/declarative/schema.html#pkBool	ParamKind.pkBool		17
+nim	ParamKind	tzutrader/declarative/schema.html#ParamKind	enum ParamKind		17
+nim	ParamValue	tzutrader/declarative/schema.html#ParamValue	object ParamValue		21
+nim	IndicatorYAML	tzutrader/declarative/schema.html#IndicatorYAML	object IndicatorYAML		33
+nim	opLessThan	tzutrader/declarative/schema.html#opLessThan	ComparisonOp.opLessThan		42
+nim	opGreaterThan	tzutrader/declarative/schema.html#opGreaterThan	ComparisonOp.opGreaterThan		42
+nim	opLessEqual	tzutrader/declarative/schema.html#opLessEqual	ComparisonOp.opLessEqual		42
+nim	opGreaterEqual	tzutrader/declarative/schema.html#opGreaterEqual	ComparisonOp.opGreaterEqual		42
+nim	opEqual	tzutrader/declarative/schema.html#opEqual	ComparisonOp.opEqual		42
+nim	opNotEqual	tzutrader/declarative/schema.html#opNotEqual	ComparisonOp.opNotEqual		42
+nim	opCrossesAbove	tzutrader/declarative/schema.html#opCrossesAbove	ComparisonOp.opCrossesAbove		42
+nim	opCrossesBelow	tzutrader/declarative/schema.html#opCrossesBelow	ComparisonOp.opCrossesBelow		42
+nim	ComparisonOp	tzutrader/declarative/schema.html#ComparisonOp	enum ComparisonOp		42
+nim	ckSimple	tzutrader/declarative/schema.html#ckSimple	ConditionKind.ckSimple		53
+nim	ckAnd	tzutrader/declarative/schema.html#ckAnd	ConditionKind.ckAnd		53
+nim	ckOr	tzutrader/declarative/schema.html#ckOr	ConditionKind.ckOr		53
+nim	ckNot	tzutrader/declarative/schema.html#ckNot	ConditionKind.ckNot		53
+nim	ConditionKind	tzutrader/declarative/schema.html#ConditionKind	enum ConditionKind		53
+nim	ConditionYAML	tzutrader/declarative/schema.html#ConditionYAML	object ConditionYAML		60
+nim	RuleYAML	tzutrader/declarative/schema.html#RuleYAML	object RuleYAML		80
+nim	psFixed	tzutrader/declarative/schema.html#psFixed	PositionSizingKind.psFixed		84
+nim	psPercent	tzutrader/declarative/schema.html#psPercent	PositionSizingKind.psPercent		84
+nim	psDynamic	tzutrader/declarative/schema.html#psDynamic	PositionSizingKind.psDynamic		84
+nim	PositionSizingKind	tzutrader/declarative/schema.html#PositionSizingKind	enum PositionSizingKind		84
+nim	PositionSizingYAML	tzutrader/declarative/schema.html#PositionSizingYAML	object PositionSizingYAML		90
+nim	StrategyYAML	tzutrader/declarative/schema.html#StrategyYAML	object StrategyYAML		100
+nim	dsYahoo	tzutrader/declarative/schema.html#dsYahoo	DataSourceKind.dsYahoo		108
+nim	dsCsv	tzutrader/declarative/schema.html#dsCsv	DataSourceKind.dsCsv		108
+nim	dsCoinbase	tzutrader/declarative/schema.html#dsCoinbase	DataSourceKind.dsCoinbase		108
+nim	DataSourceKind	tzutrader/declarative/schema.html#DataSourceKind	enum DataSourceKind		108
+nim	DataConfigYAML	tzutrader/declarative/schema.html#DataConfigYAML	object DataConfigYAML		114
+nim	PortfolioConfigYAML	tzutrader/declarative/schema.html#PortfolioConfigYAML	object PortfolioConfigYAML		128
+nim	IndicatorOverride	tzutrader/declarative/schema.html#IndicatorOverride	object IndicatorOverride		135
+nim	ConditionOverride	tzutrader/declarative/schema.html#ConditionOverride	object ConditionOverride		139
+nim	StrategyOverrides	tzutrader/declarative/schema.html#StrategyOverrides	object StrategyOverrides		144
+nim	StrategyVariantYAML	tzutrader/declarative/schema.html#StrategyVariantYAML	object StrategyVariantYAML		150
+nim	BatchOutputYAML	tzutrader/declarative/schema.html#BatchOutputYAML	object BatchOutputYAML		156
+nim	BatchTestYAML	tzutrader/declarative/schema.html#BatchTestYAML	object BatchTestYAML		162
+nim	srkLinear	tzutrader/declarative/schema.html#srkLinear	SweepRangeKind.srkLinear		171
+nim	srkList	tzutrader/declarative/schema.html#srkList	SweepRangeKind.srkList		171
+nim	SweepRangeKind	tzutrader/declarative/schema.html#SweepRangeKind	enum SweepRangeKind		171
+nim	SweepRange	tzutrader/declarative/schema.html#SweepRange	object SweepRange		176
+nim	SweepParameter	tzutrader/declarative/schema.html#SweepParameter	object SweepParameter		186
+nim	SweepOutputYAML	tzutrader/declarative/schema.html#SweepOutputYAML	object SweepOutputYAML		191
+nim	ParameterSweepYAML	tzutrader/declarative/schema.html#ParameterSweepYAML	object ParameterSweepYAML		197
+nim	newParamInt	tzutrader/declarative/schema.html#newParamInt,int	proc newParamInt(val: int): ParamValue		207
+nim	newParamFloat	tzutrader/declarative/schema.html#newParamFloat,float	proc newParamFloat(val: float): ParamValue		211
+nim	newParamString	tzutrader/declarative/schema.html#newParamString,string	proc newParamString(val: string): ParamValue		215
+nim	newParamBool	tzutrader/declarative/schema.html#newParamBool,bool	proc newParamBool(val: bool): ParamValue		219
+nim	newSimpleCondition	tzutrader/declarative/schema.html#newSimpleCondition,string,ComparisonOp,string	proc newSimpleCondition(left: string; op: ComparisonOp; right: string): ConditionYAML		223
+nim	newAndCondition	tzutrader/declarative/schema.html#newAndCondition,seq[ConditionYAML]	proc newAndCondition(conditions: seq[ConditionYAML]): ConditionYAML		233
+nim	newOrCondition	tzutrader/declarative/schema.html#newOrCondition,seq[ConditionYAML]	proc newOrCondition(conditions: seq[ConditionYAML]): ConditionYAML		240
+nim	newNotCondition	tzutrader/declarative/schema.html#newNotCondition,ConditionYAML	proc newNotCondition(condition: ConditionYAML): ConditionYAML		247
+nim	newDataConfigYahoo	tzutrader/declarative/schema.html#newDataConfigYahoo,seq[string],string,string	proc newDataConfigYahoo(symbols: seq[string]; startDate: string; endDate: string): DataConfigYAML		256
+nim	newDataConfigCsv	tzutrader/declarative/schema.html#newDataConfigCsv,string	proc newDataConfigCsv(csvFile: string): DataConfigYAML		266
+nim	newPortfolioConfig	tzutrader/declarative/schema.html#newPortfolioConfig,float,float,Option[float],Option[float]	proc newPortfolioConfig(initialCash: float = 100000.0; commission: float = 0.001;\n                   minCommission: Option[float] = none(float);\n                   riskFreeRate: Option[float] = none(float)): PortfolioConfigYAML		273
+nim	newStrategyVariant	tzutrader/declarative/schema.html#newStrategyVariant,string,string,Option[StrategyOverrides]	proc newStrategyVariant(file: string; name: string; overrides: Option[\n    StrategyOverrides] = none(StrategyOverrides)): StrategyVariantYAML		286
+nim	newBatchOutput	tzutrader/declarative/schema.html#newBatchOutput,seq[string],Option[string],Option[string]	proc newBatchOutput(formats: seq[string] = @["csv"];\n               comparisonReport: Option[string] = none(string);\n               individualResults: Option[string] = none(string)): BatchOutputYAML		297
+nim	newSweepRangeLinear	tzutrader/declarative/schema.html#newSweepRangeLinear,float,float,float	proc newSweepRangeLinear(min: float; max: float; step: float): SweepRange		308
+nim	newSweepRangeList	tzutrader/declarative/schema.html#newSweepRangeList,seq[float]	proc newSweepRangeList(values: seq[float]): SweepRange		317
+nim	newSweepParameter	tzutrader/declarative/schema.html#newSweepParameter,string,SweepRange	proc newSweepParameter(path: string; range: SweepRange): SweepParameter		324
+nim	`$`	tzutrader/declarative/schema.html#$,ParamValue	proc `$`(p: ParamValue): string		331
+nim	`$`	tzutrader/declarative/schema.html#$,ComparisonOp	proc `$`(op: ComparisonOp): string		339
+nim	`$`	tzutrader/declarative/schema.html#$,SourceLocation	proc `$`(loc: SourceLocation): string		351
+nim	formatError	tzutrader/declarative/schema.html#formatError,string,Option[SourceLocation]	proc formatError(msg: string; loc: Option[SourceLocation] = none(SourceLocation)): string		355
+nimgrp	$	tzutrader/declarative/schema.html#$-procs-all	proc		331

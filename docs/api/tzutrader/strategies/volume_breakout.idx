@@ -1,0 +1,6 @@
+nimTitle	volume_breakout	tzutrader/strategies/volume_breakout.html	module src/tzutrader/strategies/volume_breakout		0
+nim	VolumeBreakoutStrategy	tzutrader/strategies/volume_breakout.html#VolumeBreakoutStrategy	type VolumeBreakoutStrategy		9
+nim	newVolumeBreakoutStrategy	tzutrader/strategies/volume_breakout.html#newVolumeBreakoutStrategy,int,float64,string	proc newVolumeBreakoutStrategy(period: int = 20; volumeMultiplier: float64 = 1.5;\n                          symbol: string = ""): VolumeBreakoutStrategy		22
+nim	onBar	tzutrader/strategies/volume_breakout.html#onBar.e,VolumeBreakoutStrategy,OHLCV	method onBar(s: VolumeBreakoutStrategy; bar: OHLCV): Signal		46
+nim	reset	tzutrader/strategies/volume_breakout.html#reset.e,VolumeBreakoutStrategy	method reset(s: VolumeBreakoutStrategy)		104
+nim	name	tzutrader/strategies/volume_breakout.html#name.e,VolumeBreakoutStrategy	method name(s: VolumeBreakoutStrategy): string		114

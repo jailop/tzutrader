@@ -1,0 +1,6 @@
+nimTitle	rsi	tzutrader/strategies/rsi.html	module src/tzutrader/strategies/rsi		0
+nim	RSIStrategy	tzutrader/strategies/rsi.html#RSIStrategy	type RSIStrategy		9
+nim	newRSIStrategy	tzutrader/strategies/rsi.html#newRSIStrategy,int,float64,float64,string	proc newRSIStrategy(period: int = 14; oversold: float64 = 30.0;\n               overbought: float64 = 70.0; symbol: string = ""): RSIStrategy		18
+nim	analyze	tzutrader/strategies/rsi.html#analyze.e,RSIStrategy,seq[OHLCV]	method analyze(s: RSIStrategy; data: seq[OHLCV]): seq[Signal]		41
+nim	onBar	tzutrader/strategies/rsi.html#onBar.e,RSIStrategy,OHLCV	method onBar(s: RSIStrategy; bar: OHLCV): Signal		45
+nim	reset	tzutrader/strategies/rsi.html#reset.e,RSIStrategy	method reset(s: RSIStrategy)		76

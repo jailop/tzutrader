@@ -1,0 +1,22 @@
+nimTitle	strategy_builder	tzutrader/strategy_builder.html	module src/tzutrader/strategy_builder		0
+nim	StrategyBuilder	tzutrader/strategy_builder.html#StrategyBuilder	type StrategyBuilder		7
+nim	newStrategyBuilder	tzutrader/strategy_builder.html#newStrategyBuilder,Strategy	proc newStrategyBuilder(strategy: Strategy): StrategyBuilder		13
+nim	withStopLoss	tzutrader/strategy_builder.html#withStopLoss,StrategyBuilder,StopLossRule	proc withStopLoss(sb: StrategyBuilder; rule: StopLossRule): StrategyBuilder		27
+nim	withFixedStopLoss	tzutrader/strategy_builder.html#withFixedStopLoss,StrategyBuilder,float	proc withFixedStopLoss(sb: StrategyBuilder; percentage: float): StrategyBuilder		38
+nim	withPriceStopLoss	tzutrader/strategy_builder.html#withPriceStopLoss,StrategyBuilder,float	proc withPriceStopLoss(sb: StrategyBuilder; price: float): StrategyBuilder		55
+nim	withTrailingStop	tzutrader/strategy_builder.html#withTrailingStop,StrategyBuilder,float,float	proc withTrailingStop(sb: StrategyBuilder; trailPct: float;\n                 activationPct: float = 0.0): StrategyBuilder		71
+nim	withATRStop	tzutrader/strategy_builder.html#withATRStop,StrategyBuilder,float,string	proc withATRStop(sb: StrategyBuilder; multiplier: float;\n            indicatorId: string = "atr_14"): StrategyBuilder		94
+nim	withTakeProfit	tzutrader/strategy_builder.html#withTakeProfit,StrategyBuilder,TakeProfitRule	proc withTakeProfit(sb: StrategyBuilder; rule: TakeProfitRule): StrategyBuilder		114
+nim	withFixedTakeProfit	tzutrader/strategy_builder.html#withFixedTakeProfit,StrategyBuilder,float	proc withFixedTakeProfit(sb: StrategyBuilder; percentage: float): StrategyBuilder		126
+nim	withPriceTakeProfit	tzutrader/strategy_builder.html#withPriceTakeProfit,StrategyBuilder,float	proc withPriceTakeProfit(sb: StrategyBuilder; price: float): StrategyBuilder		143
+nim	withRiskReward	tzutrader/strategy_builder.html#withRiskReward,StrategyBuilder,float	proc withRiskReward(sb: StrategyBuilder; ratio: float): StrategyBuilder		159
+nim	withMultiLevelProfit	tzutrader/strategy_builder.html#withMultiLevelProfit,StrategyBuilder,seq[TakeProfitLevel]	proc withMultiLevelProfit(sb: StrategyBuilder; levels: seq[TakeProfitLevel]): StrategyBuilder		182
+nim	build	tzutrader/strategy_builder.html#build,StrategyBuilder	proc build(sb: StrategyBuilder): Strategy		204
+nim	withRiskManagement	tzutrader/strategy_builder.html#withRiskManagement,Strategy,StopLossRule,TakeProfitRule	proc withRiskManagement(strategy: Strategy; stopLoss: StopLossRule = nil;\n                   takeProfit: TakeProfitRule = nil): Strategy		214
+nim	withFixedStopLoss	tzutrader/strategy_builder.html#withFixedStopLoss,Strategy,float	proc withFixedStopLoss(strategy: Strategy; percentage: float): Strategy		240
+nim	withFixedTakeProfit	tzutrader/strategy_builder.html#withFixedTakeProfit,Strategy,float	proc withFixedTakeProfit(strategy: Strategy; percentage: float): Strategy		260
+nim	withTrailingStop	tzutrader/strategy_builder.html#withTrailingStop,Strategy,float,float	proc withTrailingStop(strategy: Strategy; trailPct: float; activationPct: float = 0.0): Strategy		280
+nimgrp	withfixedtakeprofit	tzutrader/strategy_builder.html#withFixedTakeProfit-procs-all	proc		126
+nimgrp	withtrailingstop	tzutrader/strategy_builder.html#withTrailingStop-procs-all	proc		71
+nimgrp	withfixedstoploss	tzutrader/strategy_builder.html#withFixedStopLoss-procs-all	proc		38
+heading	Trail 3% behind high, activate after 5% profit	tzutrader/strategy_builder.html#trail-3percent-behind-high-activate-after-5percent-profit	 Trail 3% behind high, activate after 5% profit		0
