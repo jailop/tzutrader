@@ -5,20 +5,14 @@
 ## - PPO (Percentage Price Oscillator) - MACD as percentage for cross-asset comparison
 ## - CMO (Chande Momentum Oscillator) - Alternative to RSI using sums instead of averages
 ## - MOM (Momentum) - Simple but effective current vs N periods ago
-##
-## Shows how these momentum indicators complement each other for trading signals.
 
 import std/[strformat, strutils, math]
 
 include ../src/tzutrader/indicators
 
-# ============================================================================
-# Section 1: Momentum (MOM) - The Foundation
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 1: MOM (Momentum) - Current Price vs N Periods Ago"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "Momentum is the simplest momentum indicator: Current - Price[N]"
@@ -31,21 +25,21 @@ var mom10 = newMOM(period = 10)
 
 # Generate trending then ranging data
 let trendData = @[
-  100.0, 102.0, 104.0, 106.0, 108.0,  # Uptrend
+  100.0, 102.0, 104.0, 106.0, 108.0, # Uptrend
   110.0, 112.0, 114.0, 116.0, 118.0,
   120.0, 122.0, 124.0, 126.0, 128.0,
-  130.0, 130.5, 131.0, 130.5, 130.0,  # Start ranging
+  130.0, 130.5, 131.0, 130.5, 130.0, # Start ranging
   130.5, 129.5, 130.0, 130.5, 129.5,
   130.0, 129.0, 131.0, 130.0, 129.5
 ]
 
 echo "Bar    Price     MOM(5)    MOM(10)   Interpretation"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i, price in trendData:
   let mom5Val = mom5.update(price)
   let mom10Val = mom10.update(price)
-  
+
   var interp = ""
   if classify(mom5Val) != fcNan:
     if mom5Val > 5.0:
@@ -58,7 +52,7 @@ for i, price in trendData:
       interp = "Downtrend"
   else:
     interp = "Warming up..."
-  
+
   if classify(mom5Val) != fcNan:
     echo &"{i+1:<6} {price:<9.2f} {mom5Val:>7.2f}   {mom10Val:>7.2f}    {interp}"
 
@@ -70,13 +64,9 @@ echo "  • Longer periods (MOM10) smooth out noise vs shorter (MOM5)"
 echo "  • Simple but effective - foundation for ROC and other indicators"
 echo ""
 
-# ============================================================================
-# Section 2: CMO (Chande Momentum Oscillator)
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 2: CMO - Momentum Using Sum of Gains/Losses"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "CMO = ((Sum Gains - Sum Losses) / (Sum Gains + Sum Losses)) * 100"
@@ -103,12 +93,12 @@ let cmoData: seq[PriceBar] = @[
 ]
 
 echo "Bar    Close     CMO       RSI      Phase"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i, bar in cmoData:
   let cmoVal = cmo.update(bar.close)
   let rsiVal = rsi.update(bar.open, bar.close)
-  
+
   var phase = ""
   if i < 10:
     phase = "Uptrend"
@@ -116,7 +106,7 @@ for i, bar in cmoData:
     phase = "Ranging"
   else:
     phase = "Downtrend"
-  
+
   if classify(cmoVal) != fcNan:
     echo &"{i+1:<6} {bar.close:<9.2f} {cmoVal:>7.1f}   {rsiVal:>7.1f}    {phase}"
 
@@ -129,13 +119,9 @@ echo "  • More sensitive than RSI to momentum changes"
 echo "  • Both show similar trends but CMO centered at 0"
 echo ""
 
-# ============================================================================
-# Section 3: PPO (Percentage Price Oscillator)
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 3: PPO - MACD as Percentage"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "PPO = ((Fast EMA - Slow EMA) / Slow EMA) * 100"
@@ -157,7 +143,8 @@ let lowPriced = Asset(
 let highPriced = Asset(
   name: "Stock B ($200)",
   prices: @[200.0, 210.0, 220.0, 230.0, 240.0, 250.0, 260.0, 270.0, 280.0, 290.0,
-            300.0, 310.0, 320.0, 330.0, 340.0, 350.0, 360.0, 370.0, 380.0, 390.0,
+            300.0, 310.0, 320.0, 330.0, 340.0, 350.0, 360.0, 370.0, 380.0,
+            390.0,
             400.0, 404.0, 408.0, 412.0, 416.0, 420.0, 420.0, 420.0, 420.0, 420.0]
 )
 
@@ -169,18 +156,18 @@ var macdB = newMACD(shortPeriod = 5, longPeriod = 10, diffPeriod = 3)
 
 echo "Stock A (Low Priced):              Stock B (High Priced):"
 echo "Price   MACD    PPO      |      Price   MACD     PPO"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i in 0..<lowPriced.prices.len:
   let priceA = lowPriced.prices[i]
   let priceB = highPriced.prices[i]
-  
+
   let macdValA = macdA.update(priceA)
   let ppoValA = ppoA.update(priceA)
-  
+
   let macdValB = macdB.update(priceB)
   let ppoValB = ppoB.update(priceB)
-  
+
   if i >= 10 and i mod 5 == 0:
     echo &"{priceA:<7.2f} {macdValA.macd:>6.2f}  {ppoValA.ppo:>6.2f}%  |  {priceB:<7.2f} {macdValB.macd:>7.2f}  {ppoValB.ppo:>6.2f}%"
 
@@ -192,13 +179,9 @@ echo "  • PPO histogram works like MACD histogram for signals"
 echo "  • Better for: portfolio comparison, multi-asset strategies"
 echo ""
 
-# ============================================================================
-# Section 4: StochRSI (Stochastic RSI)
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 4: STOCHRSI - Stochastic Applied to RSI"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "StochRSI applies Stochastic oscillator formula to RSI values"
@@ -227,12 +210,12 @@ let stochData: seq[PriceBar] = @[
 ]
 
 echo "Bar    Close     RSI      StochK   StochD   Signal"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i, bar in stochData:
   let rsiVal = standardRsi.update(bar.open, bar.close)
   let stochVal = stochRsi.update(bar.open, bar.close)
-  
+
   var signal = ""
   if classify(stochVal.k) != fcNan:
     if stochVal.k < 20:
@@ -243,7 +226,7 @@ for i, bar in stochData:
       signal = "Pullback in uptrend - Buy"
     else:
       signal = ""
-  
+
   if i >= 15 and i mod 5 == 0:
     if classify(stochVal.k) != fcNan:
       echo &"{i+1:<6} {bar.close:<9.2f} {rsiVal:>6.1f}   {stochVal.k:>6.1f}   {stochVal.d:>6.1f}    {signal}"
@@ -256,13 +239,9 @@ echo "  • Can give false signals - use with trend confirmation"
 echo "  • %K crosses above %D = buy signal, below = sell signal"
 echo ""
 
-# ============================================================================
-# Section 5: Combining All Four Indicators
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 5: Combined Momentum Analysis"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "Using all 4 momentum indicators together for comprehensive signals"
@@ -294,17 +273,17 @@ let cycleData: seq[PriceBar] = @[
 echo "Trading Signals from Combined Analysis:"
 echo ""
 echo "Bar   Price    MOM     CMO    PPO%   StochK | Phase & Signal"
-echo "-" .repeat(75)
+echo "-".repeat(75)
 
 for i, bar in cycleData:
   let momVal = comboMOM.update(bar.close)
   let cmoVal = comboCMO.update(bar.close)
   let ppoVal = comboPPO.update(bar.close)
   let stochVal = comboStochRSI.update(bar.open, bar.close)
-  
+
   var phase = ""
   var signal = ""
-  
+
   if i < 10:
     phase = "ACCUMULATION"
     if classify(momVal) != fcNan and momVal > 0 and cmoVal > 0:
@@ -326,61 +305,7 @@ for i, bar in cycleData:
       signal = "→ Bear rally - avoid"
     elif ppoVal.ppo < -2.0:
       signal = "→ Confirmed downtrend"
-  
+
   if i >= 10 and i mod 5 == 0:
     if classify(momVal) != fcNan:
       echo &"{i+1:<5} {bar.close:<7.2f} {momVal:>6.1f}  {cmoVal:>6.1f}  {ppoVal.ppo:>6.2f}  {stochVal.k:>6.1f} | {phase} {signal}"
-
-echo ""
-echo "=" .repeat(70)
-echo "Trading Strategy Insights"
-echo "=" .repeat(70)
-echo ""
-
-echo "1. ENTRY SIGNALS (All must confirm):"
-echo "   • MOM > 0 (positive momentum)"
-echo "   • CMO > 0 (more gains than losses)"
-echo "   • PPO > 0 (fast EMA above slow)"
-echo "   • StochRSI 20-40 (pullback in uptrend)"
-echo ""
-
-echo "2. STRONG TREND (Hold position):"
-echo "   • MOM increasing"
-echo "   • CMO > +50"
-echo "   • PPO histogram expanding"
-echo "   • StochRSI 40-80 (healthy range)"
-echo ""
-
-echo "3. WARNING SIGNS (Tighten stops):"
-echo "   • MOM flattening or declining"
-echo "   • CMO dropping below +20"
-echo "   • PPO histogram shrinking"
-echo "   • StochRSI > 80 (overbought)"
-echo ""
-
-echo "4. EXIT SIGNALS (Take profits/cut losses):"
-echo "   • MOM < 0 (momentum reversal)"
-echo "   • CMO < -20 (more losses than gains)"
-echo "   • PPO crosses below signal"
-echo "   • StochRSI %K crosses below %D"
-echo ""
-
-echo "5. INDICATOR STRENGTHS:"
-echo "   • MOM: Simple, objective momentum direction"
-echo "   • CMO: Symmetric scale, good for extremes"
-echo "   • PPO: Cross-asset comparison, portfolio level"
-echo "   • StochRSI: Early warnings in trends, mean reversion"
-echo ""
-
-echo "=" .repeat(70)
-echo "Additional Momentum Indicators Example Complete!"
-echo "=" .repeat(70)
-echo ""
-echo "Next Steps:"
-echo "  • Backtest these combinations on historical data"
-echo "  • Adjust parameters for different timeframes"
-echo "  • Combine with volume indicators (from Phase 9.3)"
-echo "  • Add risk management rules (stops, position sizing)"
-echo ""
-echo "Phase 9.4 completes the indicator library - 25/25 indicators! 🎉"
-echo ""

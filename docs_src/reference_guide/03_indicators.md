@@ -1,26 +1,33 @@
-# Reference Guide: Technical Indicators
+# Technical Indicators
 
-## Overview
-
-Technical indicators are mathematical calculations applied to price and volume data to identify patterns and potential trading opportunities. TzuTrader provides pure Nim implementations of commonly used indicators using a streaming-only architecture.
-
-Module: `tzutrader/indicators.nim`
+Technical indicators are mathematical calculations applied to price and
+volume data to identify patterns and potential trading opportunities.
+TzuTrader provides pure Nim implementations of commonly used indicators
+using a streaming-only architecture.
 
 ## Streaming Architecture
 
-TzuTrader uses a streaming-only design where indicators update incrementally as new data arrives:
+TzuTrader uses a streaming-only design where indicators update
+incrementally as new data arrives:
 
-Streaming Objects: All indicators maintain internal state and update one data point at a time. This design provides:
+Streaming Objects: All indicators maintain internal state and update one
+data point at a time. This design provides:
+
 - O(1) Memory: Constant memory usage regardless of data size
 - O(1) Updates: Each new data point is processed in constant time
 - Unified API: Same code works for backtesting and live trading
-- Historical Access: Circular buffers allow access to previous values via `indicator[0]` (current), `indicator[-1]` (previous), etc.
+- Historical Access: Circular buffers allow access to previous values
+  via `indicator[0]` (current), `indicator[-1]` (previous), etc.
 
-This architecture is ideal for both backtesting historical data and running live trading bots, as the same indicator instance can process data indefinitely without memory growth.
+This architecture is ideal for both backtesting historical data and
+running live trading bots, as the same indicator instance can process
+data indefinitely without memory growth.
 
 ## Moving Averages
 
-Moving averages smooth price data to reveal trends by reducing noise. They form the foundation of many trading strategies and serve as dynamic support and resistance levels.
+Moving averages smooth price data to reveal trends by reducing noise.
+They form the foundation of many trading strategies and serve as dynamic
+support and resistance levels.
 
 ### Simple Moving Average (SMA)
 
@@ -42,6 +49,7 @@ proc update*(ma: MA, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Number of periods to average
 - `memSize`: Size of circular buffer for historical access (default 1)
 
@@ -51,7 +59,10 @@ Access: Use `ma[0]` for current value, `ma[-1]` for previous, etc.
 
 Usage Characteristics:
 
-SMAs respond slowly to price changes because all values in the window have equal weight. A 20-period SMA considers the price from 20 bars ago as important as yesterday's price. This lag makes SMAs smooth but sometimes too slow for fast-moving markets.
+SMAs respond slowly to price changes because all values in the window
+have equal weight. A 20-period SMA considers the price from 20 bars ago
+as important as yesterday's price. This lag makes SMAs smooth but
+sometimes too slow for fast-moving markets.
 
 Example:
 
@@ -73,7 +84,9 @@ for price in [100.0, 102.0, 101.0, 103.0, 105.0, 104.0, 106.0]:
 
 ### Exponential Moving Average (EMA)
 
-The EMA gives greater weight to recent prices, making it more responsive to new information than the SMA. This responsiveness comes at the cost of being more sensitive to short-term fluctuations.
+The EMA gives greater weight to recent prices, making it more responsive
+to new information than the SMA. This responsiveness comes at the cost
+of being more sensitive to short-term fluctuations.
 
 Formula:
 
@@ -95,13 +108,14 @@ proc update*(ema: EMA, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Number of periods
 - `alpha`: Smoothing factor coefficient (default 2.0, used in k calculation)
 - `memSize`: Size of circular buffer for historical access (default 1)
 
 Usage Characteristics:
 
-The multiplier $k$ determines responsiveness. A 10-period EMA has $k = 0.1818$, meaning the most recent price contributes about 18% to the new EMA value. Shorter periods create higher multipliers and more reactive EMAs.
+The multiplier $k$ determines responsiveness. A 10-period EMA has $k = 0.1818$, meaning the most recent price contributes about 18\% to the new EMA value. Shorter periods create higher multipliers and more reactive EMAs.
 
 EMAs are particularly useful in trending markets where staying close to current prices matters. However, they generate more false signals in choppy markets than SMAs.
 
@@ -125,6 +139,7 @@ proc update*(wma: WMA, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Number of periods for weighted average
 - `memSize`: Size of circular buffer (default 1)
 
@@ -138,7 +153,8 @@ Momentum indicators measure the rate of price change, helping identify when move
 
 ### Relative Strength Index (RSI)
 
-RSI measures the magnitude of recent price changes to evaluate overbought or oversold conditions. It oscillates between 0 and 100.
+RSI measures the magnitude of recent price changes to evaluate
+overbought or oversold conditions. It oscillates between 0 and 100.
 
 Formula:
 
@@ -167,6 +183,7 @@ proc update*(rsi: RSI, open, close: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback period (default 14)
 - `memSize`: Size of circular buffer (default 1)
 - `open`: Opening price for the bar
@@ -174,9 +191,13 @@ Parameters:
 
 Interpretation:
 
-Traditional interpretations suggest values above 70 indicate overbought conditions and values below 30 indicate oversold conditions. However, markets can remain overbought or oversold for extended periods during strong trends.
+Traditional interpretations suggest values above 70 indicate overbought
+conditions and values below 30 indicate oversold conditions. However,
+markets can remain overbought or oversold for extended periods during
+strong trends.
 
-RSI works better for identifying divergences—when price makes a new high but RSI doesn't, or vice versa—than as absolute buy/sell signals.
+RSI works better for identifying divergences—when price makes a new high
+but RSI doesn't, or vice versa—than as absolute buy/sell signals.
 
 Example:
 
@@ -213,22 +234,30 @@ proc update*(roc: ROC, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback period (default 12)
 - `memSize`: Size of circular buffer (default 1)
 
 Usage Characteristics:
 
-ROC is unbounded—it can range from -100% (price went to zero) to infinity. Positive values indicate upward momentum, negative values indicate downward momentum. The magnitude indicates strength.
+ROC is unbounded—it can range from -100\% (price went to zero) to
+infinity. Positive values indicate upward momentum, negative values
+indicate downward momentum. The magnitude indicates strength.
 
-ROC tends to oscillate around zero in ranging markets and trend away from zero in directional markets.
+ROC tends to oscillate around zero in ranging markets and trend away
+from zero in directional markets.
 
 ## Trend Indicators
 
-Trend indicators attempt to identify and confirm the direction of price movement. They typically lag price but offer confirmation once a trend establishes.
+Trend indicators attempt to identify and confirm the direction of price
+movement. They typically lag price but offer confirmation once a trend
+establishes.
 
 ### Moving Average Convergence Divergence (MACD)
 
-MACD uses the relationship between two exponential moving averages to identify trend changes. It consists of three components: the MACD line, signal line, and histogram.
+MACD uses the relationship between two exponential moving averages to
+identify trend changes. It consists of three components: the MACD line,
+signal line, and histogram.
 
 Formulas:
 
@@ -248,6 +277,7 @@ proc update*(macd: MACD, value: float64): MACDResult
 ```
 
 Parameters:
+
 - `fast`: Fast EMA period (default 12)
 - `slow`: Slow EMA period (default 26)
 - `signal`: Signal line period (default 9)
@@ -257,21 +287,31 @@ Returns: `MACDResult` tuple with `(macd, signal, histogram)` fields
 
 Interpretation:
 
-Crossovers between the MACD line and signal line generate trading signals. When the MACD line crosses above the signal line, it suggests upward momentum. Crosses below suggest downward momentum.
+Crossovers between the MACD line and signal line generate trading
+signals. When the MACD line crosses above the signal line, it suggests
+upward momentum. Crosses below suggest downward momentum.
 
-The histogram visualizes the distance between the lines. Growing histogram values indicate strengthening momentum, shrinking values suggest weakening momentum.
+The histogram visualizes the distance between the lines. Growing
+histogram values indicate strengthening momentum, shrinking values
+suggest weakening momentum.
 
 Usage Characteristics:
 
-MACD works well in trending markets but generates numerous false signals in sideways markets. The standard 12/26/9 parameters were chosen decades ago for daily charts and may not be optimal for all timeframes or markets.
+MACD works well in trending markets but generates numerous false signals
+in sideways markets. The standard 12/26/9 parameters were chosen decades
+ago for daily charts and may not be optimal for all timeframes or
+markets.
 
 ### Parabolic Stop and Reverse (PSAR)
 
-PSAR provides both trend direction and trailing stop levels. The indicator "stops and reverses" when price crosses the PSAR level, flipping to the opposite side of price.
+PSAR provides both trend direction and trailing stop levels. The
+indicator "stops and reverses" when price crosses the PSAR level,
+flipping to the opposite side of price.
 
 Formulas:
 
-The PSAR calculation is iterative and depends on whether in an uptrend or downtrend:
+The PSAR calculation is iterative and depends on whether in an uptrend
+or downtrend:
 
 Uptrend (PSAR below price):
 
@@ -282,6 +322,7 @@ Downtrend (PSAR above price):
 $$\text{PSAR}_{t+1} = \text{PSAR}_t - AF \times (\text{PSAR}_t - EP)$$
 
 where:
+
 - $AF$ = Acceleration Factor (starts at initial value, increases each time a new extreme is reached)
 - $EP$ = Extreme Point (highest high in uptrend, lowest low in downtrend)
 
@@ -303,12 +344,14 @@ proc update*(psar: PSAR, high, low: float64): PSARResult
 ```
 
 Parameters:
+
 - `acceleration`: Initial and increment value for AF (default 0.02)
 - `maxAcceleration`: Maximum AF value (default 0.2)
 - `memSize`: Size of circular buffer for historical access (default 1)
 - `high, low`: High and low prices for the bar
 
 Returns: `PSARResult` with fields:
+
 - `sar`: The SAR value (stop level)
 - `isLong`: True if currently in uptrend (PSAR below price)
 - `ep`: Current extreme point tracked
@@ -317,16 +360,19 @@ Returns: `PSARResult` with fields:
 Interpretation:
 
 PSAR serves two purposes:
+
 1. Trend direction: PSAR below price = uptrend; PSAR above price = downtrend
 2. Stop placement: PSAR value provides a trailing stop level
 
 Trading Signals:
+
 - Price crosses above PSAR → Enter long (or exit short)
 - Price crosses below PSAR → Enter short (or exit long)
 
 Acceleration Mechanism:
 
 The AF starts at the initial value (typically 0.02) and increases by the same amount each time a new extreme is reached:
+
 - Uptrend: AF increases when price makes a new high
 - Downtrend: AF increases when price makes a new low
 - AF caps at maxAcceleration (typically 0.2)
@@ -336,6 +382,7 @@ This causes PSAR to accelerate toward price as the trend matures, tightening the
 Usage Characteristics:
 
 PSAR excels in trending markets but generates excessive whipsaws in ranging markets. It's always in the market (either bullish or bearish), making it suitable for:
+
 - Trailing stop placement
 - Trend identification
 - Always-in-market strategies
@@ -399,7 +446,8 @@ for bar in data:
 
 Comparison with Fixed Stops:
 
-Traditional fixed stops (e.g., -2% from entry) don't adapt to:
+Traditional fixed stops (e.g., -2\% from entry) don't adapt to:
+
 - Market volatility
 - Trend strength
 - Time in trade
@@ -444,6 +492,7 @@ proc update*(atr: ATR, high, low, close: float64): float64
 ```
 
 Parameters:
+
 - `period`: Smoothing period (default 14)
 - `memSize`: Size of circular buffer (default 1)
 - `high, low, close`: OHLC values for the bar
@@ -497,6 +546,7 @@ proc update*(bb: BollingerBands, value: float64): BBResult
 ```
 
 Parameters:
+
 - `period`: SMA period (default 20)
 - `stdDev`: Number of standard deviations for bands (default 2.0)
 - `memSize`: Size of circular buffer (default 1)
@@ -542,6 +592,7 @@ proc update*(sd: STDDEV, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback period
 - `memSize`: Size of circular buffer (default 1)
 
@@ -579,6 +630,7 @@ proc update*(obv: OBV, close, volume: float64): float64
 ```
 
 Parameters:
+
 - `close`: Closing price
 - `volume`: Trading volume
 - `memSize`: Size of circular buffer (default 1)
@@ -649,6 +701,7 @@ proc nanToZero*(x: float64): float64
 In Practice:
 
 Strategies must handle NaN values appropriately. Common approaches include:
+
 - Wait until all indicators return valid values before generating signals
 - Use default values (like `nanToZero`) with caution, as zero might not be meaningful
 - Track initialization state explicitly
@@ -677,16 +730,19 @@ These methods manage the rolling window of values. User code typically doesn't n
 ## Performance Considerations
 
 Memory Usage:
+
 - All indicators use fixed-size circular buffers
 - Memory usage is O(1) - constant regardless of data stream length
 - Typical memory per indicator: 100-1000 bytes
 
 Computational Speed:
+
 - Each update() call is O(1) - constant time
 - Incremental calculations are highly efficient
 - Suitable for both backtesting and live trading
 
 Streaming Architecture Benefits:
+
 - Same code for backtesting and live trading
 - No memory growth over time
 - Fast indicator updates
@@ -696,7 +752,7 @@ Streaming Architecture Benefits:
 
 ### Stochastic Oscillator
 
-The Stochastic Oscillator compares the closing price to the price range over a period. It generates two lines: %K (fast) and %D (slow signal line). Values range from 0 to 100.
+The Stochastic Oscillator compares the closing price to the price range over a period. It generates two lines: \%K (fast) and \%D (slow signal line). Values range from 0 to 100.
 
 Formula:
 
@@ -714,9 +770,10 @@ proc update*(stoch: STOCH, high, low, close: float64): STOCHResult
 ```
 
 Parameters:
-- `period`: Lookback period for %K (default 14)
-- `kSmooth`: Smoothing for %K (default 3)
-- `dSmooth`: Smoothing for %D signal line (default 3)
+
+- `period`: Lookback period for \%K (default 14)
+- `kSmooth`: Smoothing for \%K (default 3)
+- `dSmooth`: Smoothing for \%D signal line (default 3)
 - `memSize`: Size of circular buffer (default 1)
 - `high, low, close`: OHLC values
 
@@ -724,10 +781,10 @@ Returns: `STOCHResult` tuple with `(k, d)` fields
 
 Interpretation:
 
-- Overbought: %K > 80 suggests selling pressure may emerge
-- Oversold: %K < 20 suggests buying pressure may emerge
-- Crossovers: %K crossing above %D signals potential buy, crossing below signals potential sell
-- Divergence: Price makes new high but %K doesn't confirm → potential reversal
+- Overbought: \%K > 80 suggests selling pressure may emerge
+- Oversold: \%K < 20 suggests buying pressure may emerge
+- Crossovers: \%K crossing above \%D signals potential buy, crossing below signals potential sell
+- Divergence: Price makes new high but \%K doesn't confirm → potential reversal
 
 Example:
 
@@ -772,6 +829,7 @@ proc update*(cci: CCI, high, low, close: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback period (default 20)
 - `memSize`: Size of circular buffer (default 1)
 - `high, low, close`: OHLC values
@@ -794,7 +852,7 @@ for bar in data:
   let cciVal = cci.update(bar.high, bar.low, bar.close)
   if not cciVal.isNaN:
     echo "CCI: ", cciVal
-```
+    
 let high = data.mapIt(it.high)
 let low = data.mapIt(it.low)
 let close = data.mapIt(it.close)
@@ -810,7 +868,7 @@ elif cciValues[^1] > 100:
 
 Characteristics:
 
-CCI is unbounded and can reach extreme values. The 0.015 constant in the formula is chosen so that approximately 70-80% of CCI values fall between -100 and +100. CCI works well for identifying cyclical turns in commodities and stocks.
+CCI is unbounded and can reach extreme values. The 0.015 constant in the formula is chosen so that approximately 70-80\% of CCI values fall between -100 and +100. CCI works well for identifying cyclical turns in commodities and stocks.
 
 ### Money Flow Index (MFI)
 
@@ -840,6 +898,7 @@ proc update*(mfi: MFI, high, low, close, volume: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback period (default 14)
 - `memSize`: Size of circular buffer (default 1)
 - `high, low, close`: OHLC values
@@ -913,6 +972,7 @@ proc update*(adx: ADX, high, low, close: float64): ADXResult
 ```
 
 Parameters:
+
 - `period`: Lookback period (default 14)
 - `memSize`: Size of circular buffer (default 1)
 - `high, low, close`: OHLC values
@@ -922,12 +982,14 @@ Returns: `ADXResult` tuple with `(adx, plusDI, minusDI)` fields
 Interpretation:
 
 ADX (Trend Strength):
+
 - ADX < 20: Weak or absent trend, range-bound market
 - ADX 20-25: Trend developing
 - ADX 25-50: Strong trend
 - ADX > 50: Very strong trend (rare)
 
 Directional Indicators:
+
 - +DI > -DI: Uptrend
 - +DI < -DI: Downtrend
 - +DI and -DI crossing: Potential trend reversal
@@ -976,6 +1038,7 @@ TRIMA applies double smoothing, creating a moving average of a moving average. T
 Formula:
 
 TRIMA is the SMA of an SMA. For period N:
+
 - First, calculate SMA with period ceil((N+1)/2)
 - Then, calculate SMA of those values with period floor((N+1)/2) + 1
 
@@ -993,6 +1056,7 @@ Characteristics:
 TRIMA is the smoothest of the moving averages but also the laggiest. The double smoothing eliminates most noise but makes it slow to react to price changes. Use TRIMA when smoothness is more important than responsiveness.
 
 Use cases:
+
 - Long-term trend identification
 - Noise reduction in volatile markets
 - Baseline for other calculations requiring stable values
@@ -1021,6 +1085,7 @@ Characteristics:
 DEMA responds faster than EMA while maintaining reasonable smoothness. It's not twice as fast as EMA despite the name—the improvement is more modest but noticeable.
 
 Use cases:
+
 - Short to medium-term trend following
 - Crossover strategies requiring faster signals
 - Dynamic support/resistance levels
@@ -1049,14 +1114,16 @@ Characteristics:
 TEMA provides the fastest response of the exponential moving averages while maintaining smooth output. However, the faster response means it generates more whipsaw signals in choppy markets.
 
 Use cases:
+
 - Short-term trading where timing is critical
 - Fast-moving markets
 - When lag reduction is paramount
 
 EMA vs DEMA vs TEMA:
+
 - EMA: Standard responsiveness, good for most situations
-- DEMA: 30-40% less lag than EMA, good balance
-- TEMA: 50-60% less lag than EMA, very responsive
+- DEMA: 30-40\% less lag than EMA, good balance
+- TEMA: 50-60\% less lag than EMA, very responsive
 
 ### Kaufman Adaptive Moving Average (KAMA)
 
@@ -1080,6 +1147,7 @@ proc update*(kama: KAMA, value: float64): float64
 ```
 
 Parameters:
+
 - `period`: Lookback for efficiency ratio calculation
 - `fastPeriod`: Fastest smoothing constant
 - `slowPeriod`: Slowest smoothing constant
@@ -1089,6 +1157,7 @@ Characteristics:
 KAMA's adaptive nature makes it effective across different market conditions. In trends, it hugs price closely. In ranges, it flattens out, producing fewer false signals. This adaptability comes at the cost of complexity and requires more historical data for stable results.
 
 Use cases:
+
 - Multi-market strategies (one MA for all conditions)
 - Reducing whipsaws in ranging markets
 - When market regime changes frequently
@@ -1121,6 +1190,7 @@ Characteristics:
 True Range is the foundation for ATR and other volatility indicators. Unlike simple range (high - low), TR captures overnight gaps and intraday volatility, providing a complete picture of price movement.
 
 Use cases:
+
 - Component for ATR calculation
 - Volatility spikes detection
 - Understanding full price range per bar
@@ -1147,15 +1217,16 @@ Characteristics:
 NATR solves the problem of comparing volatility across assets with different price levels. A $5 move in a $50 stock is much more significant than a $5 move in a $500 stock. NATR captures this by expressing volatility in percentage terms.
 
 Use cases:
+
 - Portfolio risk management
 - Position sizing across multiple assets
 - Volatility filters for multi-asset strategies
 - Comparing trading opportunities across price levels
 
 Interpretation:
-- NATR < 2%: Low volatility
-- NATR 2-5%: Normal volatility
-- NATR > 5%: High volatility
+- NATR < 2\%: Low volatility
+- NATR 2-5\%: Normal volatility
+- NATR > 5\%: High volatility
 
 ### Accumulation/Distribution (AD)
 
@@ -1183,12 +1254,14 @@ Characteristics:
 AD is a cumulative indicator that tracks the flow of volume. When prices close near the high of the day, it adds to AD (accumulation). When prices close near the low, it subtracts from AD (distribution). The absolute value matters less than the trend direction.
 
 Use cases:
+
 - Confirming price trends (AD rises with price in uptrend)
 - Detecting divergences (price rises but AD falls = warning)
 - Identifying accumulation vs distribution phases
 - Volume-based trend confirmation
 
 Interpretation:
+
 - AD rising: Accumulation (buying pressure)
 - AD falling: Distribution (selling pressure)
 - AD flat while price moves: Weak trend
@@ -1226,12 +1299,14 @@ Characteristics:
 Aroon is unique in measuring time rather than price. A value of 100 means a new high/low just occurred. A value of 0 means the high/low occurred N periods ago. This time-based approach makes Aroon effective at identifying trend starts and exhaustion.
 
 Use cases:
+
 - Identifying trend strength (Aroon Up > 70 = strong uptrend)
 - Detecting consolidation (both Aroon Up and Down < 50)
 - Spotting reversals (Aroon Down crosses above 70 after uptrend)
 - Trend confirmation
 
 Interpretation:
+
 - Aroon Up > 70: Strong uptrend (recent new highs)
 - Aroon Down > 70: Strong downtrend (recent new lows)
 - Both < 50: Ranging market, no clear trend
@@ -1252,7 +1327,7 @@ First calculate RSI, then:
 
 $$\text{StochRSI} = \frac{\text{RSI} - \text{RSI}_{\text{low}}}{\text{RSI}_{\text{high}} - \text{RSI}_{\text{low}}}$$
 
-The result is smoothed with moving averages to produce %K and %D lines.
+The result is smoothed with moving averages to produce \%K and \%D lines.
 
 Streaming Type:
 
@@ -1264,26 +1339,29 @@ proc update*(stochRsi: STOCHRSI, openPrice, closePrice: float64): StochResult
 ```
 
 Parameters:
+
 - `rsiPeriod`: Period for RSI calculation
 - `period`: Lookback for Stochastic calculation
-- `kPeriod`: Smoothing period for %K
-- `dPeriod`: Smoothing period for %D
+- `kPeriod`: Smoothing period for \%K
+- `dPeriod`: Smoothing period for \%D
 
 Characteristics:
 
 STOCHRSI oscillates between 0 and 100 but moves faster than standard RSI. This sensitivity makes it useful for catching pullbacks in strong trends but also generates more false signals. It's particularly effective when RSI remains elevated (>50) during uptrends—STOCHRSI can still identify oversold conditions for entry.
 
 Use cases:
+
 - Finding entries during strong trends
 - More sensitive overbought/oversold signals
 - Short-term momentum trading
 - Identifying pullbacks in trends
 
 Interpretation:
-- %K < 20: Oversold, potential buy
-- %K > 80: Overbought, potential sell
-- %K crosses above %D: Bullish signal
-- %K crosses below %D: Bearish signal
+
+- \%K < 20: Oversold, potential buy
+- \%K > 80: Overbought, potential sell
+- \%K crosses above \%D: Bullish signal
+- \%K crosses below \%D: Bearish signal
 
 ### Percentage Price Oscillator (PPO)
 
@@ -1310,15 +1388,20 @@ proc update*(ppo: PPO, value: float64): PPOResult
 
 Characteristics:
 
-PPO works identically to MACD but normalizes values to percentages. This makes PPO more suitable for portfolio-level strategies or comparing momentum across different assets. A 2% PPO means roughly the same thing for a $10 stock and a $1000 stock.
+PPO works identically to MACD but normalizes values to percentages. This
+makes PPO more suitable for portfolio-level strategies or comparing
+momentum across different assets. A 2\% PPO means roughly the same thing
+for a $10 stock and a $1000 stock.
 
 Use cases:
+
 - Multi-asset momentum strategies
 - Portfolio-level momentum signals
 - Comparing relative momentum across assets
 - When MACD's absolute values aren't comparable
 
 Interpretation:
+
 - PPO > 0: Bullish momentum (fast EMA above slow)
 - PPO < 0: Bearish momentum
 - PPO crosses above signal: Buy signal
@@ -1347,12 +1430,14 @@ Characteristics:
 CMO ranges from -100 to +100, with zero as neutral. Unlike RSI which uses averages (smoothing the calculation), CMO uses raw sums, making it more responsive to momentum changes. The symmetric range around zero also makes interpretation intuitive—positive values are bullish, negative are bearish.
 
 Use cases:
+
 - Alternative to RSI with less smoothing
 - Momentum extremes detection
 - Mean reversion strategies
 - Divergence analysis
 
 Interpretation:
+
 - CMO > +50: Strong upward momentum
 - CMO < -50: Strong downward momentum
 - CMO between -20 and +20: Weak momentum
@@ -1380,12 +1465,14 @@ Characteristics:
 Despite its simplicity, MOM effectively captures momentum direction and magnitude. Positive values indicate upward momentum; negative indicate downward. The absolute value shows momentum strength. MOM forms the basis for more complex indicators like ROC (which expresses MOM as a percentage).
 
 Use cases:
+
 - Simple momentum confirmation
 - Foundation for custom indicators
 - Straightforward trend strength measurement
 - When simplicity and transparency are priorities
 
 Interpretation:
+
 - MOM > 0: Upward momentum
 - MOM < 0: Downward momentum
 - MOM increasing: Accelerating momentum
@@ -1399,18 +1486,23 @@ MOM vs ROC: MOM shows absolute point change while ROC shows percentage change. U
 TzuTrader now provides 26 technical indicators across five categories:
 
 Trend Indicators:
+
 - MA (SMA), EMA, WMA, TRIMA, DEMA, TEMA, KAMA, MACD, PSAR
 
 Momentum Indicators:
+
 - RSI, ROC, STOCH, CMO, MOM, STOCHRSI
 
 Volatility Indicators:
+
 - ATR, STDEV, BB, TRANGE, NATR
 
 Volume Indicators:
+
 - OBV, MFI, AD
 
 Trend Strength:
+
 - CCI, ADX, AROON, PPO
 
 All indicators follow the streaming-only architecture for O(1) memory usage and support real-time applications.

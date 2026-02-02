@@ -99,7 +99,7 @@ position_sizing:
 - At this moment only a few illustrative data sources are supported,
   like CSV files and Yahoo Finance.
 - At this moment only OHLCV-based strategies are supported.
-- The API is not stable yet. Don't use this library for production (no
+- The API is not stable yet. Don't use this library for production (not
   yet).
 
 ## ⚠️ Disclaimers

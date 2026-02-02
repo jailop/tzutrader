@@ -1,8 +1,3 @@
-## YAML Parser for Screener Configurations
-##
-## This module handles parsing YAML configuration files for the market screener.
-## It converts raw YAML nodes into ScreenerConfig objects.
-
 import std/[tables, options, strutils]
 import yaml
 import ../declarative/[schema as declSchema, parser as declParser]
@@ -13,10 +8,6 @@ import alerts
 type
   ScreenerParseError* = object of CatchableError
     ## Error during screener YAML parsing
-
-# ============================================================================
-# YAML Node Helpers (reuse from declarative parser)
-# ============================================================================
 
 proc getStr(node: YamlNode, default: string = ""): string =
   ## Safely extract string from YAML node
@@ -60,36 +51,32 @@ proc getSeq(node: YamlNode): seq[YamlNode] =
   else:
     result = @[]
 
-# ============================================================================
-# Parse Strategy Configuration
-# ============================================================================
-
 proc parseParamValue(node: YamlNode): ParamValue =
   ## Parse a parameter value from YAML node
   ## Reuse the logic from declarative parser
   if node.kind != yScalar:
     raise newException(ScreenerParseError, "Parameter values must be scalar")
-  
+
   let content = node.content
-  
+
   # Try bool first
   if content.toLowerAscii() in ["true", "false", "yes", "no"]:
     return newParamBool(node.getBool())
-  
+
   # Try int
   try:
     let intVal = parseInt(content)
     return newParamInt(intVal)
   except ValueError:
     discard
-  
+
   # Try float
   try:
     let floatVal = parseFloat(content)
     return newParamFloat(floatVal)
   except ValueError:
     discard
-  
+
   # Default to string
   return newParamString(content)
 
@@ -97,12 +84,12 @@ proc parseStrategyConfig(node: YamlNode): ScreenerStrategyConfig =
   ## Parse a single strategy configuration
   if node.kind != yMapping:
     raise newException(ScreenerParseError, "Strategy config must be a mapping")
-  
+
   var kind = ""
   var name = ""
   var filePath = ""
   var params = initTable[string, ParamValue]()
-  
+
   for key, val in node.fields:
     case key.content
     of "kind":
@@ -117,19 +104,19 @@ proc parseStrategyConfig(node: YamlNode): ScreenerStrategyConfig =
           params[paramKey.content] = parseParamValue(paramVal)
     else:
       discard
-  
+
   # Determine strategy kind
   case kind.toLowerAscii()
   of "built_in", "builtin":
     if name.len == 0:
       raise newException(ScreenerParseError, "Built-in strategy must have a name")
     result = newBuiltInStrategy(name, params)
-  
+
   of "yaml_file", "yamlfile", "yaml":
     if filePath.len == 0:
       raise newException(ScreenerParseError, "YAML strategy must have a file_path")
     result = newYamlStrategy(filePath)
-  
+
   else:
     raise newException(ScreenerParseError, "Unknown strategy kind: " & kind & " (use 'built_in' or 'yaml_file')")
 
@@ -139,28 +126,24 @@ proc parseStrategies(node: YamlNode): seq[ScreenerStrategyConfig] =
   for strategyNode in node.getSeq():
     result.add(parseStrategyConfig(strategyNode))
 
-# ============================================================================
-# Parse Data Configuration
-# ============================================================================
-
 proc parseDataConfig(node: YamlNode): ScreenerDataConfig =
   ## Parse data configuration section
   if node.kind != yMapping:
     raise newException(ScreenerParseError, "Data config must be a mapping")
-  
+
   var source = "yahoo"
-  
+
   for key, val in node.fields:
     if key.content == "source":
       source = val.getStr()
       break
-  
+
   case source.toLowerAscii()
   of "yahoo", "yahoo_finance", "yfinance":
     var symbols: seq[string] = @[]
     var lookbackStr = "90d"
     var intervalStr = "1d"
-    
+
     for key, val in node.fields:
       case key.content
       of "symbols":
@@ -172,16 +155,16 @@ proc parseDataConfig(node: YamlNode): ScreenerDataConfig =
         intervalStr = val.getStr()
       else:
         discard
-    
+
     let lookback = parseLookbackPeriod(lookbackStr)
     let interval = parseTimeInterval(intervalStr)
     result = newYahooDataConfig(symbols, lookback, interval)
-  
+
   of "coinbase", "cb":
     var pairs: seq[string] = @[]
     var lookbackStr = "7d"
     var intervalStr = "1h"
-    
+
     for key, val in node.fields:
       case key.content
       of "pairs":
@@ -193,15 +176,15 @@ proc parseDataConfig(node: YamlNode): ScreenerDataConfig =
         intervalStr = val.getStr()
       else:
         discard
-    
+
     let lookback = parseLookbackPeriod(lookbackStr)
     let interval = parseTimeInterval(intervalStr)
     result = newCoinbaseDataConfig(pairs, lookback, interval)
-  
+
   of "csv":
     var directory = ""
     var lookbackStr = ""
-    
+
     for key, val in node.fields:
       case key.content
       of "directory", "dir":
@@ -210,20 +193,17 @@ proc parseDataConfig(node: YamlNode): ScreenerDataConfig =
         lookbackStr = val.getStr()
       else:
         discard
-    
+
     let lookback = if lookbackStr.len > 0:
       some(parseLookbackPeriod(lookbackStr))
     else:
       none(LookbackPeriod)
-    
-    result = newCsvDataConfig(directory, lookback)
-  
-  else:
-    raise newException(ScreenerParseError, "Unsupported data source: " & source & " (use 'yahoo', 'coinbase', or 'csv')")
 
-# ============================================================================
-# Parse Output Configuration
-# ============================================================================
+    result = newCsvDataConfig(directory, lookback)
+
+  else:
+    raise newException(ScreenerParseError, "Unsupported data source: " &
+        source & " (use 'yahoo', 'coinbase', or 'csv')")
 
 proc parseOutputConfig(node: YamlNode): ScreenerOutputConfig =
   ## Parse output configuration section
@@ -232,7 +212,7 @@ proc parseOutputConfig(node: YamlNode): ScreenerOutputConfig =
   var filepath = ""
   var saveHistory = false
   var historyDir = "screener_history"
-  
+
   if node.kind == yMapping:
     for key, val in node.fields:
       case key.content
@@ -248,23 +228,25 @@ proc parseOutputConfig(node: YamlNode): ScreenerOutputConfig =
         historyDir = val.getStr()
       else:
         discard
-  
+
   let outputFormat = case format.toLowerAscii()
     of "terminal", "term", "console": ofTerminal
     of "csv": ofCsv
     of "json": ofJson
     of "markdown", "md": ofMarkdown
     else:
-      raise newException(ScreenerParseError, "Invalid output format: " & format & " (use 'terminal', 'csv', 'json', or 'markdown')")
-  
+      raise newException(ScreenerParseError, "Invalid output format: " &
+          format & " (use 'terminal', 'csv', 'json', or 'markdown')")
+
   let detail = case detailLevel.toLowerAscii()
     of "summary", "brief": dlSummary
     of "detailed", "detail", "full": dlDetailed
     else:
-      raise newException(ScreenerParseError, "Invalid detail level: " & detailLevel & " (use 'summary' or 'detailed')")
-  
+      raise newException(ScreenerParseError, "Invalid detail level: " &
+          detailLevel & " (use 'summary' or 'detailed')")
+
   let path = if filepath.len > 0: some(filepath) else: none(string)
-  
+
   result = ScreenerOutputConfig(
     format: outputFormat,
     detailLevel: detail,
@@ -273,16 +255,12 @@ proc parseOutputConfig(node: YamlNode): ScreenerOutputConfig =
     historyDir: historyDir
   )
 
-# ============================================================================
-# Parse Filters Configuration
-# ============================================================================
-
 proc parseFilters(node: YamlNode): ScreenerFilters =
   ## Parse filters configuration section
   var signalTypeStrs: seq[string] = @[]
   var minStrengthStr = "moderate"
   var topN = -1
-  
+
   if node.kind == yMapping:
     for key, val in node.fields:
       case key.content
@@ -295,7 +273,7 @@ proc parseFilters(node: YamlNode): ScreenerFilters =
         topN = val.getInt()
       else:
         discard
-  
+
   # Parse signal types
   var signalTypes: seq[AlertType] = @[]
   if signalTypeStrs.len > 0:
@@ -316,48 +294,45 @@ proc parseFilters(node: YamlNode): ScreenerFilters =
   else:
     # Default to buy and sell signals
     signalTypes = @[atBuySignal, atSellSignal]
-  
+
   # Parse min strength
   let minStrength = case minStrengthStr.toLowerAscii()
     of "weak", "low": asWeak
     of "moderate", "medium", "mod": asModerate
     of "strong", "high": asStrong
     else:
-      raise newException(ScreenerParseError, "Invalid strength: " & minStrengthStr & " (use 'weak', 'moderate', or 'strong')")
-  
-  let topNOption = if topN > 0: some(topN) else: none(int)
-  
-  result = newScreenerFilters(signalTypes, minStrength, topNOption)
+      raise newException(ScreenerParseError, "Invalid strength: " &
+          minStrengthStr & " (use 'weak', 'moderate', or 'strong')")
 
-# ============================================================================
-# Main Parse Function
-# ============================================================================
+  let topNOption = if topN > 0: some(topN) else: none(int)
+
+  result = newScreenerFilters(signalTypes, minStrength, topNOption)
 
 proc parseScreenerYAML*(yamlContent: string): ScreenerConfig =
   ## Parse a complete screener configuration from YAML string
   ## Raises ScreenerParseError if parsing fails
-  
+
   var root: YamlNode
-  
+
   try:
     load(yamlContent, root)
   except YamlParserError as e:
     raise newException(ScreenerParseError, "YAML syntax error: " & e.msg)
   except YamlConstructionError as e:
     raise newException(ScreenerParseError, "YAML construction error: " & e.msg)
-  
+
   if root.kind != yMapping:
     raise newException(ScreenerParseError, "Screener config root must be a mapping")
-  
+
   # Initialize with defaults
   var metadata = MetadataYAML(name: "", description: "", tags: @[])
   var strategies: seq[ScreenerStrategyConfig] = @[]
   var dataConfig: ScreenerDataConfig
   var outputConfig = newOutputConfig()
   var filters = newScreenerFilters()
-  
+
   var hasData = false
-  
+
   # Parse each section
   for key, val in root.fields:
     case key.content
@@ -379,29 +354,29 @@ proc parseScreenerYAML*(yamlContent: string): ScreenerConfig =
               metadata.tags.add(tag.getStr())
           else:
             discard
-    
+
     of "strategies":
       strategies = parseStrategies(val)
-    
+
     of "data":
       dataConfig = parseDataConfig(val)
       hasData = true
-    
+
     of "output":
       outputConfig = parseOutputConfig(val)
-    
+
     of "filters":
       filters = parseFilters(val)
-    
+
     else:
       discard
-  
+
   if not hasData:
     raise newException(ScreenerParseError, "Data configuration is required")
-  
+
   if strategies.len == 0:
     raise newException(ScreenerParseError, "At least one strategy must be specified")
-  
+
   result = newScreenerConfig(metadata, strategies, dataConfig, outputConfig, filters)
 
 proc parseScreenerYAMLFile*(filename: string): ScreenerConfig =

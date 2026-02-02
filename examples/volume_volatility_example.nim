@@ -12,13 +12,9 @@ import std/[strformat, strutils, math]
 
 include ../src/tzutrader/indicators
 
-# ============================================================================
-# Section 1: True Range - Capturing Full Volatility
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 1: True Range (TRANGE) - Volatility Measurement"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "True Range captures the full extent of price movement, including gaps."
@@ -27,7 +23,7 @@ echo ""
 
 # Create TRANGE and ATR indicators
 var trange = newTRANGE()
-var atr = newATR(5)  # 5-period ATR for smoothing
+var atr = newATR(5) # 5-period ATR for smoothing
 
 # Generate price data with a gap
 type PriceBar = tuple[high, low, close: float64]
@@ -36,22 +32,22 @@ let priceData: seq[PriceBar] = @[
   (high: 102.0, low: 100.0, close: 101.0),
   (high: 103.0, low: 101.0, close: 102.5),
   (high: 104.0, low: 102.0, close: 103.0),
-  (high: 103.5, low: 101.5, close: 102.0),  # Normal day
-  (high: 108.0, low: 106.0, close: 107.5),  # Gap up (prev close 102.0)
+  (high: 103.5, low: 101.5, close: 102.0),       # Normal day
+  (high: 108.0, low: 106.0, close: 107.5),       # Gap up (prev close 102.0)
   (high: 109.0, low: 107.0, close: 108.0),
   (high: 108.5, low: 106.5, close: 107.0),
-  (high: 103.0, low: 101.0, close: 101.5),  # Gap down (prev close 107.0)
+  (high: 103.0, low: 101.0, close: 101.5),       # Gap down (prev close 107.0)
   (high: 102.0, low: 100.0, close: 101.0),
   (high: 103.0, low: 101.0, close: 102.0)
 ]
 
 echo "Bar    High     Low    Close   |  TRange    ATR(5)   Notes"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i, bar in priceData:
   let tr = trange.update(bar.high, bar.low, bar.close)
   let atrVal = atr.update(bar.high, bar.low, bar.close)
-  
+
   var notes = ""
   if i == 4:
     notes = "Gap Up! TR captures gap"
@@ -61,7 +57,7 @@ for i, bar in priceData:
     notes = "Wide range"
   else:
     notes = "Normal range"
-  
+
   if classify(tr) != fcNan:
     echo &"{i+1:<6} {bar.high:<8.2f} {bar.low:<6.2f} {bar.close:<7.2f} | {tr:>7.2f}  {atrVal:>7.2f}   {notes}"
   else:
@@ -75,13 +71,9 @@ echo "  • Gap down (bar 8): TR captures full drop from prev close to low"
 echo "  • ATR smooths TR over period, good for stop-loss sizing"
 echo ""
 
-# ============================================================================
-# Section 2: Normalized ATR - Cross-Asset Comparison
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 2: NATR - Volatility as Percentage"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "NATR expresses ATR as percentage of close price, enabling comparison"
@@ -129,18 +121,18 @@ echo "Comparing volatility across different price levels:"
 echo ""
 echo "Stock A (Low Priced):                  Stock B (High Priced):"
 echo "Close    ATR      NATR(%)      |       Close    ATR      NATR(%)"
-echo "-" .repeat(70)
+echo "-".repeat(70)
 
 for i in 0..<lowPricedStock.bars.len:
   let barA = lowPricedStock.bars[i]
   let barB = highPricedStock.bars[i]
-  
+
   let atrValA = atrA.update(barA.high, barA.low, barA.close)
   let natrValA = natrA.update(barA.high, barA.low, barA.close)
-  
+
   let atrValB = atrB.update(barB.high, barB.low, barB.close)
   let natrValB = natrB.update(barB.high, barB.low, barB.close)
-  
+
   if classify(natrValA) != fcNan:
     echo &"{barA.close:<8.2f} {atrValA:<8.2f} {natrValA:<11.2f}  |       {barB.close:<8.2f} {atrValB:<8.2f} {natrValB:<8.2f}"
 
@@ -151,13 +143,9 @@ echo "  • NATR values are similar (~4%), showing comparable volatility"
 echo "  • Use NATR for: portfolio risk comparison, position sizing, strategy parameters"
 echo ""
 
-# ============================================================================
-# Section 3: Accumulation/Distribution - Volume Flow
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 3: AD (Accumulation/Distribution) - Volume Flow Analysis"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "AD measures buying/selling pressure by combining price and volume."
@@ -169,7 +157,7 @@ var ad = newAD()
 
 # Simulate bullish accumulation period
 let accumulationData = @[
-  (high: 100.0, low: 98.0, close: 99.0, volume: 10000.0),   # Close mid-range
+  (high: 100.0, low: 98.0, close: 99.0, volume: 10000.0), # Close mid-range
   (high: 101.0, low: 99.0, close: 100.5, volume: 12000.0), # Close near high
   (high: 102.0, low: 100.0, close: 101.8, volume: 15000.0), # Strong close
   (high: 103.0, low: 101.0, close: 102.7, volume: 18000.0), # Accumulation
@@ -178,13 +166,13 @@ let accumulationData = @[
 
 echo "Accumulation Phase (Bullish):"
 echo "Bar    High     Low    Close   Volume    |    AD Line    Change    Interpretation"
-echo "-" .repeat(85)
+echo "-".repeat(85)
 
 var prevAD = 0.0
 for i, (h, l, c, v) in accumulationData:
   let adVal = ad.update(h, l, c, v)
   let change = if i > 0: adVal - prevAD else: 0.0
-  
+
   var interp = ""
   if c > (h + l) / 2:
     interp = "Close near high → Buying"
@@ -192,7 +180,7 @@ for i, (h, l, c, v) in accumulationData:
     interp = "Close near low → Selling"
   else:
     interp = "Close mid-range → Neutral"
-  
+
   echo &"{i+1:<6} {h:<8.2f} {l:<6.2f} {c:<7.2f} {v:<9.0f} | {adVal:>10.0f} {change:>9.0f}    {interp}"
   prevAD = adVal
 
@@ -201,22 +189,22 @@ echo ""
 # Now simulate distribution phase
 var ad2 = newAD()
 let distributionData = @[
-  (high: 104.0, low: 102.0, close: 103.0, volume: 20000.0), # Start
-  (high: 103.5, low: 101.0, close: 101.5, volume: 22000.0), # Close near low
-  (high: 102.0, low: 99.5, close: 100.0, volume: 25000.0),  # Selling pressure
-  (high: 101.0, low: 98.0, close: 98.5, volume: 28000.0),   # Distribution
-  (high: 100.0, low: 96.0, close: 96.5, volume: 30000.0),   # Heavy selling
+  (high: 104.0, low: 102.0, close: 103.0, volume: 20000.0),             # Start
+  (high: 103.5, low: 101.0, close: 101.5, volume: 22000.0),             # Close near low
+  (high: 102.0, low: 99.5, close: 100.0, volume: 25000.0),              # Selling pressure
+  (high: 101.0, low: 98.0, close: 98.5, volume: 28000.0),               # Distribution
+  (high: 100.0, low: 96.0, close: 96.5, volume: 30000.0),               # Heavy selling
 ]
 
 echo "Distribution Phase (Bearish):"
 echo "Bar    High     Low    Close   Volume    |    AD Line    Change    Interpretation"
-echo "-" .repeat(85)
+echo "-".repeat(85)
 
 prevAD = 0.0
 for i, (h, l, c, v) in distributionData:
   let adVal = ad2.update(h, l, c, v)
   let change = if i > 0: adVal - prevAD else: 0.0
-  
+
   var interp = ""
   if c > (h + l) / 2:
     interp = "Close near high → Buying"
@@ -224,7 +212,7 @@ for i, (h, l, c, v) in distributionData:
     interp = "Close near low → Selling"
   else:
     interp = "Close mid-range → Neutral"
-  
+
   echo &"{i+1:<6} {h:<8.2f} {l:<6.2f} {c:<7.2f} {v:<9.0f} | {adVal:>10.0f} {change:>9.0f}    {interp}"
   prevAD = adVal
 
@@ -236,13 +224,9 @@ echo "  • Divergences: Price ↑ but AD ↓ warns of weakness (distribution)"
 echo "  • Best used with price trend confirmation"
 echo ""
 
-# ============================================================================
-# Section 4: Aroon - Trend Identification
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 4: AROON - Trend Strength and Reversals"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "Aroon measures time since highest high / lowest low."
@@ -289,11 +273,11 @@ let trendData = @[
 ]
 
 echo "Bar    High     Low     | Aroon Up  Aroon Dn  Oscillator |  Market Phase"
-echo "-" .repeat(80)
+echo "-".repeat(80)
 
 for i, (h, l) in trendData:
   let aroonResult = aroon.update(h, l)
-  
+
   if classify(aroonResult.up) != fcNan:
     var phase = ""
     if aroonResult.up > 70:
@@ -306,7 +290,7 @@ for i, (h, l) in trendData:
       phase = "Bearish bias"
     else:
       phase = "Ranging / Consolidation"
-    
+
     echo &"{i+1:<6} {h:<8.2f} {l:<7.2f} | {aroonResult.up:>8.1f}  {aroonResult.down:>8.1f}  {aroonResult.oscillator:>10.1f} |  {phase}"
   else:
     echo &"{i+1:<6} {h:<8.2f} {l:<7.2f} |    --        --          --        |  Warming up..."
@@ -319,13 +303,9 @@ echo "  • Bars 15-18: Both moderate → consolidation at top"
 echo "  • Bars 19-25: Aroon Down rises to >90 → trend reversal to downtrend"
 echo ""
 
-# ============================================================================
-# Section 5: Combining Indicators - Comprehensive Analysis
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 5: Combined Analysis - Volume, Volatility & Trend"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "Combining indicators for comprehensive market analysis:"
@@ -362,7 +342,7 @@ let fullScenario: seq[FullBar] = @[
 echo "Market Phases Analysis:"
 echo ""
 echo "Bar    Close   Volume  |  ATR   NATR%  | AroonUp AroonDn |   AD      | Signal"
-echo "-" .repeat(90)
+echo "-".repeat(90)
 
 var prevADVal = 0.0
 for i, bar in fullScenario:
@@ -370,9 +350,9 @@ for i, bar in fullScenario:
   let natrVal = combinedNATR.update(bar.high, bar.low, bar.close)
   let adVal = combinedAD.update(bar.high, bar.low, bar.close, bar.volume)
   let aroonVal = combinedAroon.update(bar.high, bar.low)
-  
+
   var signal = ""
-  
+
   # Determine market phase and signal
   if i < 5:
     signal = "Accumulation phase"
@@ -383,12 +363,12 @@ for i, bar in fullScenario:
     let adChange = adVal - prevADVal
     if adChange < -50000:
       signal = "WARNING: Distribution"
-  
+
   if classify(atrVal) != fcNan:
     echo &"{i+1:<6} {bar.close:<7.2f} {bar.volume:<7.0f} | {atrVal:>5.2f}  {natrVal:>5.2f}  | {aroonVal.up:>6.1f}  {aroonVal.down:>6.1f}  | {adVal:>8.0f}  | {signal}"
   else:
     echo &"{i+1:<6} {bar.close:<7.2f} {bar.volume:<7.0f} |   --    --    |   --     --    |    --     | Warmup"
-  
+
   prevADVal = adVal
 
 echo ""
@@ -413,13 +393,9 @@ echo "  • Volume still elevated → smart money exiting"
 echo "  → Strategy: Take profits, tighten stops, reduce exposure"
 echo ""
 
-# ============================================================================
-# Section 6: Practical Applications
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 6: Practical Trading Applications"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "1. POSITION SIZING with ATR/NATR:"
@@ -452,9 +428,9 @@ echo "   • Direction: Use Aroon or price action for direction"
 echo "   • Stop: Use current ATR for stop placement"
 echo ""
 
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Volume & Volatility Example Complete!"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 echo "Next Steps:"
 echo "  • Combine with trend indicators (MACD, Moving Averages)"

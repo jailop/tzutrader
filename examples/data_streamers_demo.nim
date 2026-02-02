@@ -13,16 +13,12 @@ echo "tzutrader Data Streamers Demo"
 echo "=========================================="
 echo ""
 
-# ============================================================================
-# 1. CSV File Streamer Demo
-# ============================================================================
-
 echo "1. CSV File Streamer Demo"
 echo "--------------------------"
 
 # Generate some mock data to a CSV file
 let mockData = generateMockOHLCV(
-  "DEMO", 
+  "DEMO",
   parse("2024-01-01", "yyyy-MM-dd").toTime().toUnix(),
   parse("2024-01-10", "yyyy-MM-dd").toTime().toUnix(),
   Int1d
@@ -47,10 +43,6 @@ for bar in csvStream.items():
 echo "  ... (", csvStream.len - 3, " more bars)"
 echo ""
 
-# ============================================================================
-# 2. Yahoo Finance History Demo
-# ============================================================================
-
 echo "2. Yahoo Finance History Demo"
 echo "------------------------------"
 
@@ -70,10 +62,6 @@ while yfStream.hasNext() and count < 3:
 
 echo "  ... (", yfStream.len - 3, " more bars)"
 echo ""
-
-# ============================================================================
-# 3. Coinbase History Demo
-# ============================================================================
 
 echo "3. Coinbase History Demo"
 echo "-------------------------"
@@ -97,10 +85,6 @@ while cbStream.hasNext() and count < 3:
 echo "  ... (", cbStream.len - 3, " more bars)"
 echo ""
 
-# ============================================================================
-# 4. Using result() method to peek without advancing
-# ============================================================================
-
 echo "4. Peek at current observation (result() method)"
 echo "------------------------------------------------"
 
@@ -111,13 +95,9 @@ if current.isSome:
   echo "Current bar (peeking): ", current.get
 
 echo "Current index (unchanged): ", yfStream.index
-discard yfStream.next()  # Now advance
+discard yfStream.next() # Now advance
 echo "After next(), index: ", yfStream.index
 echo ""
-
-# ============================================================================
-# 5. Legacy API still works
-# ============================================================================
 
 echo "5. Legacy DataStream API (backward compatible)"
 echo "-----------------------------------------------"

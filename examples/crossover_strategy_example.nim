@@ -12,26 +12,26 @@ proc main() =
   echo "Moving Average Crossover Strategy Example"
   echo "="
   echo ""
-  
+
   # Load CSV data
   echo "Loading AAPL sample data..."
   let data = readCSV("data/AAPL_sample.csv")
   echo &"Loaded {data.len} bars"
   echo ""
-  
+
   # Create MA Crossover strategy
   echo "Creating MA Crossover Strategy (Fast: 10, Slow: 20)"
   let strategy = newCrossoverStrategy(fastPeriod = 10, slowPeriod = 20)
-  
+
   # Streaming mode analysis
   echo "\n=== STREAMING MODE ==="
   var signals: seq[Signal] = @[]
   for bar in data:
     signals.add(strategy.onBar(bar))
-  
+
   var buySignals: seq[Signal] = @[]
   var sellSignals: seq[Signal] = @[]
-  
+
   for signal in signals:
     case signal.position
     of Position.Buy:
@@ -44,19 +44,19 @@ proc main() =
       echo &"  {signal.reason}"
     of Position.Stay:
       discard
-  
+
   echo &"\nSummary:"
   echo &"  Total bars:     {signals.len}"
   echo &"  Golden crosses: {buySignals.len}"
   echo &"  Death crosses:  {sellSignals.len}"
-  
+
   # Streaming mode demonstration
   echo "\n=== STREAMING MODE ==="
   let streamStrategy = newCrossoverStrategy(fastPeriod = 10, slowPeriod = 20)
-  
+
   var streamBuys = 0
   var streamSells = 0
-  
+
   echo "Processing bars in real-time mode..."
   for i, bar in data:
     let signal = streamStrategy.onBar(bar)
@@ -66,32 +66,31 @@ proc main() =
     elif signal.position == Position.Sell:
       streamSells.inc
       echo &"[{i+1}/{data.len}] DEATH CROSS  @ ${signal.price:.2f}"
-  
+
   echo &"\nStreaming Summary:"
   echo &"  Golden crosses: {streamBuys}"
   echo &"  Death crosses:  {streamSells}"
-  
+
   # Parameter comparison
   echo "\n=== PARAMETER COMPARISON ==="
   echo "Testing different MA periods:"
-  
+
   let configurations = @[
     (fast: 5, slow: 10),
     (fast: 10, slow: 20),
     (fast: 20, slow: 50),
     (fast: 50, slow: 200)
   ]
-  
+
   for config in configurations:
-    let testStrat = newCrossoverStrategy(fastPeriod = config.fast, slowPeriod = config.slow)
+    let testStrat = newCrossoverStrategy(fastPeriod = config.fast,
+        slowPeriod = config.slow)
     var testSignals: seq[Signal] = @[]
     for bar in data:
       testSignals.add(testStrat.onBar(bar))
     let buys = testSignals.filterIt(it.position == Position.Buy).len
     let sells = testSignals.filterIt(it.position == Position.Sell).len
     echo &"  MA({config.fast}/{config.slow}): {buys} golden, {sells} death crosses"
-  
-  echo "\nDone!"
 
 when isMainModule:
   main()

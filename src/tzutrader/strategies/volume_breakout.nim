@@ -1,31 +1,3 @@
-## Volume Breakout Strategy for tzutrader
-##
-## Price breakout strategy with volume confirmation to reduce false signals.
-##
-## **Strategy Type**: Breakout + Volume Confirmation
-##
-## **Best Market Conditions**: Markets transitioning from consolidation to trend
-##
-## **Trading Logic**:
-## - Track price range (high/low) over N periods
-## - Buy when: price breaks above range high AND volume > avgVolume × multiplier
-## - Sell when: price breaks below range low AND volume > avgVolume × multiplier
-## - Volume confirmation filters out weak/false breakouts
-##
-## **Typical Parameters**:
-## - period: 20 (lookback for price range and volume average)
-## - volumeMultiplier: 1.5 (volume must be 1.5x average)
-##
-## **Risk Profile**: Moderate to High, catches strong moves
-##
-## **Complementary Strategies**: Works well with trend filters
-##
-## **Known Limitations**:
-## - Misses low-volume breakouts that can still be valid
-## - Can generate false signals in highly volatile markets
-## - Requires consistent volume data
-## - Late entry after breakout already occurred
-
 import std/strformat
 import ../core
 import ../indicators
@@ -50,12 +22,12 @@ type
 proc newVolumeBreakoutStrategy*(period: int = 20, volumeMultiplier: float64 = 1.5,
                                  symbol: string = ""): VolumeBreakoutStrategy =
   ## Create a new Volume Breakout strategy
-  ## 
+  ##
   ## Args:
   ##   period: Lookback period for range and volume average (default 20)
   ##   volumeMultiplier: Volume must exceed average by this factor (default 1.5)
   ##   symbol: Symbol to trade (optional)
-  ## 
+  ##
   ## Returns:
   ##   New VolumeBreakoutStrategy instance
   result = VolumeBreakoutStrategy(
@@ -73,10 +45,10 @@ proc newVolumeBreakoutStrategy*(period: int = 20, volumeMultiplier: float64 = 1.
 
 method onBar*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
   ## Process single bar using streaming volume breakout logic
-  
+
   # Update volume MA
   let avgVolume = s.volumeMA.update(bar.volume)
-  
+
   # Build up price history
   if s.length < s.period:
     s.priceHighs[s.pos] = bar.high
@@ -84,23 +56,24 @@ method onBar*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
     s.pos = (s.pos + 1) mod s.period
     s.length += 1
     return newSignal(Position.Stay, s.symbol, bar.close, "Building price history")
-  
+
   # Calculate range high and low from previous periods (excluding current bar)
   var rangeHigh = s.priceHighs[0]
   var rangeLow = s.priceLows[0]
-  
+
   for i in 1..<s.period:
     if s.priceHighs[i] > rangeHigh:
       rangeHigh = s.priceHighs[i]
     if s.priceLows[i] < rangeLow:
       rangeLow = s.priceLows[i]
-  
+
   # Check if volume is sufficient
-  let volumeConfirmed = if avgVolume.isNaN: false else: bar.volume > (avgVolume * s.volumeMultiplier)
-  
+  let volumeConfirmed = if avgVolume.isNaN: false else: bar.volume > (
+      avgVolume * s.volumeMultiplier)
+
   var position = Position.Stay
   var reason = ""
-  
+
   # Check for breakouts
   if bar.high > rangeHigh and volumeConfirmed:
     # Upward breakout with volume confirmation
@@ -118,14 +91,14 @@ method onBar*(s: VolumeBreakoutStrategy, bar: OHLCV): Signal =
   else:
     # Within range
     reason = &"Within range (Price: {bar.close:.2f}, Range: {rangeLow:.2f}-{rangeHigh:.2f})"
-  
+
   # Update price history
   s.priceHighs[s.pos] = bar.high
   s.priceLows[s.pos] = bar.low
   s.pos = (s.pos + 1) mod s.period
-  
+
   s.initialized = true
-  
+
   result = newSignal(position, s.symbol, bar.close, reason)
 
 method reset*(s: VolumeBreakoutStrategy) =

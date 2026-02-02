@@ -5,7 +5,7 @@ import ../../src/tzutrader/screener/[alerts, reports, schema]
 import ../../src/tzutrader/core
 
 suite "Report Generation Tests":
-  
+
   setup:
     # Create sample alerts
     let alert1 = newAlert(
@@ -17,7 +17,7 @@ suite "Report Generation Tests":
       indicators = {"RSI": 28.3, "Price": 178.25}.toTable,
       metadata = {"reason": "RSI oversold"}.toTable
     )
-    
+
     let alert2 = newAlert(
       symbol = "TSLA",
       strategyName = "MACD Crossover",
@@ -26,7 +26,7 @@ suite "Report Generation Tests":
       strength = asModerate,
       indicators = {"MACD": 0.45, "Signal": 0.30}.toTable
     )
-    
+
     let alert3 = newAlert(
       symbol = "GOOGL",
       strategyName = "Bollinger Breakout",
@@ -35,9 +35,9 @@ suite "Report Generation Tests":
       strength = asWeak,
       indicators = {"Upper": 145.0, "Lower": 140.0}.toTable
     )
-    
+
     let alerts = @[alert1, alert2, alert3]
-    
+
     # Create sample summary
     var summary = ScreenerSummary(
       totalSymbols: 10,
@@ -52,7 +52,7 @@ suite "Report Generation Tests":
     summary.signalsByStrength[asStrong] = 1
     summary.signalsByStrength[asModerate] = 1
     summary.signalsByStrength[asWeak] = 1
-  
+
   test "Print summary":
     let summaryText = printSummary(summary)
     check summaryText.contains("SCREENING SUMMARY")
@@ -61,24 +61,24 @@ suite "Report Generation Tests":
     check summaryText.contains("Strategies Used:    3")
     check summaryText.contains("Signals by Type:")
     check summaryText.contains("Signals by Strength:")
-  
+
   test "Format terminal table - summary level":
     let table = formatTerminalTable(alerts, dlSummary)
     check table.contains("MARKET SCREENER ALERTS")
     check table.contains("Total Alerts: 3")
     # Should not contain detailed alert data at summary level
     check(not table.contains("AAPL"))
-  
+
   test "Format terminal table - detailed level":
     let table = formatTerminalTable(alerts, dlDetailed)
     check table.contains("MARKET SCREENER ALERTS")
     check table.contains("AAPL")
     check table.contains("TSLA")
     check table.contains("GOOGL")
-    check table.contains("RSI Mean Reversi")  # Truncated in table
+    check table.contains("RSI Mean Reversi") # Truncated in table
     check table.contains("MACD Crossover")
-    check table.contains("Bollinger Breako")  # Truncated in table
-  
+    check table.contains("Bollinger Breako") # Truncated in table
+
   test "Format CSV report":
     let csv = formatCsvReport(alerts)
     check csv.contains("Symbol,Strategy,AlertType,Strength,Price,Timestamp,Indicators,Metadata")
@@ -88,7 +88,7 @@ suite "Report Generation Tests":
     check csv.contains("178.25")
     check csv.contains("235.67")
     check csv.contains("142.80")
-  
+
   test "Format JSON report":
     let jsonReport = formatJsonReport(alerts)
     check jsonReport.contains("\"alerts\"")
@@ -99,7 +99,7 @@ suite "Report Generation Tests":
     check jsonReport.contains("\"symbol\": \"GOOGL\"")
     check jsonReport.contains("\"alertType\"")
     check jsonReport.contains("\"strength\"")
-  
+
   test "Format Markdown report":
     let mdReport = formatMarkdownReport(alerts)
     check mdReport.contains("# Market Screener Report")
@@ -109,7 +109,7 @@ suite "Report Generation Tests":
     check mdReport.contains("| AAPL | RSI Mean Reversion |")
     check mdReport.contains("| TSLA | MACD Crossover |")
     check mdReport.contains("| GOOGL | Bollinger Breakout |")
-  
+
   test "Print detailed alerts":
     let detailed = printDetailedAlerts(alerts)
     check detailed.contains("[Alert 1/3]")
@@ -121,7 +121,7 @@ suite "Report Generation Tests":
     check detailed.contains("Indicators:")
     check detailed.contains("Metadata:")
     check detailed.contains("reason")
-  
+
   test "Generate full report - terminal format":
     let config = ScreenerOutputConfig(
       format: ofTerminal,
@@ -132,7 +132,7 @@ suite "Report Generation Tests":
     check report.contains("SCREENING SUMMARY")
     check report.contains("MARKET SCREENER ALERTS")
     check report.contains("AAPL")
-  
+
   test "Generate full report - CSV format":
     let config = ScreenerOutputConfig(
       format: ofCsv,
@@ -142,7 +142,7 @@ suite "Report Generation Tests":
     let report = generateReport(alerts, summary, config)
     check report.contains("Symbol,Strategy,AlertType")
     check report.contains("AAPL,RSI Mean Reversion")
-  
+
   test "Generate full report - JSON format":
     let config = ScreenerOutputConfig(
       format: ofJson,
@@ -152,7 +152,7 @@ suite "Report Generation Tests":
     let report = generateReport(alerts, summary, config)
     check report.contains("\"alerts\"")
     check report.contains("\"count\": 3")
-  
+
   test "Generate full report - Markdown format":
     let config = ScreenerOutputConfig(
       format: ofMarkdown,
@@ -162,22 +162,22 @@ suite "Report Generation Tests":
     let report = generateReport(alerts, summary, config)
     check report.contains("# Market Screener Report")
     check report.contains("| Symbol |")
-  
+
   test "Empty alerts handling":
     let emptyAlerts: seq[Alert] = @[]
-    
+
     let table = formatTerminalTable(emptyAlerts, dlDetailed)
     check table.contains("No alerts to display")
-    
+
     let csv = formatCsvReport(emptyAlerts)
-    check csv.contains("Symbol,Strategy,AlertType")  # Header only
-    
+    check csv.contains("Symbol,Strategy,AlertType") # Header only
+
     let json = formatJsonReport(emptyAlerts)
     check json.contains("\"count\": 0")
-    
+
     let md = formatMarkdownReport(emptyAlerts)
     check md.contains("*No alerts found*")
-    
+
     let detailed = printDetailedAlerts(emptyAlerts)
     check detailed.contains("No alerts to display")
 

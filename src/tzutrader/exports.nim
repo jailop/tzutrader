@@ -8,7 +8,7 @@ import core, trader, scanner
 
 proc toJson*(report: BacktestReport): JsonNode =
   ## Convert BacktestReport to JSON
-  ## 
+  ##
   ## Returns:
   ##   JsonNode representation of the report
   result = %* {
@@ -37,7 +37,7 @@ proc toJson*(report: BacktestReport): JsonNode =
 
 proc toJson*(scanResult: ScanResult): JsonNode =
   ## Convert ScanResult to JSON
-  ## 
+  ##
   ## Returns:
   ##   JsonNode representation of the scan result
   %* {
@@ -48,7 +48,7 @@ proc toJson*(scanResult: ScanResult): JsonNode =
 
 proc toJson*(results: seq[ScanResult]): JsonNode =
   ## Convert sequence of ScanResults to JSON array
-  ## 
+  ##
   ## Returns:
   ##   JsonNode array of scan results
   result = newJArray()
@@ -57,7 +57,7 @@ proc toJson*(results: seq[ScanResult]): JsonNode =
 
 proc exportJson*(report: BacktestReport, filename: string) =
   ## Export BacktestReport to JSON file
-  ## 
+  ##
   ## Args:
   ##   report: Report to export
   ##   filename: Output file path
@@ -66,7 +66,7 @@ proc exportJson*(report: BacktestReport, filename: string) =
 
 proc exportJson*(results: seq[ScanResult], filename: string) =
   ## Export scan results to JSON file
-  ## 
+  ##
   ## Args:
   ##   results: Scan results to export
   ##   filename: Output file path
@@ -75,7 +75,7 @@ proc exportJson*(results: seq[ScanResult], filename: string) =
 
 proc toCsvHeader*(): string =
   ## Get CSV header for BacktestReport
-  ## 
+  ##
   ## Returns:
   ##   CSV header string
   "symbol,start_time,end_time,initial_cash,final_value," &
@@ -87,7 +87,7 @@ proc toCsvHeader*(): string =
 
 proc toCsvRow*(report: BacktestReport): string =
   ## Convert BacktestReport to CSV row
-  ## 
+  ##
   ## Returns:
   ##   CSV row string
   &"{report.symbol}," &
@@ -114,7 +114,7 @@ proc toCsvRow*(report: BacktestReport): string =
 
 proc exportCsv*(report: BacktestReport, filename: string) =
   ## Export BacktestReport to CSV file
-  ## 
+  ##
   ## Args:
   ##   report: Report to export
   ##   filename: Output file path
@@ -124,20 +124,20 @@ proc exportCsv*(report: BacktestReport, filename: string) =
 
 proc exportCsv*(results: seq[ScanResult], filename: string) =
   ## Export scan results to CSV file
-  ## 
+  ##
   ## Args:
   ##   results: Scan results to export
   ##   filename: Output file path
   var csv = toCsvHeader() & "\n"
-  
+
   for r in results:
     csv &= r.report.toCsvRow() & "\n"
-  
+
   writeFile(filename, csv)
 
 proc toJson*(log: TradeLog): JsonNode =
   ## Convert TradeLog to JSON
-  ## 
+  ##
   ## Returns:
   ##   JsonNode representation of the trade log
   %* {
@@ -152,24 +152,24 @@ proc toJson*(log: TradeLog): JsonNode =
 
 proc exportTradeLog*(logs: seq[TradeLog], filename: string) =
   ## Export trade logs to JSON file
-  ## 
+  ##
   ## Args:
   ##   logs: Trade logs to export
   ##   filename: Output file path
   var jsonArray = newJArray()
   for log in logs:
     jsonArray.add(log.toJson())
-  
+
   writeFile(filename, jsonArray.pretty())
 
 proc exportTradeLogCsv*(logs: seq[TradeLog], filename: string) =
   ## Export trade logs to CSV file
-  ## 
+  ##
   ## Args:
   ##   logs: Trade logs to export
   ##   filename: Output file path
   var csv = "timestamp,symbol,action,quantity,price,cash,equity\n"
-  
+
   for log in logs:
     csv &= &"{log.timestamp}," &
            &"{log.symbol}," &
@@ -178,5 +178,5 @@ proc exportTradeLogCsv*(logs: seq[TradeLog], filename: string) =
            &"{log.price}," &
            &"{log.cash}," &
            &"{log.equity}\n"
-  
+
   writeFile(filename, csv)

@@ -13,13 +13,9 @@ import std/[strformat, strutils, math]
 
 include ../src/tzutrader/indicators
 
-# ============================================================================
-# Section 1: Basic Moving Average Comparison
-# ============================================================================
-
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 1: Moving Average Lag Comparison"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 # Create all moving average types with same period
@@ -38,7 +34,7 @@ let trendingData = @[
 
 echo "Trending market (consistent uptrend):"
 echo "Bar    Price      SMA(10)    EMA(10)    TRIMA(10)  DEMA(10)   TEMA(10)"
-echo "-" .repeat(80)
+echo "-".repeat(80)
 
 for i, price in trendingData:
   let smaVal = sma.update(price)
@@ -46,7 +42,7 @@ for i, price in trendingData:
   let trimaVal = trima.update(price)
   let demaVal = dema.update(price)
   let temaVal = tema.update(price)
-  
+
   # Print every 5th bar and last 3
   if i mod 5 == 0 or i >= trendingData.len - 3:
     let smaStr = if smaVal.isNaN: "N/A" else: &"{smaVal:>7.2f}"
@@ -64,14 +60,10 @@ echo "  - EMA: Moderate lag"
 echo "  - DEMA: Lower lag than EMA"
 echo "  - TEMA: Minimal lag (closest to price)"
 
-# ============================================================================
-# Section 2: Response to Sudden Price Change
-# ============================================================================
-
 echo ""
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 2: Response to Sudden Price Changes"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 # Reset indicators
@@ -83,20 +75,20 @@ tema = newTEMA(10)
 # Stable price then sudden jump
 let jumpData = @[
   100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
-  100.0, 100.0, 150.0,  # Sudden 50% jump
+  100.0, 100.0, 150.0, # Sudden 50% jump
   150.0, 150.0, 150.0
 ]
 
 echo "Price with sudden jump (100 -> 150):"
 echo "Bar    Price      SMA(10)    EMA(10)    DEMA(10)   TEMA(10)   Gap%"
-echo "-" .repeat(75)
+echo "-".repeat(75)
 
 for i, price in jumpData:
   let smaVal = sma.update(price)
   let emaVal = ema.update(price)
   let demaVal = dema.update(price)
   let temaVal = tema.update(price)
-  
+
   # Show around the jump
   if i >= 9:
     var gaps: string
@@ -105,7 +97,7 @@ for i, price in jumpData:
       gaps = &"{temaGap:>5.1f}%"
     else:
       gaps = "N/A"
-    
+
     let smaStr = if smaVal.isNaN: "N/A" else: &"{smaVal:>7.2f}"
     let emaStr = if emaVal.isNaN: "N/A" else: &"{emaVal:>7.2f}"
     let demaStr = if demaVal.isNaN: "N/A" else: &"{demaVal:>7.2f}"
@@ -119,35 +111,31 @@ echo "  - DEMA: Fast response"
 echo "  - EMA: Moderate response"
 echo "  - SMA: Slowest response"
 
-# ============================================================================
-# Section 3: Adaptive KAMA in Different Market Conditions
-# ============================================================================
-
 echo ""
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 3: KAMA - Adaptive Behavior"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "3a. KAMA in Trending Market:"
-echo "-" .repeat(40)
+echo "-".repeat(40)
 
 var kamaTrend = newKAMA(period = 10, fastPeriod = 2, slowPeriod = 30)
 var emaTrend = newEMA(10)
 
 # Strong trend
 for i in 0..<20:
-  let price = 100.0 + float64(i) * 3.0  # Strong uptrend
+  let price = 100.0 + float64(i) * 3.0 # Strong uptrend
   discard kamaTrend.update(price)
   discard emaTrend.update(price)
 
 echo "Bar    Price      KAMA(10)   EMA(10)"
-echo "-" .repeat(45)
+echo "-".repeat(45)
 for i in 0..<5:
   let price = 100.0 + float64(20 + i) * 3.0
   let kamaVal = kamaTrend.update(price)
   let emaVal = emaTrend.update(price)
-  
+
   let kamaStr = if kamaVal.isNaN: "N/A" else: &"{kamaVal:>7.2f}"
   let emaStr = if emaVal.isNaN: "N/A" else: &"{emaVal:>7.2f}"
   echo &"{20 + i:<6} ${price:<9.2f} {kamaStr}  {emaStr}"
@@ -157,7 +145,7 @@ echo "In trending market: KAMA behaves like fast EMA (responsive)"
 echo ""
 
 echo "3b. KAMA in Choppy/Sideways Market:"
-echo "-" .repeat(40)
+echo "-".repeat(40)
 
 var kamaChop = newKAMA(period = 10, fastPeriod = 2, slowPeriod = 30)
 var emaChop = newEMA(10)
@@ -173,16 +161,16 @@ for price in choppyData:
   discard emaChop.update(price)
 
 echo "Bar    Price      KAMA(10)   EMA(10)    KAMA Smoother?"
-echo "-" .repeat(60)
+echo "-".repeat(60)
 
 for i in 0..<5:
   let price = choppyData[choppyData.len - 5 + i]
   let kamaVal = kamaChop.update(price)
   let emaVal = emaChop.update(price)
-  
+
   let kamaStr = if kamaVal.isNaN: "N/A" else: &"{kamaVal:>7.2f}"
   let emaStr = if emaVal.isNaN: "N/A" else: &"{emaVal:>7.2f}"
-  
+
   var smoother = ""
   if not kamaVal.isNaN and not emaVal.isNaN:
     let kamaDeviation = abs(price - kamaVal)
@@ -191,7 +179,7 @@ for i in 0..<5:
       smoother = "Yes (more stable)"
     else:
       smoother = "Similar"
-  
+
   echo &"{20 + i:<6} ${price:<9.2f} {kamaStr}  {emaStr}  {smoother}"
 
 echo ""
@@ -199,14 +187,10 @@ echo "In choppy market: KAMA is smoother (filters noise)"
 echo "  - High efficiency = trending (KAMA fast)"
 echo "  - Low efficiency = choppy (KAMA slow)"
 
-# ============================================================================
-# Section 4: Practical Usage Guidelines
-# ============================================================================
-
 echo ""
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 4: When to Use Each Moving Average"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "SMA (Simple Moving Average):"
@@ -250,14 +234,10 @@ echo "  Best for: All market conditions, adaptive strategies"
 echo "  Pros: Automatically adapts, responsive in trends, stable in chop"
 echo "  Cons: More complex, needs proper parameter tuning"
 
-# ============================================================================
-# Section 5: Crossover Strategy Comparison
-# ============================================================================
-
 echo ""
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Section 5: MA Crossover Strategies"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 # Fast and slow MAs of different types
@@ -274,7 +254,7 @@ let crossoverData = @[
 
 echo "Comparing EMA(5/20) vs DEMA(5/20) crossovers:"
 echo "Bar    Price      Fast EMA   Slow EMA   EMA Signal | Fast DEMA  Slow DEMA  DEMA Signal"
-echo "-" .repeat(95)
+echo "-".repeat(95)
 
 var prevEMAFast, prevEMASlow, prevDEMAFast, prevDEMASlow: float64
 
@@ -283,30 +263,30 @@ for i, price in crossoverData:
   let emaS = slowEMA.update(price)
   let demaF = fastDEMA.update(price)
   let demaS = slowDEMA.update(price)
-  
-  if i >= 15:  # Show last part
+
+  if i >= 15: # Show last part
     var emaSignal = "    -"
     var demaSignal = "    -"
-    
+
     if not (prevEMAFast.isNaN or prevEMASlow.isNaN or emaF.isNaN or emaS.isNaN):
       if prevEMAFast <= prevEMASlow and emaF > emaS:
         emaSignal = "  BUY"
       elif prevEMAFast >= prevEMASlow and emaF < emaS:
         emaSignal = " SELL"
-    
+
     if not (prevDEMAFast.isNaN or prevDEMASlow.isNaN or demaF.isNaN or demaS.isNaN):
       if prevDEMAFast <= prevDEMASlow and demaF > demaS:
         demaSignal = "  BUY"
       elif prevDEMAFast >= prevDEMASlow and demaF < demaS:
         demaSignal = " SELL"
-    
+
     let emaFStr = if emaF.isNaN: "N/A" else: &"{emaF:>7.2f}"
     let emaSStr = if emaS.isNaN: "N/A" else: &"{emaS:>7.2f}"
     let demaFStr = if demaF.isNaN: "N/A" else: &"{demaF:>7.2f}"
     let demaSStr = if demaS.isNaN: "N/A" else: &"{demaS:>7.2f}"
-    
+
     echo &"{i:<6} ${price:<9.2f} {emaFStr}  {emaSStr}  {emaSignal}    | {demaFStr}  {demaSStr}  {demaSignal}"
-  
+
   prevEMAFast = emaF
   prevEMASlow = emaS
   prevDEMAFast = demaF
@@ -317,14 +297,10 @@ echo "DEMA crossovers typically occur earlier than EMA crossovers"
 echo "  - Pro: Earlier entry/exit signals"
 echo "  - Con: More prone to false signals"
 
-# ============================================================================
-# Summary
-# ============================================================================
-
 echo ""
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo "Summary: Phase 9.2 Advanced Moving Averages"
-echo "=" .repeat(70)
+echo "=".repeat(70)
 echo ""
 
 echo "Implemented Indicators (4 new):"
@@ -344,4 +320,4 @@ echo "  • KAMA adapts: Fast in trends, slow in chop"
 echo "  • Choose based on: market conditions, trading timeframe, and risk tolerance"
 echo ""
 
-echo "=" .repeat(70)
+echo "=".repeat(70)

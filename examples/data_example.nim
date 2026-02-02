@@ -33,7 +33,7 @@ echo ""
 echo "3. Fetching data for multiple symbols..."
 let symbols = @["AAPL", "MSFT", "GOOGL"]
 let endTime = getTime().toUnix()
-let startTime = endTime - (7 * 86400)  # 7 days ago
+let startTime = endTime - (7 * 86400) # 7 days ago
 
 let multiData = fetchMultiple(symbols, startTime, endTime, Int1d)
 for symbol, bars in multiData:
@@ -44,9 +44,10 @@ echo ""
 echo "4. Getting quotes for multiple symbols..."
 let quotes = getQuotes(symbols)
 for symbol, q in quotes:
-  let changeStr = if q.regularMarketChange >= 0: "+" & $q.regularMarketChange else: $q.regularMarketChange
+  let changeStr = if q.regularMarketChange >= 0: "+" &
+      $q.regularMarketChange else: $q.regularMarketChange
   let pctStr = if q.regularMarketChangePercent >= 0: "+" else: ""
-  echo "   ", symbol, ": $", q.regularMarketPrice, 
+  echo "   ", symbol, ": $", q.regularMarketPrice,
        " (", pctStr, $q.regularMarketChangePercent, "%)"
 echo ""
 
@@ -55,8 +56,8 @@ echo "5. Streaming data using iterator..."
 let ds2 = newDataStream("AAPL", Int1d)
 var count = 0
 for bar in ds2.stream(startTime, endTime):
-  if count < 3:  # Show first 3 bars
-    echo "   ", fromUnix(bar.timestamp).format("yyyy-MM-dd"), 
+  if count < 3: # Show first 3 bars
+    echo "   ", fromUnix(bar.timestamp).format("yyyy-MM-dd"),
          ": Close = $", bar.close
   count += 1
 echo "   ... (", count, " total bars)"

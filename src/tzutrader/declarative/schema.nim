@@ -1,25 +1,11 @@
-## Schema Type Definitions for YAML-based Declarative Strategies
-##
-## This module defines the core types that represent a declarative strategy
-## loaded from a YAML configuration file. These types form the abstract
-## syntax tree (AST) for the strategy definition.
-
 import std/[tables, options]
 
 type
-  # ============================================================================
-  # Source Location (Phase 2 - Feature B2)
-  # ============================================================================
-  
   SourceLocation* = object
     ## Location in the YAML source file (for better error messages)
     line*: int
     column*: int
-    
-  # ============================================================================
-  # Strategy Metadata
-  # ============================================================================
-  
+
   MetadataYAML* = object
     ## Strategy metadata - who, what, when
     name*: string
@@ -27,15 +13,11 @@ type
     author*: Option[string]
     created*: Option[string]
     tags*: seq[string]
-  
-  # ============================================================================
-  # Parameters
-  # ============================================================================
-  
+
   ParamKind* = enum
     ## Parameter value type discriminator
     pkInt, pkFloat, pkString, pkBool
-  
+
   ParamValue* = object
     ## Parameter value - can be int, float, string, or bool
     case kind*: ParamKind
@@ -47,24 +29,16 @@ type
       strVal*: string
     of pkBool:
       boolVal*: bool
-  
-  # ============================================================================
-  # Indicators
-  # ============================================================================
-  
+
   IndicatorYAML* = object
     ## Indicator definition - type and parameters
-    id*: string                      # Unique identifier (e.g., "rsi_14")
-    indicatorType*: string           # Type of indicator (e.g., "rsi", "macd")
-    params*: Table[string, ParamValue]  # Indicator-specific parameters
-    source*: Option[string]          # Data source (open/high/low/close/volume) - Phase 2
-    output*: Option[string]          # Output selection for multi-output indicators - Phase 2
+    id*: string                        # Unique identifier (e.g., "rsi_14")
+    indicatorType*: string             # Type of indicator (e.g., "rsi", "macd")
+    params*: Table[string, ParamValue] # Indicator-specific parameters
+    source*: Option[string]            # Data source (open/high/low/close/volume) - Phase 2
+    output*: Option[string]            # Output selection for multi-output indicators - Phase 2
     location*: Option[SourceLocation]  # Source location for error reporting - Phase 2
-  
-  # ============================================================================
-  # Conditions (Boolean Logic)
-  # ============================================================================
-  
+
   ComparisonOp* = enum
     ## Comparison operators for conditions
     opLessThan = "<"
@@ -75,24 +49,24 @@ type
     opNotEqual = "!="
     opCrossesAbove = "crosses_above"
     opCrossesBelow = "crosses_below"
-  
+
   ConditionKind* = enum
     ## Discriminator for condition types
-    ckSimple,  # Simple comparison
-    ckAnd,     # Boolean AND
-    ckOr,      # Boolean OR
-    ckNot      # Boolean NOT (Phase 3)
-  
+    ckSimple, # Simple comparison
+    ckAnd,    # Boolean AND
+    ckOr,     # Boolean OR
+    ckNot     # Boolean NOT (Phase 3)
+
   ConditionYAML* = object
     ## A single condition in a rule
     ## Can be a simple comparison or a boolean combination
-    location*: Option[SourceLocation]  # Source location for error reporting - Phase 2
+    location*: Option[SourceLocation] # Source location for error reporting - Phase 2
     case kind*: ConditionKind
     of ckSimple:
       # Simple comparison: left op right
-      left*: string                  # Reference to indicator or value
+      left*: string # Reference to indicator or value
       operator*: ComparisonOp
-      right*: string                 # Reference to indicator or literal value
+      right*: string # Reference to indicator or literal value
     of ckAnd:
       # Boolean AND of multiple conditions
       andConditions*: seq[ConditionYAML]
@@ -102,39 +76,27 @@ type
     of ckNot:
       # Boolean NOT (Phase 3 - not implemented in Phase 1)
       notCondition*: ref ConditionYAML
-  
-  # ============================================================================
-  # Rules (Entry/Exit Logic)
-  # ============================================================================
-  
+
   RuleYAML* = object
     ## Entry or exit rule - when to take action
     conditions*: ConditionYAML
-  
-  # ============================================================================
-  # Position Sizing
-  # ============================================================================
-  
+
   PositionSizingKind* = enum
     ## Position sizing strategy type
-    psFixed,    # Fixed size (Phase 1)
-    psPercent,  # Percent of capital (Phase 2)
-    psDynamic   # Dynamic calculation (Phase 3)
-  
+    psFixed,   # Fixed size (Phase 1)
+    psPercent, # Percent of capital (Phase 2)
+    psDynamic  # Dynamic calculation (Phase 3)
+
   PositionSizingYAML* = object
     ## How much to trade (Phase 1: fixed size only)
     case kind*: PositionSizingKind
     of psFixed:
-      fixedSize*: float            # Fixed position size (e.g., 100.0 shares)
-    of psPercent:                  # Phase 2+
+      fixedSize*: float # Fixed position size (e.g., 100.0 shares)
+    of psPercent:       # Phase 2+
       percentCapital*: float
-    of psDynamic:                  # Phase 3+
+    of psDynamic:       # Phase 3+
       dynamicExpr*: string
-  
-  # ============================================================================
-  # Complete Strategy Definition
-  # ============================================================================
-  
+
   StrategyYAML* = object
     ## Complete declarative strategy definition
     metadata*: MetadataYAML
@@ -142,17 +104,13 @@ type
     entryRule*: RuleYAML
     exitRule*: RuleYAML
     positionSizing*: PositionSizingYAML
-  
-  # ============================================================================
-  # Batch Testing Configuration (Phase 4)
-  # ============================================================================
-  
+
   DataSourceKind* = enum
     ## Type of data source
-    dsYahoo,      # Yahoo Finance
-    dsCsv,        # CSV file
-    dsCoinbase    # Coinbase (future)
-  
+    dsYahoo,   # Yahoo Finance
+    dsCsv,     # CSV file
+    dsCoinbase # Coinbase (future)
+
   DataConfigYAML* = object
     ## Data source configuration for batch tests
     case source*: DataSourceKind
@@ -166,41 +124,41 @@ type
       coinbaseSymbols*: seq[string]
       coinbaseStart*: string
       coinbaseEnd*: string
-  
+
   PortfolioConfigYAML* = object
     ## Portfolio configuration
     initialCash*: float
     commission*: float
     minCommission*: Option[float]
     riskFreeRate*: Option[float]
-  
+
   IndicatorOverride* = object
     ## Override for a single indicator parameter
     params*: Table[string, ParamValue]
-  
+
   ConditionOverride* = object
     ## Override for entry/exit conditions
     entry*: Option[ConditionYAML]
     exit*: Option[ConditionYAML]
-  
+
   StrategyOverrides* = object
     ## Parameter overrides for a strategy variant
     indicators*: Option[Table[string, IndicatorOverride]]
     conditions*: Option[ConditionOverride]
     positionSizing*: Option[PositionSizingYAML]
-  
+
   StrategyVariantYAML* = object
     ## A strategy with optional parameter overrides
-    file*: string                        # Path to strategy YAML file
-    name*: string                        # Unique name for this variant
-    overrides*: Option[StrategyOverrides]  # Parameter overrides
-  
+    file*: string                         # Path to strategy YAML file
+    name*: string                         # Unique name for this variant
+    overrides*: Option[StrategyOverrides] # Parameter overrides
+
   BatchOutputYAML* = object
     ## Output configuration for batch tests
-    comparisonReport*: Option[string]    # HTML comparison report path
-    individualResults*: Option[string]   # Directory for individual CSVs
-    formats*: seq[string]                # Output formats: csv, json, html
-  
+    comparisonReport*: Option[string]  # HTML comparison report path
+    individualResults*: Option[string] # Directory for individual CSVs
+    formats*: seq[string]              # Output formats: csv, json, html
+
   BatchTestYAML* = object
     ## Complete batch test configuration
     version*: string
@@ -209,16 +167,12 @@ type
     strategies*: seq[StrategyVariantYAML]
     portfolio*: PortfolioConfigYAML
     output*: BatchOutputYAML
-  
-  # ============================================================================
-  # Parameter Sweep Configuration (Phase 4)
-  # ============================================================================
-  
+
   SweepRangeKind* = enum
     ## Type of parameter sweep range
-    srkLinear,   # Linear range with step
-    srkList      # Explicit list of values
-  
+    srkLinear, # Linear range with step
+    srkList    # Explicit list of values
+
   SweepRange* = object
     ## Range of values for parameter sweep
     case kind*: SweepRangeKind
@@ -228,31 +182,27 @@ type
       step*: float
     of srkList:
       values*: seq[float]
-  
+
   SweepParameter* = object
     ## Parameter to sweep
-    path*: string          # JSON path to parameter (e.g., "indicators.rsi_14.period")
-    range*: SweepRange     # Range of values
-  
+    path*: string      # JSON path to parameter (e.g., "indicators.rsi_14.period")
+    range*: SweepRange # Range of values
+
   SweepOutputYAML* = object
     ## Output configuration for parameter sweeps
-    heatmap*: Option[string]       # Heatmap visualization path
-    bestResults*: string           # Top N results CSV
-    fullResults*: string           # All results CSV
-  
+    heatmap*: Option[string] # Heatmap visualization path
+    bestResults*: string     # Top N results CSV
+    fullResults*: string     # All results CSV
+
   ParameterSweepYAML* = object
     ## Complete parameter sweep configuration
     version*: string
     metadata*: MetadataYAML
-    baseStrategy*: string              # Base strategy file path
+    baseStrategy*: string            # Base strategy file path
     data*: DataConfigYAML
     portfolio*: PortfolioConfigYAML
-    parameters*: seq[SweepParameter]   # Parameters to sweep
+    parameters*: seq[SweepParameter] # Parameters to sweep
     output*: SweepOutputYAML
-
-# ============================================================================
-# Helper Constructors
-# ============================================================================
 
 proc newParamInt*(val: int): ParamValue =
   ## Create an integer parameter
@@ -270,7 +220,8 @@ proc newParamBool*(val: bool): ParamValue =
   ## Create a boolean parameter
   ParamValue(kind: pkBool, boolVal: val)
 
-proc newSimpleCondition*(left: string, op: ComparisonOp, right: string): ConditionYAML =
+proc newSimpleCondition*(left: string, op: ComparisonOp,
+    right: string): ConditionYAML =
   ## Create a simple comparison condition
   ConditionYAML(
     kind: ckSimple,
@@ -302,7 +253,8 @@ proc newNotCondition*(condition: ConditionYAML): ConditionYAML =
     notCondition: condRef
   )
 
-proc newDataConfigYahoo*(symbols: seq[string], startDate: string, endDate: string): DataConfigYAML =
+proc newDataConfigYahoo*(symbols: seq[string], startDate: string,
+    endDate: string): DataConfigYAML =
   ## Create a Yahoo Finance data configuration
   DataConfigYAML(
     source: dsYahoo,
@@ -318,10 +270,11 @@ proc newDataConfigCsv*(csvFile: string): DataConfigYAML =
     csvFile: csvFile
   )
 
-proc newPortfolioConfig*(initialCash: float = 100000.0, 
+proc newPortfolioConfig*(initialCash: float = 100000.0,
                         commission: float = 0.001,
                         minCommission: Option[float] = none(float),
-                        riskFreeRate: Option[float] = none(float)): PortfolioConfigYAML =
+                        riskFreeRate: Option[float] = none(
+                            float)): PortfolioConfigYAML =
   ## Create a portfolio configuration with sensible defaults
   PortfolioConfigYAML(
     initialCash: initialCash,
@@ -330,9 +283,10 @@ proc newPortfolioConfig*(initialCash: float = 100000.0,
     riskFreeRate: riskFreeRate
   )
 
-proc newStrategyVariant*(file: string, 
+proc newStrategyVariant*(file: string,
                         name: string,
-                        overrides: Option[StrategyOverrides] = none(StrategyOverrides)): StrategyVariantYAML =
+                        overrides: Option[StrategyOverrides] = none(
+                            StrategyOverrides)): StrategyVariantYAML =
   ## Create a strategy variant
   StrategyVariantYAML(
     file: file,
@@ -342,7 +296,8 @@ proc newStrategyVariant*(file: string,
 
 proc newBatchOutput*(formats: seq[string] = @["csv"],
                     comparisonReport: Option[string] = none(string),
-                    individualResults: Option[string] = none(string)): BatchOutputYAML =
+                    individualResults: Option[string] = none(
+                        string)): BatchOutputYAML =
   ## Create batch output configuration
   BatchOutputYAML(
     formats: formats,
@@ -373,10 +328,6 @@ proc newSweepParameter*(path: string, range: SweepRange): SweepParameter =
     range: range
   )
 
-# ============================================================================
-# Display/Debug Helpers
-# ============================================================================
-
 proc `$`*(p: ParamValue): string =
   ## Convert parameter to string for debugging
   case p.kind
@@ -401,7 +352,8 @@ proc `$`*(loc: SourceLocation): string =
   ## Convert source location to string (line:column format)
   "line " & $loc.line & ", column " & $loc.column
 
-proc formatError*(msg: string, loc: Option[SourceLocation] = none(SourceLocation)): string =
+proc formatError*(msg: string, loc: Option[SourceLocation] = none(
+    SourceLocation)): string =
   ## Format an error message with optional location information
   if loc.isSome():
     let l = loc.get()

@@ -1,21 +1,5 @@
-## Technical indicators module for tzutrader
-##
-## Pure Nim implementations following pybottrader design pattern.
-## All indicators are streaming-only, storing computed values in circular buffers.
-##
-## Design principles:
-## - Single update() call per data point
-## - Circular buffer stores computed indicator values (not raw data)
-## - Access via [0] (current), [-1] (previous), etc.
-## - Returns NaN until sufficient data accumulated
-## - No batch processing - streaming only
-
 import std/[math, deques]
 import core
-
-# ============================================================================
-# Base Types
-# ============================================================================
 
 type
   Indicator*[T] = ref object of RootObj
@@ -54,10 +38,6 @@ proc isNaN*(x: float64): bool {.inline.} =
   ## Check if value is NaN
   result = x.classify == fcNaN
 
-# ============================================================================
-# Moving Averages
-# ============================================================================
-
 # Simple Moving Average (SMA / MA)
 
 type
@@ -71,7 +51,7 @@ type
 
 proc newMA*(period: int, memSize: int = 1): MA =
   ## Create new Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for average
   ##   memSize: Size of circular buffer for storing computed values (default 1)
@@ -88,22 +68,22 @@ proc newMA*(period: int, memSize: int = 1): MA =
 
 proc update*(ma: MA, value: float64): float64 =
   ## Update MA with new value
-  ## 
+  ##
   ## Returns current MA value (NaN if insufficient data)
   if ma.length < ma.period:
     ma.length += 1
   else:
     ma.accum -= ma.prevs[ma.pos]
-  
+
   ma.prevs[ma.pos] = value
   ma.accum += value
   ma.pos = (ma.pos + 1) mod ma.period
-  
+
   if ma.length < ma.period:
     ma.push(NaN)
   else:
     ma.push(ma.accum / ma.period.float64)
-  
+
   result = ma[0]
 
 # Exponential Moving Average (EMA)
@@ -119,7 +99,7 @@ type
 
 proc newEMA*(period: int, alpha: float64 = 2.0, memSize: int = 1): EMA =
   ## Create new Exponential Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods
   ##   alpha: Smoothing factor coefficient (default 2.0)
@@ -137,10 +117,10 @@ proc newEMA*(period: int, alpha: float64 = 2.0, memSize: int = 1): EMA =
 
 proc update*(ema: EMA, value: float64): float64 =
   ## Update EMA with new value
-  ## 
+  ##
   ## Returns current EMA value (NaN if insufficient data)
   ema.length += 1
-  
+
   if ema.length < ema.period:
     ema.prev += value
   elif ema.length == ema.period:
@@ -148,12 +128,12 @@ proc update*(ema: EMA, value: float64): float64 =
     ema.prev /= ema.period.float64
   else:
     ema.prev = (value * ema.smoothFactor) + ema.prev * (1.0 - ema.smoothFactor)
-  
+
   if ema.length < ema.period:
     ema.push(NaN)
   else:
     ema.push(ema.prev)
-  
+
   result = ema[0]
 
 # Moving Variance (MV)
@@ -184,11 +164,11 @@ proc update*(mv: MV, value: float64): float64 =
   ## Update MV with new value
   if mv.length < mv.period:
     mv.length += 1
-  
+
   mv.prevs[mv.pos] = value
   mv.pos = (mv.pos + 1) mod mv.period
   discard mv.ma.update(value)
-  
+
   if mv.length < mv.period:
     mv.push(NaN)
   else:
@@ -197,7 +177,7 @@ proc update*(mv: MV, value: float64): float64 =
       let diff = mv.prevs[i] - mv.ma[0]
       accum += diff * diff
     mv.push(accum / mv.period.float64)
-  
+
   result = mv[0]
 
 # Standard Deviation (STDEV)
@@ -230,14 +210,14 @@ proc update*(stdev: STDEV, value: float64): float64 =
 type
   TRIMA* = ref object of Indicator[float64]
     ## Triangular Moving Average (double-smoothed MA)
-    ## 
+    ##
     ## TRIMA is calculated by taking a Simple Moving Average of a Simple Moving Average.
     ## This double smoothing produces a smoother line with less lag than SMA, but more
     ## lag than EMA. The result is a triangular weighting where the central values have
     ## more influence than the edges.
-    ## 
+    ##
     ## Formula: TRIMA = SMA(SMA(price, n), n)
-    ## 
+    ##
     ## Interpretation:
     ## - Smoother than SMA, reduces noise
     ## - Good for identifying underlying trend
@@ -249,11 +229,11 @@ type
 
 proc newTRIMA*(period: int, memSize: int = 1): TRIMA =
   ## Create new Triangular Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for both moving averages
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var trima = newTRIMA(10)
   ##   let value = trima.update(price)
@@ -271,16 +251,16 @@ proc newTRIMA*(period: int, memSize: int = 1): TRIMA =
 
 proc update*(trima: TRIMA, value: float64): float64 =
   ## Update TRIMA with new value
-  ## 
+  ##
   ## Returns current TRIMA value (NaN if insufficient data)
   let firstMAValue = trima.firstMA.update(value)
-  
+
   if firstMAValue.isNaN:
     trima.push(NaN)
   else:
     let trimaValue = trima.secondMA.update(firstMAValue)
     trima.push(trimaValue)
-  
+
   result = trima[0]
 
 # Double Exponential Moving Average (DEMA)
@@ -288,13 +268,13 @@ proc update*(trima: TRIMA, value: float64): float64 =
 type
   DEMA* = ref object of Indicator[float64]
     ## Double Exponential Moving Average
-    ## 
+    ##
     ## DEMA is designed to reduce the lag of traditional EMAs by using a combination
     ## of a single EMA and a double EMA. It's more responsive to price changes than
     ## both SMA and EMA.
-    ## 
+    ##
     ## Formula: DEMA = 2 * EMA(price) - EMA(EMA(price))
-    ## 
+    ##
     ## Interpretation:
     ## - Less lag than EMA
     ## - More responsive to recent price changes
@@ -306,11 +286,11 @@ type
 
 proc newDEMA*(period: int, memSize: int = 1): DEMA =
   ## Create new Double Exponential Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for the EMA calculations
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var dema = newDEMA(10)
   ##   let value = dema.update(price)
@@ -328,10 +308,10 @@ proc newDEMA*(period: int, memSize: int = 1): DEMA =
 
 proc update*(dema: DEMA, value: float64): float64 =
   ## Update DEMA with new value
-  ## 
+  ##
   ## Returns current DEMA value (NaN if insufficient data)
   let ema1 = dema.firstEMA.update(value)
-  
+
   if ema1.isNaN:
     dema.push(NaN)
   else:
@@ -342,7 +322,7 @@ proc update*(dema: DEMA, value: float64): float64 =
       # DEMA = 2 * EMA - EMA(EMA)
       let demaValue = 2.0 * ema1 - ema2
       dema.push(demaValue)
-  
+
   result = dema[0]
 
 # Triple Exponential Moving Average (TEMA)
@@ -350,12 +330,12 @@ proc update*(dema: DEMA, value: float64): float64 =
 type
   TEMA* = ref object of Indicator[float64]
     ## Triple Exponential Moving Average
-    ## 
+    ##
     ## TEMA takes the DEMA concept further by using three EMAs to achieve even less lag.
     ## It's highly responsive to price changes with minimal lag.
-    ## 
+    ##
     ## Formula: TEMA = 3 * EMA - 3 * EMA(EMA) + EMA(EMA(EMA))
-    ## 
+    ##
     ## Interpretation:
     ## - Minimal lag among moving averages
     ## - Very responsive to price changes
@@ -368,11 +348,11 @@ type
 
 proc newTEMA*(period: int, memSize: int = 1): TEMA =
   ## Create new Triple Exponential Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for the EMA calculations
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var tema = newTEMA(10)
   ##   let value = tema.update(price)
@@ -391,10 +371,10 @@ proc newTEMA*(period: int, memSize: int = 1): TEMA =
 
 proc update*(tema: TEMA, value: float64): float64 =
   ## Update TEMA with new value
-  ## 
+  ##
   ## Returns current TEMA value (NaN if insufficient data)
   let ema1 = tema.firstEMA.update(value)
-  
+
   if ema1.isNaN:
     tema.push(NaN)
   else:
@@ -409,7 +389,7 @@ proc update*(tema: TEMA, value: float64): float64 =
         # TEMA = 3 * EMA - 3 * EMA(EMA) + EMA(EMA(EMA))
         let temaValue = 3.0 * ema1 - 3.0 * ema2 + ema3
         tema.push(temaValue)
-  
+
   result = tema[0]
 
 # Kaufman Adaptive Moving Average (KAMA)
@@ -417,22 +397,22 @@ proc update*(tema: TEMA, value: float64): float64 =
 type
   KAMA* = ref object of Indicator[float64]
     ## Kaufman Adaptive Moving Average
-    ## 
+    ##
     ## KAMA is an adaptive moving average that adjusts its smoothing constant based on
     ## market volatility. In trending markets, it becomes more responsive (like EMA).
     ## In choppy markets, it becomes smoother (like SMA). This adaptability makes it
     ## excellent for filtering out noise while being responsive to genuine trends.
-    ## 
+    ##
     ## The calculation uses an Efficiency Ratio (ER) to measure market direction:
     ## - ER = (absolute price change) / (sum of absolute bar-to-bar changes)
     ## - ER near 1.0 = strong trend (more responsive)
     ## - ER near 0.0 = choppy/sideways (more smoothing)
-    ## 
+    ##
     ## Formula:
     ##   ER = abs(price - price[period]) / sum(abs(price[i] - price[i-1]))
     ##   SC = (ER * (fastSC - slowSC) + slowSC)^2
     ##   KAMA = KAMA[prev] + SC * (price - KAMA[prev])
-    ## 
+    ##
     ## Interpretation:
     ## - Adapts to market conditions automatically
     ## - Reduces whipsaws in sideways markets
@@ -441,9 +421,9 @@ type
     period: int
     fastPeriod: int
     slowPeriod: int
-    fastSC: float64  # Fast smoothing constant
-    slowSC: float64  # Slow smoothing constant
-    prices: seq[float64]  # Price window for ER calculation
+    fastSC: float64 # Fast smoothing constant
+    slowSC: float64 # Slow smoothing constant
+    prices: seq[float64] # Price window for ER calculation
     pos: int
     length: int
     prevKAMA: float64
@@ -452,13 +432,13 @@ type
 proc newKAMA*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 30,
               memSize: int = 1): KAMA =
   ## Create new Kaufman Adaptive Moving Average indicator
-  ## 
+  ##
   ## Args:
   ##   period: Period for Efficiency Ratio calculation (default 10)
   ##   fastPeriod: Fast EMA period for trending markets (default 2)
   ##   slowPeriod: Slow EMA period for choppy markets (default 30)
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var kama = newKAMA(10)  # Use defaults
   ##   let value = kama.update(price)
@@ -483,60 +463,56 @@ proc newKAMA*(period: int = 10, fastPeriod: int = 2, slowPeriod: int = 30,
 
 proc update*(kama: KAMA, value: float64): float64 =
   ## Update KAMA with new value
-  ## 
+  ##
   ## Returns current KAMA value (NaN if insufficient data)
-  
+
   # Store price in circular buffer
   kama.prices[kama.pos] = value
   kama.pos = (kama.pos + 1) mod (kama.period + 1)
-  
+
   if kama.length < kama.period + 1:
     kama.length += 1
-  
+
   # Need period + 1 values to calculate
   if kama.length < kama.period + 1:
     kama.push(NaN)
     return NaN
-  
+
   # Initialize KAMA with first price if needed
   if not kama.initialized:
     kama.prevKAMA = kama.prices[(kama.pos + kama.period) mod (kama.period + 1)]
     kama.initialized = true
-  
+
   # Calculate Efficiency Ratio (ER)
   # ER = abs(change) / sum(volatility)
-  let oldestIdx = kama.pos  # Points to oldest value after increment
+  let oldestIdx = kama.pos # Points to oldest value after increment
   let newestIdx = (kama.pos + kama.period) mod (kama.period + 1)
-  
+
   let change = abs(kama.prices[newestIdx] - kama.prices[oldestIdx])
-  
+
   var volatility = 0.0
   for i in 0..<kama.period:
     let idx1 = (oldestIdx + i) mod (kama.period + 1)
     let idx2 = (oldestIdx + i + 1) mod (kama.period + 1)
     volatility += abs(kama.prices[idx2] - kama.prices[idx1])
-  
+
   # Efficiency Ratio
   var er = 0.0
   if volatility > 0.0:
     er = change / volatility
-  
+
   # Smoothing Constant (SC)
   # SC = [ER * (fastSC - slowSC) + slowSC]^2
   let sc = er * (kama.fastSC - kama.slowSC) + kama.slowSC
   let sc2 = sc * sc
-  
+
   # KAMA calculation
   # KAMA = KAMA[prev] + SC * (price - KAMA[prev])
   let kamaValue = kama.prevKAMA + sc2 * (value - kama.prevKAMA)
   kama.prevKAMA = kamaValue
   kama.push(kamaValue)
-  
-  result = kama[0]
 
-# ============================================================================
-# Momentum Indicators
-# ============================================================================
+  result = kama[0]
 
 # Return on Investment (ROI)
 
@@ -590,13 +566,13 @@ proc update*(rsi: RSI, openPrice, closePrice: float64): float64 =
   let diff = closePrice - openPrice
   discard rsi.gains.update(if diff >= 0.0: diff else: 0.0)
   discard rsi.losses.update(if diff < 0.0: -diff else: 0.0)
-  
+
   if rsi.losses[0].isNaN:
     rsi.push(NaN)
   else:
     let rsiValue = 100.0 - 100.0 / (1.0 + rsi.gains[0] / rsi.losses[0])
     rsi.push(rsiValue)
-  
+
   result = rsi[0]
 
 # Rate of Change (ROC)
@@ -632,17 +608,13 @@ proc update*(roc: ROC, value: float64): float64 =
     let oldValue = roc.prevs[roc.pos]
     roc.prevs[roc.pos] = value
     roc.pos = (roc.pos + 1) mod roc.period
-    
+
     if oldValue == 0.0:
       roc.push(NaN)
     else:
       roc.push(((value - oldValue) / oldValue) * 100.0)
-  
-  result = roc[0]
 
-# ============================================================================
-# Trend Indicators
-# ============================================================================
+  result = roc[0]
 
 # MACD Result Type
 
@@ -664,14 +636,14 @@ type
     start: int
     counter: int
 
-proc newMACD*(shortPeriod: int = 12, longPeriod: int = 26, 
+proc newMACD*(shortPeriod: int = 12, longPeriod: int = 26,
               diffPeriod: int = 9, memSize: int = 1): MACD =
   ## Create new MACD indicator
   var memData = newSeq[MACDResult](memSize)
   # Initialize with NaN values
   for i in 0..<memSize:
     memData[i] = MACDResult(macd: NaN, signal: NaN, hist: NaN)
-  
+
   result = MACD(
     memData: memData,
     memPos: 0,
@@ -688,7 +660,7 @@ proc update*(macd: MACD, value: float64): MACDResult =
   macd.counter += 1
   discard macd.shortEma.update(value)
   discard macd.longEma.update(value)
-  
+
   var macdResult: MACDResult
   if macd.counter >= macd.start:
     let diff = macd.shortEma[0] - macd.longEma[0]
@@ -700,13 +672,9 @@ proc update*(macd: MACD, value: float64): MACDResult =
     )
   else:
     macdResult = MACDResult(macd: NaN, signal: NaN, hist: NaN)
-  
+
   macd.push(macdResult)
   result = macd[0]
-
-# ============================================================================
-# Volatility Indicators
-# ============================================================================
 
 # Average True Range (ATR)
 
@@ -726,7 +694,7 @@ proc newATR*(period: int = 14, memSize: int = 1): ATR =
 
 proc update*(atr: ATR, lowPrice, highPrice, closePrice: float64): float64 =
   ## Update ATR with low, high, and close prices
-  let tr = max(max(highPrice - lowPrice, highPrice - closePrice), 
+  let tr = max(max(highPrice - lowPrice, highPrice - closePrice),
                lowPrice - closePrice)
   discard atr.prevs.update(tr)
   atr.push(atr.prevs[0])
@@ -748,14 +716,14 @@ type
     stdev: STDEV
     numStdDev: float64
 
-proc newBollingerBands*(period: int = 20, numStdDev: float64 = 2.0, 
+proc newBollingerBands*(period: int = 20, numStdDev: float64 = 2.0,
                         memSize: int = 1): BollingerBands =
   ## Create new Bollinger Bands indicator
   var memData = newSeq[BollingerResult](memSize)
   # Initialize with NaN values
   for i in 0..<memSize:
     memData[i] = BollingerResult(upper: NaN, middle: NaN, lower: NaN)
-  
+
   result = BollingerBands(
     memData: memData,
     memPos: 0,
@@ -769,7 +737,7 @@ proc update*(bb: BollingerBands, value: float64): BollingerResult =
   ## Update Bollinger Bands with new value
   discard bb.ma.update(value)
   discard bb.stdev.update(value)
-  
+
   var bbResult: BollingerResult
   if bb.ma[0].isNaN or bb.stdev[0].isNaN:
     bbResult = BollingerResult(upper: NaN, middle: NaN, lower: NaN)
@@ -781,13 +749,9 @@ proc update*(bb: BollingerBands, value: float64): BollingerResult =
       middle: middle,
       lower: middle - offset
     )
-  
+
   bb.push(bbResult)
   result = bb[0]
-
-# ============================================================================
-# Volume Indicators
-# ============================================================================
 
 # On-Balance Volume (OBV)
 
@@ -821,30 +785,26 @@ proc update*(obv: OBV, closePrice, volume: float64): float64 =
     elif closePrice < obv.prevClose:
       obv.obvValue -= volume
     obv.prevClose = closePrice
-  
+
   obv.push(obv.obvValue)
   result = obv[0]
-
-# ============================================================================
-# Phase 9.1: Additional Indicators
-# ============================================================================
 
 # Stochastic Oscillator (STOCH)
 
 type
   StochResult* = object
     ## Stochastic Oscillator result
-    k*: float64  ## %K line (fast)
-    d*: float64  ## %D line (slow, SMA of %K)
+    k*: float64 ## %K line (fast)
+    d*: float64 ## %D line (slow, SMA of %K)
 
 type
   STOCH* = ref object of Indicator[StochResult]
     ## Stochastic Oscillator
-    ## 
+    ##
     ## Measures momentum by comparing closing price to the price range over a period.
     ## %K shows where the close is relative to the high-low range.
     ## %D is a moving average of %K, providing a smoother signal line.
-    ## 
+    ##
     ## Interpretation:
     ## - Values above 80 indicate overbought conditions
     ## - Values below 20 indicate oversold conditions
@@ -857,16 +817,16 @@ type
     closeWindow: seq[float64]
     length: int
     pos: int
-    kMA: MA  # Moving average for %D line
+    kMA: MA # Moving average for %D line
 
 proc newSTOCH*(kPeriod: int = 14, dPeriod: int = 3, memSize: int = 1): STOCH =
   ## Create new Stochastic Oscillator indicator
-  ## 
+  ##
   ## Args:
   ##   kPeriod: Number of periods for %K calculation (default 14)
   ##   dPeriod: Number of periods for %D smoothing (default 3)
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ## .. code-block:: nim
   ##    var stoch = newSTOCH(kPeriod = 14, dPeriod = 3, memSize = 10)
@@ -878,7 +838,7 @@ proc newSTOCH*(kPeriod: int = 14, dPeriod: int = 3, memSize: int = 1): STOCH =
   # Initialize with NaN values
   for i in 0..<memSize:
     memData[i] = StochResult(k: NaN, d: NaN)
-  
+
   result = STOCH(
     memData: memData,
     memPos: 0,
@@ -895,23 +855,23 @@ proc newSTOCH*(kPeriod: int = 14, dPeriod: int = 3, memSize: int = 1): STOCH =
 
 proc update*(stoch: STOCH, high, low, close: float64): StochResult =
   ## Update Stochastic Oscillator with new bar
-  ## 
+  ##
   ## Args:
   ##   high: High price of the bar
   ##   low: Low price of the bar
   ##   close: Close price of the bar
-  ## 
+  ##
   ## Returns:
   ##   StochResult with %K and %D values (NaN if insufficient data)
   if stoch.length < stoch.kPeriod:
     stoch.length += 1
-  
+
   # Update rolling windows
   stoch.highWindow[stoch.pos] = high
   stoch.lowWindow[stoch.pos] = low
   stoch.closeWindow[stoch.pos] = close
   stoch.pos = (stoch.pos + 1) mod stoch.kPeriod
-  
+
   var stochResult: StochResult
   if stoch.length < stoch.kPeriod:
     # Not enough data yet
@@ -925,20 +885,20 @@ proc update*(stoch: STOCH, high, low, close: float64): StochResult =
         highestHigh = stoch.highWindow[i]
       if stoch.lowWindow[i] < lowestLow:
         lowestLow = stoch.lowWindow[i]
-    
+
     # Calculate %K
     let range = highestHigh - lowestLow
     var k: float64
     if range == 0.0:
-      k = 50.0  # Neutral value when no range
+      k = 50.0 # Neutral value when no range
     else:
       k = 100.0 * (close - lowestLow) / range
-    
+
     # Calculate %D (moving average of %K)
     let d = stoch.kMA.update(k)
-    
+
     stochResult = StochResult(k: k, d: d)
-  
+
   stoch.push(stochResult)
   result = stoch[0]
 
@@ -947,30 +907,30 @@ proc update*(stoch: STOCH, high, low, close: float64): StochResult =
 type
   CCI* = ref object of Indicator[float64]
     ## Commodity Channel Index
-    ## 
+    ##
     ## Measures the deviation of the typical price from its average.
     ## Useful for identifying cyclical trends and overbought/oversold conditions.
-    ## 
+    ##
     ## Formula: CCI = (Typical Price - MA(Typical Price)) / (0.015 * Mean Deviation)
     ## Where Typical Price = (High + Low + Close) / 3
-    ## 
+    ##
     ## Interpretation:
     ## - Values above +100 indicate overbought conditions
     ## - Values below -100 indicate oversold conditions
     ## - Can range beyond +/-100 (unbounded)
     period: int
-    tpWindow: seq[float64]  # Typical price window
+    tpWindow: seq[float64] # Typical price window
     length: int
     pos: int
-    tpMA: MA  # MA for typical price
+    tpMA: MA # MA for typical price
 
 proc newCCI*(period: int = 20, memSize: int = 1): CCI =
   ## Create new Commodity Channel Index indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for calculation (default 20)
   ##   memSize: Size of circular buffer (default 1)
-  ## 
+  ##
   ## Example:
   ## .. code-block:: nim
   ##    var cci = newCCI(period = 20)
@@ -992,27 +952,27 @@ proc newCCI*(period: int = 20, memSize: int = 1): CCI =
 
 proc update*(cci: CCI, high, low, close: float64): float64 =
   ## Update CCI with new bar
-  ## 
+  ##
   ## Args:
   ##   high: High price of the bar
   ##   low: Low price of the bar
   ##   close: Close price of the bar
-  ## 
+  ##
   ## Returns:
   ##   CCI value (NaN if insufficient data)
   # Calculate typical price
   let typicalPrice = (high + low + close) / 3.0
-  
+
   if cci.length < cci.period:
     cci.length += 1
-  
+
   # Update typical price window
   cci.tpWindow[cci.pos] = typicalPrice
   cci.pos = (cci.pos + 1) mod cci.period
-  
+
   # Update MA of typical price
   let tpAvg = cci.tpMA.update(typicalPrice)
-  
+
   if tpAvg.isNaN:
     cci.push(NaN)
   else:
@@ -1021,16 +981,16 @@ proc update*(cci: CCI, high, low, close: float64): float64 =
     for i in 0..<cci.period:
       sumDeviation += abs(cci.tpWindow[i] - tpAvg)
     let meanDeviation = sumDeviation / cci.period.float64
-    
+
     # Calculate CCI
     var cciValue: float64
     if meanDeviation == 0.0:
       cciValue = 0.0
     else:
       cciValue = (typicalPrice - tpAvg) / (0.015 * meanDeviation)
-    
+
     cci.push(cciValue)
-  
+
   result = cci[0]
 
 # Money Flow Index (MFI)
@@ -1038,14 +998,14 @@ proc update*(cci: CCI, high, low, close: float64): float64 =
 type
   MFI* = ref object of Indicator[float64]
     ## Money Flow Index
-    ## 
+    ##
     ## Volume-weighted RSI that measures buying and selling pressure.
     ## Combines price and volume to identify overbought/oversold conditions.
-    ## 
+    ##
     ## Formula: MFI = 100 - 100 / (1 + Money Flow Ratio)
     ## Where Money Flow Ratio = Positive Money Flow / Negative Money Flow
     ## Money Flow = Typical Price * Volume
-    ## 
+    ##
     ## Interpretation:
     ## - Values above 80 indicate overbought conditions
     ## - Values below 20 indicate oversold conditions
@@ -1059,11 +1019,11 @@ type
 
 proc newMFI*(period: int = 14, memSize: int = 1): MFI =
   ## Create new Money Flow Index indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for calculation (default 14)
   ##   memSize: Size of circular buffer (default 1)
-  ## 
+  ##
   ## Example:
   ## .. code-block:: nim
   ##    var mfi = newMFI(period = 14)
@@ -1086,39 +1046,39 @@ proc newMFI*(period: int = 14, memSize: int = 1): MFI =
 
 proc update*(mfi: MFI, high, low, close, volume: float64): float64 =
   ## Update MFI with new bar
-  ## 
+  ##
   ## Args:
   ##   high: High price of the bar
   ##   low: Low price of the bar
   ##   close: Close price of the bar
   ##   volume: Volume of the bar
-  ## 
+  ##
   ## Returns:
   ##   MFI value (NaN if insufficient data)
   # Calculate typical price
   let typicalPrice = (high + low + close) / 3.0
   let moneyFlow = typicalPrice * volume
-  
+
   # Determine if positive or negative flow
   var posFlow = 0.0
   var negFlow = 0.0
-  
+
   if not mfi.prevTypicalPrice.isNaN:
     if typicalPrice > mfi.prevTypicalPrice:
       posFlow = moneyFlow
     elif typicalPrice < mfi.prevTypicalPrice:
       negFlow = moneyFlow
     # If equal, both remain 0
-  
+
   if mfi.length < mfi.period:
     mfi.length += 1
-  
+
   # Update flow windows
   mfi.posFlowWindow[mfi.pos] = posFlow
   mfi.negFlowWindow[mfi.pos] = negFlow
   mfi.pos = (mfi.pos + 1) mod mfi.period
   mfi.prevTypicalPrice = typicalPrice
-  
+
   if mfi.length < mfi.period:
     mfi.push(NaN)
   else:
@@ -1128,20 +1088,20 @@ proc update*(mfi: MFI, high, low, close, volume: float64): float64 =
     for i in 0..<mfi.period:
       sumPosFlow += mfi.posFlowWindow[i]
       sumNegFlow += mfi.negFlowWindow[i]
-    
+
     # Calculate MFI
     var mfiValue: float64
     if sumNegFlow == 0.0:
       if sumPosFlow == 0.0:
-        mfiValue = 50.0  # Neutral when no flow
+        mfiValue = 50.0 # Neutral when no flow
       else:
-        mfiValue = 100.0  # All positive flow
+        mfiValue = 100.0 # All positive flow
     else:
       let moneyFlowRatio = sumPosFlow / sumNegFlow
       mfiValue = 100.0 - 100.0 / (1.0 + moneyFlowRatio)
-    
+
     mfi.push(mfiValue)
-  
+
   result = mfi[0]
 
 # Average Directional Movement Index (ADX)
@@ -1149,24 +1109,24 @@ proc update*(mfi: MFI, high, low, close, volume: float64): float64 =
 type
   ADXResult* = object
     ## ADX calculation result
-    adx*: float64      ## ADX value (trend strength)
-    plusDI*: float64   ## +DI (positive directional indicator)
-    minusDI*: float64  ## -DI (negative directional indicator)
+    adx*: float64     ## ADX value (trend strength)
+    plusDI*: float64  ## +DI (positive directional indicator)
+    minusDI*: float64 ## -DI (negative directional indicator)
 
 type
   ADX* = ref object of Indicator[ADXResult]
     ## Average Directional Movement Index
-    ## 
+    ##
     ## Measures the strength of a trend (not direction).
     ## Includes +DI and -DI which show trend direction.
-    ## 
+    ##
     ## Interpretation:
     ## - ADX < 20: Weak or no trend
     ## - ADX 20-40: Moderate trend
     ## - ADX > 40: Strong trend
     ## - +DI > -DI: Uptrend
     ## - -DI > +DI: Downtrend
-    ## 
+    ##
     ## Wilder's smoothing formula used for TR, +DM, -DM, and ADX
     period: int
     prevHigh: float64
@@ -1182,11 +1142,11 @@ type
 
 proc newADX*(period: int = 14, memSize: int = 1): ADX =
   ## Create new ADX indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for calculation (default 14)
   ##   memSize: Size of circular buffer (default 1)
-  ## 
+  ##
   ## Example:
   ## .. code-block:: nim
   ##    var adx = newADX(period = 14)
@@ -1198,7 +1158,7 @@ proc newADX*(period: int = 14, memSize: int = 1): ADX =
   # Initialize with NaN values
   for i in 0..<memSize:
     memData[i] = ADXResult(adx: NaN, plusDI: NaN, minusDI: NaN)
-  
+
   result = ADX(
     memData: memData,
     memPos: 0,
@@ -1217,16 +1177,16 @@ proc newADX*(period: int = 14, memSize: int = 1): ADX =
 
 proc update*(adx: ADX, high, low, close: float64): ADXResult =
   ## Update ADX with new bar
-  ## 
+  ##
   ## Args:
   ##   high: High price of the bar
   ##   low: Low price of the bar
   ##   close: Close price of the bar
-  ## 
+  ##
   ## Returns:
   ##   ADXResult with ADX, +DI, and -DI values (NaN if insufficient data)
   var adxResult: ADXResult
-  
+
   if adx.prevHigh.isNaN:
     # First bar - just store values
     adx.prevHigh = high
@@ -1239,110 +1199,111 @@ proc update*(adx: ADX, high, low, close: float64): ADXResult =
     let tr2 = abs(high - adx.prevClose)
     let tr3 = abs(low - adx.prevClose)
     let tr = max(max(tr1, tr2), tr3)
-    
+
     # Calculate Directional Movement
     let upMove = high - adx.prevHigh
     let downMove = adx.prevLow - low
-    
+
     var plusDM = 0.0
     var minusDM = 0.0
-    
+
     if upMove > downMove and upMove > 0:
       plusDM = upMove
     if downMove > upMove and downMove > 0:
       minusDM = downMove
-    
+
     # Wilder's smoothing
     adx.length += 1
-    
+
     if adx.length <= adx.period:
       # Initial accumulation phase
       adx.smoothedTR += tr
       adx.smoothedPlusDM += plusDM
       adx.smoothedMinusDM += minusDM
-      
+
       if adx.length == adx.period:
         # First smoothed values (simple average)
         adx.smoothedTR = adx.smoothedTR / adx.period.float64
         adx.smoothedPlusDM = adx.smoothedPlusDM / adx.period.float64
         adx.smoothedMinusDM = adx.smoothedMinusDM / adx.period.float64
         adx.initialized = true
-      
+
       adxResult = ADXResult(adx: NaN, plusDI: NaN, minusDI: NaN)
     else:
       # Wilder's smoothing: smoothed = (prev * (n-1) + current) / n
-      adx.smoothedTR = (adx.smoothedTR * (adx.period - 1).float64 + tr) / adx.period.float64
-      adx.smoothedPlusDM = (adx.smoothedPlusDM * (adx.period - 1).float64 + plusDM) / adx.period.float64
-      adx.smoothedMinusDM = (adx.smoothedMinusDM * (adx.period - 1).float64 + minusDM) / adx.period.float64
-      
+      adx.smoothedTR = (adx.smoothedTR * (adx.period - 1).float64 + tr) /
+          adx.period.float64
+      adx.smoothedPlusDM = (adx.smoothedPlusDM * (adx.period - 1).float64 +
+          plusDM) / adx.period.float64
+      adx.smoothedMinusDM = (adx.smoothedMinusDM * (adx.period - 1).float64 +
+          minusDM) / adx.period.float64
+
       # Calculate +DI and -DI
       var plusDI = 0.0
       var minusDI = 0.0
-      
+
       if adx.smoothedTR > 0:
         plusDI = 100.0 * adx.smoothedPlusDM / adx.smoothedTR
         minusDI = 100.0 * adx.smoothedMinusDM / adx.smoothedTR
-      
+
       # Calculate DX (Directional Index)
       var dx = 0.0
       let diSum = plusDI + minusDI
       if diSum > 0:
         dx = 100.0 * abs(plusDI - minusDI) / diSum
-      
+
       # Smooth DX to get ADX (Wilder's smoothing again)
       if adx.length == adx.period + 1:
         # First ADX is just DX
         adx.smoothedDX = dx
       else:
-        adx.smoothedDX = (adx.smoothedDX * (adx.period - 1).float64 + dx) / adx.period.float64
-      
-      adxResult = ADXResult(adx: adx.smoothedDX, plusDI: plusDI, minusDI: minusDI)
-    
+        adx.smoothedDX = (adx.smoothedDX * (adx.period - 1).float64 + dx) /
+            adx.period.float64
+
+      adxResult = ADXResult(adx: adx.smoothedDX, plusDI: plusDI,
+          minusDI: minusDI)
+
     # Update previous values
     adx.prevHigh = high
     adx.prevLow = low
     adx.prevClose = close
-  
+
   adx.push(adxResult)
   result = adx[0]
-
-# ============================================================================
-# Phase 9.3: Volume & Volatility Indicators
-# ============================================================================
 
 # True Range (TRANGE)
 
 proc calculateTrueRange*(high, low, prevClose: float64): float64 =
   ## Calculate True Range for a single bar
-  ## 
+  ##
   ## True Range is the greatest of:
   ## - Current High - Current Low
   ## - abs(Current High - Previous Close)
   ## - abs(Current Low - Previous Close)
-  ## 
+  ##
   ## Returns the true range value
   if prevClose.isNaN:
     # First bar - just use high-low
     return high - low
-  
+
   let hl = high - low
   let hpc = abs(high - prevClose)
   let lpc = abs(low - prevClose)
-  
+
   result = max(hl, max(hpc, lpc))
 
 type
   TRANGE* = ref object of Indicator[float64]
     ## True Range
-    ## 
+    ##
     ## Measures market volatility by calculating the greatest of:
     ## - Current high minus current low
     ## - Absolute value of current high minus previous close
     ## - Absolute value of current low minus previous close
-    ## 
+    ##
     ## True Range accounts for gaps and limit moves, providing a more
     ## complete picture of volatility than simple high-low range.
-    ## 
+    ##
     ## Interpretation:
     ## - Higher values = higher volatility
     ## - Lower values = lower volatility
@@ -1352,10 +1313,10 @@ type
 
 proc newTRANGE*(memSize: int = 1): TRANGE =
   ## Create new True Range indicator
-  ## 
+  ##
   ## Args:
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var tr = newTRANGE()
   ##   let trValue = tr.update(high, low, close)
@@ -1371,7 +1332,7 @@ proc newTRANGE*(memSize: int = 1): TRANGE =
 
 proc update*(tr: TRANGE, high, low, close: float64): float64 =
   ## Update True Range with new bar
-  ## 
+  ##
   ## Returns current True Range value
   let trValue = calculateTrueRange(high, low, tr.prevClose)
   tr.prevClose = close
@@ -1383,13 +1344,13 @@ proc update*(tr: TRANGE, high, low, close: float64): float64 =
 type
   NATR* = ref object of Indicator[float64]
     ## Normalized Average True Range
-    ## 
+    ##
     ## NATR is ATR expressed as a percentage of the closing price.
     ## This normalization allows for comparison of volatility across
     ## different price levels and different instruments.
-    ## 
+    ##
     ## Formula: NATR = (ATR / Close) * 100
-    ## 
+    ##
     ## Interpretation:
     ## - Expressed as percentage of price
     ## - Allows comparison across different price ranges
@@ -1401,11 +1362,11 @@ type
 
 proc newNATR*(period: int = 14, memSize: int = 1): NATR =
   ## Create new Normalized Average True Range indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods for ATR calculation (default 14)
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var natr = newNATR(14)
   ##   let natrValue = natr.update(high, low, close)
@@ -1422,16 +1383,16 @@ proc newNATR*(period: int = 14, memSize: int = 1): NATR =
 
 proc update*(natr: NATR, high, low, close: float64): float64 =
   ## Update NATR with new bar
-  ## 
+  ##
   ## Returns current NATR value (NaN if insufficient data or close is zero)
   let atrValue = natr.atr.update(high, low, close)
-  
+
   if atrValue.isNaN or close == 0.0:
     natr.push(NaN)
   else:
     let natrValue = (atrValue / close) * 100.0
     natr.push(natrValue)
-  
+
   result = natr[0]
 
 # Accumulation/Distribution (AD)
@@ -1439,17 +1400,17 @@ proc update*(natr: NATR, high, low, close: float64): float64 =
 type
   AD* = ref object of Indicator[float64]
     ## Accumulation/Distribution Line
-    ## 
+    ##
     ## A/D is a cumulative indicator that uses volume flow to assess
     ## whether a stock is being accumulated (bought) or distributed (sold).
     ## It relates the closing price to the high-low range and multiplies
     ## by volume.
-    ## 
+    ##
     ## Formula:
     ##   Money Flow Multiplier = ((Close - Low) - (High - Close)) / (High - Low)
     ##   Money Flow Volume = Money Flow Multiplier * Volume
     ##   A/D = Previous A/D + Money Flow Volume
-    ## 
+    ##
     ## Interpretation:
     ## - Rising A/D line = accumulation (buying pressure)
     ## - Falling A/D line = distribution (selling pressure)
@@ -1460,10 +1421,10 @@ type
 
 proc newAD*(memSize: int = 1): AD =
   ## Create new Accumulation/Distribution indicator
-  ## 
+  ##
   ## Args:
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var ad = newAD()
   ##   let adValue = ad.update(high, low, close, volume)
@@ -1480,27 +1441,27 @@ proc newAD*(memSize: int = 1): AD =
 
 proc update*(ad: AD, high, low, close, volume: float64): float64 =
   ## Update A/D with new bar
-  ## 
+  ##
   ## Returns current A/D value
-  
+
   # Calculate Money Flow Multiplier
   let range = high - low
   var mfm = 0.0
-  
+
   if range > 0.0:
     mfm = ((close - low) - (high - close)) / range
   # If range is 0, mfm stays 0
-  
+
   # Calculate Money Flow Volume
   let mfv = mfm * volume
-  
+
   # Update cumulative A/D
   if not ad.initialized:
     ad.adValue = mfv
     ad.initialized = true
   else:
     ad.adValue += mfv
-  
+
   ad.push(ad.adValue)
   result = ad[0]
 
@@ -1509,22 +1470,22 @@ proc update*(ad: AD, high, low, close, volume: float64): float64 =
 type
   AroonResult* = object
     ## Aroon calculation result
-    up*: float64      ## Aroon Up (0-100)
-    down*: float64    ## Aroon Down (0-100)
-    oscillator*: float64  ## Aroon Oscillator (Up - Down, range -100 to +100)
+    up*: float64         ## Aroon Up (0-100)
+    down*: float64       ## Aroon Down (0-100)
+    oscillator*: float64 ## Aroon Oscillator (Up - Down, range -100 to +100)
 
 type
   AROON* = ref object of Indicator[AroonResult]
     ## Aroon Indicator
-    ## 
+    ##
     ## Aroon identifies when trends are likely to change by measuring
     ## the time since the highest high and lowest low over a period.
-    ## 
+    ##
     ## Formulas:
     ##   Aroon Up = ((period - periods since period high) / period) * 100
     ##   Aroon Down = ((period - periods since period low) / period) * 100
     ##   Aroon Oscillator = Aroon Up - Aroon Down
-    ## 
+    ##
     ## Interpretation:
     ## - Aroon Up > 70 and Aroon Down < 30: Strong uptrend
     ## - Aroon Down > 70 and Aroon Up < 30: Strong downtrend
@@ -1540,11 +1501,11 @@ type
 
 proc newAROON*(period: int = 25, memSize: int = 1): AROON =
   ## Create new Aroon indicator
-  ## 
+  ##
   ## Args:
   ##   period: Number of periods to look back (default 25)
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ##   var aroon = newAROON(25)
   ##   let aroonResult = aroon.update(high, low)
@@ -1564,58 +1525,56 @@ proc newAROON*(period: int = 25, memSize: int = 1): AROON =
 
 proc update*(aroon: AROON, high, low: float64): AroonResult =
   ## Update Aroon with new bar
-  ## 
+  ##
   ## Returns current Aroon result (NaN if insufficient data)
-  
+
   # Store values in circular buffer
   aroon.highs[aroon.pos] = high
   aroon.lows[aroon.pos] = low
   aroon.pos = (aroon.pos + 1) mod aroon.period
-  
+
   if aroon.length < aroon.period:
     aroon.length += 1
-  
+
   if aroon.length < aroon.period:
     aroon.push(AroonResult(up: NaN, down: NaN, oscillator: NaN))
     return aroon[0]
-  
+
   # Find periods since highest high and lowest low
   # Iterate from most recent (periodsAgo=0) to oldest (periodsAgo=period-1)
   var highestHigh = -Inf
   var lowestLow = Inf
-  var periodsSinceHigh = aroon.period - 1  # Start with oldest
+  var periodsSinceHigh = aroon.period - 1 # Start with oldest
   var periodsSinceLow = aroon.period - 1
-  
+
   for periodsAgo in 0..<aroon.period:
     # Calculate actual index in circular buffer
     # Most recent value is at (pos - 1), going backwards in time
     let idx = (aroon.pos - 1 - periodsAgo + aroon.period) mod aroon.period
-    
+
     if aroon.highs[idx] >= highestHigh:
       highestHigh = aroon.highs[idx]
       periodsSinceHigh = periodsAgo
-    
+
     if aroon.lows[idx] <= lowestLow:
       lowestLow = aroon.lows[idx]
       periodsSinceLow = periodsAgo
-  
+
   # Calculate Aroon Up and Aroon Down
-  let aroonUp = ((aroon.period.float64 - periodsSinceHigh.float64) / aroon.period.float64) * 100.0
-  let aroonDown = ((aroon.period.float64 - periodsSinceLow.float64) / aroon.period.float64) * 100.0
+  let aroonUp = ((aroon.period.float64 - periodsSinceHigh.float64) /
+      aroon.period.float64) * 100.0
+  let aroonDown = ((aroon.period.float64 - periodsSinceLow.float64) /
+      aroon.period.float64) * 100.0
   let aroonOsc = aroonUp - aroonDown
-  
+
   let aroonResult = AroonResult(
     up: aroonUp,
     down: aroonDown,
     oscillator: aroonOsc
   )
-  
+
   aroon.push(aroonResult)
   result = aroon[0]
-
-# ============================================================================
-# Phase 9.4: Additional Momentum Indicators
-# ============================================================================
 
 # Stochastic RSI (STOCHRSI)
 
@@ -1627,15 +1586,16 @@ type
     period: int
     kPeriod: int
     dPeriod: int
-    rsiValues: seq[float64]  # Circular buffer for RSI values
+    rsiValues: seq[float64] # Circular buffer for RSI values
     pos: int
     length: int
-    kMA: MA  # Moving average for %K smoothing
-    dMA: MA  # Moving average for %D
+    kMA: MA # Moving average for %K smoothing
+    dMA: MA # Moving average for %D
 
-proc newSTOCHRSI*(rsiPeriod: int = 14, period: int = 14, kPeriod: int = 3, dPeriod: int = 3, memSize: int = 1): STOCHRSI =
+proc newSTOCHRSI*(rsiPeriod: int = 14, period: int = 14, kPeriod: int = 3,
+    dPeriod: int = 3, memSize: int = 1): STOCHRSI =
   ## Create new Stochastic RSI indicator
-  ## 
+  ##
   ## Args:
   ##   rsiPeriod: Period for RSI calculation (default 14)
   ##   period: Lookback period for Stochastic calculation (default 14)
@@ -1659,27 +1619,27 @@ proc newSTOCHRSI*(rsiPeriod: int = 14, period: int = 14, kPeriod: int = 3, dPeri
 
 proc update*(stochRsi: STOCHRSI, openPrice, closePrice: float64): StochResult =
   ## Update Stochastic RSI with price data
-  ## 
+  ##
   ## Returns StochResult with %K and %D values (NaN if insufficient data)
-  
+
   # First, calculate RSI
   let rsiValue = stochRsi.rsi.update(openPrice, closePrice)
-  
+
   # Store RSI value in circular buffer
   stochRsi.rsiValues[stochRsi.pos] = rsiValue
   stochRsi.pos = (stochRsi.pos + 1) mod stochRsi.period
   if stochRsi.length < stochRsi.period:
     stochRsi.length += 1
-  
+
   # Need full period of RSI values to calculate Stochastic
   if stochRsi.length < stochRsi.period or classify(rsiValue) == fcNan:
     stochRsi.push(StochResult(k: NaN, d: NaN))
     return stochRsi[0]
-  
+
   # Find highest and lowest RSI over the period
   var highestRSI = -Inf
   var lowestRSI = Inf
-  
+
   for i in 0..<stochRsi.period:
     let rsi = stochRsi.rsiValues[i]
     if classify(rsi) != fcNan:
@@ -1687,23 +1647,23 @@ proc update*(stochRsi: STOCHRSI, openPrice, closePrice: float64): StochResult =
         highestRSI = rsi
       if rsi < lowestRSI:
         lowestRSI = rsi
-  
+
   # Calculate raw Stochastic value
   var rawK: float64
   if highestRSI == lowestRSI:
-    rawK = 50.0  # Neutral when no range
+    rawK = 50.0 # Neutral when no range
   else:
     rawK = ((rsiValue - lowestRSI) / (highestRSI - lowestRSI)) * 100.0
-  
+
   # Smooth with moving averages
   let smoothedK = stochRsi.kMA.update(rawK)
   let smoothedD = stochRsi.dMA.update(smoothedK)
-  
+
   let stochResult = StochResult(
     k: smoothedK,
     d: smoothedD
   )
-  
+
   stochRsi.push(stochResult)
   result = stochRsi[0]
 
@@ -1712,9 +1672,9 @@ proc update*(stochRsi: STOCHRSI, openPrice, closePrice: float64): StochResult =
 type
   PPOResult* = object
     ## Result from PPO indicator
-    ppo*: float64          # Main PPO line (fast EMA - slow EMA) / slow EMA * 100
-    signal*: float64       # Signal line (EMA of PPO)
-    histogram*: float64    # Histogram (PPO - Signal)
+    ppo*: float64       # Main PPO line (fast EMA - slow EMA) / slow EMA * 100
+    signal*: float64    # Signal line (EMA of PPO)
+    histogram*: float64 # Histogram (PPO - Signal)
 
   PPO* = ref object of Indicator[PPOResult]
     ## Percentage Price Oscillator - MACD expressed as percentage
@@ -1727,9 +1687,10 @@ type
     signalEMA: EMA
     length: int
 
-proc newPPO*(fastPeriod: int = 12, slowPeriod: int = 26, signalPeriod: int = 9, memSize: int = 1): PPO =
+proc newPPO*(fastPeriod: int = 12, slowPeriod: int = 26, signalPeriod: int = 9,
+    memSize: int = 1): PPO =
   ## Create new Percentage Price Oscillator
-  ## 
+  ##
   ## Args:
   ##   fastPeriod: Fast EMA period (default 12)
   ##   slowPeriod: Slow EMA period (default 26)
@@ -1750,37 +1711,37 @@ proc newPPO*(fastPeriod: int = 12, slowPeriod: int = 26, signalPeriod: int = 9, 
 
 proc update*(ppo: PPO, value: float64): PPOResult =
   ## Update PPO with new price value
-  ## 
+  ##
   ## Returns PPOResult with ppo, signal, and histogram (NaN if insufficient data)
   ppo.length += 1
-  
+
   let fastValue = ppo.fastEMA.update(value)
   let slowValue = ppo.slowEMA.update(value)
-  
+
   # Need both EMAs ready before calculating PPO
   if ppo.length < ppo.slowPeriod or classify(slowValue) == fcNan or slowValue == 0.0:
     ppo.push(PPOResult(ppo: NaN, signal: NaN, histogram: NaN))
     return ppo[0]
-  
+
   # Calculate PPO as percentage
   let ppoValue = ((fastValue - slowValue) / slowValue) * 100.0
-  
+
   # Calculate signal line
   let signalValue = ppo.signalEMA.update(ppoValue)
-  
+
   # Calculate histogram
   var histValue: float64
   if classify(signalValue) == fcNan:
     histValue = NaN
   else:
     histValue = ppoValue - signalValue
-  
+
   let ppoResult = PPOResult(
     ppo: ppoValue,
     signal: signalValue,
     histogram: histValue
   )
-  
+
   ppo.push(ppoResult)
   result = ppo[0]
 
@@ -1792,15 +1753,15 @@ type
     ## Uses sum of gains/losses instead of average
     ## Range: -100 to +100 (vs RSI 0 to 100)
     period: int
-    gains: seq[float64]    # Circular buffer for gains
-    losses: seq[float64]   # Circular buffer for losses
+    gains: seq[float64] # Circular buffer for gains
+    losses: seq[float64] # Circular buffer for losses
     pos: int
     length: int
     prevClose: float64
 
 proc newCMO*(period: int = 14, memSize: int = 1): CMO =
   ## Create new Chande Momentum Oscillator
-  ## 
+  ##
   ## Args:
   ##   period: Lookback period (default 14)
   ##   memSize: Size of circular buffer (default 1)
@@ -1818,49 +1779,49 @@ proc newCMO*(period: int = 14, memSize: int = 1): CMO =
 
 proc update*(cmo: CMO, close: float64): float64 =
   ## Update CMO with new close price
-  ## 
+  ##
   ## Returns CMO value in range -100 to +100 (NaN if insufficient data)
-  
+
   # Calculate price change
   var gain = 0.0
   var loss = 0.0
-  
+
   if classify(cmo.prevClose) != fcNan:
     let change = close - cmo.prevClose
     if change > 0:
       gain = change
     elif change < 0:
       loss = -change
-  
+
   cmo.prevClose = close
-  
+
   # Store in circular buffers
   cmo.gains[cmo.pos] = gain
   cmo.losses[cmo.pos] = loss
   cmo.pos = (cmo.pos + 1) mod cmo.period
   if cmo.length < cmo.period:
     cmo.length += 1
-  
+
   # Need full period to calculate CMO
   if cmo.length < cmo.period:
     cmo.push(NaN)
     return cmo[0]
-  
+
   # Sum all gains and losses
   var sumGains = 0.0
   var sumLosses = 0.0
   for i in 0..<cmo.period:
     sumGains += cmo.gains[i]
     sumLosses += cmo.losses[i]
-  
+
   # Calculate CMO
   let totalMovement = sumGains + sumLosses
   var cmoValue: float64
   if totalMovement == 0.0:
-    cmoValue = 0.0  # No movement = neutral
+    cmoValue = 0.0 # No movement = neutral
   else:
     cmoValue = ((sumGains - sumLosses) / totalMovement) * 100.0
-  
+
   cmo.push(cmoValue)
   result = cmo[0]
 
@@ -1872,13 +1833,13 @@ type
     ## Foundation for many other indicators
     ## Positive = upward momentum, Negative = downward momentum
     period: int
-    prices: seq[float64]  # Circular buffer for historical prices
+    prices: seq[float64] # Circular buffer for historical prices
     pos: int
     length: int
 
 proc newMOM*(period: int = 10, memSize: int = 1): MOM =
   ## Create new Momentum indicator
-  ## 
+  ##
   ## Args:
   ##   period: Lookback period (default 10)
   ##   memSize: Size of circular buffer (default 1)
@@ -1894,10 +1855,10 @@ proc newMOM*(period: int = 10, memSize: int = 1): MOM =
 
 proc update*(mom: MOM, price: float64): float64 =
   ## Update Momentum with new price
-  ## 
+  ##
   ## Returns momentum value (current - price N periods ago)
   ## Returns NaN if insufficient data
-  
+
   if mom.length < mom.period:
     # Still collecting initial data
     mom.prices[mom.pos] = price
@@ -1909,57 +1870,54 @@ proc update*(mom: MOM, price: float64): float64 =
     # Read old price BEFORE overwriting it
     let oldPrice = mom.prices[mom.pos]
     let momentum = price - oldPrice
-    
+
     # Now store new price and advance
     mom.prices[mom.pos] = price
     mom.pos = (mom.pos + 1) mod mom.period
-    
-    mom.push(momentum)
-  
-  result = mom[0]
 
-# ============================================================================
-# Parabolic SAR (PSAR)
-# ============================================================================
+    mom.push(momentum)
+
+  result = mom[0]
 
 type
   PSARResult* = object
     ## Parabolic SAR result
-    sar*: float64      ## SAR value (stop and reverse level)
-    isUptrend*: bool   ## True if in uptrend, False if in downtrend
-    af*: float64       ## Current acceleration factor
+    sar*: float64    ## SAR value (stop and reverse level)
+    isUptrend*: bool ## True if in uptrend, False if in downtrend
+    af*: float64     ## Current acceleration factor
 
 type
   PSAR* = ref object of Indicator[PSARResult]
     ## Parabolic SAR (Stop and Reverse)
-    ## 
+    ##
     ## Provides dynamic trailing stop levels that follow price trends.
     ## SAR dots appear below price during uptrends and above during downtrends.
-    ## 
+    ##
     ## Interpretation:
     ## - When price crosses above SAR: Buy signal (trend reversal to uptrend)
     ## - When price crosses below SAR: Sell signal (trend reversal to downtrend)
     ## - Distance between price and SAR indicates trend strength
     ## - SAR accelerates toward price as trend continues
-    acceleration: float64   ## Acceleration factor step (default 0.02)
-    maximum: float64        ## Maximum acceleration factor (default 0.20)
-    sar: float64            ## Current SAR value
-    extreme: float64        ## Extreme point in current trend
-    af: float64             ## Current acceleration factor
-    isUptrend: bool         ## Current trend direction
-    initialized: bool       ## Whether indicator has been initialized
-    initHigh: float64       ## Initial high for first 2 bars
-    initLow: float64        ## Initial low for first 2 bars
-    barCount: int           ## Number of bars processed
+    acceleration: float64 ## Acceleration factor step (default 0.02)
+    maximum: float64 ## Maximum acceleration factor (default 0.20)
+    sar: float64 ## Current SAR value
+    extreme: float64 ## Extreme point in current trend
+    af: float64 ## Current acceleration factor
+    isUptrend: bool ## Current trend direction
+    initialized: bool ## Whether indicator has been initialized
+    initHigh: float64 ## Initial high for first 2 bars
+    initLow: float64 ## Initial low for first 2 bars
+    barCount: int ## Number of bars processed
 
-proc newPSAR*(acceleration: float64 = 0.02, maximum: float64 = 0.20, memSize: int = 1): PSAR =
+proc newPSAR*(acceleration: float64 = 0.02, maximum: float64 = 0.20,
+    memSize: int = 1): PSAR =
   ## Create new Parabolic SAR indicator
-  ## 
+  ##
   ## Args:
   ##   acceleration: Acceleration factor step (default 0.02)
   ##   maximum: Maximum acceleration factor (default 0.20)
   ##   memSize: Size of circular buffer for storing computed values (default 1)
-  ## 
+  ##
   ## Example:
   ## .. code-block:: nim
   ##    var psar = newPSAR(acceleration = 0.02, maximum = 0.20, memSize = 10)
@@ -1973,7 +1931,7 @@ proc newPSAR*(acceleration: float64 = 0.02, maximum: float64 = 0.20, memSize: in
   # Initialize with NaN values
   for i in 0..<memSize:
     memData[i] = PSARResult(sar: NaN, isUptrend: true, af: acceleration)
-  
+
   result = PSAR(
     memData: memData,
     memPos: 0,
@@ -1992,24 +1950,25 @@ proc newPSAR*(acceleration: float64 = 0.02, maximum: float64 = 0.20, memSize: in
 
 proc update*(psar: PSAR, high, low, close: float64): PSARResult =
   ## Update Parabolic SAR with new bar
-  ## 
+  ##
   ## Args:
   ##   high: High price of the bar
   ##   low: Low price of the bar
   ##   close: Close price of the bar
-  ## 
+  ##
   ## Returns:
   ##   PSARResult with SAR value, trend direction, and acceleration factor
   psar.barCount += 1
-  
+
   # Need at least 2 bars to initialize
   if psar.barCount == 1:
     psar.initHigh = high
     psar.initLow = low
-    let psarResult = PSARResult(sar: NaN, isUptrend: true, af: psar.acceleration)
+    let psarResult = PSARResult(sar: NaN, isUptrend: true,
+        af: psar.acceleration)
     psar.push(psarResult)
     return psarResult
-  
+
   if not psar.initialized:
     # Initialize on second bar
     # Assume uptrend if close > open, otherwise downtrend
@@ -2017,49 +1976,49 @@ proc update*(psar: PSAR, high, low, close: float64): PSARResult =
     if close > psar.initLow:
       # Start in uptrend
       psar.isUptrend = true
-      psar.sar = psar.initLow  # SAR starts at the low
-      psar.extreme = max(psar.initHigh, high)  # EP is the highest high
+      psar.sar = psar.initLow # SAR starts at the low
+      psar.extreme = max(psar.initHigh, high) # EP is the highest high
     else:
       # Start in downtrend
       psar.isUptrend = false
-      psar.sar = psar.initHigh  # SAR starts at the high
-      psar.extreme = min(psar.initLow, low)  # EP is the lowest low
-    
+      psar.sar = psar.initHigh # SAR starts at the high
+      psar.extreme = min(psar.initLow, low) # EP is the lowest low
+
     psar.af = psar.acceleration
     psar.initialized = true
-    
+
     let psarResult = PSARResult(sar: psar.sar, isUptrend: psar.isUptrend, af: psar.af)
     psar.push(psarResult)
     return psarResult
-  
+
   # Calculate new SAR value
   let prevSAR = psar.sar
   let prevExtreme = psar.extreme
   let prevAF = psar.af
   let wasUptrend = psar.isUptrend
-  
+
   # Update SAR using formula: SAR = prior SAR + prior AF * (prior EP - prior SAR)
   psar.sar = prevSAR + prevAF * (prevExtreme - prevSAR)
-  
+
   # Check for trend reversal
   var reversal = false
-  
+
   if wasUptrend:
     # In uptrend: SAR should be below price
     # Reversal if SAR crosses above the low
     if psar.sar > low:
       reversal = true
       psar.isUptrend = false
-      psar.sar = prevExtreme  # SAR becomes the extreme point of previous trend
-      psar.extreme = low      # New extreme is current low
-      psar.af = psar.acceleration  # Reset AF
+      psar.sar = prevExtreme # SAR becomes the extreme point of previous trend
+      psar.extreme = low # New extreme is current low
+      psar.af = psar.acceleration # Reset AF
     else:
       # Continue uptrend
       # Ensure SAR doesn't exceed the low of previous 2 bars
       # (This prevents SAR from being too close to price)
       if psar.sar > low:
         psar.sar = low
-      
+
       # Update extreme point if new high
       if high > psar.extreme:
         psar.extreme = high
@@ -2071,28 +2030,24 @@ proc update*(psar: PSAR, high, low, close: float64): PSARResult =
     if psar.sar < high:
       reversal = true
       psar.isUptrend = true
-      psar.sar = prevExtreme  # SAR becomes the extreme point of previous trend
-      psar.extreme = high     # New extreme is current high
-      psar.af = psar.acceleration  # Reset AF
+      psar.sar = prevExtreme # SAR becomes the extreme point of previous trend
+      psar.extreme = high # New extreme is current high
+      psar.af = psar.acceleration # Reset AF
     else:
       # Continue downtrend
       # Ensure SAR doesn't go below the high of previous 2 bars
       if psar.sar < high:
         psar.sar = high
-      
+
       # Update extreme point if new low
       if low < psar.extreme:
         psar.extreme = low
         # Increase acceleration factor
         psar.af = min(psar.af + psar.acceleration, psar.maximum)
-  
+
   let psarResult = PSARResult(sar: psar.sar, isUptrend: psar.isUptrend, af: psar.af)
   psar.push(psarResult)
   result = psarResult
-
-# ============================================================================
-# Convenience Aliases
-# ============================================================================
 
 # SMA is an alias for MA
 type SMA* = MA
