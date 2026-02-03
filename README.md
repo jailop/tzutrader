@@ -102,6 +102,10 @@ position_sizing:
 - The API is not stable yet. Don't use this library for production (not
   yet).
 
+## Contributing
+
+Check the [ROADMAP](ROADMAP.md) for planned features and ideas.
+
 ## ⚠️ Disclaimers
 
 This software is provided for educational and research purposes
