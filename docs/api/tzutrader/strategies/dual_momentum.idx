@@ -1,6 +1,0 @@
-nimTitle	dual_momentum	tzutrader/strategies/dual_momentum.html	module src/tzutrader/strategies/dual_momentum		0
-nim	DualMomentumStrategy	tzutrader/strategies/dual_momentum.html#DualMomentumStrategy	type DualMomentumStrategy		9
-nim	newDualMomentumStrategy	tzutrader/strategies/dual_momentum.html#newDualMomentumStrategy,int,int,string	proc newDualMomentumStrategy(rocPeriod: int = 12; smaPeriod: int = 50;\n                        symbol: string = ""): DualMomentumStrategy		20
-nim	onBar	tzutrader/strategies/dual_momentum.html#onBar.e,DualMomentumStrategy,OHLCV	method onBar(s: DualMomentumStrategy; bar: OHLCV): Signal		42
-nim	reset	tzutrader/strategies/dual_momentum.html#reset.e,DualMomentumStrategy	method reset(s: DualMomentumStrategy)		96
-nim	name	tzutrader/strategies/dual_momentum.html#name.e,DualMomentumStrategy	method name(s: DualMomentumStrategy): string		104

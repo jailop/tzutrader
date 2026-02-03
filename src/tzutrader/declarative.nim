@@ -1,17 +1,17 @@
 ## Declarative Strategy System
 
-import tzutrader/declarative/schema
-import tzutrader/declarative/parser
-import tzutrader/declarative/validator
-import tzutrader/declarative/strategy_builder
-import tzutrader/declarative/expression
-import tzutrader/declarative/condition_eval
-import tzutrader/declarative/risk_management
-import tzutrader/declarative/position_sizing
-import tzutrader/declarative/batch_runner
-import tzutrader/declarative/sweep_generator
-import tzutrader/declarative/sweep_runner
-import tzutrader/declarative/results
+import declarative/schema
+import declarative/parser
+import declarative/validator
+import declarative/strategy_builder
+import declarative/expression
+import declarative/condition_eval
+import declarative/risk_management
+import declarative/position_sizing
+import declarative/batch_runner
+import declarative/sweep_generator
+import declarative/sweep_runner
+import declarative/results
 
 export schema, parser, validator, strategy_builder, expression, condition_eval
 export risk_management, position_sizing, batch_runner, sweep_generator,

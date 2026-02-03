@@ -1,7 +1,6 @@
-import std/[times, strutils, strformat, tables, json, algorithm]
+import std/[times, strutils, strformat, tables, json]
 import ./alerts
 import ./schema
-import ../core
 
 const
   # Terminal formatting characters

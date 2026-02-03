@@ -1,4 +1,4 @@
-import std/[tables, times, strformat, os, strutils, options]
+import std/[tables, times, strformat, strutils, options]
 import ../core
 import ../data
 import ../portfolio

@@ -1,4 +1,4 @@
-import std/[tables, times, math, sequtils, strformat, algorithm, strutils]
+import std/[tables, times, math, sequtils, strformat, strutils]
 import core, data, strategy, portfolio
 import declarative/risk_management
 

@@ -1,5 +1,4 @@
 import std/[math, deques]
-import core
 
 type
   Indicator*[T] = ref object of RootObj

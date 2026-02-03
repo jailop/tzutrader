@@ -1,4 +1,4 @@
-import std/[tables, strformat, strutils, options]
+import std/[tables, strutils, options]
 import ../strategy
 import ../strategies/base # Import for PositionSizingType
 import ../indicators

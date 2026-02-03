@@ -1,0 +1,3 @@
+mkdocs-minify-plugin
+mkdocs_pymdownx_material_extras
+mkdocs

@@ -1,7 +1,6 @@
 import std/[tables, options, strutils]
 import yaml
-import ../declarative/[schema as declSchema, parser as declParser]
-import ../data
+import ../declarative/[schema as declSchema]
 import schema
 import alerts
 

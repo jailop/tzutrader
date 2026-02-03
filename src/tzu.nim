@@ -2,7 +2,7 @@ import std/[strformat, os, sequtils, tables, strutils, options]
 import tzutrader/[core, data, strategy, trader, portfolio]
 import tzutrader/declarative/[parser, validator, strategy_builder, batch_runner,
     results, sweep_runner]
-import tzutrader/screener/[screener, parser as screener_parser, reports, schema]
+import tzutrader/screener/[screener, parser as screener_parser, schema]
 import cligen
 
 type DataSourceKind = enum
@@ -264,7 +264,7 @@ proc runScreenerFromFile(screenerFile: string, verbose: bool = false): int =
   if verbose:
     echo "Running screener..."
 
-  let result = try:
+  let res = try:
     screenerObj.run()
   except ScreenerError as e:
     echo &"Screener error: {e.msg}"
@@ -274,7 +274,7 @@ proc runScreenerFromFile(screenerFile: string, verbose: bool = false): int =
     return 1
 
   # Generate and print report
-  let screenerResult = formatResult(result, config.output)
+  let screenerResult = formatResult(res, config.output)
   echo screenerResult
 
   # Write to file if specified

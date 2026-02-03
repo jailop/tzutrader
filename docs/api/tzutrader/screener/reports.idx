@@ -1,9 +1,0 @@
-nimTitle	reports	tzutrader/screener/reports.html	module src/tzutrader/screener/reports		0
-nim	printSummary	tzutrader/screener/reports.html#printSummary,ScreenerSummary	proc printSummary(summary: ScreenerSummary): string		74
-nim	formatTerminalTable	tzutrader/screener/reports.html#formatTerminalTable,seq[Alert],DetailLevel	proc formatTerminalTable(alerts: seq[Alert]; detailLevel: DetailLevel = dlSummary): string		100
-nim	formatCsvReport	tzutrader/screener/reports.html#formatCsvReport,seq[Alert]	proc formatCsvReport(alerts: seq[Alert]): string		159
-nim	formatJsonReport	tzutrader/screener/reports.html#formatJsonReport,seq[Alert]	proc formatJsonReport(alerts: seq[Alert]): string		198
-nim	formatMarkdownReport	tzutrader/screener/reports.html#formatMarkdownReport,seq[Alert]	proc formatMarkdownReport(alerts: seq[Alert]): string		212
-nim	printDetailedAlerts	tzutrader/screener/reports.html#printDetailedAlerts,seq[Alert]	proc printDetailedAlerts(alerts: seq[Alert]): string		236
-nim	generateReport	tzutrader/screener/reports.html#generateReport,seq[Alert],ScreenerSummary,ScreenerOutputConfig	proc generateReport(alerts: seq[Alert]; summary: ScreenerSummary;\n               config: ScreenerOutputConfig): string		271
-nim	generateReportWithSummary	tzutrader/screener/reports.html#generateReportWithSummary,seq[Alert],ScreenerSummary,ScreenerOutputConfig,bool	proc generateReportWithSummary(alerts: seq[Alert]; summary: ScreenerSummary;\n                          config: ScreenerOutputConfig; showSummary: bool = true): string		292

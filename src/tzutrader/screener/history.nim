@@ -1,6 +1,5 @@
 import std/[times, json, os, strutils, tables, strformat, algorithm]
 import ./alerts
-import ./schema
 
 type
   ScreenerHistoryEntry* = object

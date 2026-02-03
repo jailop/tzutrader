@@ -1,6 +1,5 @@
 import std/[tables, times, math, algorithm, strformat, sequtils, strutils]
 import ../trader
-import ../core
 
 type
   BacktestResultSummary* = object

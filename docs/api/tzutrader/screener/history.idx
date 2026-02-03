@@ -1,8 +1,0 @@
-nimTitle	history	tzutrader/screener/history.html	module src/tzutrader/screener/history		0
-nim	ScreenerHistoryEntry	tzutrader/screener/history.html#ScreenerHistoryEntry	object ScreenerHistoryEntry		6
-nim	saveScreenerHistory	tzutrader/screener/history.html#saveScreenerHistory,string,seq[Alert],int,int,string	proc saveScreenerHistory(configName: string; alerts: seq[Alert]; symbolsScanned: int;\n                    strategiesUsed: int; historyDir: string = "screener_history"): void		76
-nim	loadScreenerHistory	tzutrader/screener/history.html#loadScreenerHistory,string	proc loadScreenerHistory(filepath: string): ScreenerHistoryEntry		122
-nim	listScreenerHistory	tzutrader/screener/history.html#listScreenerHistory,string	proc listScreenerHistory(historyDir: string = "screener_history"): seq[string]		140
-nim	getLatestScreenerResult	tzutrader/screener/history.html#getLatestScreenerResult,string,string	proc getLatestScreenerResult(configName: string;\n                        historyDir: string = "screener_history"): ScreenerHistoryEntry		159
-nim	compareScreenerResults	tzutrader/screener/history.html#compareScreenerResults,ScreenerHistoryEntry,ScreenerHistoryEntry	proc compareScreenerResults(entry1: ScreenerHistoryEntry;\n                       entry2: ScreenerHistoryEntry): tuple[\n    newSignals: seq[Alert], removedSignals: seq[Alert]]		173
-nim	printHistorySummary	tzutrader/screener/history.html#printHistorySummary,seq[ScreenerHistoryEntry]	proc printHistorySummary(entries: seq[ScreenerHistoryEntry]): string		203

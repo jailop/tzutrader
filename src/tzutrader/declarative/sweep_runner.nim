@@ -1,6 +1,4 @@
 import std/[tables, times, strformat, algorithm, options, strutils]
-import ../core
-import ../data
 import ../portfolio
 import ../trader
 import ../strategy

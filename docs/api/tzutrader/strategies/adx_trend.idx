@@ -1,6 +1,0 @@
-nimTitle	adx_trend	tzutrader/strategies/adx_trend.html	module src/tzutrader/strategies/adx_trend		0
-nim	ADXTrendStrategy	tzutrader/strategies/adx_trend.html#ADXTrendStrategy	type ADXTrendStrategy		9
-nim	newADXTrendStrategy	tzutrader/strategies/adx_trend.html#newADXTrendStrategy,int,float64,string	proc newADXTrendStrategy(period: int = 14; adxThreshold: float64 = 25.0;\n                    symbol: string = ""): ADXTrendStrategy		18
-nim	onBar	tzutrader/strategies/adx_trend.html#onBar.e,ADXTrendStrategy,OHLCV	method onBar(s: ADXTrendStrategy; bar: OHLCV): Signal		38
-nim	reset	tzutrader/strategies/adx_trend.html#reset.e,ADXTrendStrategy	method reset(s: ADXTrendStrategy)		84
-nim	name	tzutrader/strategies/adx_trend.html#name.e,ADXTrendStrategy	method name(s: ADXTrendStrategy): string		90

@@ -1,6 +1,0 @@
-nimTitle	filtered_mean_reversion	tzutrader/strategies/filtered_mean_reversion.html	module src/tzutrader/strategies/filtered_mean_reversion		0
-nim	FilteredMeanReversionStrategy	tzutrader/strategies/filtered_mean_reversion.html#FilteredMeanReversionStrategy	type FilteredMeanReversionStrategy		9
-nim	newFilteredMeanReversionStrategy	tzutrader/strategies/filtered_mean_reversion.html#newFilteredMeanReversionStrategy,int,int,float64,float64,string	proc newFilteredMeanReversionStrategy(rsiPeriod: int = 14; trendPeriod: int = 200;\n                                 oversold: float64 = 30.0;\n                                 overbought: float64 = 70.0; symbol: string = ""): FilteredMeanReversionStrategy		23
-nim	onBar	tzutrader/strategies/filtered_mean_reversion.html#onBar.e,FilteredMeanReversionStrategy,OHLCV	method onBar(s: FilteredMeanReversionStrategy; bar: OHLCV): Signal		52
-nim	reset	tzutrader/strategies/filtered_mean_reversion.html#reset.e,FilteredMeanReversionStrategy	method reset(s: FilteredMeanReversionStrategy)		110
-nim	name	tzutrader/strategies/filtered_mean_reversion.html#name.e,FilteredMeanReversionStrategy	method name(s: FilteredMeanReversionStrategy): string		119

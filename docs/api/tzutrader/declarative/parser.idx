@@ -1,8 +1,0 @@
-nimTitle	parser	tzutrader/declarative/parser.html	module src/tzutrader/declarative/parser		0
-nim	ParseError	tzutrader/declarative/parser.html#ParseError	object ParseError		6
-nim	parseStrategyYAML	tzutrader/declarative/parser.html#parseStrategyYAML,string	proc parseStrategyYAML(yamlContent: string): StrategyYAML		299
-nim	parseStrategyYAMLFile	tzutrader/declarative/parser.html#parseStrategyYAMLFile,string	proc parseStrategyYAMLFile(filename: string): StrategyYAML		336
-nim	parseBatchTestYAML	tzutrader/declarative/parser.html#parseBatchTestYAML,string	proc parseBatchTestYAML(yamlContent: string): BatchTestYAML		512
-nim	parseBatchTestYAMLFile	tzutrader/declarative/parser.html#parseBatchTestYAMLFile,string	proc parseBatchTestYAMLFile(filename: string): BatchTestYAML		552
-nim	parseParameterSweepYAML	tzutrader/declarative/parser.html#parseParameterSweepYAML,string	proc parseParameterSweepYAML(yamlContent: string): ParameterSweepYAML		644
-nim	parseParameterSweepYAMLFile	tzutrader/declarative/parser.html#parseParameterSweepYAMLFile,string	proc parseParameterSweepYAMLFile(filename: string): ParameterSweepYAML		690

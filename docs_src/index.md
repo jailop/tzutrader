@@ -1,24 +1,20 @@
 # TzuTrader Documentation
 
-TzuTrader is an experimental algorithmic trading framework designed to
-develop, and test systematic trading strategies. Whether you're
-validating a new trading idea, optimizing strategy parameters, or
-screening markets for opportunities, TzuTrader provides tools to do it
-efficiently.
+TzuTrader is an algorithmic framework designed to
+develop, and test trading strategies.
 
-## Why?
+## Key Features
 
-- Fast Development Cycle: Test trading ideas in minutes using the CLI or
+- Fast Development Cycle: Test trading ideas quickly using the CLI or
   declarative YAML configs—no coding required for basic strategies
 - Better Performance: Built in Nim for speed and memory
-  efficiency, with O(1) memory streaming indicators
+  efficiency
 - Flexible Workflow: Start with simple built-in strategies, evolve to
-  YAML configs, or write custom strategies in Nim for maximum control
-- Comprehensive Toolset: Backtesting, market screening, batch testing,
-  parameter optimization, and basic portfolio simulation in one 
-  library
+  YAML configs, or write custom strategies
+- Integrated Toolset: Backtesting, market screening, batch testing,
+  and basic portfolio simulation
 
-## How it looks?
+## How it looks like?
 
 CLI Tool:
 
@@ -34,27 +30,6 @@ tzu --strategy=examples/rsi_strategy_example.yaml --symbol=AAPL --start=2023-01-
 
 # Screen multiple symbols and get alerts
 tzu --screen=examples/screeners/basic_rsi_screener.yml
-```
-
-Library Example:
-
-```nim
-import tzutrader
-
-# Load data and create strategy
-let data = readCSV("data/AAPL.csv")
-let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
-
-# Run backtest
-let report = quickBacktest(
-  symbol = "AAPL",
-  strategy = strategy,
-  data = data,
-  initialCash = 100000.0,
-  commission = 0.001
-)
-
-echo report.summary()
 ```
 
 YAML files:
@@ -93,12 +68,33 @@ position_sizing:
   size: 100
 ```
 
+Library Example:
+
+```nim
+import tzutrader
+
+# Load data and create strategy
+let data = readCSV("data/AAPL.csv")
+let strategy = newRSIStrategy(period = 14, oversold = 30, overbought = 70)
+
+# Run backtest
+let report = quickBacktest(
+  symbol = "AAPL",
+  strategy = strategy,
+  data = data,
+  initialCash = 100000.0,
+  commission = 0.001
+)
+
+echo report.summary()
+```
+
 ## Limitations
 
 - At this moment only a few illustrative data sources are supported,
   like CSV files and Yahoo Finance.
 - At this moment only OHLCV-based strategies are supported.
-- The API is not stable yet. Don't use this library for production (not
+- The API is still evolving. Don't use this library for production (not
   yet).
 
 ## Docomentation
@@ -147,4 +143,6 @@ accept full responsibility for your actions.
 
 ## Next Steps
 
-Ready to start? Head to the [Getting Started Guide](user_guide/01_getting_started.md) and run your first backtest in under 15 minutes.
+Ready to start? Head to the [Getting Started
+Guide](user_guide/01_getting_started.md) and run your first backtest in
+under 15 minutes.

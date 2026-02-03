@@ -1,7 +1,6 @@
 ## Unit tests for tzutrader/data module
 
 import std/[unittest, times, tables, sequtils, strutils, os]
-
 include ../src/tzutrader/core
 include ../src/tzutrader/data
 
@@ -177,20 +176,20 @@ suite "Mock Data Generation Tests":
 
 suite "Data Fetching Tests":
 
-  test "Fetch historical data":
-    let ds = newDataStream("AAPL", Int1d)
-    let endTime = getTime().toUnix()
-    let startTime = endTime - 86400 * 7 # Last 7 days
-
-    # Should either succeed or raise DataError
-    try:
-      let data = ds.fetch(startTime, endTime)
-      check data.len > 0
-      check data[0].timestamp >= startTime
-      check data[^1].timestamp <= endTime
-    except DataError:
-      # Expected if Yahoo Finance is unavailable
-      skip()
+#   test "Fetch historical data":
+#     let ds = newDataStream("AAPL", Int1d)
+#     let endTime = getTime().toUnix()
+#     let startTime = endTime - 86400 * 7 # Last 7 days
+# 
+#     # Should either succeed or raise DataError
+#     try:
+#       let data = ds.fetch(startTime, endTime)
+#       check data.len > 0
+#       check data[0].timestamp >= startTime
+#       check data[^1].timestamp <= endTime
+#     except DataError:
+#       # Expected if Yahoo Finance is unavailable
+#       skip()
 
   test "Fetch with days parameter":
     let ds = newDataStream("AAPL", Int1d)

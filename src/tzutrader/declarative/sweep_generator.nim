@@ -1,4 +1,4 @@
-import std/[tables, strutils, sequtils, math, strformat, options]
+import std/[tables, strutils, math, strformat]
 import ./schema
 import ./parser # For parseStrategyYAMLFile
 

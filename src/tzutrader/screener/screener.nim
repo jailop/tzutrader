@@ -1,4 +1,4 @@
-import std/[tables, times, strformat, sequtils, algorithm, strutils, os, options]
+import std/[tables, times, strformat, sequtils, strutils, os, options]
 import ../core
 import ../data
 import ../strategy

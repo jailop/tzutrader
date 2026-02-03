@@ -1,6 +1,0 @@
-nimTitle	crossover	tzutrader/strategies/crossover.html	module src/tzutrader/strategies/crossover		0
-nim	CrossoverStrategy	tzutrader/strategies/crossover.html#CrossoverStrategy	type CrossoverStrategy		9
-nim	newCrossoverStrategy	tzutrader/strategies/crossover.html#newCrossoverStrategy,int,int,string	proc newCrossoverStrategy(fastPeriod: int = 50; slowPeriod: int = 200;\n                     symbol: string = ""): CrossoverStrategy		18
-nim	analyze	tzutrader/strategies/crossover.html#analyze.e,CrossoverStrategy,seq[OHLCV]	method analyze(s: CrossoverStrategy; data: seq[OHLCV]): seq[Signal]		39
-nim	onBar	tzutrader/strategies/crossover.html#onBar.e,CrossoverStrategy,OHLCV	method onBar(s: CrossoverStrategy; bar: OHLCV): Signal		43
-nim	reset	tzutrader/strategies/crossover.html#reset.e,CrossoverStrategy	method reset(s: CrossoverStrategy)		79
