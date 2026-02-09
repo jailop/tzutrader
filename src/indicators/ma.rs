@@ -14,38 +14,38 @@ use super::{base::BaseIndicator, Indicator};
 
 /// Moving Average indicator
 #[derive(Debug, Clone)]
-pub struct MA<const P: usize, const S: usize = 1> {
+pub struct MA<const P: usize, const N: usize = 1> {
     accum: f64,
     length: usize,
-    data: BaseIndicator<f64, S>,
+    data: BaseIndicator<f64, N>,
     prevs: [f64; P],
     pos: usize,
 }
 
-impl<const P: usize, const S: usize> MA<P, S> {
+impl<const P: usize, const N: usize> MA<P, N> {
     /// Create a new MA indicator
     pub fn new() -> Self {
         Self {
             accum: 0.0,
             length: 0,
-            data: BaseIndicator::new_float(),
+            data: BaseIndicator::new(),
             prevs: [f64::NAN; P],
             pos: 0,
         }
     }
 }
 
-impl<const P: usize, const S: usize> Default for MA<P, S> {
+impl<const P: usize, const N: usize> Default for MA<P, N> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<const P: usize, const S: usize> Indicator for MA<P, S> {
+impl<const P: usize, const N: usize> Indicator for MA<P, N> {
     type Input = f64;
     type Output = f64;
 
-    fn update(&mut self, value: f64) {
+    fn update(&mut self, value: f64) -> Option<f64> {
         if self.length < P {
             self.length += 1;
         } else {
@@ -57,22 +57,23 @@ impl<const P: usize, const S: usize> Indicator for MA<P, S> {
         self.pos = (self.pos + 1) % P;
         
         if self.length < P {
-            self.data.update(f64::NAN);
+            None
         } else {
             self.data.update(self.accum / P as f64);
+            self.data.get(0)
         }
     }
 
-    fn get(&self, key: i32) -> f64 {
+    fn get(&self, key: i32) -> Option<f64> {
         self.data.get(key)
     }
 
     fn reset(&mut self) {
         self.length = 0;
         self.accum = 0.0;
-        self.prevs = [f64::NAN; P];
         self.data.reset();
         self.pos = 0;
+        // self.prevs = [f64::NAN; P];
     }
 }
 
@@ -86,18 +87,18 @@ mod tests {
         
         // First two values should produce NaN
         ma.update(5.0);
-        assert!(ma.get(0).is_nan());
+        assert!(ma.get(0).is_none());
         
         ma.update(4.0);
-        assert!(ma.get(0).is_nan());
+        assert!(ma.get(0).is_none());
         
         // Third value completes the period
         ma.update(3.0);
-        assert_eq!(ma.get(0), 4.0); // (5 + 4 + 3) / 3 = 4
+        assert_eq!(ma.get(0), Some(4.0)); // (5 + 4 + 3) / 3 = 4
         
         // Fourth value (rolling window)
         ma.update(6.0);
-        assert_eq!(ma.get(0), 4.333333333333333); // (4 + 3 + 6) / 3
+        assert_eq!(ma.get(0), Some(4.333333333333333)); // (4 + 3 + 6) / 3
     }
 
     #[test]
@@ -131,7 +132,7 @@ mod tests {
         ma.reset();
         
         ma.update(10.0);
-        assert!(ma.get(0).is_nan());
+        assert!(ma.get(0).is_none());
     }
 
     #[test]
@@ -142,6 +143,6 @@ mod tests {
             ma.update(i as f64);
         }
         
-        assert_eq!(ma.get(0), 3.0); // (1 + 2 + 3 + 4 + 5) / 5 = 3
+        assert_eq!(ma.get(0), Some(3.0)); // (1 + 2 + 3 + 4 + 5) / 5 = 3
     }
 }

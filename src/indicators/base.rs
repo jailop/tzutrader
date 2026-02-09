@@ -12,8 +12,9 @@ use super::Indicator;
 
 /// Generic indicator with circular buffer storage
 #[derive(Debug, Clone)]
-pub struct BaseIndicator<T, const N: usize> {
+pub struct BaseIndicator<T, const N: usize = 1> {
     pos: i32,
+    filled: bool,
     data: [T; N],
 }
 
@@ -22,6 +23,7 @@ impl<T: Default + Copy, const N: usize> BaseIndicator<T, N> {
     pub fn new() -> Self {
         Self {
             pos: -1,
+            filled: false,
             data: [T::default(); N],
         }
     }
@@ -33,42 +35,40 @@ impl<T: Default + Copy, const N: usize> Default for BaseIndicator<T, N> {
     }
 }
 
-// Special initialization for f64 to use NaN as default
-impl<const N: usize> BaseIndicator<f64, N> {
-    /// Create a new f64 indicator with NaN as initial values
-    pub fn new_float() -> Self {
-        Self {
-            pos: -1,
-            data: [f64::NAN; N],
-        }
-    }
-}
-
 impl<T: Copy + Default, const N: usize> Indicator for BaseIndicator<T, N> {
     type Input = T;
     type Output = T;
 
-    fn update(&mut self, value: T) {
+    fn update(&mut self, value: T) -> Option<T> {
         if self.pos == -1 {
             self.pos = 0;
         } else {
             self.pos = (self.pos + 1) % N as i32;
+            if self.pos == 0 {
+                self.filled = true; // Buffer is now full
+            }
         }
         self.data[self.pos as usize] = value;
+        Some(value)
     }
 
-    fn get(&self, key: i32) -> T {
-        assert!(self.pos != -1, "indicator is empty");
-        assert!(key <= 0, "cannot access future values (positive index)");
-        assert!(-key < N as i32, "index out of bounds");
-        
-        let pos = ((self.pos + N as i32 + key) % N as i32) as usize;
-        self.data[pos]
+    fn get(&self, key: i32) -> Option<T> {
+        match self.pos {
+            -1 => return None, // No data yet
+            _ if key > 0 => return None, // Future values not available
+            _ if key < -(N as i32) => return None, // Out of bounds
+            _ if !self.filled && key < -self.pos => return None, // Not enough data yet
+            _ => {
+                let pos = ((self.pos + N as i32 + key) % N as i32) as usize;
+                Some(self.data[pos])
+            }
+        }
     }
 
     fn reset(&mut self) {
         self.pos = -1;
-        self.data = [T::default(); N];
+        self.filled = false;
+        // self.data = [T::default(); N];
     }
 }
 
@@ -84,15 +84,15 @@ mod tests {
         ind.update(2);
         ind.update(3);
         
-        assert_eq!(ind.get(0), 3);
-        assert_eq!(ind.get(-1), 2);
-        assert_eq!(ind.get(-2), 1);
+        assert_eq!(ind.get(0), Some(3));
+        assert_eq!(ind.get(-1), Some(2));
+        assert_eq!(ind.get(-2), Some(1));
         
         // Test circular behavior
         ind.update(4);
-        assert_eq!(ind.get(0), 4);
-        assert_eq!(ind.get(-1), 3);
-        assert_eq!(ind.get(-2), 2);
+        assert_eq!(ind.get(0), Some(4));
+        assert_eq!(ind.get(-1), Some(3));
+        assert_eq!(ind.get(-2), Some(2));
     }
 
     #[test]
@@ -104,21 +104,29 @@ mod tests {
         ind.reset();
         
         ind.update(10);
-        assert_eq!(ind.get(0), 10);
+        let val = ind.get(0);
+        assert!(val.is_some());
+        assert_eq!(val, Some(10));
     }
 
     #[test]
-    #[should_panic(expected = "indicator is empty")]
     fn test_empty_access() {
         let ind = BaseIndicator::<i32, 3>::new();
-        ind.get(0);
+        assert!(ind.get(0).is_none());
     }
 
     #[test]
-    #[should_panic(expected = "cannot access future values")]
     fn test_future_access() {
         let mut ind = BaseIndicator::<i32, 3>::new();
         ind.update(1);
-        ind.get(1);
+        ind.get(1).is_none();
+    }
+
+    #[test]
+    fn test_not_completly_filled() {
+        let mut ind = BaseIndicator::<i32, 3>::new();
+        ind.update(1);
+        ind.update(2);
+        assert!(ind.get(-2).is_none());
     }
 }

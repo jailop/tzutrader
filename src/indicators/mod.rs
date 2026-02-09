@@ -1,46 +1,47 @@
-/// Technical indicators for financial data analysis.
+/// Technical indicators for trading strategies
 ///
 /// This module defines a common interface for indicators using traits,
 /// allowing them to be used interchangeably in algorithms that process
-/// financial data. Indicators are designed to work with zero dynamic memory
+/// trading stragegies. Indicators are designed to work with zero dynamic memory
 /// allocation (using const generics), implement circular buffers for
 /// processing historical data, and are designed for streaming data scenarios
 /// where new data points are continuously added.
 
-pub mod ad;
-pub mod adx;
-pub mod aroon;
-pub mod atr;
+// pub mod ad;
+// pub mod adx;
+// pub mod aroon;
+// pub mod atr;
 pub mod base;
-pub mod bollinger;
-pub mod cci;
-pub mod cmo;
-pub mod dema;
-pub mod ema;
-pub mod kama;
+// pub mod bollinger;
+// pub mod cci;
+// pub mod cmo;
+// pub mod dema;
+// pub mod ema;
+// pub mod kama;
 pub mod ma;
-pub mod macd;
-pub mod mfi;
-pub mod mom;
-pub mod mv;
-pub mod natr;
-pub mod obv;
-pub mod ppo;
-pub mod psar;
-pub mod roc;
-pub mod roi;
-pub mod rsi;
-pub mod stdev;
-pub mod stoch;
-pub mod stochrsi;
-pub mod tema;
-pub mod trange;
-pub mod trima;
+// pub mod macd;
+// pub mod mfi;
+// pub mod mom;
+// pub mod mv;
+// pub mod natr;
+// pub mod obv;
+// pub mod ppo;
+// pub mod psar;
+// pub mod roc;
+// pub mod roi;
+// pub mod rsi;
+// pub mod stdev;
+// pub mod stoch;
+// pub mod stochrsi;
+// pub mod tema;
+// pub mod trange;
+// pub mod trima;
 
 /// OHLCV bar data structure
 #[derive(Debug, Clone, Copy, Default)]
 #[allow(dead_code)]
 pub struct Ohlcv {
+    pub timestamp: i64,
     pub open: f64,
     pub high: f64,
     pub low: f64,
@@ -66,8 +67,10 @@ pub trait Indicator {
     /// Update the indicator with a new value.
     ///
     /// In a streaming scenario, this would be called each time
-    /// a new data point is available.
-    fn update(&mut self, value: Self::Input);
+    /// a new data point is available. It processes the input
+    /// updating the internal state and returns the current
+    /// output value.
+    fn update(&mut self, value: Self::Input) -> Option<Self::Output>;
 
     /// Access a value in time series style.
     ///
@@ -75,10 +78,13 @@ pub trait Indicator {
     /// - `key = -1`: previous time step value
     /// - `key = -2`: two time steps ago
     ///
-    /// # Panics
-    /// - Panics if a positive index is accessed (future values)
-    /// - Panics if the index is out of bounds
-    fn get(&self, key: i32) -> Self::Output;
+    /// It returns an optional value, which is `None` if the requested
+    /// time step is out of bounds:
+    /// - If the indicator has not yet received enough data points
+    ///   to produce a valid output for the requested time step.
+    /// - If the `key` is positive (future time steps are not available).
+    /// - If the `key` is less than the negative size of the internal buffer.
+    fn get(&self, key: i32) -> Option<Self::Output>;
 
     /// Reset the state of the indicator.
     ///
