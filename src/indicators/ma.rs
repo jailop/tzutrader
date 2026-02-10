@@ -5,27 +5,6 @@
 //! and an accumulator to keep track of their sum. When a new value is added,
 //! the oldest value is subtracted from the accumulator and the new value is
 //! added, allowing for efficient O(1) updates.
-//!
-//! # Type Parameters
-//! - `P`: Period of the moving average (compile-time constant)
-//! - `S`: Number of recent MA values to store (compile-time constant)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader_rs::{Indicator, MA};
-//!
-//! let mut ma = MA::<5, 3>::new();
-//! for i in 1..=10 {
-//!    ma.update(i as f64);
-//! }
-//! // access current value: 8.00
-//! println!("Current: {:.2}", ma.get(0).unwrap_or(f64::NAN));
-//! // access previous value: 7.00
-//! println!("Previous: {:.2}", ma.get(-1).unwrap_or(f64::NAN));
-//! // access two bars ago: 6.00
-//! println!("Two bars ago: {:.2}\n", ma.get(-2).unwrap_or(f64::NAN));
-//! ```
 
 use super::{base::BaseIndicator, Indicator};
 

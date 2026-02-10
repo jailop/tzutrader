@@ -9,7 +9,7 @@
 //!   Aroon Oscillator = Aroon Up - Aroon Down
 
 use super::{base::BaseIndicator, Indicator};
-use crate::Ohlcv;
+use crate::types::Ohlcv;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct AroonValues {
@@ -24,9 +24,7 @@ pub struct AROON<const P: usize, const S: usize = 1> {
     lows: [f64; P],
     pos: usize,
     length: usize,
-    up_values: BaseIndicator<f64, S>,
-    down_values: BaseIndicator<f64, S>,
-    oscillator_values: BaseIndicator<f64, S>,
+    data: BaseIndicator<AroonValues, S>,
 }
 
 impl<const P: usize, const S: usize> AROON<P, S> {
@@ -36,17 +34,7 @@ impl<const P: usize, const S: usize> AROON<P, S> {
             lows: [f64::NAN; P],
             pos: 0,
             length: 0,
-            up_values: BaseIndicator::new(),
-            down_values: BaseIndicator::new(),
-            oscillator_values: BaseIndicator::new(),
-        }
-    }
-
-    pub fn get_values(&self, key: i32) -> AroonValues {
-        AroonValues {
-            up: self.up_values.get(key),
-            down: self.down_values.get(key),
-            oscillator: self.oscillator_values.get(key),
+            data: BaseIndicator::new(),
         }
     }
 }
@@ -59,9 +47,9 @@ impl<const P: usize, const S: usize> Default for AROON<P, S> {
 
 impl<const P: usize, const S: usize> Indicator for AROON<P, S> {
     type Input = Ohlcv;
-    type Output = f64;
+    type Output = AroonValues;
 
-    fn update(&mut self, value: Ohlcv) -> Option<Self::Output> {
+    fn update(&mut self, value: Ohlcv) -> Option<AroonValues> {
         self.highs[self.pos] = value.high;
         self.lows[self.pos] = value.low;
         self.pos = (self.pos + 1) % P;
@@ -71,9 +59,12 @@ impl<const P: usize, const S: usize> Indicator for AROON<P, S> {
         }
 
         if self.length < P {
-            self.up_values.update(f64::NAN);
-            self.down_values.update(f64::NAN);
-            self.oscillator_values.update(f64::NAN);
+            self.data.update(AroonValues {
+                up: f64::NAN,
+                down: f64::NAN,
+                oscillator: f64::NAN,
+            });
+            return None;
         } else {
             let mut highest_high = f64::NEG_INFINITY;
             let mut lowest_low = f64::INFINITY;
@@ -98,15 +89,17 @@ impl<const P: usize, const S: usize> Indicator for AROON<P, S> {
             let aroon_down = ((P as f64 - periods_since_low as f64) / P as f64) * 100.0;
             let aroon_osc = aroon_up - aroon_down;
 
-            self.up_values.update(aroon_up);
-            self.down_values.update(aroon_down);
-            self.oscillator_values.update(aroon_osc);
+            self.data.update(AroonValues {
+                up: aroon_up,
+                down: aroon_down,
+                oscillator: aroon_osc,
+            });
         }
         self.data.get(0)
     }
 
-    fn get(&self, key: i32) -> Option<f64> {
-        self.up_values.get(key)
+    fn get(&self, key: i32) -> Option<AroonValues> {
+        self.data.get(key)
     }
 
     fn reset(&mut self) {
@@ -114,8 +107,6 @@ impl<const P: usize, const S: usize> Indicator for AROON<P, S> {
         self.length = 0;
         self.highs = [f64::NAN; P];
         self.lows = [f64::NAN; P];
-        self.up_values.reset();
-        self.down_values.reset();
-        self.oscillator_values.reset();
+        self.data.reset();
     }
 }

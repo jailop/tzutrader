@@ -5,7 +5,7 @@
 //! Uses Wilder's smoothing formula for TR, +DM, -DM, and ADX.
 
 use super::{base::BaseIndicator, Indicator};
-use crate::Ohlcv;
+use crate::types::Ohlcv;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ADXValues {
@@ -25,9 +25,7 @@ pub struct ADX<const P: usize, const S: usize = 1> {
     smoothed_dx: f64,
     length: usize,
     initialized: bool,
-    adx_values: BaseIndicator<f64, S>,
-    plus_di_values: BaseIndicator<f64, S>,
-    minus_di_values: BaseIndicator<f64, S>,
+    data: BaseIndicator<ADXValues, S>,
 }
 
 impl<const P: usize, const S: usize> ADX<P, S> {
@@ -42,17 +40,7 @@ impl<const P: usize, const S: usize> ADX<P, S> {
             smoothed_dx: 0.0,
             length: 0,
             initialized: false,
-            adx_values: BaseIndicator::new(),
-            plus_di_values: BaseIndicator::new(),
-            minus_di_values: BaseIndicator::new(),
-        }
-    }
-
-    pub fn get_values(&self, key: i32) -> ADXValues {
-        ADXValues {
-            adx: self.adx_values.get(key),
-            plus_di: self.plus_di_values.get(key),
-            minus_di: self.minus_di_values.get(key),
+            data: BaseIndicator::new(),
         }
     }
 }
@@ -65,16 +53,19 @@ impl<const P: usize, const S: usize> Default for ADX<P, S> {
 
 impl<const P: usize, const S: usize> Indicator for ADX<P, S> {
     type Input = Ohlcv;
-    type Output = f64;
+    type Output = ADXValues;
 
-    fn update(&mut self, value: Ohlcv) -> Option<Self::Output> {
-        if self.prev_high.is_none() {
+    fn update(&mut self, value: Ohlcv) -> Option<ADXValues> {
+        if self.prev_high.is_nan() {
             self.prev_high = value.high;
             self.prev_low = value.low;
             self.prev_close = value.close;
-            self.adx_values.update(f64::NAN);
-            self.plus_di_values.update(f64::NAN);
-            self.minus_di_values.update(f64::NAN);
+            self.data.update(ADXValues {
+                adx: f64::NAN,
+                plus_di: f64::NAN,
+                minus_di: f64::NAN,
+            });
+            return None;
         } else {
             let tr1 = value.high - value.low;
             let tr2 = (value.high - self.prev_close).abs();
@@ -108,9 +99,11 @@ impl<const P: usize, const S: usize> Indicator for ADX<P, S> {
                     self.initialized = true;
                 }
 
-                self.adx_values.update(f64::NAN);
-                self.plus_di_values.update(f64::NAN);
-                self.minus_di_values.update(f64::NAN);
+                self.data.update(ADXValues {
+                    adx: f64::NAN,
+                    plus_di: f64::NAN,
+                    minus_di: f64::NAN,
+                });
             } else {
                 self.smoothed_tr = (self.smoothed_tr * (P - 1) as f64 + tr) / P as f64;
                 self.smoothed_plus_dm =
@@ -138,9 +131,11 @@ impl<const P: usize, const S: usize> Indicator for ADX<P, S> {
                     self.smoothed_dx = (self.smoothed_dx * (P - 1) as f64 + dx) / P as f64;
                 }
 
-                self.adx_values.update(self.smoothed_dx);
-                self.plus_di_values.update(plus_di);
-                self.minus_di_values.update(minus_di);
+                self.data.update(ADXValues {
+                    adx: self.smoothed_dx,
+                    plus_di,
+                    minus_di,
+                });
             }
 
             self.prev_high = value.high;
@@ -150,8 +145,8 @@ impl<const P: usize, const S: usize> Indicator for ADX<P, S> {
         self.data.get(0)
     }
 
-    fn get(&self, key: i32) -> Option<f64> {
-        self.adx_values.get(key)
+    fn get(&self, key: i32) -> Option<ADXValues> {
+        self.data.get(key)
     }
 
     fn reset(&mut self) {
@@ -164,8 +159,6 @@ impl<const P: usize, const S: usize> Indicator for ADX<P, S> {
         self.smoothed_dx = 0.0;
         self.length = 0;
         self.initialized = false;
-        self.adx_values.reset();
-        self.plus_di_values.reset();
-        self.minus_di_values.reset();
+        self.data.reset();
     }
 }

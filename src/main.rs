@@ -1,4 +1,5 @@
-use tzutrader_rs::{Indicator, Ohlcv, MA};
+use tzutrader::indicators::{Indicator, MA};
+use tzutrader::types::Ohlcv;
 
 fn main() {
     // Test MA indicator

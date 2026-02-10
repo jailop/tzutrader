@@ -12,19 +12,6 @@
 //! # Type Parameters
 //! - `P`: Period for calculating the efficiency ratio (compile-time constant)
 //! - `S`: Number of recent KAMA values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, kama::KAMA};
-//!
-//! let mut kama = KAMA::<10, 3>::with_periods(2, 30);
-//! for i in 1..=20 {
-//!     kama.update(i as f64);
-//! }
-//! // Access current value
-//! println!("Current: {:.2}", kama.get(0).unwrap_or(f64::NAN));
-//! ```
 
 use super::{base::BaseIndicator, Indicator};
 

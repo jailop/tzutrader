@@ -8,20 +8,6 @@
 //! # Type Parameters
 //! - `P`: Period for the exponential moving averages (compile-time constant)
 //! - `S`: Number of recent TEMA values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, tema::TEMA};
-//!
-//! let mut tema = TEMA::<10, 1>::new();
-//! for i in 1..=30 {
-//!     tema.update(i as f64);
-//! }
-//! if let Some(value) = tema.get(0) {
-//!     println!("TEMA: {:.2}", value);
-//! }
-//! ```
 
 use super::{base::BaseIndicator, ema::EMA, Indicator};
 

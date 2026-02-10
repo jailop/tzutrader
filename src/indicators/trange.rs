@@ -7,28 +7,9 @@
 //!
 //! # Type Parameters
 //! - `S`: Number of recent TRANGE values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, Ohlcv, trange::TRANGE};
-//!
-//! let mut trange = TRANGE::<1>::new();
-//! let bar = Ohlcv {
-//!     timestamp: 0,
-//!     open: 100.0,
-//!     high: 105.0,
-//!     low: 99.0,
-//!     close: 103.0,
-//!     volume: 1000.0,
-//! };
-//! trange.update(bar);
-//! if let Some(value) = trange.get(0) {
-//!     println!("True Range: {:.2}", value);
-//! }
-//! ```
 
-use super::{base::BaseIndicator, Indicator, Ohlcv};
+use super::{base::BaseIndicator, Indicator};
+use crate::types::Ohlcv;
 
 #[derive(Debug, Clone)]
 pub struct TRANGE<const S: usize = 1> {

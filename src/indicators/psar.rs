@@ -25,9 +25,7 @@ pub struct PSAR<const S: usize = 1> {
     bar_count: usize,
     acceleration: f64,
     maximum: f64,
-    sar_values: BaseIndicator<f64, S>,
-    uptrend_values: BaseIndicator<bool, S>,
-    af_values: BaseIndicator<f64, S>,
+    data: BaseIndicator<PSARResult, S>,
 }
 
 impl<const S: usize> PSAR<S> {
@@ -47,17 +45,7 @@ impl<const S: usize> PSAR<S> {
             bar_count: 0,
             acceleration,
             maximum,
-            sar_values: BaseIndicator::new(),
-            uptrend_values: BaseIndicator::new(),
-            af_values: BaseIndicator::new(),
-        }
-    }
-
-    pub fn get_values(&self, key: i32) -> PSARResult {
-        PSARResult {
-            sar: self.sar_values.get(key).unwrap_or(f64::NAN),
-            is_uptrend: self.uptrend_values.get(key).unwrap_or(true),
-            af: self.af_values.get(key).unwrap_or(self.acceleration),
+            data: BaseIndicator::new(),
         }
     }
 }
@@ -70,7 +58,7 @@ impl<const S: usize> Default for PSAR<S> {
 
 impl<const S: usize> Indicator for PSAR<S> {
     type Input = Ohlcv;
-    type Output = f64;
+    type Output = PSARResult;
 
     fn update(&mut self, value: Ohlcv) -> Option<PSARResult> {
         self.bar_count += 1;
@@ -78,9 +66,11 @@ impl<const S: usize> Indicator for PSAR<S> {
         if self.bar_count == 1 {
             self.init_high = value.high;
             self.init_low = value.low;
-            self.sar_values.update(f64::NAN);
-            self.uptrend_values.update(true);
-            self.af_values.update(self.acceleration);
+            self.data.update(PSARResult {
+                sar: f64::NAN,
+                is_uptrend: true,
+                af: self.acceleration,
+            });
             return None;
         }
 
@@ -98,9 +88,11 @@ impl<const S: usize> Indicator for PSAR<S> {
             self.af = self.acceleration;
             self.initialized = true;
 
-            self.sar_values.update(self.sar);
-            self.uptrend_values.update(self.is_uptrend);
-            self.af_values.update(self.af);
+            self.data.update(PSARResult {
+                sar: self.sar,
+                is_uptrend: self.is_uptrend,
+                af: self.af,
+            });
             return None;
         }
 
@@ -143,14 +135,16 @@ impl<const S: usize> Indicator for PSAR<S> {
             }
         }
 
-        self.sar_values.update(self.sar);
-        self.uptrend_values.update(self.is_uptrend);
-        self.af_values.update(self.af);
-        Some(self.get_values(0))
+        self.data.update(PSARResult {
+            sar: self.sar,
+            is_uptrend: self.is_uptrend,
+            af: self.af,
+        });
+        self.data.get(0)
     }
 
     fn get(&self, key: i32) -> Option<PSARResult> {
-        Some(self.get_values(key))
+        self.data.get(key)
     }
 
     fn reset(&mut self) {
@@ -162,8 +156,6 @@ impl<const S: usize> Indicator for PSAR<S> {
         self.init_high = f64::NEG_INFINITY;
         self.init_low = f64::INFINITY;
         self.bar_count = 0;
-        self.sar_values.reset();
-        self.uptrend_values.reset();
-        self.af_values.reset();
+        self.data.reset();
     }
 }

@@ -5,26 +5,6 @@
 //!
 //! # Type Parameters
 //! - `S`: Number of recent OBV values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, OBV};
-//!
-//! let mut obv = OBV::<1>::new();
-//! let bar = Ohlcv {
-//!     timestamp: 0,
-//!     open: 100.0,
-//!     high: 105.0,
-//!     low: 99.0,
-//!     close: 103.0,
-//!     volume: 10000.0,
-//! };
-//! obv.update(bar);
-//! if let Some(value) = obv.get(0) {
-//!     println!("OBV: {:.0}", value);
-//! }
-//! ```
 
 use super::{base::BaseIndicator, Indicator};
 use crate::types::Ohlcv;

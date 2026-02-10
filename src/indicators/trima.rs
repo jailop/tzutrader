@@ -8,20 +8,6 @@
 //! # Type Parameters
 //! - `P`: Period for both moving averages (compile-time constant)
 //! - `S`: Number of recent TRIMA values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, trima::TRIMA};
-//!
-//! let mut trima = TRIMA::<10, 1>::new();
-//! for i in 1..=20 {
-//!     trima.update(i as f64);
-//! }
-//! if let Some(value) = trima.get(0) {
-//!     println!("TRIMA: {:.2}", value);
-//! }
-//! ```
 
 use super::{base::BaseIndicator, ma::MA, Indicator};
 

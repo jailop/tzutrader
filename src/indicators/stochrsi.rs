@@ -9,30 +9,9 @@
 //! - `K`: %K smoothing period (compile-time constant)
 //! - `D`: %D smoothing period (compile-time constant)
 //! - `S`: Number of recent values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, Ohlcv, stochrsi::STOCHRSI};
-//!
-//! let mut stochrsi = STOCHRSI::<14, 14, 3, 3, 1>::new();
-//! let bar = Ohlcv {
-//!     timestamp: 0,
-//!     open: 100.0,
-//!     high: 105.0,
-//!     low: 99.0,
-//!     close: 103.0,
-//!     volume: 1000.0,
-//! };
-//! stochrsi.update(bar);
-//! if let Some(k) = stochrsi.get(0) {
-//!     let values = stochrsi.get_values(0);
-//!     println!("StochRSI K: {:.2}", k);
-//!     println!("StochRSI D: {:.2}", values.d.unwrap_or(f64::NAN));
-//! }
-//! ```
 
-use super::{base::BaseIndicator, ma::MA, rsi::RSI, Indicator, Ohlcv};
+use super::{base::BaseIndicator, ma::MA, rsi::RSI, Indicator};
+use crate::types::Ohlcv;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct StochRSIValues {

@@ -40,7 +40,7 @@ impl<const P: usize, const S: usize> Indicator for CMO<P, S> {
     type Input = f64;
     type Output = f64;
 
-    fn update(&mut self, close: f64) {
+    fn update(&mut self, close: f64) -> Option<f64> {
         let mut gain = 0.0;
         let mut loss = 0.0;
 
@@ -64,6 +64,7 @@ impl<const P: usize, const S: usize> Indicator for CMO<P, S> {
 
         if self.length < P {
             self.data.update(f64::NAN);
+            return None;
         } else {
             let sum_gains: f64 = self.gains.iter().sum();
             let sum_losses: f64 = self.losses.iter().sum();
@@ -77,6 +78,7 @@ impl<const P: usize, const S: usize> Indicator for CMO<P, S> {
 
             self.data.update(cmo_value);
         }
+        self.data.get(0)
     }
 
     fn get(&self, key: i32) -> Option<f64> {

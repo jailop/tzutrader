@@ -6,20 +6,6 @@
 //! # Type Parameters
 //! - `P`: Period for standard deviation calculation (compile-time constant)
 //! - `S`: Number of recent stdev values to store (compile-time constant, default 1)
-//!
-//! # Example
-//!
-//! ```rust
-//! use tzutrader::indicators::{Indicator, stdev::STDEV};
-//!
-//! let mut stdev = STDEV::<5, 1>::new();
-//! for i in 1..=10 {
-//!     stdev.update(i as f64);
-//! }
-//! if let Some(value) = stdev.get(0) {
-//!     println!("Standard Deviation: {:.2}", value);
-//! }
-//! ```
 
 use super::{base::BaseIndicator, mv::MV, Indicator};
 
