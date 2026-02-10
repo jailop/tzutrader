@@ -7,7 +7,6 @@
 /// # Type Parameters
 /// - `N`: Size of the circular buffer (compile-time constant)
 /// - `T`: Type of values stored in the buffer
-
 use super::Indicator;
 
 /// Generic indicator with circular buffer storage
@@ -54,9 +53,9 @@ impl<T: Copy + Default, const N: usize> Indicator for BaseIndicator<T, N> {
 
     fn get(&self, key: i32) -> Option<T> {
         match self.pos {
-            -1 => return None, // No data yet
-            _ if key > 0 => return None, // Future values not available
-            _ if key < -(N as i32) => return None, // Out of bounds
+            -1 => return None,                                   // No data yet
+            _ if key > 0 => return None,                         // Future values not available
+            _ if key < -(N as i32) => return None,               // Out of bounds
             _ if !self.filled && key < -self.pos => return None, // Not enough data yet
             _ => {
                 let pos = ((self.pos + N as i32 + key) % N as i32) as usize;
@@ -79,15 +78,15 @@ mod tests {
     #[test]
     fn test_base_indicator() {
         let mut ind = BaseIndicator::<i32, 3>::new();
-        
+
         ind.update(1);
         ind.update(2);
         ind.update(3);
-        
+
         assert_eq!(ind.get(0), Some(3));
         assert_eq!(ind.get(-1), Some(2));
         assert_eq!(ind.get(-2), Some(1));
-        
+
         // Test circular behavior
         ind.update(4);
         assert_eq!(ind.get(0), Some(4));
@@ -98,11 +97,11 @@ mod tests {
     #[test]
     fn test_reset() {
         let mut ind = BaseIndicator::<i32, 3>::new();
-        
+
         ind.update(1);
         ind.update(2);
         ind.reset();
-        
+
         ind.update(10);
         let val = ind.get(0);
         assert!(val.is_some());
@@ -119,7 +118,7 @@ mod tests {
     fn test_future_access() {
         let mut ind = BaseIndicator::<i32, 3>::new();
         ind.update(1);
-        ind.get(1).is_none();
+        _ = ind.get(1).is_none();
     }
 
     #[test]

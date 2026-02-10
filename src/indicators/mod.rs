@@ -1,53 +1,71 @@
-/// Technical indicators for trading strategies
-///
-/// This module defines a common interface for indicators using traits,
-/// allowing them to be used interchangeably in algorithms that process
-/// trading stragegies. Indicators are designed to work with zero dynamic memory
-/// allocation (using const generics), implement circular buffers for
-/// processing historical data, and are designed for streaming data scenarios
-/// where new data points are continuously added.
+//! Technical indicators for trading strategies
+//!
+//! This module defines a common interface for indicators using traits,
+//! allowing them to be used interchangeably in algorithms that process
+//! trading stragegies. Indicators are designed to work with zero dynamic memory
+//! allocation (using const generics), implement circular buffers for
+//! processing historical data, and are designed for streaming data scenarios
+//! where new data points are continuously added.
 
-// pub mod ad;
-// pub mod adx;
-// pub mod aroon;
-// pub mod atr;
+pub mod ad;
+pub mod adx;
+pub mod aroon;
+pub mod atr;
 pub mod base;
-// pub mod bollinger;
-// pub mod cci;
-// pub mod cmo;
-// pub mod dema;
-// pub mod ema;
-// pub mod kama;
+pub mod bollinger;
+pub mod cci;
+pub mod cmo;
+pub mod dema;
+pub mod ema;
+pub mod kama;
 pub mod ma;
-// pub mod macd;
-// pub mod mfi;
-// pub mod mom;
-// pub mod mv;
-// pub mod natr;
-// pub mod obv;
-// pub mod ppo;
-// pub mod psar;
-// pub mod roc;
-// pub mod roi;
-// pub mod rsi;
-// pub mod stdev;
-// pub mod stoch;
-// pub mod stochrsi;
-// pub mod tema;
-// pub mod trange;
-// pub mod trima;
+pub mod macd;
+pub mod mfi;
+pub mod mom;
+pub mod mv;
+pub mod natr;
+pub mod obv;
+pub mod ppo;
+pub mod psar;
+pub mod roc;
+pub mod roi;
+pub mod rsi;
+pub mod stdev;
+pub mod stoch;
+pub mod stochrsi;
+pub mod tema;
+pub mod trange;
+pub mod trima;
 
-/// OHLCV bar data structure
-#[derive(Debug, Clone, Copy, Default)]
-#[allow(dead_code)]
-pub struct Ohlcv {
-    pub timestamp: i64,
-    pub open: f64,
-    pub high: f64,
-    pub low: f64,
-    pub close: f64,
-    pub volume: f64,
-}
+pub use ad::AD;
+pub use adx::ADX;
+pub use aroon::AROON;
+pub use atr::ATR;
+pub use base::BaseIndicator;
+pub use bollinger::BollingerBands;
+pub use cci::CCI;
+pub use cmo::CMO;
+pub use dema::DEMA;
+pub use ema::EMA;
+pub use kama::KAMA;
+pub use ma::MA;
+pub use macd::MACD;
+pub use mfi::MFI;
+pub use mom::MOM;
+pub use mv::MV;
+pub use natr::NATR;
+pub use obv::OBV;
+pub use ppo::PPO;
+pub use psar::PSAR;
+pub use roc::ROC;
+pub use roi::ROI;
+pub use rsi::RSI;
+pub use stdev::STDEV;
+pub use stoch::STOCH;
+pub use stochrsi::STOCHRSI;
+pub use tema::TEMA;
+pub use trange::TRANGE;
+pub use trima::TRIMA;
 
 /// Trait that all indicators must implement.
 ///
