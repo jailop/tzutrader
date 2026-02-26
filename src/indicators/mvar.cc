@@ -1,6 +1,8 @@
 #include <indicators.h>
 #include <cmath>
 
+namespace Ind {
+
 double MVar::update(double value) {
     if (len < prev.size()) len++;
     prev[pos] = value;
@@ -17,3 +19,5 @@ double MVar::update(double value) {
         return data.update(accum / (prev.size() - dof));
     }
 }
+
+} // namespace Ind

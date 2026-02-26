@@ -5,6 +5,8 @@
 #include <cstddef>
 #include "defs.h"
 
+namespace Ind {
+
 template <typename T>
 class BaseIndicator {
     std::vector<T> data;
@@ -104,5 +106,7 @@ public:
     MACDResult get() const noexcept { return data.get(); }
     size_t size() const noexcept { return data.size(); }
 };
+
+} // namespace Ind
 
 #endif // INDICATORS_H

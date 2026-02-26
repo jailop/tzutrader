@@ -1,6 +1,8 @@
 #include "indicators.h"
 #include <cmath>
 
+namespace Ind {
+
 double RSI::update(OHLCV value) {
     double diff = value.close - value.open;
     gains.update(diff >= 0.0 ? diff : 0.0);
@@ -12,3 +14,5 @@ double RSI::update(OHLCV value) {
         return data.update(rsi);
     }
 }
+
+} // namespace Ind

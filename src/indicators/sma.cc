@@ -1,6 +1,8 @@
 #include "indicators.h"
 #include <cmath>
 
+namespace Ind {
+
 double SMA::update(double value) {
     if (len < prev.size())
         len++;
@@ -13,3 +15,5 @@ double SMA::update(double value) {
             ? std::nan("") 
             : sum / prev.size());
 } 
+
+} // namespace Ind

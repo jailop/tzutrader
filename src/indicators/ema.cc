@@ -1,7 +1,7 @@
 #include "indicators.h"
 #include <cmath>
 
-double EMA::update(double value) {
+double Ind::EMA::update(double value) {
     len++;
     if (len <= period) {
         prev += value;

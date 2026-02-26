@@ -1,12 +1,12 @@
 #include "strategies.h"
 
+namespace Strat {
+
 template <typename T>
 Signal Crossover<T>::update(const SingleValue& data) {
     double short_value = short_sma.update(data.value);
     double long_value = long_sma.update(data.value);
-    signal.timestamp = data.timestamp;
-    signal.items[0].price = data.value;
-    signal.items[0].side = Side::NONE;
+    Signal signal = {data.timestamp, {{Side::NONE, data.value}}};
     if ((short_value > long_value * (1.0 + threshold))
             && (last_side != Side::BUY))
         last_side = signal.items[0].side = Side::BUY;
@@ -16,3 +16,4 @@ Signal Crossover<T>::update(const SingleValue& data) {
     return signal;
 }
 
+} // namespace Strat

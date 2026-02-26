@@ -1,7 +1,7 @@
 #include "indicators.h"
 #include <cmath>
 
-MACDResult MACD::update(double value) {
+Ind::MACDResult Ind::MACD::update(double value) {
     len++;
     short_ema.update(value);
     long_ema.update(value);
