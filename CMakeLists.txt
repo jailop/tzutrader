@@ -10,8 +10,7 @@ file(GLOB LIB_SOURCES
 add_library(tzutrader STATIC ${LIB_SOURCES})
 include_directories(${INCLUDE_DIR})
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(tzutrader PRIVATE -g -O0 -Wall -Wextra
-        -pedantic)
+    target_compile_options(tzutrader PRIVATE -g -O0 -Wall -Wextra)
 else()
     target_compile_options(tzutrader PRIVATE -O3 -march=native -DNDEBUG -Wall -Wextra)
 endif()

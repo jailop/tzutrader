@@ -10,10 +10,12 @@ class Crossover {
     T short_sma;
     T long_sma;
     double threshold;
-    double smoothing;  // Smoothing factor for EMA
+    double smoothing;  // Smoothing factor, only for EMA
     Side last_side;
     static constexpr DataType required_data[1] = {DataType::SINGLE_VALUE};
     static constexpr size_t num_items = 1;
+    SignalItem item[1] = {{Side::NONE, 0.0, 0.0}};
+    Signal signal = {0, item};
 public:
     Crossover(size_t short_period, size_t long_period,
             double threshold = 0.0, double smoothing = 2.0)
@@ -29,7 +31,7 @@ public:
     }
     const DataType* requiredData() const { return required_data; }
     size_t numItems() const { return num_items; }
-    Signal update(const SingleValue& data);
+    const Signal update(const SingleValue& data);
 };
 
 typedef Crossover<Ind::SMA> SmaCrossover;
@@ -42,13 +44,35 @@ class RSI {
     Side last_side;
     static constexpr DataType required_data[1] = {DataType::OHLCV};
     static constexpr size_t num_items = 1;
+    SignalItem item[1] = {{Side::NONE, 0.0, 0.0}};
+    Signal signal = {0, item};
+    OHLCVField field;
 public:
-    RSI(size_t period, double oversold = 30.0, double overbought = 70.0)
+    RSI(size_t period, double oversold = 30.0, double overbought = 70.0,
+            OHLCVField field = OHLCVField::CLOSE)
         : oversold(oversold), overbought(overbought), rsi(period),
-          last_side(Side::NONE) {}
+          last_side(Side::NONE), field(field) {}
     const DataType* requiredData() const { return required_data; }
     size_t numItems() const { return num_items; }
-    Signal update(const OHLCV& data);
+    const Signal update(const OHLCV& data);
+};
+
+class MACD {
+    Ind::MACD macd;
+    double threshold;
+    Side last_side;
+    static constexpr DataType required_data[1] = {DataType::SINGLE_VALUE};
+    static constexpr size_t num_items = 1;
+    SignalItem item[1] = {{Side::NONE, 0.0, 0.0}};
+    Signal signal = {0, item};
+public:
+    MACD(size_t short_period, size_t long_period, size_t signal_period,
+            double smoothing = 0.0, double threshold = 0.0)
+        : macd(short_period, long_period, signal_period, smoothing),
+          threshold(threshold), last_side(Side::NONE) {}
+    const DataType* requiredData() const { return required_data; }
+    size_t numItems() const { return num_items; }
+    const Signal update(const SingleValue& data);
 };
 
 } // namespace Strat

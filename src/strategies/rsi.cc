@@ -1,13 +1,12 @@
 #include "strategies.h"
+#include <cmath>
 
 namespace Strat {
 
-Signal RSI::update(const OHLCV& data) {
-    double rsi_value = rsi.update(data.close);
-    Signal signal = {
-        data.timestamp,
-        {{Side::NONE, data.close, 0.0}}
-    };
+const Signal RSI::update(const OHLCV& data) {
+    double rsi_value = rsi.update(data);
+    signal.timestamp = data.timestamp;
+    signal.items[0].price = data.getFieldValue(field);
     if (std::isnan(rsi_value))
         return signal;
     if ((rsi_value < oversold) && (last_side != Side::BUY))
@@ -16,3 +15,5 @@ Signal RSI::update(const OHLCV& data) {
         last_side = signal.items[0].side = Side::SELL;
     return signal;
 }
+
+} // namespace Strat
