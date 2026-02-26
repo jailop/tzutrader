@@ -2,7 +2,6 @@
 #define INDICATORS_H
 
 #include <cstddef>
-#include <vector>
 #include "defs.h"
 
 namespace Ind {
