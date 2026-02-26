@@ -3,7 +3,8 @@
 
 namespace Strat {
 
-const Signal RSI::update(const OHLCV& data) {
+template <size_t N>
+const Signal RSI<N>::update(const OHLCV& data) {
     double rsi_value = rsi.update(data);
     signal.timestamp = data.timestamp;
     signal.items[0].price = data.getFieldValue(field);

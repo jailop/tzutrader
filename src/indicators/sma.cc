@@ -3,7 +3,8 @@
 
 namespace Ind {
 
-double SMA::update(double value) {
+template <size_t N>
+double SMA<N>::update(double value) {
     if (len < prev.size())
         len++;
     else
@@ -11,9 +12,10 @@ double SMA::update(double value) {
     sum += value;
     prev[pos] = value;
     pos = (pos + 1) % prev.size();
-    return data.update(len < prev.size() 
+    data = len < prev.size() 
             ? std::nan("") 
-            : sum / prev.size());
+            : sum / prev.size();
+    return data;
 } 
 
 } // namespace Ind

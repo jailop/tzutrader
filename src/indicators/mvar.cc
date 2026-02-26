@@ -3,20 +3,22 @@
 
 namespace Ind {
 
-double MVar::update(double value) {
-    if (len < prev.size()) len++;
+template <size_t N>
+double MVar<N>::update(double value) {
+    if (len < size) len++;
     prev[pos] = value;
-    pos = (pos + 1) % prev.size();
+    pos = (pos + 1) % size;
     sma.update(value);
-    if (len < prev.size()) {
-        return data.update(std::nan(""));
+    if (len < size) {
+        return std::nan("");
     } else {
         double accum = 0.0;
-        for (size_t i = 0; i < prev.size(); i++) {
+        for (size_t i = 0; i < size; i++) {
             double diff = prev[i] - sma.get();
             accum += diff * diff;
         }
-        return data.update(accum / (prev.size() - dof));
+        data = accum / (size - dof);
+        return data;
     }
 }
 

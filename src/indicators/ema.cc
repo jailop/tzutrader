@@ -11,5 +11,6 @@ double Ind::EMA::update(double value) {
     } else {
         prev = (value * alpha) + (prev * (1.0 - alpha));
     }
-    return data.update(len < period ? std::nan("") : prev);
+    data = len < period ? std::nan("") : prev;
+    return data;
 }

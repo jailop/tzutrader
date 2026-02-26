@@ -2,8 +2,8 @@
 
 namespace Strat {
 
-template <typename T>
-const Signal Crossover<T>::update(const SingleValue& data) {
+template <size_t ShortPeriod, size_t LongPeriod>
+const Signal SMACrossover<ShortPeriod, LongPeriod>::update(const SingleValue& data) {
     double short_value = short_sma.update(data.value);
     double long_value = long_sma.update(data.value);
     signal.timestamp = data.timestamp;
