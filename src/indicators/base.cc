@@ -10,7 +10,7 @@ T BaseIndicator<T>::update(T value) {
 
 template <typename T>
 T BaseIndicator<T>::operator[](int index) const {
-    if (index > 0 || -index > data.size())
+    if (index > 0 || static_cast<size_t>(-index) > data.size())
         throw std::out_of_range("Index out of range");
     return data[(pos + data.size() + index) % data.size()];
 }

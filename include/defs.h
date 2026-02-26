@@ -9,5 +9,4 @@ struct OHLCV {
     double volume;
 };
 
-
 #endif // DEFS_H
