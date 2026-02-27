@@ -24,7 +24,7 @@ TEST(MACD, GeneratesBuySellSignals) {
     using Strat::MACD;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::MACD strat(12, 26, 9, 0.0);
+    Strat::MACD strat(12, 26, 9);
     bool buy = false, sell = false;
     for (const auto& row : csv) {
         auto sig = strat.update(row);

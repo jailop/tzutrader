@@ -4,6 +4,7 @@
 #include <istream>
 #include <iostream>
 #include <array>
+#include <cstring>
 #include "defs.h"
 
 constexpr size_t MAX_BUFFER_SIZE = 2048;
@@ -34,7 +35,10 @@ struct CsvParseTraits<Tick> {
         int64_t ts = std::strtol(line_buffer, &end, 10);
         double price = std::strtod(end, &end);
         double volume = std::strtod(end, &end);
-        int side = (*end != '\0') ? std::strtol(end, nullptr, 10) : 2;
+        int side = 2;
+        if (*end != '\0' && *end != '\n') {
+            side = static_cast<int>(std::strtol(end, &end, 10));
+        }
         if (*end != '\0' && *end != '\n') return false;
         out = Tick{ts, price, volume, static_cast<Side>(side)};
         return true;
@@ -46,7 +50,7 @@ struct CsvParseTraits<SingleValue> {
     static bool parse(const char* line_buffer, SingleValue& out) {
         char* end;
         int64_t ts = std::strtol(line_buffer, &end, 10);
-        double value = std::strtod(end, nullptr);
+        double value = std::strtod(end, &end);
         if (*end != '\0' && *end != '\n') return false;
         out = SingleValue{ts, value};
         return true;
@@ -65,13 +69,17 @@ public:
     }
     ParseIterator& operator++() {
         std::array<char, MAX_BUFFER_SIZE> line_buffer;
-        while (!end_ && input_->getline(line_buffer.data(), line_buffer.size())) {
-            while (!line_buffer.empty() 
-                    && (line_buffer.back() == '\r'
-                        || line_buffer.back() == '\n')) {
-                line_buffer[line_buffer.size() - 1] = '\0';
+        while (!end_ && input_->getline(line_buffer.data(), static_cast<std::streamsize>(line_buffer.size()))) {
+            char* buf = line_buffer.data();
+            size_t len = std::strlen(buf);
+            while (len > 0 && (buf[len - 1] == '\r' || buf[len - 1] == '\n')) {
+                buf[--len] = '\0';
             }
-            if (Parser::parse(line_buffer.data(), current_)) {
+            // Replace commas with spaces so numeric parsers using strtod/strtol work as expected
+            for (size_t i = 0; i < len; ++i) {
+                if (buf[i] == ',') buf[i] = ' ';
+            }
+            if (Parser::parse(buf, current_)) {
                 return *this;
             }
         }

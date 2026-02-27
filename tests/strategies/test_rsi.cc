@@ -24,13 +24,13 @@ TEST(RSI, ReturnsHoldDuringWarmup) {
     assert(file.is_open());
     Csv<OHLCV> csv(file);
     RSI<> strat;
-    size_t count = 0;
-    for (auto& row : csv) {
+    int i = 0;
+    for (const auto& row : csv) {
+        if (i++ >= 13) break; // only check warmup period
         auto sig = strat.update(row);
         EXPECT_EQ(sig.side, Side::NONE);
-        count++;
     }
-    EXPECT_GT(count, 0);
+    EXPECT_GT(i, 0);
 }
 
 TEST(RSI, GeneratesBuySellSignals) {

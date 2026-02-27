@@ -66,7 +66,7 @@ class MACD {
     static constexpr DataType required_data[1] = {DataType::SINGLE_VALUE};
 public:
     MACD(size_t short_period, size_t long_period, size_t signal_period,
-            double smoothing = 0.0, double threshold = 0.0)
+            double smoothing = 2.0, double threshold = 0.0)
         : macd(short_period, long_period, signal_period, smoothing),
           threshold(threshold), last_side(Side::NONE) {}
     const DataType* requiredData() const { return required_data; }
