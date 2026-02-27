@@ -2,15 +2,17 @@
 #include "indicators.h"
 #include <cmath>
 
+using namespace tzu;
+
 TEST(EMA, ReturnsNaNDuringWarmup) {
-    Ind::EMA ema(3);
+    EMA ema(3);
     EXPECT_TRUE(std::isnan(ema.update(10.0)));
     EXPECT_TRUE(std::isnan(ema.update(20.0)));
     EXPECT_FALSE(std::isnan(ema.update(30.0)));
 }
 
 TEST(EMA, FirstValueIsSMAOfWarmupPeriod) {
-    Ind::EMA ema(3);
+    EMA ema(3);
     ema.update(10.0);
     ema.update(20.0);
     double result = ema.update(30.0);
@@ -18,7 +20,7 @@ TEST(EMA, FirstValueIsSMAOfWarmupPeriod) {
 }
 
 TEST(EMA, AppliesExponentialSmoothingAfterWarmup) {
-    Ind::EMA ema(3, 2.0);
+    EMA ema(3, 2.0);
     ema.update(10.0);
     ema.update(20.0);
     double prevEMA = ema.update(30.0); // triggers SMA assignment

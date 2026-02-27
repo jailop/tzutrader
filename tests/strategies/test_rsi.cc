@@ -6,24 +6,25 @@
 #include "strategies.h"
 #include "defs.h"
 
-static std::vector<OHLCV> load_ohlcv(const std::string& path) {
+using namespace tzu;
+
+static std::vector<Ohlcv> load_ohlcv(const std::string& path) {
     std::ifstream file(path);
     assert(file.is_open());
-    std::vector<OHLCV> data;
-    Csv<OHLCV> csv(file);
+    std::vector<Ohlcv> data;
+    Csv<Ohlcv> csv(file);
     for (const auto& row : csv) data.push_back(row);
     assert(!data.empty());
     return data;
 }
 
-constexpr char OHLCV_PATH[] = "../data/btcusd.csv";
+constexpr char Ohlcv_PATH[] = "../data/btcusd.csv";
 
 TEST(RSI, ReturnsHoldDuringWarmup) {
-    using Strat::RSI;
-    std::ifstream file(OHLCV_PATH);
+    std::ifstream file(Ohlcv_PATH);
     assert(file.is_open());
-    Csv<OHLCV> csv(file);
-    RSI<> strat;
+    Csv<Ohlcv> csv(file);
+    RSIStrat<> strat;
     int i = 0;
     for (const auto& row : csv) {
         if (i++ >= 13) break; // only check warmup period
@@ -34,9 +35,8 @@ TEST(RSI, ReturnsHoldDuringWarmup) {
 }
 
 TEST(RSI, GeneratesBuySellSignals) {
-    using Strat::RSI;
     auto data = load_ohlcv("../data/btcusd.csv");
-    RSI<> strat;
+    RSIStrat<> strat;
     bool buy = false, sell = false;
     for (size_t i = 0; i < data.size(); ++i) {
         auto sig = strat.update(data[i]);
@@ -48,9 +48,8 @@ TEST(RSI, GeneratesBuySellSignals) {
 }
 
 TEST(RSI, AvoidsRepeatedSignals) {
-    using Strat::RSI;
     auto data = load_ohlcv("../data/btcusd.csv");
-    RSI<> strat;
+    RSIStrat<> strat;
     Side last = Side::NONE;
     for (size_t i = 0; i < data.size(); ++i) {
         auto sig = strat.update(data[i]);

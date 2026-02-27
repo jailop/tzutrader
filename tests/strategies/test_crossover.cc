@@ -5,6 +5,8 @@
 #include "strategies.h"
 #include "defs.h"
 
+using namespace tzu;
+
 // Helper: Load OHLCV from CSV
 static std::vector<SingleValue> load_singlevalue(const std::string& path) {
     std::ifstream file(path);
@@ -15,10 +17,9 @@ static std::vector<SingleValue> load_singlevalue(const std::string& path) {
 }
 
 TEST(SMACrossover, ReturnsHoldDuringWarmup) {
-    using Strat::SMACrossover;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::SMACrossover<7, 21> strat(0.0); // default threshold
+    SMACrossover<7, 21> strat(0.0); // default threshold
     int i = 0;
     for (const auto& row : csv) {
         if (i++ >= 20) break;
@@ -28,10 +29,9 @@ TEST(SMACrossover, ReturnsHoldDuringWarmup) {
 }
 
 TEST(SMACrossover, GeneratesBuySellSignals) {
-    using Strat::SMACrossover;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::SMACrossover<7, 21> strat(0.0);
+    SMACrossover<7, 21> strat(0.0);
     Side last = Side::NONE;
     bool buy = false, sell = false;
     for (const auto& row : csv) {
@@ -45,10 +45,9 @@ TEST(SMACrossover, GeneratesBuySellSignals) {
 }
 
 TEST(SMACrossover, AvoidsRepeatedSignals) {
-    using Strat::SMACrossover;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::SMACrossover<7, 21> strat(0.0);
+    SMACrossover<7, 21> strat(0.0);
     Side last = Side::NONE;
     for (const auto& row : csv) {
         auto sig = strat.update(row);

@@ -3,6 +3,9 @@
 
 #include <cstdint>
 #include <cmath>
+#include <ostream>
+
+namespace tzu {
 
 enum class Side {
     BUY,
@@ -19,7 +22,7 @@ struct Signal {
         : timestamp(ts), side(s), price(p), volume(v) {}
 };
 
-enum class OHLCVField {
+enum class OhlcvField {
     OPEN,
     HIGH,
     LOW,
@@ -27,23 +30,23 @@ enum class OHLCVField {
     VOLUME
 };
 
-struct OHLCV {
+struct Ohlcv {
     int64_t timestamp;
     double open;
     double high;
     double low;
     double close;
     double volume;
-    OHLCV(int64_t ts = 0, double o = 0.0, double h = 0.0, double l = 0.0,
+    Ohlcv(int64_t ts = 0, double o = 0.0, double h = 0.0, double l = 0.0,
           double c = 0.0, double v = 0.0)
         : timestamp(ts), open(o), high(h), low(l), close(c), volume(v) {}
-    double getFieldValue(OHLCVField field) const {
+    double getFieldValue(OhlcvField field) const {
         switch (field) {
-            case OHLCVField::OPEN: return open;
-            case OHLCVField::HIGH: return high;
-            case OHLCVField::LOW: return low;
-            case OHLCVField::CLOSE: return close;
-            case OHLCVField::VOLUME: return volume;
+            case OhlcvField::OPEN: return open;
+            case OhlcvField::HIGH: return high;
+            case OhlcvField::LOW: return low;
+            case OhlcvField::CLOSE: return close;
+            case OhlcvField::VOLUME: return volume;
         }
         return std::nan(""); // Should never reach here
     }
@@ -55,7 +58,8 @@ struct Tick {
     double volume = 0.0;
     Side side = Side::NONE;
     Tick() = default;
-    Tick(int64_t ts, double p, double v, Side s) : timestamp(ts), price(p), volume(v), side(s) {}
+    Tick(int64_t ts, double p, double v, Side s)
+        : timestamp(ts), price(p), volume(v), side(s) {}
 };
 
 struct SingleValue {
@@ -70,5 +74,20 @@ enum class DataType {
     TICK,
     SINGLE_VALUE,
 };
+
+} // namespace tzu
+
+inline std::ostream& operator<<(std::ostream& os, const tzu::Signal& signal) {
+    os << "Signal(timestamp=" << signal.timestamp
+       << ", side=" 
+       << (signal.side == tzu::Side::BUY 
+               ? "BUY" 
+               : signal.side == tzu::Side::SELL 
+                ? "SELL" : "NONE")
+       << ", price=" << signal.price
+       << ", volume=" << signal.volume << ")";
+    return os;
+}
+
 
 #endif // DEFS_H

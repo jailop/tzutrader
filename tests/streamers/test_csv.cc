@@ -4,10 +4,12 @@
 #include "streamers.h"
 #include "defs.h"
 
-TEST(CsvStreamer, ReadsOHLCV) {
+using namespace tzu;
+
+TEST(CsvStreamer, ReadsOhlcv) {
     std::ifstream file("../data/btcusd.csv");
     ASSERT_TRUE(file.is_open());
-    Csv<OHLCV> csv(file);
+    Csv<Ohlcv> csv(file);
     int count = 0;
     for (const auto& row : csv) {
         EXPECT_GT(row.timestamp, 0);

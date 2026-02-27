@@ -4,7 +4,7 @@
 #include <cstddef>
 #include "defs.h"
 
-namespace Ind {
+namespace tzu {
 
 template <size_t N=9>
 class SMA {
@@ -96,7 +96,7 @@ class RSI {
     SMA<N> losses;
 public:
     double get() const noexcept { return data; }
-    double update(OHLCV value) {
+    double update(Ohlcv value) {
         double diff = value.close - value.open;
         gains.update(diff >= 0.0 ? diff : 0.0);
         losses.update(diff < 0 ? -diff : 0.0);
@@ -141,6 +141,6 @@ public:
     }
 };
 
-} // namespace Ind
+} // namespace tzu
 
 #endif // INDICATORS_H

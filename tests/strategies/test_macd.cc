@@ -7,11 +7,12 @@
 
 // Use Csv<SingleValue> directly for iteration
 
+using namespace tzu;
+
 TEST(MACD, ReturnsHoldDuringWarmup) {
-    using Strat::MACD;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::MACD strat(12, 26, 9, 0.0); // typical MACD params
+    MACDStrat strat(12, 26, 9, 0.0); // typical MACD params
     int i = 0;
     for (const auto& row : csv) {
         if (i++ >= 30) break;
@@ -21,10 +22,9 @@ TEST(MACD, ReturnsHoldDuringWarmup) {
 }
 
 TEST(MACD, GeneratesBuySellSignals) {
-    using Strat::MACD;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::MACD strat(12, 26, 9);
+    MACDStrat strat(12, 26, 9);
     bool buy = false, sell = false;
     for (const auto& row : csv) {
         auto sig = strat.update(row);
@@ -36,10 +36,9 @@ TEST(MACD, GeneratesBuySellSignals) {
 }
 
 TEST(MACD, AvoidsRepeatedSignals) {
-    using Strat::MACD;
     std::ifstream file("../data/btcusd_singlevalue.csv");
     Csv<SingleValue> csv(file);
-    Strat::MACD strat(12, 26, 9, 0.0);
+    MACDStrat strat(12, 26, 9, 0.0);
     Side last = Side::NONE;
     for (const auto& row : csv) {
         auto sig = strat.update(row);

@@ -2,8 +2,10 @@
 #include "indicators.h"
 #include <cmath>
 
+using namespace tzu;
+
 TEST(MACD, ReturnsNaNDuringWarmup) {
-    Ind::MACD macd(3, 5, 2);
+    MACD macd(3, 5, 2);
     auto result = macd.update(100.0);
     EXPECT_TRUE(std::isnan(result.macd));
     EXPECT_TRUE(std::isnan(result.signal));
@@ -11,7 +13,7 @@ TEST(MACD, ReturnsNaNDuringWarmup) {
 }
 
 TEST(MACD, CalculatesMACDLineAfterWarmup) {
-    Ind::MACD macd(2, 4, 2);
+    MACD macd(2, 4, 2);
     macd.update(100.0);
     macd.update(102.0);
     macd.update(104.0);
@@ -21,7 +23,7 @@ TEST(MACD, CalculatesMACDLineAfterWarmup) {
 }
 
 TEST(MACD, HistogramEqualsMACDMinusSignal) {
-    Ind::MACD macd(3, 6, 2);
+    MACD macd(3, 6, 2);
     for (int i = 0; i < 10; ++i) macd.update(100.0 + i * 2.0);
     auto result = macd.update(120.0);
     if (!std::isnan(result.macd) && !std::isnan(result.signal))
