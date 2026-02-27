@@ -54,11 +54,15 @@ struct Tick {
     double price = 0.0;
     double volume = 0.0;
     Side side = Side::NONE;
+    Tick() = default;
+    Tick(int64_t ts, double p, double v, Side s) : timestamp(ts), price(p), volume(v), side(s) {}
 };
 
 struct SingleValue {
     int64_t timestamp;
     double value = 0.0;
+    SingleValue() = default;
+    SingleValue(int64_t ts, double v) : timestamp(ts), value(v) {}
 };
 
 enum class DataType {
