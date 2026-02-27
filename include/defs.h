@@ -10,21 +10,14 @@ enum class Side {
     NONE
 };
 
-struct SignalItem {
+struct Signal {
+    int64_t timestamp;
     Side side;
     double price;
     double volume;
-    SignalItem(Side s = Side::NONE, double p = 0.0, double v = 0.0)
-        : side(s), price(p), volume(v) {}
+    Signal(int64_t ts = 0, Side s = Side::NONE, double p = 0.0, double v = 1.0)
+        : timestamp(ts), side(s), price(p), volume(v) {}
 };
-
-struct Signal {
-    int64_t timestamp;
-    SignalItem* items;
-    Signal(int64_t ts = 0, SignalItem* i = nullptr)
-        : timestamp(ts), items(i) {}
-};
-
 
 enum class OHLCVField {
     OPEN,
