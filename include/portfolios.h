@@ -8,6 +8,15 @@
 
 namespace tzu {
 
+/**
+ * A simple portfolio that invests all available cash into the asset
+ * when a BUY signal is received, and sells all holdings when a SELL
+ * signal is received. It tracks the initial cash, current cash,
+ * quantity held, last price, and last timestamp for performance
+ * evaluation. Of course, this is a very naive and unrealistic
+ * portfolio, but it serves as a basic example for testing and
+ * demonstration purposes.
+ */
 class SimplePortfolio {
     double initial_cash;
     double cash;

@@ -29,7 +29,8 @@ Build the backtesting example:
 
     g++ -I./include examples/backtesting.cc -o examples/backtesting
 
-The example reads CSV OHLCV data from stdin. Use a pipe, for example:
+The example reads CSV OHLCV data from stdin. This file includes data
+from 2015 to 2026.
 
     cat tests/data/btcusd.csv | ./examples/backtesting
 

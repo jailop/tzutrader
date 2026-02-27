@@ -4,8 +4,29 @@
 #include <cstddef>
 #include "defs.h"
 
+/**
+ * This header defines several technical indicators commonly used in
+ * financial analysis. Each indicator is implemented as a class that
+ * maintains the necessary state to calculate the indicator values
+ * efficiently as new data points are added. All the indicators follow a
+ * similar interface, with a `get()` method to retrieve the current
+ * value and an `update()` method to add a new data point and
+ * recalculate the indicator.
+ */
+
 namespace tzu {
 
+/**
+ * Simple Moving Average (SMA)
+ *
+ * Maintains a fixed-size window of the most recent values and
+ * calculates the average. Returns NaN until enough values have been
+ * added to fill the window. Once the window is full, it updates the
+ * average efficiently by keeping a running sum and subtracting the
+ * value that falls out of the window.
+ *
+ * Template parameter N specifies the size of the window.
+ */
 template <size_t N=9>
 class SMA {
     double data = std::nan("");
@@ -30,6 +51,23 @@ public:
     }
 };
 
+/**
+ * Exponential Moving Average (EMA)
+ *
+ * Uses a smoothing factor to give more weight to recent values. Returns
+ * NaN until enough values have been added to fill the initial period.
+ * Once the initial period is filled, it calculates the EMA using the
+ * formula:
+ *
+ * EMA_today = (Value_today * alpha) + (EMA_yesterday * (1 - alpha))
+ *
+ * where alpha is the smoothing factor calculated as:
+ *
+ * alpha = smoothing / (period + 1)
+ *
+ * The default smoothing factor is 2.0, which is commonly used in
+ * financial applications.
+ */
 class EMA {
     double data = std::nan("");
     double alpha;
@@ -57,6 +95,22 @@ public:
     }
 };
 
+/**
+ * Moving Variance (MVar)
+ * 
+ * Calculates the variance of the most recent N values. Returns NaN
+ * until enough values have been added to fill the window. Once the
+ * window is full, it calculates the variance using the formula:
+ *
+ * Variance = (1 / (N - dof)) * sum((x_i - mean)^2)
+ *
+ * where dof is the degrees of freedom, which is typically 1 for sample
+ * variance and 0 for population variance. The N template parameter
+ * specifies the size of the window.
+ *
+ * The standard deviation can be obtained by taking the square root of
+ * the variance.
+ */
 template <size_t N=9>
 class MVar {
     double data = std::nan("");
@@ -88,7 +142,21 @@ public:
     }
 };
 
-
+/**
+ * Relative Strength Index (RSI)
+ *
+ * Calculates the RSI based on the average gains and losses over a
+ * specified period. Returns NaN until enough values have been added to
+ * fill the window. Once the window is full, it calculates the RSI using
+ * the formula:
+ *
+ * RSI = 100 - (100 / (1 + (Average Gain / Average Loss)))
+ *
+ * where Average Gain and Average Loss are calculated using the SMA of
+ * the gains and losses over the specified period. The N template
+ * parameter specifies the size of the window for calculating the
+ * average gains and losses.
+ */
 template <size_t N=14>
 class RSI {
     double data = std::nan("");
@@ -107,12 +175,32 @@ public:
     }
 };
 
+/**
+ * Moving Average Convergence Divergence Result (MACDResult)
+ *
+ * Holds the current values of the MACD line, signal line, and
+ * histogram. The MACD line is the difference between the short-term EMA
+ * and the long-term EMA. The signal line is the EMA of the MACD line,
+ * and the histogram is the difference between the MACD line and the
+ * signal line.
+ */
 struct MACDResult {
     double macd;
     double signal;
     double histogram;
 };
 
+/**
+ * Moving Average Convergence Divergence (MACD)
+ *
+ * Combines multiple EMAs to calculate the MACD line, signal line, and
+ * histogram. Returns NaN for all values until enough data has been
+ * added to fill the initial periods for both EMAs. Once the initial
+ * periods are filled, it calculates the MACD line as the difference
+ * between the short-term EMA and the long-term EMA. The signal line is
+ * calculated as the EMA of the MACD line, and the histogram is the
+ * difference between the MACD line and the signal line.
+ */
 class MACD {
     MACDResult data;
     EMA short_ema;
