@@ -47,8 +47,8 @@ public:
     const DataType* requiredData() const { return required_data; }
     size_t numItems() const { return 1; }
     Signal update(const Ohlcv& data) {
-    double rsi_value = rsi.update(data);
-    Signal signal = {data.timestamp, Side::NONE, data.getFieldValue(field)};
+        double rsi_value = rsi.update(data);
+        Signal signal = {data.timestamp, Side::NONE, data.getFieldValue(field)};
         if (std::isnan(rsi_value))
             return signal;
         if ((rsi_value < oversold) && (last_side != Side::BUY))

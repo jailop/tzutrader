@@ -24,9 +24,7 @@ int main(int argc, char** argv) {
 
 Build the backtesting example:
 
-    g++ -std=c++11 -I./include examples/backtesting.cc -o examples/backtesting
-
-Running the example:
+    g++ -I./include examples/backtesting.cc -o examples/backtesting
 
 The example reads CSV OHLCV data from stdin. Use a pipe, for example:
 
@@ -50,20 +48,31 @@ How does it work?
 - The `SimpleRunner` class orchestrates the backtesting process, feeding
   data from the `Csv` stream into the `RSIStrat` strategy and updating
   the portfolio accordingly.
-  
-This modular design allows you to easily swap out components (e.g., use
-a different strategy or data source) while keeping the core backtesting
-logic intact.
 
+Here is the `update` method of the `RSIStrat`:
+
+```c++
+    Signal update(const Ohlcv& data) {
+        double rsi_value = rsi.update(data);
+        Signal signal = {data.timestamp, Side::NONE, data.getFieldValue(field)};
+        if (std::isnan(rsi_value))
+            return signal;
+        if ((rsi_value < oversold) && (last_side != Side::BUY))
+            last_side = signal.side = Side::BUY;
+        else if ((rsi_value > overbought) && (last_side != Side::SELL))
+            last_side = signal.side = Side::SELL;
+        return signal;
+    }
+```
+  
 Design Philosophy
 -----------------
 
 - Designed to be as simple and lightweight as possible, with minimal
   dependencies and a focus on core functionality.
 - Optimized for performance, using efficient data structures and
-  algorithms to ensure fast backtesting even with large datasets.
-  Comptime optimizations and careful memory management are employed to
-  minimize overhead and maximize speed.
+  algorithms. Comptime optimizations and careful memory management are
+  employed to minimize overhead and maximize speed.
 - The framework processes data in a streaming fashion, allowing it to
   handle large datasets without needing to load everything into memory
   at once. This also allows for more realistic backtesting, as it
@@ -72,8 +81,8 @@ Design Philosophy
   different strategies, data sources, and portfolio management
   approaches without needing to modify the core backtesting logic.
 - Designed to be easily extensible, allowing users to implement their
-  own strategies, indicators, data sources, and runners without needing
-  to modify the core framework.
+  own strategies, indicators, data sources, and automated runners
+  without needing to modify the core framework.
 
 Initial Features
 ----------------
