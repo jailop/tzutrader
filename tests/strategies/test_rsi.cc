@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <cassert>
 #include <fstream>
 #include <vector>
 #include "streamers.h"
@@ -7,20 +8,29 @@
 
 static std::vector<OHLCV> load_ohlcv(const std::string& path) {
     std::ifstream file(path);
+    assert(file.is_open());
     std::vector<OHLCV> data;
     Csv<OHLCV> csv(file);
     for (const auto& row : csv) data.push_back(row);
+    assert(!data.empty());
     return data;
 }
 
+constexpr char OHLCV_PATH[] = "../data/btcusd.csv";
+
 TEST(RSI, ReturnsHoldDuringWarmup) {
     using Strat::RSI;
-    auto data = load_ohlcv("../data/btcusd.csv");
+    std::ifstream file(OHLCV_PATH);
+    assert(file.is_open());
+    Csv<OHLCV> csv(file);
     RSI<> strat;
-    for (size_t i = 0; i < 20; ++i) {
-        auto sig = strat.update(data[i]);
+    size_t count = 0;
+    for (auto& row : csv) {
+        auto sig = strat.update(row);
         EXPECT_EQ(sig.side, Side::NONE);
+        count++;
     }
+    EXPECT_GT(count, 0);
 }
 
 TEST(RSI, GeneratesBuySellSignals) {
