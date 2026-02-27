@@ -1,7 +1,10 @@
 tzutrader
 =========
 
-A C++ trading backtesting framework.
+A minimalst, composable, and performant C++ trading backtesting framework.
+
+At this moment, the implementation covers only very basic features, in
+order to validate the design and architecture.
 
 Example
 -------
@@ -49,7 +52,7 @@ How does it work?
   data from the `Csv` stream into the `RSIStrat` strategy and updating
   the portfolio accordingly.
 
-Here is the `update` method of the `RSIStrat`:
+Here is the `RSIStrat`'s `update` method:
 
 ```c++
     Signal update(const Ohlcv& data) {
@@ -64,25 +67,6 @@ Here is the `update` method of the `RSIStrat`:
         return signal;
     }
 ```
-  
-Design Philosophy
------------------
-
-- Designed to be as simple and lightweight as possible, with minimal
-  dependencies and a focus on core functionality.
-- Optimized for performance, using efficient data structures and
-  algorithms. Comptime optimizations and careful memory management are
-  employed to minimize overhead and maximize speed.
-- The framework processes data in a streaming fashion, allowing it to
-  handle large datasets without needing to load everything into memory
-  at once. This also allows for more realistic backtesting, as it
-  simulates the real-time flow of data and trading decisions.
-- Built to be easily composable, allowing users to mix and match
-  different strategies, data sources, and portfolio management
-  approaches without needing to modify the core backtesting logic.
-- Designed to be easily extensible, allowing users to implement their
-  own strategies, indicators, data sources, and automated runners
-  without needing to modify the core framework.
 
 Initial Features
 ----------------
@@ -92,14 +76,48 @@ Initial Features
 - Input data formats: csv
 - Built-in Strategies: Crossover, RSI, and MACD.
 
+ 
+Design Philosophy
+-----------------
+
+- Designed to be as simple and lightweight as possible, with zero
+  external dependencies and a focus on core functionality.
+- Built to be easily composable, with a modular design
+  that allows users to easily swap out different components, as well as 
+  to implement their own custom indicators, strategies, and portfolio
+  management approaches.
+- Optimized for performance, using efficient data structures and
+  algorithms. Comptime optimizations and careful memory management are
+  employed to minimize overhead and maximize speed.
+- The framework processes data in a streaming fashion, allowing it to
+  handle large datasets without needing to load everything into memory
+  at once.
+
 Roadmap
 -------
 
-- Improve documentation and add more examples to demonstrate the
+- Improve the design and architecture to make it more composable and
+  performant, while keeping it minimalistic.
+- Produce documentation and add more examples to demonstrate the
   framework's and how users can adapt or extend it for their own needs.
-- Add support for additional input data formats, e.g. JSON.
-- Implement additional trading strategies and indicators.
+- Add support for the most common input data formats, e.g. JSON.
+- Implement a minimal but useful set of built-in trading strategies and
+  indicators.
 - Add support for more realistic portfolio management, including
   transaction costs and slippage.
-- Implement risk management features, such as stop-loss orders and
-  position sizing.
+- Implement essential risk management features, such as stop-loss orders
+  and position sizing.
+
+Not considered:
+
+- Include an extensive set of built-in strategies and indicators. The
+  framework is designed to be minimalistic, and users are encouraged to
+  implement their own custom strategies and indicators using the
+  provided interfaces.
+- Support for data retrieval APIs. The framework is designed to be
+  agnostic to data sources, and users can easily implement their own
+  data retrieval logic using the provided interfaces.
+- Bindings to other languages. The framework takes advantage of C++'s
+  features and idioms to achieve its goals. Some of these, like comptime
+  optimizations and careful memory management, are not easily wrapped by
+  other languages.

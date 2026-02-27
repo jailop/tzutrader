@@ -7,7 +7,7 @@
 
 namespace tzu {
 
-template <typename Strat, typename Portfolio, typename Streamer>
+template <typename Portfolio, typename Strat, typename Streamer>
 class SimpleRunner {
     Strat strat;
     Portfolio portfolio;
