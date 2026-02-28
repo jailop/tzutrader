@@ -29,7 +29,8 @@ inline double compute_total_value(double cash, double holdings) {
 // Compute basic performance metrics from an equity curve (timestamp, equity)
 inline void compute_performance_metrics(const std::vector<std::pair<int64_t, double>>& eq,
                                         double &out_total_return, double &out_annual_return,
-                                        double &out_max_drawdown, double &out_sharpe) {
+                                        double &out_max_drawdown, double &out_sharpe,
+                                        double &out_years) {
     out_total_return = out_annual_return = out_max_drawdown = out_sharpe = 0.0;
     if (eq.size() < 1) return;
     double start = eq.front().second;
@@ -41,7 +42,14 @@ inline void compute_performance_metrics(const std::vector<std::pair<int64_t, dou
         double seconds = static_cast<double>(eq.back().first - eq.front().first);
         years = seconds / (365.0 * 24.0 * 3600.0);
     }
-    out_annual_return = (years > 0.0) ? (std::pow(end / start, 1.0 / years) - 1.0) : out_total_return;
+    // Only compute annualized return for periods longer than 30 days.
+    if (years >= (30.0/365.0)) {
+        out_annual_return = std::pow(end / start, 1.0 / years) - 1.0;
+    } else {
+        out_annual_return = std::nan("");
+    }
+
+    out_years = years;
 
     // max drawdown
     double peak = eq.front().second;
@@ -96,6 +104,7 @@ class BasicPortfolio {
     double stop_loss_pct;
     double take_profit_pct;
     double last_price = std::nan("");
+    double init_price = std::nan(""); // price at start for buy&hold comparison
     double total_costs = 0.0;
     uint16_t num_trades = 0;
     uint16_t num_stop_loss = 0;
@@ -136,7 +145,12 @@ public:
         if (signal.price <= 0.0) return;
         last_price = signal.price;
         last_timestamp = signal.timestamp;
-        if (init_timestamp == 0) init_timestamp = signal.timestamp;
+        if (init_timestamp == 0) {
+            init_timestamp = signal.timestamp;
+            init_price = signal.price;
+            // record initial equity (before processing this row)
+            equity_curve.emplace_back(init_timestamp, cash);
+        }
         // Check stop-loss and take-profit for existing positions
         for (size_t i = 0; i < positions.size();) {
             bool liquidate = false;
@@ -195,7 +209,6 @@ inline std::ostream& operator<<(std::ostream& os,
     compute_holdings_qty(portfolio.positions, portfolio.last_price, holdings, qty);
     double total_value = compute_total_value(portfolio.cash, holdings);
     double profit_loss = total_value - portfolio.init_cash;
-    double return_pct = (total_value - portfolio.init_cash) / portfolio.init_cash;
     os << std::fixed << std::setprecision(4)
         << "init_time:" << portfolio.init_timestamp
         << " curr_time:" << portfolio.last_timestamp
@@ -208,15 +221,34 @@ inline std::ostream& operator<<(std::ostream& os,
         << " holdings:" << holdings
         << " valuation:" << total_value
         << " total_costs:" << portfolio.total_costs
-        << " profit:" << profit_loss
-        << " return:" << return_pct * 100.0 << "%";
+        << " profit:" << profit_loss;
 
     // compute and print performance metrics
-    double total_ret=0.0, ann_ret=0.0, max_dd=0.0, sharpe=0.0;
-    compute_performance_metrics(portfolio.equity_curve, total_ret, ann_ret, max_dd, sharpe);
-    os << " total_return:" << total_ret * 100.0 << "%"
-       << " annual_return:" << ann_ret * 100.0 << "%"
-       << " max_drawdown:" << max_dd * 100.0 << "%"
+    double total_ret=0.0, ann_ret=0.0, max_dd=0.0, sharpe=0.0, years=0.0;
+    compute_performance_metrics(portfolio.equity_curve, total_ret, ann_ret, max_dd, sharpe, years);
+    os << " total_return:" << total_ret * 100.0 << "%";
+    // only show annualized return when it was computed
+    if (!std::isnan(ann_ret)) {
+        os << " annual_return:" << ann_ret * 100.0 << "%";
+    } else {
+        os << " annual_return:N/A";
+    }
+
+    // buy-and-hold comparison
+    if (!std::isnan(portfolio.init_price) && portfolio.init_price > 0.0) {
+        double bh_qty = std::floor(portfolio.init_cash / portfolio.init_price);
+        double bh_cash_left = portfolio.init_cash - (bh_qty * portfolio.init_price);
+        double bh_value = bh_qty * portfolio.last_price + bh_cash_left;
+        double bh_total_ret = (bh_value / portfolio.init_cash) - 1.0;
+        os << " buy_and_hold_return:" << bh_total_ret * 100.0 << "%";
+        if (!std::isnan(ann_ret)) {
+            // annualize buy&hold using same years
+            double bh_ann = std::pow(bh_value / portfolio.init_cash, 1.0 / years) - 1.0;
+            os << " bh_annual:" << bh_ann * 100.0 << "%";
+        }
+    }
+
+    os << " max_drawdown:" << max_dd * 100.0 << "%"
        << " sharpe:" << sharpe;
     return os;
 }

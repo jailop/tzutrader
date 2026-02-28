@@ -1,7 +1,7 @@
 tzutrader
 =========
 
-A minimalst, composable, and performant C++ trading backtesting framework.
+A composable, and performant C++ trading backtesting framework.
 
 At this moment, the implementation covers only very basic features, in
 order to validate the design and architecture.
@@ -48,10 +48,13 @@ from 2015 to 2026.
 
 The output:
 
-    init_time:1419984 curr_time:1767052 init_cash:100000.0000 \
-    curr_cash:197422.2894 num_trades:116 num_stop_loss:18 num_take_profit:7 \
-    quantity:0.0000 holdings:0.0000 valuation:197422.2894 \
-    total_costs:14952.7706 profit:97422.2894 return:97.4223%
+```
+init_time:1419984 curr_time:1767052 init_cash:100000.0000 curr_cash:197422.2894 
+num_trades:116 num_stop_loss:18 num_take_profit:7 quantity:0.0000 
+holdings:0.0000 valuation:197422.2894 total_costs:14952.7706 profit:97422.2894
+total_return:97.4223% annual_return:N/A buy_and_hold_return:27727.8764%
+max_drawdown:52.7974% sharpe:11.6825
+```
 
 How does it work?
 -----------------
@@ -89,7 +92,13 @@ Initial Features
 - Input data formats: csv
 - Built-in Strategies: Crossover, RSI, and MACD.
 - Basic portfolio management
+- Initial testing suite for the core components
 
+Critically, it still pending proper documentation, with a conceptual
+overview of the framework's design and architecture, as well as detailed
+usage instructions and examples about the built-in components, and a
+guide for users to implement their own custom indicators, strategies,
+and portfolio management approaches.
  
 Design Philosophy
 -----------------
@@ -105,25 +114,36 @@ Design Philosophy
   employed to minimize overhead and maximize speed.
 - The framework processes data in a streaming fashion, allowing it to
   handle large datasets without needing to load everything into memory
-  at once.
+  at once. This also allows for more realistic backtesting, as it
+  simulates the way that real trading systems operate, processing data
+  as it arrives, and protecting against look-ahead bias.
+- Correctness is a top priority, not only in terms of proper
+  implementation, but also in terms of ensuring
+  that the framework's behavior is consistent and predictable.
 
 Roadmap
 -------
 
-- Improve the design and architecture to make it more composable and
-  performant, while keeping it minimalistic.
 - Produce documentation and add more examples to demonstrate the
   framework's and how users can adapt or extend it for their own needs.
+- Improve the design and architecture to make it more composable and
+  performant.
 - Add support for the most common input data formats, e.g. JSON.
 - Implement a minimal but useful set of built-in trading strategies and
   indicators.
 - Introduce strategies that can take multiple input data streams
-- Add support for more realistic portfolio and risk management features.
+- Add support for a more realistic portfolio, risk and order management
+  features, e.g. multiple assets, position sizing, slippage, etc.
+- Enforce a rigorous testing strategy, with a comprehensive set of unit
+  tests to validate the correctness of the core components, and to
+  ensure that future changes do not introduce regressions. In addition,
+  performance benchmarks will be added to track the framework's
+  performance.
 
 Not considered:
 
 - Include an extensive set of built-in strategies and indicators. The
-  framework is designed to be minimalistic, and users are encouraged to
+  framework is designed to be small, and users are encouraged to
   implement their own custom strategies and indicators using the
   provided interfaces.
 - Support for data retrieval APIs. The framework is designed to be
