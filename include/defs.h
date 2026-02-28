@@ -141,9 +141,11 @@ inline std::ostream& operator<<(std::ostream& os, const tzu::Signal& signal) {
  * opened. This struct can be used to track open positions in a trading strategy.
  */
 struct Position {
-    int64_t timestamp = 0;
-    double quantity = 0.0;
-    double price = 0.0;
+    int64_t timestamp;
+    double quantity;
+    double price;
+    Position(int64_t ts = 0, double q = 0.0, double p = 0.0)
+        : timestamp(ts), quantity(q), price(p) {}
 };
 
 #endif // DEFS_H

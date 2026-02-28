@@ -1,6 +1,8 @@
-#include "include/streamers.h"
 #include <fstream>
 #include <iostream>
+#include "tzu.h"
+
+using namespace tzu;
 
 int main() {
     std::ifstream inputFile("./tests/data/btcusd.csv");
@@ -8,7 +10,7 @@ int main() {
         std::cerr << "Failed to open the file." << std::endl;
         return 1;
     }
-    Csv<OHLCV> csv(inputFile);
+    Csv<Ohlcv> csv(inputFile);
     for (const auto& record : csv) {
         std::cout << "Timestamp: " << record.timestamp
                     << ", Open: " << record.open
