@@ -1,10 +1,11 @@
 tzutrader
 =========
 
-A composable, and performant C++ trading backtesting framework.
+An experiment on building a composable and performant C++ trading
+backtesting framework.
 
 At this moment, the implementation covers only very basic features, in
-order to validate the design and architecture.
+order to explore and validate design and architecture choices.
 
 Example
 -------
@@ -52,13 +53,8 @@ The output:
 init_time:1419984 curr_time:1767052 init_cash:100000.0000 curr_cash:197422.2894 
 num_trades:116 num_stop_loss:18 num_take_profit:7 quantity:0.0000 
 holdings:0.0000 valuation:197422.2894 total_costs:14952.7706 profit:97422.2894
-total_return:97.4223% annual_return:N/A buy_and_hold_return:27727.8764%
-max_drawdown:52.7974% sharpe:11.6825
+total_return:97.4223%
 ```
-
-As it is expected, the plain RSI strategy performs poorly on this
-dataset, but it serves as a simple example to demonstrate the
-framework's basic functionality.
 
 How does it work?
 -----------------
@@ -101,7 +97,7 @@ Initial Features
 Critically, it still pending proper documentation, with a conceptual
 overview of the framework's design and architecture, as well as detailed
 usage instructions and examples about the built-in components, and a
-guide for users to implement their own custom indicators, strategies,
+guide on implementing custom indicators, strategies,
 and portfolio management approaches.
  
 Design Philosophy
@@ -110,7 +106,7 @@ Design Philosophy
 - Designed to be as simple and lightweight as possible, with zero
   external dependencies and a focus on core functionality.
 - Built to be easily composable, with a modular design
-  that allows users to easily swap out different components, as well as 
+  that allows to easily swap out different components, as well as 
   to implement their own custom indicators, strategies, and portfolio
   management approaches.
 - Optimized for performance, using efficient data structures and
@@ -129,7 +125,7 @@ Roadmap
 -------
 
 - Produce documentation and add more examples to demonstrate the
-  framework's and how users can adapt or extend it for their own needs.
+  framework's
 - Improve the design and architecture to make it more composable and
   performant.
 - Add support for the most common input data formats, e.g. JSON.
@@ -153,7 +149,3 @@ Not considered:
 - Support for data retrieval APIs. The framework is designed to be
   agnostic to data sources, and users can easily implement their own
   data retrieval logic using the provided interfaces.
-- Bindings to other languages. The framework takes advantage of C++'s
-  features and idioms to achieve its goals. Some of these, like comptime
-  optimizations and careful memory management, are not easily wrapped by
-  other languages.
