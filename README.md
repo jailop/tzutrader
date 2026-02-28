@@ -2,7 +2,7 @@ tzutrader
 =========
 
 An experiment on building a composable and performant C++ trading
-backtesting framework.
+backtesting library.
 
 At this moment, the implementation covers only very basic features, in
 order to explore and validate design and architecture choices.
@@ -97,7 +97,7 @@ Initial Features
 - Initial testing suite for the core components
 
 Critically, it still pending proper documentation, with a conceptual
-overview of the framework's design and architecture, as well as detailed
+overview of the library's design and architecture, as well as detailed
 usage instructions and examples about the built-in components, and a
 guide on implementing custom indicators, strategies,
 and portfolio management approaches.
@@ -114,16 +114,16 @@ Design Philosophy
 - Optimized for performance, using efficient data structures and
   algorithms. Comptime optimizations and careful memory management are
   employed to minimize overhead and maximize speed.
-- The framework processes data in a streaming fashion, allowing it to
+- The library processes data in a streaming fashion, allowing it to
   handle large datasets without needing to load everything into memory
   at once. This also allows for more realistic backtesting, as it
   simulates the way that real trading systems operate, processing data
   as it arrives, and protecting against look-ahead bias.
 - Correctness is a top priority, not only in terms of proper
   implementation, but also in terms of ensuring
-  that the framework's behavior is consistent and predictable.
+  that the librari's behavior is consistent and predictable.
 
-This project aims to develop a framework that is broad enough to support
+This project aims to develop a library that is broad enough to support
 a wide variety of problems and use cases. However, each design and
 architectural decision involves one or more trade-offs, which in total
 constrain the scope. Explicitly accepting this reality is part of the
@@ -133,7 +133,7 @@ Roadmap
 -------
 
 - Produce documentation and add more examples to demonstrate the
-  framework's
+  library's features and usage.
 - Improve the design and architecture to make it more composable and
   performant.
 - Add support for the most common input data formats, e.g. JSON.
@@ -145,15 +145,15 @@ Roadmap
 - Enforce a rigorous testing strategy, with a comprehensive set of unit
   tests to validate the correctness of the core components, and to
   ensure that future changes do not introduce regressions. In addition,
-  performance benchmarks will be added to track the framework's
+  performance benchmarks will be added to track the library's
   performance.
 
 Not considered:
 
 - Include an extensive set of built-in strategies and indicators. The
-  framework is designed to be small, and users are encouraged to
+  library is designed to be small, and users are encouraged to
   implement their own custom strategies and indicators using the
   provided interfaces.
-- Support for data retrieval APIs. The framework is designed to be
-  agnostic to data sources, and users can easily implement their own
+- Support for data retrieval APIs. The library is designed to be
+  agnostic to data sources, and users can implement their own
   data retrieval logic using the provided interfaces.
