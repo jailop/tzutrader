@@ -123,6 +123,12 @@ Design Philosophy
   implementation, but also in terms of ensuring
   that the framework's behavior is consistent and predictable.
 
+This project aims to develop a framework that is broad enough to support
+a wide variety of problems and use cases. However, each design and
+architectural decision involves one or more trade-offs, which in total
+constrain the scope. Explicitly accepting this reality is part of the
+approach of this project.
+
 Roadmap
 -------
 
