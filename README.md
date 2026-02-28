@@ -56,6 +56,10 @@ total_return:97.4223% annual_return:N/A buy_and_hold_return:27727.8764%
 max_drawdown:52.7974% sharpe:11.6825
 ```
 
+As it is expected, the plain RSI strategy performs poorly on this
+dataset, but it serves as a simple example to demonstrate the
+framework's basic functionality.
+
 How does it work?
 -----------------
 
