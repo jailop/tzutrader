@@ -10,16 +10,28 @@ Example
 -------
 
 ```c++
+
 #include <iostream>
 #include <string>
+#include <utility>
 #include "tzu.h"
 
 using namespace tzu;
 
 int main(int argc, char** argv) {
-    bool verbose = false;
-    if (argc > 1 && std::string(argv[1]) == "-v") verbose = true;
-    SimpleRunner<RSIStrat<>, SimplePortfolio, Csv<Ohlcv>> runner(std::cin);
+    bool verbose = (argc > 1 && std::string(argv[1]) == "-v");
+    RSIStrat<> strat;
+    BasicPortfolio portfolio(
+        100000.0,   // initial capital
+        0.001,      // trading fee 0.1%,
+        0.10,       // stop-loss 10%
+        0.20        // take-profit 20%
+     );
+    Csv<Ohlcv> csv(std::cin);
+    BasicRunner<BasicPortfolio, RSIStrat<>, Csv<Ohlcv>> runner(
+            std::move(portfolio),
+            std::move(strat),
+            std::move(csv));
     runner.run(verbose);
     return 0;
 }
@@ -27,18 +39,19 @@ int main(int argc, char** argv) {
 
 Build the backtesting example:
 
-    g++ -I./include examples/backtesting.cc -o examples/backtesting
+    g++ -I./include examples/example01.cc -o example01
 
-The example reads CSV OHLCV data from stdin. This file includes data
+The example reads CSV OHLCV data from stdin. That file includes data
 from 2015 to 2026.
 
-    cat tests/data/btcusd.csv | ./examples/backtesting
+    cat tests/data/btcusd.csv | ./example01
 
 The output:
 
-    timestamp: 1760572 init_cash: 100000 curr_cash: 370.72 \
-    quantity: 2 invested: 212936 valuation: 213306 \
-    profit: 113306 return: 1.13306
+    init_time:1419984 curr_time:1767052 init_cash:100000.0000 \
+    curr_cash:197422.2894 num_trades:116 num_stop_loss:18 num_take_profit:7 \
+    quantity:0.0000 holdings:0.0000 valuation:197422.2894 \
+    total_costs:14952.7706 profit:97422.2894 return:97.4223%
 
 How does it work?
 -----------------
@@ -47,11 +60,10 @@ How does it work?
   `Ohlcv` objects.
 - The `RSIStrat` class implements a simple RSI-based trading strategy.
   It generates buy/sell signals based on RSI thresholds.
-- The `SimplePortfolio` class manages the portfolio state, executing
-  trades based on the strategy's signals and tracking cash and holdings.
-- The `SimpleRunner` class orchestrates the backtesting process, feeding
-  data from the `Csv` stream into the `RSIStrat` strategy and updating
-  the portfolio accordingly.
+- The `BasicPortfolio` class manages the trading portfolio, tracking
+  cash, holdings, and performance metrics.
+- The `BasicRunner` class orchestrates the backtesting process, feeding data
+  to the strategy and updating the portfolio accordingly.
 
 Here is the `RSIStrat`'s `update` method:
 
@@ -76,6 +88,7 @@ Initial Features
 - Data types: OHLCV, trades, and simple time series.
 - Input data formats: csv
 - Built-in Strategies: Crossover, RSI, and MACD.
+- Basic portfolio management
 
  
 Design Philosophy
@@ -104,10 +117,8 @@ Roadmap
 - Add support for the most common input data formats, e.g. JSON.
 - Implement a minimal but useful set of built-in trading strategies and
   indicators.
-- Add support for more realistic portfolio management, including
-  transaction costs and slippage.
-- Implement essential risk management features, such as stop-loss orders
-  and position sizing.
+- Introduce strategies that can take multiple input data streams
+- Add support for more realistic portfolio and risk management features.
 
 Not considered:
 

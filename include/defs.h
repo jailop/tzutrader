@@ -135,4 +135,15 @@ inline std::ostream& operator<<(std::ostream& os, const tzu::Signal& signal) {
     return os;
 }
 
+/**
+ * Represents a trading position, which includes the timestamp of the position,
+ * the quantity of the asset held, and the price at which the position was
+ * opened. This struct can be used to track open positions in a trading strategy.
+ */
+struct Position {
+    int64_t timestamp = 0;
+    double quantity = 0.0;
+    double price = 0.0;
+};
+
 #endif // DEFS_H
