@@ -7,6 +7,8 @@ backtesting framework.
 At this moment, the implementation covers only very basic features, in
 order to explore and validate design and architecture choices.
 
+Criticism is very welcome!
+
 Example
 -------
 
