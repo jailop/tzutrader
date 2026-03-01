@@ -13,12 +13,12 @@ int main(int argc, char** argv) {
         0.001,      // trading fee 0.1%,
         0.10,       // stop-loss 10%
         0.20        // take-profit 20%
-     );
+    );
     Csv<Ohlcv> csv(std::cin);
     BasicRunner<BasicPortfolio, RSIStrat, Csv<Ohlcv>> runner(
-            std::move(portfolio),
-            std::move(strat),
-            std::move(csv));
+            portfolio,
+            strat,
+            csv);
     runner.run(verbose);
     return 0;
 }
