@@ -7,14 +7,12 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 file(GLOB LIB_SOURCES "${SRC_DIR}/*.cc")
 add_library(tzutrader STATIC ${LIB_SOURCES})
 include_directories(${INCLUDE_DIR})
-
-# Build examples if sources exist
+install(DIRECTORY ${INCLUDE_DIR}/ DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 if(EXISTS "${CMAKE_SOURCE_DIR}/examples/example01.cc")
     add_executable(example01 "${CMAKE_SOURCE_DIR}/examples/example01.cc")
     target_include_directories(example01 PRIVATE ${INCLUDE_DIR})
     set_target_properties(example01 PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(tzutrader PRIVATE -g -O0 -Wall -Wextra)
     if(TARGET example01)
