@@ -1,8 +1,7 @@
 tzutrader
 =========
 
-An experiment on building a composable and performant C++ trading
-backtesting library.
+An experiment on building a composable C++ trading backtesting library.
 
 At this moment, the implementation covers only very basic features, in
 order to explore and validate design and architecture choices.
@@ -13,7 +12,6 @@ Example
 -------
 
 ```c++
-
 #include <iostream>
 #include <string>
 #include <utility>
@@ -23,7 +21,7 @@ using namespace tzu;
 
 int main(int argc, char** argv) {
     bool verbose = (argc > 1 && std::string(argv[1]) == "-v");
-    RSIStrat<> strat;
+    RSIStrat strat;
     BasicPortfolio portfolio(
         100000.0,   // initial capital
         0.001,      // trading fee 0.1%,
@@ -31,7 +29,7 @@ int main(int argc, char** argv) {
         0.20        // take-profit 20%
      );
     Csv<Ohlcv> csv(std::cin);
-    BasicRunner<BasicPortfolio, RSIStrat<>, Csv<Ohlcv>> runner(
+    BasicRunner<BasicPortfolio, RSIStrat, Csv<Ohlcv>> runner(
             std::move(portfolio),
             std::move(strat),
             std::move(csv));
@@ -75,7 +73,7 @@ Here is the `RSIStrat`'s `update` method:
 ```c++
     Signal update(const Ohlcv& data) {
         double rsi_value = rsi.update(data);
-        Signal signal = {data.timestamp, Side::NONE, data.getFieldValue(field)};
+        Signal signal = {data.timestamp, Side::NONE, data.close};
         if (std::isnan(rsi_value))
             return signal;
         if ((rsi_value < oversold) && (last_side != Side::BUY))
@@ -90,7 +88,7 @@ Initial Features
 ----------------
 
 - Indicators: SMA, EMA, Moving Variance, RSI, and MACD.
-- Data types: OHLCV, trades, and simple time series.
+- Data types: OHLCV, trades, and single value time series.
 - Input data formats: csv
 - Built-in Strategies: Crossover, RSI, and MACD.
 - Basic portfolio management
@@ -105,48 +103,28 @@ and portfolio management approaches.
 Design Philosophy
 -----------------
 
-- Designed to be as simple and lightweight as possible, with zero
-  external dependencies and a focus on core functionality.
-- Built to be easily composable, with a modular design
-  that allows to easily swap out different components, as well as 
-  to implement their own custom indicators, strategies, and portfolio
-  management approaches.
-- Optimized for performance, using efficient data structures and
-  algorithms. Comptime optimizations and careful memory management are
-  employed to minimize overhead and maximize speed.
+- Designed to be as simple and lightweight as possible, with a focus on
+  core functionality.
+- Built to be easily composable, with a modular design that allows to
+  easily swap out different components, as well as to implement their
+  own custom indicators, strategies, and portfolio management
+  approaches.
 - The library processes data in a streaming fashion, allowing it to
   handle large datasets without needing to load everything into memory
   at once. This also allows for more realistic backtesting, as it
   simulates the way that real trading systems operate, processing data
   as it arrives, and protecting against look-ahead bias.
-- Correctness is a top priority, not only in terms of proper
-  implementation, but also in terms of ensuring
-  that the librari's behavior is consistent and predictable.
-
-This project aims to develop a library that is broad enough to support
-a wide variety of problems and use cases. However, each design and
-architectural decision involves one or more trade-offs, which in total
-constrain the scope. Explicitly accepting this reality is part of the
-approach of this project.
 
 Roadmap
 -------
 
 - Produce documentation and add more examples to demonstrate the
   library's features and usage.
-- Improve the design and architecture to make it more composable and
-  performant.
 - Add support for the most common input data formats, e.g. JSON.
 - Implement a minimal but useful set of built-in trading strategies and
   indicators.
-- Introduce strategies that can take multiple input data streams
 - Add support for a more realistic portfolio, risk and order management
   features, e.g. multiple assets, position sizing, slippage, etc.
-- Enforce a rigorous testing strategy, with a comprehensive set of unit
-  tests to validate the correctness of the core components, and to
-  ensure that future changes do not introduce regressions. In addition,
-  performance benchmarks will be added to track the library's
-  performance.
 
 Not considered:
 

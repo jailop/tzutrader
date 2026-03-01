@@ -7,7 +7,7 @@ using namespace tzu;
 
 int main(int argc, char** argv) {
     bool verbose = (argc > 1 && std::string(argv[1]) == "-v");
-    RSIStrat<> strat;
+    RSIStrat strat;
     BasicPortfolio portfolio(
         100000.0,   // initial capital
         0.001,      // trading fee 0.1%,
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
         0.20        // take-profit 20%
      );
     Csv<Ohlcv> csv(std::cin);
-    BasicRunner<BasicPortfolio, RSIStrat<>, Csv<Ohlcv>> runner(
+    BasicRunner<BasicPortfolio, RSIStrat, Csv<Ohlcv>> runner(
             std::move(portfolio),
             std::move(strat),
             std::move(csv));

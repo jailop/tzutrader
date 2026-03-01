@@ -2,6 +2,7 @@
 #define INDICATORS_H
 
 #include <cstddef>
+#include <vector>
 #include "defs.h"
 
 /**
@@ -16,6 +17,17 @@
 
 namespace tzu {
 
+template <class T, typename In, typename Out>
+class Indicator {
+public:
+    Out get() const noexcept {
+        return static_cast<T*>(this)->get();
+    }
+    Out update(In value) {
+        return static_cast<T*>(this)->update(value);
+    }
+};
+
 /**
  * Simple Moving Average (SMA)
  *
@@ -25,28 +37,28 @@ namespace tzu {
  * average efficiently by keeping a running sum and subtracting the
  * value that falls out of the window.
  *
- * Template parameter N specifies the size of the window.
+ * Template parameter `window_size` specifies the size of the window.
  */
-template <size_t N=9>
-class SMA {
+class SMA: public Indicator<SMA, double, double> {
     double data = std::nan("");
-    double prev[N];
+    std::vector<double> prev;
     size_t pos = 0;
     size_t len = 0;
     double sum = 0.0;
 public:
+    SMA(size_t window_size): prev(window_size, std::nan("")) {}
     double get() const noexcept { return data; }
     double update(double value) {
-        if (len < N)
+        if (len < prev.size())
             len++;
         else
             sum -= prev[pos];
         sum += value;
         prev[pos] = value;
-        pos = (pos + 1) % N;
-        data = len < N
+        pos = (pos + 1) % prev.size();
+        data = len < prev.size()
                 ? std::nan("") 
-                : sum / N;
+                : sum / static_cast<double>(prev.size());
         return data;
     }
 };
@@ -68,7 +80,7 @@ public:
  * The default smoothing factor is 2.0, which is commonly used in
  * financial applications.
  */
-class EMA {
+class EMA: public Indicator<EMA, double, double> {
     double data = std::nan("");
     double alpha;
     double prev = 0.0;
@@ -111,33 +123,33 @@ public:
  * The standard deviation can be obtained by taking the square root of
  * the variance.
  */
-template <size_t N=9>
 class MVar {
     double data = std::nan("");
-    SMA<N> sma;
-    double prev[N];
-    size_t size = N;
+    SMA sma;
+    std::vector<double> prev;
     size_t pos = 0;
     size_t len = 0;
     double sum = 0.0;
     size_t dof;
 public:
-    MVar(size_t dof)
-        : dof(dof) {}
+    MVar(size_t window_size, size_t dof)
+        : sma(window_size), prev(window_size, std::nan("")), dof(dof) {}
     double get() const noexcept { return data; }
     double update(double value) {
-        if (len < size) len++;
+        if (len < prev.size()) len++;
         prev[pos] = value;
-        pos = (pos + 1) % size;
+        pos = (pos + 1) % prev.size();
         sma.update(value);
-        if (len < size)
+        if (len < prev.size())
             return std::nan("");
         double accum = 0.0;
-        for (size_t i = 0; i < size; i++) {
-            double diff = prev[i] - sma.get();
+        for (size_t prev_value : prev) {
+            if (std::isnan(prev_value))
+                return std::nan("");
+            double diff = prev_value - sma.get();
             accum += diff * diff;
         }
-        data = accum / (size - dof);
+        data = accum / (prev.size() - dof);
         return data;
     }
 };
@@ -157,12 +169,12 @@ public:
  * parameter specifies the size of the window for calculating the
  * average gains and losses.
  */
-template <size_t N=14>
-class RSI {
+class RSI: public Indicator<RSI, Ohlcv, double> {
     double data = std::nan("");
-    SMA<N> gains;
-    SMA<N> losses;
+    SMA gains;
+    SMA losses;
 public:
+    RSI(size_t period): gains(period), losses(period) {}
     double get() const noexcept { return data; }
     double update(Ohlcv value) {
         double diff = value.close - value.open;
@@ -201,7 +213,7 @@ struct MACDResult {
  * calculated as the EMA of the MACD line, and the histogram is the
  * difference between the MACD line and the signal line.
  */
-class MACD {
+class MACD: public Indicator<MACD, double, MACDResult> {
     MACDResult data;
     EMA short_ema;
     EMA long_ema;

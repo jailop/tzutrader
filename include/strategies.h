@@ -16,6 +16,14 @@
 
 namespace tzu {
 
+template <class T, typename In>
+class Strategy {
+public:
+    Signal update(const In& data) {
+        return static_cast<T*>(this)->update(data);
+    }
+};
+
 /**
  * The cross-over strategy using two Simple Moving Averages (SMA).
  * Generates a buy signal when the short SMA crosses above the long SMA,
@@ -23,20 +31,15 @@ namespace tzu {
  * threshold parameter allows for a percentage-based buffer to avoid
  * false signals in choppy markets.
  */
-template <size_t ShortPeriod, size_t LongPeriod>
-class SMACrossover {
-    SMA<ShortPeriod> short_sma;
-    SMA<LongPeriod> long_sma;
+class SMACrossover: public Strategy<SMACrossover, SingleValue> {
+    SMA short_sma;
+    SMA long_sma;
     double threshold;
     Side last_side = Side::NONE;
-    static constexpr DataType required_data[1] = {DataType::SINGLE_VALUE};
 public:
-    SMACrossover(double threshold = 0.0)
-        : threshold(threshold) {}
-
-    const DataType* requiredData() const { return required_data; }
-
-    size_t numItems() const { return 1; }
+    SMACrossover(size_t short_period, size_t long_period,
+            double threshold = 0.0) :
+       short_sma(short_period), long_sma(long_period), threshold(threshold) {}
 
     Signal update(const SingleValue& data) {
         double short_value = short_sma.update(data.value);
@@ -62,24 +65,19 @@ public:
  * high, low) in the OHLCV data. The default period for the RSI is set
  * to 14, which is a common choice for this indicator.
  */
-template <size_t N=14>
-class RSIStrat {
+class RSIStrat: public Strategy<RSIStrat, Ohlcv> {
+    RSI rsi;
     double oversold;
     double overbought;
-    RSI<N> rsi;
     Side last_side;
-    static constexpr DataType required_data[1] = {DataType::OHLCV};
-    OhlcvField field;
 public:
-    RSIStrat(double oversold = 30.0, double overbought = 70.0,
-            OhlcvField field = OhlcvField::CLOSE)
-        : oversold(oversold), overbought(overbought),
-          last_side(Side::NONE), field(field) {}
-    const DataType* requiredData() const { return required_data; }
-    size_t numItems() const { return 1; }
+    RSIStrat(size_t window_size = 14, double oversold = 30.0,
+            double overbought = 70.0) :
+        rsi(window_size), oversold(oversold), overbought(overbought),
+        last_side(Side::NONE) {}
     Signal update(const Ohlcv& data) {
         double rsi_value = rsi.update(data);
-        Signal signal = {data.timestamp, Side::NONE, data.getFieldValue(field)};
+        Signal signal = {data.timestamp, Side::NONE, data.close};
         if (std::isnan(rsi_value))
             return signal;
         if ((rsi_value < oversold) && (last_side != Side::BUY))
@@ -105,14 +103,11 @@ class MACDStrat {
     MACD macd;
     double threshold;
     Side last_side;
-    static constexpr DataType required_data[1] = {DataType::SINGLE_VALUE};
 public:
     MACDStrat(size_t short_period, size_t long_period, size_t signal_period,
             double smoothing = 2.0, double threshold = 0.0)
         : macd(short_period, long_period, signal_period, smoothing),
           threshold(threshold), last_side(Side::NONE) {}
-    const DataType* requiredData() const { return required_data; }
-    size_t numItems() const { return 1; }
     Signal update(const SingleValue& data) {
         MACDResult macd_value = macd.update(data.value);
         Signal signal = {data.timestamp, Side::NONE, data.value};

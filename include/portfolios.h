@@ -12,6 +12,14 @@
 
 namespace tzu {
 
+template<class T>
+class Portfolio {
+public:
+    void update(const T& signal) {
+        static_cast<T*>(this)->update(signal);
+    }
+};
+
 inline void compute_holdings_qty(const std::vector<Position>& positions, double last_price,
                                  double &out_holdings, double &out_qty) {
     out_holdings = 0.0;
@@ -93,7 +101,7 @@ inline void compute_performance_metrics(const std::vector<std::pair<int64_t, dou
  * acquisition price (e.g. 0.1 == 10%). By default transaction costs are
  * 0 and stop-loss / take-profit are NaN (disabled).
  */
-class BasicPortfolio {
+class BasicPortfolio: public Portfolio<BasicPortfolio> {
     int64_t init_timestamp = 0;
     double init_cash;
     double cash;

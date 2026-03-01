@@ -174,8 +174,8 @@ public:
  */
 template<typename T>
 class Csv {
-    bool has_headers_;
     std::istream& input_;
+    bool has_headers_;
 public:
     explicit Csv(std::istream& input, bool has_headers = true)
             : input_(input), has_headers_(has_headers) {

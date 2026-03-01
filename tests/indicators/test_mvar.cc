@@ -5,14 +5,14 @@
 using namespace tzu;
 
 TEST(MVar, ReturnsNaNDuringWarmup) {
-    MVar<3> mvar(1);
+    MVar mvar(3, 1);
     EXPECT_TRUE(std::isnan(mvar.update(1.0)));
     EXPECT_TRUE(std::isnan(mvar.update(2.0)));
     EXPECT_FALSE(std::isnan(mvar.update(3.0)));
 }
 
 TEST(MVar, CalculatesCorrectMovingVariance) {
-    MVar<3> mvar(1);
+    MVar mvar(3, 1);
     mvar.update(10.0);
     mvar.update(20.0);
     double result = mvar.update(30.0);
@@ -20,7 +20,7 @@ TEST(MVar, CalculatesCorrectMovingVariance) {
 }
 
 TEST(MVar, SlidingWindowUpdatesCorrectly) {
-    MVar<3> mvar(1);
+    MVar mvar(3, 1);
     mvar.update(10.0);
     mvar.update(20.0);
     mvar.update(30.0);
