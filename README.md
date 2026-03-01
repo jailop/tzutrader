@@ -8,6 +8,8 @@ order to explore and validate design and architecture choices.
 
 Criticism is very welcome!
 
+API Reference: <https://jailop.codeberg.page/tzutrader/docs/html/>
+
 Example
 -------
 
