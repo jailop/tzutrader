@@ -1,0 +1,9 @@
+site_name: tzutrader
+site_description: An experiment on building a composable C++ trading backtesting library.
+repo_url: https://codeberg.org/jailop/tzutrader
+docs_dir: docs_src
+site_dir: ./docs
+nav:
+  - Home: index.md
+theme:
+  name: readthedocs
