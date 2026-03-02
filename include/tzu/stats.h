@@ -262,7 +262,7 @@ inline BuyAndHoldMetrics compute_buy_and_hold_metrics(
 
 inline void PortfolioStats::print_summary(std::ostream& os, double curr_cash, double holdings, 
                                          double qty, double total_value) const {
-    double profit_loss = total_value - init_cash - total_costs;
+    double profit_loss = total_value - init_cash;
     
     os << std::fixed << std::setprecision(4)
         << "init_time:" << init_timestamp
@@ -283,15 +283,13 @@ inline void PortfolioStats::print_summary(std::ostream& os, double curr_cash, do
         << " profit:" << profit_loss;
 
     PerformanceMetrics perf = compute_performance_metrics(equity_curve);
-    
-    // Adjust returns for total costs
-    double adjusted_total_return = ((total_value - total_costs) / init_cash) - 1.0;
+    double adjusted_total_return = (total_value / init_cash) - 1.0;
     double adjusted_annual_return = 0.0;
     bool has_adjusted_annual_return = false;
     
     const double min_period_years = 30.0 / 365.0;
     if (perf.years >= min_period_years) {
-        adjusted_annual_return = std::pow((total_value - total_costs) / init_cash, 1.0 / perf.years) - 1.0;
+        adjusted_annual_return = std::pow(total_value / init_cash, 1.0 / perf.years) - 1.0;
         has_adjusted_annual_return = true;
     }
     
