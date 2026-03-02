@@ -68,8 +68,8 @@ against a spec file:
 Then include the generated header in your C++ project and call
 parse_args(cfg, argc, argv) to populate the Config instance.
 
-Example spec
-------------
+Example
+-------
 
 Example spec.txt:
 
@@ -79,13 +79,36 @@ Example spec.txt:
     std::string out "output.txt" "Output filename"
     std::string input POSITIONAL "Input file"
 
-Examples
---------
-
-Generate the header, include it in your program, and compile:
+Generate the header file:
 
     ./genopts.awk spec.txt > generated_config.h
-    g++ main.cpp -o myprog
+    
+Include the header in your C++ source file. For example, main.cpp:
+
+```cpp
+#include "generated_config.h"
+
+int main(int argc, char* argv[]) {
+    Config config;
+    parse_args(config, argc, argv);
+    return 0;
+}
+```
+
+Compile the program:
+   
+    g++ main.cc -o main
+    
+Show the help message:
+
+    ./main --help
+    Usage: [options] [input]
+
+    Options:
+        -v,  --verbose        Enable verbose logging (Default: false)
+        -t,  --threads        Number of worker threads (Default: 4)
+        -l,  --limit          Size limit in bytes (Default: 1024)
+        -o,  --out            Output filename (Default: "output.txt")
 
 Notes
 -----

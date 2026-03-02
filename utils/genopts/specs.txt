@@ -1,0 +1,5 @@
+bool verbose false "Enable verbose logging"
+int threads 4 "Number of worker threads"
+size_t limit 1024 "Size limit in bytes"
+std::string out output.txt "Output filename"
+std::string input POSITIONAL "Input file"

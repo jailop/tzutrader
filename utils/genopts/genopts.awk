@@ -37,7 +37,16 @@ BEGIN {
     }
     longs[count] = "--" name;
 
-    print "    " type " " name " = " def ";"
+    # Prepare initializer, add quotes for string types
+    init = def
+    if (type ~ /string/ && def != "" && def != "POSITIONAL") {
+        first = substr(def,1,1)
+        if (first != "\"" && first != "'") {
+            init = "\"" def "\""
+        }
+    }
+
+    print "    " type " " name " = " init ";"
 }
 
 END {
