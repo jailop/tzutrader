@@ -42,21 +42,48 @@ int main(int argc, char** argv) {
 
 Build the backtesting example:
 
-    g++ -I./include examples/example01.cc -o example01
+    cd build && cmake .. && cmake --build . && cd ..
 
 The example reads CSV OHLCV data from stdin. That file includes data
 from 2015 to 2026.
 
-    cat tests/data/btcusd.csv | ./example01
+    cat tests/data/btcusd.csv | ./build/example01
 
 The output:
 
 ```
-init_time:1419984 curr_time:1767052 init_cash:100000.0000 curr_cash:197422.2894 
-num_trades:116 num_stop_loss:18 num_take_profit:7 quantity:0.0000 
-holdings:0.0000 valuation:197422.2894 total_costs:14952.7706 profit:97422.2894
-total_return:97.4223%
+init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
+curr_cash:197422.2894 num_trades:116 num_stop_loss:18 num_take_profit:7
+quantity:0.0000 holdings:0.0000 valuation:197422.2894 total_costs:14952.7706
+profit:97422.2894 total_return:0.9742 annual_return:0.0638
+buy_and_hold_return:277.2788 buy_and_hold_annual:0.6677
+max_drawdown:0.5280 sharpe:0.3694
 ```
+
+Doing the output prettier with Unix tools:
+
+    cat tests/data/btcusd.csv | ./build/example01 | tr ' ' '\n' | column -t -s ':'
+    
+Will produce:
+
+    init_time            1419984000
+    curr_time            1767052000
+    init_cash            100000.0000
+    curr_cash            197422.2894
+    num_trades           116
+    num_stop_loss        18
+    num_take_profit      7
+    quantity             0.0000
+    holdings             0.0000
+    valuation            197422.2894
+    total_costs          14952.7706
+    profit               97422.2894
+    total_return         0.9742
+    annual_return        0.0638
+    buy_and_hold_return  277.2788
+    buy_and_hold_annual  0.6677
+    max_drawdown         0.5280
+    sharpe               0.3694
 
 How does it work?
 -----------------

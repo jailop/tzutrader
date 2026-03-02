@@ -19,7 +19,7 @@ inline void print_help() {
     std::cout << "    -v,  --verbose        Enable verbose logging (Default: false)\n";
     std::cout << "    -t,  --threads        Number of worker threads (Default: 4)\n";
     std::cout << "    -l,  --limit          Size limit in bytes (Default: 1024)\n";
-    std::cout << "    -o,  --out            Output filename (Default: \"output.txt\")\n";
+    std::cout << "    -o,  --out            Output filename (Default: output.txt)\n";
 }
 
 inline void parse_args(Config& cfg, int argc, char** argv) {
