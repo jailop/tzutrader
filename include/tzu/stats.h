@@ -10,6 +10,24 @@
 namespace tzu {
 
 /**
+ * Trade record for tracking individual trades.
+ */
+struct Trade {
+    int64_t open_time = 0;
+    int64_t close_time = 0;
+    double open_price = 0.0;
+    double close_price = 0.0;
+    double quantity = 0.0;
+    double profit = 0.0;
+    bool closed = false;
+    
+    Trade() = default;
+    Trade(int64_t ot, int64_t ct, double op, double cp, double q, double p, bool c)
+        : open_time(ot), close_time(ct), open_price(op), close_price(cp),
+          quantity(q), profit(p), closed(c) {}
+};
+
+/**
  * Portfolio performance metrics computed from equity curve and trade history.
  */
 struct PerformanceMetrics {
@@ -32,6 +50,92 @@ struct BuyAndHoldMetrics {
     double annual_return = 0.0;
     bool has_annual_return = false;
     bool valid = false;
+};
+
+/**
+ * Portfolio statistics tracker.
+ */
+class PortfolioStats {
+private:
+    int64_t init_timestamp = 0;
+    int64_t last_timestamp = 0;
+    double init_cash = 0.0;
+    double init_price = std::nan("");
+    double last_price = std::nan("");
+    std::vector<std::pair<int64_t, double>> equity_curve;
+    std::vector<Trade> trades;
+    uint16_t num_trades = 0;
+    uint16_t num_stop_loss = 0;
+    uint16_t num_take_profit = 0;
+    double total_costs = 0.0;
+
+public:
+    void initialize(int64_t timestamp, double cash, double price) {
+        init_timestamp = timestamp;
+        last_timestamp = timestamp;
+        init_cash = cash;
+        init_price = price;
+        last_price = price;
+        equity_curve.emplace_back(timestamp, cash);
+    }
+
+    bool is_initialized() const {
+        return init_timestamp == 0;
+    }
+
+    void record_equity(int64_t timestamp, double total_value, double price) {
+        last_timestamp = timestamp;
+        last_price = price;
+        equity_curve.emplace_back(timestamp, total_value);
+    }
+
+    void record_trade_open(int64_t timestamp, double quantity, double price) {
+        trades.push_back(Trade{timestamp, 0, price, 0.0, quantity, 0.0, false});
+    }
+
+    void record_trade_close(int64_t timestamp, double quantity, double open_price, 
+                           double close_price, double profit, bool is_stop_loss, 
+                           bool is_take_profit) {
+        if (is_stop_loss) ++num_stop_loss;
+        if (is_take_profit) ++num_take_profit;
+        
+        Trade trade{0, timestamp, open_price, close_price, quantity, profit, true};
+        trades.push_back(trade);
+    }
+
+    void increment_trades() {
+        ++num_trades;
+    }
+
+    void add_costs(double cost) {
+        total_costs += cost;
+    }
+
+    uint16_t get_num_wins() const {
+        uint16_t wins = 0;
+        for (const auto& trade : trades) {
+            if (trade.closed && trade.profit > 0) ++wins;
+        }
+        return wins;
+    }
+
+    uint16_t get_num_losses() const {
+        uint16_t losses = 0;
+        for (const auto& trade : trades) {
+            if (trade.closed && trade.profit <= 0) ++losses;
+        }
+        return losses;
+    }
+
+    double get_win_rate() const {
+        uint16_t wins = get_num_wins();
+        uint16_t losses = get_num_losses();
+        uint16_t total = wins + losses;
+        return total > 0 ? static_cast<double>(wins) / total : 0.0;
+    }
+
+    void print_summary(std::ostream& os, double curr_cash, double holdings, 
+                      double qty, double total_value) const;
 };
 
 /**
@@ -154,6 +258,51 @@ inline BuyAndHoldMetrics compute_buy_and_hold_metrics(
     
     metrics.valid = true;
     return metrics;
+}
+
+inline void PortfolioStats::print_summary(std::ostream& os, double curr_cash, double holdings, 
+                                         double qty, double total_value) const {
+    double profit_loss = total_value - init_cash;
+    
+    os << std::fixed << std::setprecision(4)
+        << "init_time:" << init_timestamp
+        << " curr_time:" << last_timestamp
+        << " init_cash:" << init_cash
+        << " curr_cash:" << curr_cash
+        << " num_trades:" << num_trades
+        << " num_closed:" << (get_num_wins() + get_num_losses())
+        << " num_wins:" << get_num_wins()
+        << " num_losses:" << get_num_losses()
+        << " win_rate:" << get_win_rate()
+        << " num_stop_loss:" << num_stop_loss
+        << " num_take_profit:" << num_take_profit
+        << " quantity:" << qty
+        << " holdings:" << holdings
+        << " valuation:" << total_value
+        << " total_costs:" << total_costs
+        << " profit:" << profit_loss;
+
+    PerformanceMetrics perf = compute_performance_metrics(equity_curve);
+    os << " total_return:" << perf.total_return;
+    
+    if (perf.has_annual_return) {
+        os << " annual_return:" << perf.annual_return;
+    } else {
+        os << " annual_return:N/A";
+    }
+
+    BuyAndHoldMetrics bh = compute_buy_and_hold_metrics(
+        init_cash, init_price, last_price, perf.years);
+    
+    if (bh.valid) {
+        os << " buy_and_hold_return:" << bh.total_return;
+        if (bh.has_annual_return) {
+            os << " buy_and_hold_annual:" << bh.annual_return;
+        }
+    }
+
+    os << " max_drawdown:" << perf.max_drawdown
+       << " sharpe:" << perf.sharpe_ratio;
 }
 
 } // namespace tzu

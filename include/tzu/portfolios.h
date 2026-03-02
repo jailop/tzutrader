@@ -34,37 +34,40 @@ public:
  */
 class BasicPortfolio: public Portfolio<BasicPortfolio> {
 private:
-    int64_t init_timestamp = 0;
     double init_cash;
     double cash;
     std::vector<Position> positions;
-    std::vector<std::pair<int64_t, double>> equity_curve;
     double tx_cost_pct;
     double stop_loss_pct;
     double take_profit_pct;
     double last_price = std::nan("");
-    double init_price = std::nan("");
-    double total_costs = 0.0;
-    uint16_t num_trades = 0;
-    uint16_t num_stop_loss = 0;
-    uint16_t num_take_profit = 0;
-    int64_t last_timestamp = 0;
+    PortfolioStats stats;
 
-    void liquidate_position_at(size_t i, double price) {
-        double proceeds = positions[i].quantity * price;
+    void liquidate_position_at(size_t i, double price, int64_t timestamp, 
+                              bool is_stop_loss = false, bool is_take_profit = false) {
+        const Position& pos = positions[i];
+        double proceeds = pos.quantity * price;
         double commission = proceeds * tx_cost_pct;
-        total_costs += commission;
+        stats.add_costs(commission);
         cash += proceeds - commission;
+        
+        double profit = (price - pos.price) * pos.quantity - commission;
+        stats.record_trade_close(timestamp, pos.quantity, pos.price, price, profit,
+                                is_stop_loss, is_take_profit);
+        
         positions[i] = positions.back();
         positions.pop_back();
     }
 
-    void liquidate_all_at_price(double price) {
+    void liquidate_all_at_price(double price, int64_t timestamp) {
         for (const auto& p : positions) {
             double proceeds = p.quantity * price;
             double commission = proceeds * tx_cost_pct;
-            total_costs += commission;
+            stats.add_costs(commission);
             cash += proceeds - commission;
+            
+            double profit = (price - p.price) * p.quantity - commission;
+            stats.record_trade_close(timestamp, p.quantity, p.price, price, profit, false, false);
         }
         positions.clear();
     }
@@ -89,16 +92,18 @@ private:
         return cash + compute_holdings_value();
     }
 
-    void check_stop_loss_take_profit(double current_price) {
+    void check_stop_loss_take_profit(double current_price, int64_t timestamp) {
         for (size_t i = 0; i < positions.size();) {
             bool should_liquidate = false;
+            bool is_stop_loss = false;
+            bool is_take_profit = false;
             const Position& p = positions[i];
             
             if (!std::isnan(stop_loss_pct)) {
                 double stop_price = p.price * (1.0 - stop_loss_pct);
                 if (current_price <= stop_price) {
                     should_liquidate = true;
-                    ++num_stop_loss;
+                    is_stop_loss = true;
                 }
             }
             
@@ -106,13 +111,13 @@ private:
                 double tp_price = p.price * (1.0 + take_profit_pct);
                 if (current_price >= tp_price) {
                     should_liquidate = true;
-                    ++num_take_profit;
+                    is_take_profit = true;
                 }
             }
             
             if (should_liquidate) {
-                liquidate_position_at(i, current_price);
-                ++num_trades;
+                stats.increment_trades();
+                liquidate_position_at(i, current_price, timestamp, is_stop_loss, is_take_profit);
             } else {
                 ++i;
             }
@@ -133,16 +138,20 @@ private:
         if (qty > 0) {
             double cost = qty * signal.price;
             double commission = cost * tx_cost_pct;
-            total_costs += commission;
+            stats.add_costs(commission);
             cash -= cost + commission;
-            ++num_trades;
+            stats.increment_trades();
+            stats.record_trade_open(signal.timestamp, qty, signal.price);
             positions.push_back(Position{signal.timestamp, qty, signal.price});
         }
     }
 
     void execute_sell(const Signal& signal) {
-        liquidate_all_at_price(signal.price);
-        ++num_trades;
+        size_t num_positions = positions.size();
+        if (num_positions > 0) {
+            stats.increment_trades();
+            liquidate_all_at_price(signal.price, signal.timestamp);
+        }
     }
 
     double get_holdings_value() const {
@@ -165,18 +174,15 @@ public:
     void update(const Signal& signal) {
         if (signal.price <= 0.0) return;
         last_price = signal.price;
-        last_timestamp = signal.timestamp;
         
-        if (init_timestamp == 0) {
-            init_timestamp = signal.timestamp;
-            init_price = signal.price;
-            equity_curve.emplace_back(init_timestamp, cash);
+        if (stats.is_initialized()) {
+            stats.initialize(signal.timestamp, cash, signal.price);
         }
 
-        check_stop_loss_take_profit(signal.price);
+        check_stop_loss_take_profit(signal.price, signal.timestamp);
         process_signal(signal);
         
-        equity_curve.emplace_back(last_timestamp, compute_total_value());
+        stats.record_equity(signal.timestamp, compute_total_value(), signal.price);
     }
 
     friend std::ostream& operator<<(std::ostream& os,
@@ -187,43 +193,8 @@ inline std::ostream& operator<<(std::ostream& os, const BasicPortfolio& portfoli
     double holdings = portfolio.get_holdings_value();
     double qty = portfolio.get_total_quantity();
     double total_value = portfolio.compute_total_value();
-    double profit_loss = total_value - portfolio.init_cash;
     
-    os << std::fixed << std::setprecision(4)
-        << "init_time:" << portfolio.init_timestamp
-        << " curr_time:" << portfolio.last_timestamp
-        << " init_cash:" << portfolio.init_cash
-        << " curr_cash:" << portfolio.cash
-        << " num_trades:" << portfolio.num_trades
-        << " num_stop_loss:" << portfolio.num_stop_loss
-        << " num_take_profit:" << portfolio.num_take_profit
-        << " quantity:" << qty
-        << " holdings:" << holdings
-        << " valuation:" << total_value
-        << " total_costs:" << portfolio.total_costs
-        << " profit:" << profit_loss;
-
-    PerformanceMetrics perf = compute_performance_metrics(portfolio.equity_curve);
-    os << " total_return:" << perf.total_return;
-    
-    if (perf.has_annual_return) {
-        os << " annual_return:" << perf.annual_return;
-    } else {
-        os << " annual_return:N/A";
-    }
-
-    BuyAndHoldMetrics bh = compute_buy_and_hold_metrics(
-        portfolio.init_cash, portfolio.init_price, portfolio.last_price, perf.years);
-    
-    if (bh.valid) {
-        os << " buy_and_hold_return:" << bh.total_return;
-        if (bh.has_annual_return) {
-            os << " buy_and_hold_annual:" << bh.annual_return;
-        }
-    }
-
-    os << " max_drawdown:" << perf.max_drawdown
-       << " sharpe:" << perf.sharpe_ratio;
+    portfolio.stats.print_summary(os, portfolio.cash, holdings, qty, total_value);
     
     return os;
 }

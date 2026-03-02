@@ -52,12 +52,12 @@ from 2015 to 2026.
 The output:
 
 ```
-init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
-curr_cash:197422.2894 num_trades:116 num_stop_loss:18 num_take_profit:7
-quantity:0.0000 holdings:0.0000 valuation:197422.2894 total_costs:14952.7706
-profit:97422.2894 total_return:0.9742 annual_return:0.0638
-buy_and_hold_return:277.2788 buy_and_hold_annual:0.6677
-max_drawdown:0.5280 sharpe:0.3694
+init_time:1419984000 curr_time:1767052000 init_cash:100000.0000 
+curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28 num_losses:18 
+win_rate:0.6087 num_stop_loss:18 num_take_profit:7 quantity:0.0000 
+holdings:0.0000 valuation:197422.2894 total_costs:14952.7706 profit:97422.2894 
+total_return:0.9742 annual_return:0.0638 buy_and_hold_return:277.2788 
+buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
 ```
 
 Doing the output prettier with Unix tools:
@@ -70,7 +70,11 @@ Will produce:
     curr_time            1767052000
     init_cash            100000.0000
     curr_cash            197422.2894
-    num_trades           116
+    num_trades           92
+    num_closed           46
+    num_wins             28
+    num_losses           18
+    win_rate             0.6087
     num_stop_loss        18
     num_take_profit      7
     quantity             0.0000
@@ -128,7 +132,37 @@ overview of the library's design and architecture, as well as detailed
 usage instructions and examples about the built-in components, and a
 guide on implementing custom indicators, strategies,
 and portfolio management approaches.
- 
+
+Architecture
+------------
+
+The library is designed into several core components:
+
+- Data Sources: Responsible for reading and streaming input data in
+  various formats (e.g. CSV).
+- Indicators: Implement various indicators (e.g. SMA, EMA,
+  RSI, MACD) that can be used by trading strategies to generate
+  signals. Indicators are implemented using circular buffers to
+  efficiently compute values.
+- Strategies: Implement trading strategies that generate buy/sell
+  signals based on the indicators' values. Strategies can be as simple
+  or complex as needed, and can use multiple indicators to make
+  decisions.
+- Portfolio Management: Manages the trading portfolio, tracking
+  cash and holdings. It handles the execution of
+  trades, applying trading fees, and making decisions about position
+  sizing, stop-loss, and take-profit.
+- Performance Metrics: Computes various performance metrics, such as total
+  return, annualized return, buy-and-hold return, max drawdown, and
+  Sharpe ratio.
+- Runner: Orchestrates the backtesting process, feeding data to the
+  strategy and updating the portfolio accordingly.
+  
+The library is intended to let users to easily implement their own
+custom indicators, strategies, and portfolio management approaches, by
+providing clear interfaces and a modular design that allows to easily
+swap out different components.
+
 Design Philosophy
 -----------------
 
