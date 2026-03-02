@@ -178,6 +178,10 @@ Design Philosophy
   simulates the way that real trading systems operate, processing data
   as it arrives, and protecting against look-ahead bias.
 
+The library is inspired by the Unix philosophy of building small,
+composable tools that do one thing well, and can be combined together to
+create more complex systems.
+
 Roadmap
 -------
 
