@@ -129,7 +129,7 @@ class MVar {
     std::vector<double> prev;
     size_t pos = 0;
     size_t len = 0;
-    double sum = 0.0;
+    // double sum = 0.0;
     size_t dof;
 public:
     MVar(size_t window_size, size_t dof)
