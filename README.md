@@ -52,11 +52,12 @@ from 2015 to 2026.
 The output:
 
 ```
-init_time:1419984000 curr_time:1767052000 init_cash:100000.0000 
-curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28 num_losses:18 
-win_rate:0.6087 num_stop_loss:18 num_take_profit:7 quantity:0.0000 
-holdings:0.0000 valuation:197422.2894 total_costs:14952.7706 profit:97422.2894 
-total_return:0.9742 annual_return:0.0638 buy_and_hold_return:277.2788 
+init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
+curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28
+num_losses:18 win_rate:0.6087 num_stop_loss:18 num_take_profit:7
+quantity:0.0000 holdings:0.0000 valuation:197422.2894
+total_costs:14952.7706 profit:82469.5188 total_return:0.8247
+annual_return:0.0562 buy_and_hold_return:277.2788
 buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
 ```
 
@@ -81,9 +82,9 @@ Will produce:
     holdings             0.0000
     valuation            197422.2894
     total_costs          14952.7706
-    profit               97422.2894
-    total_return         0.9742
-    annual_return        0.0638
+    profit               82469.5188
+    total_return         0.8247
+    annual_return        0.0562
     buy_and_hold_return  277.2788
     buy_and_hold_annual  0.6677
     max_drawdown         0.5280
