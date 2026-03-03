@@ -356,6 +356,10 @@ g++ -std=c++17 main.cc -o test
 <li>Result visualization scripts</li>
 <li>Build configuration helpers</li>
 </ul>
+<p><strong>Data acquisition:</strong> For downloading historical price data, see <a href="https://codeberg.org/jailop/yfnim">yfnim</a>, a separate Yahoo Finance data puller that outputs CSV in the format tzutrader expects:</p>
+<pre><code class="language-bash">yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix &gt; data.csv
+</code></pre>
+<p><a href="https://jailop.codeberg.page/yfnim/docs/">yfnim documentation</a></p>
 <p>If you create utilities that would be useful to others, consider contributing them. See <a href="../contributing/">Contributing</a> for details.</p>
 <h2 id="philosophy">Philosophy</h2>
 <p>Utilities follow the same principles as the main library:</p>

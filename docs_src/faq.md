@@ -65,6 +65,15 @@ timestamp,open,high,low,close,volume
 1419984000,320.0,325.0,315.0,322.0,1000.0
 ```
 
+**Getting historical data:** Use [yfnim](https://codeberg.org/jailop/yfnim) to download data from Yahoo Finance:
+
+```bash
+yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix > btc_data.csv
+cat btc_data.csv | ./your_backtest
+```
+
+See [yfnim docs](https://jailop.codeberg.page/yfnim/docs/) for more options.
+
 ### Why is my indicator returning NaN?
 
 Indicators need data to warm up. A 20-period SMA returns NaN until it has 20 data points. This is intentional—it prevents using incomplete indicator values in strategies.

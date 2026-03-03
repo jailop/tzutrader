@@ -277,6 +277,14 @@ The `utils/` directory may expand with additional development tools:
 - Result visualization scripts
 - Build configuration helpers
 
+**Data acquisition:** For downloading historical price data, see [yfnim](https://codeberg.org/jailop/yfnim), a separate Yahoo Finance data puller that outputs CSV in the format tzutrader expects:
+
+```bash
+yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix > data.csv
+```
+
+[yfnim documentation](https://jailop.codeberg.page/yfnim/docs/)
+
 If you create utilities that would be useful to others, consider contributing them. See [Contributing](contributing.md) for details.
 
 ## Philosophy

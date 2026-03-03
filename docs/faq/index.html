@@ -261,6 +261,11 @@ cmake --build .
 <pre><code class="language-csv">timestamp,open,high,low,close,volume
 1419984000,320.0,325.0,315.0,322.0,1000.0
 </code></pre>
+<p><strong>Getting historical data:</strong> Use <a href="https://codeberg.org/jailop/yfnim">yfnim</a> to download data from Yahoo Finance:</p>
+<pre><code class="language-bash">yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix &gt; btc_data.csv
+cat btc_data.csv | ./your_backtest
+</code></pre>
+<p>See <a href="https://jailop.codeberg.page/yfnim/docs/">yfnim docs</a> for more options.</p>
 <h3 id="why-is-my-indicator-returning-nan">Why is my indicator returning NaN?</h3>
 <p>Indicators need data to warm up. A 20-period SMA returns NaN until it has 20 data points. This is intentional—it prevents using incomplete indicator values in strategies.</p>
 <h3 id="how-do-i-create-a-custom-indicator">How do I create a custom indicator?</h3>

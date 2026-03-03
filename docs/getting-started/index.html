@@ -253,6 +253,10 @@ g++ -std=c++11 -I../include -O2 ../my_backtest.cpp -o my_backtest
 <li><strong>open, high, low, close</strong>: Prices</li>
 <li><strong>volume</strong>: Trading volume</li>
 </ul>
+<p><strong>Getting data:</strong> You can use <a href="https://codeberg.org/jailop/yfnim">yfnim</a> to download historical price data from Yahoo Finance in the correct CSV format:</p>
+<pre><code class="language-bash">yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix &gt; btc_data.csv
+</code></pre>
+<p>See the <a href="https://jailop.codeberg.page/yfnim/docs/">yfnim documentation</a> for more details.</p>
 <h3 id="run-the-backtest">Run the Backtest</h3>
 <pre><code class="language-bash">cat your_data.csv | ./my_backtest
 </code></pre>

@@ -138,6 +138,10 @@ Treat backtesting as education, not a guarantee. If you do trade live, start sma
 3. Run examples: `cat ../tests/data/btcusd.csv | ./example01`
 4. Read the [Getting Started](getting-started.md) guide
 
+## Related Projects
+
+- **[yfnim](https://codeberg.org/jailop/yfnim)**: A Yahoo Finance data puller for fetching historical price data. Useful for obtaining CSV data to use with tzutrader. [Documentation](https://jailop.codeberg.page/yfnim/docs/)
+
 ## Community
 
 - **Source code**: <https://codeberg.org/jailop/tzutrader>

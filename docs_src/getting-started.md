@@ -114,6 +114,14 @@ timestamp,open,high,low,close,volume
 - **open, high, low, close**: Prices
 - **volume**: Trading volume
 
+**Getting data:** You can use [yfnim](https://codeberg.org/jailop/yfnim) to download historical price data from Yahoo Finance in the correct CSV format:
+
+```bash
+yf history -s:btc-usd --lookback:10y --format:csv --date_format:unix > btc_data.csv
+```
+
+See the [yfnim documentation](https://jailop.codeberg.page/yfnim/docs/) for more details.
+
 ### Run the Backtest
 
 ```bash
