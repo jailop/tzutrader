@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Utilities - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Utilities";
+        var mkdocs_page_input_path = "utilities.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Utilities</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#genopts-command-line-option-parser-generator">genopts - Command-Line Option Parser Generator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-it-does">What It Does</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-it-exists">Why It Exists</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-it-works">How It Works</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#specification-format">Specification Format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#generated-code">Generated Code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage-examples">Usage Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#supported-types">Supported Types</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#short-flags">Short Flags</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#when-to-use">When to Use</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#files">Files</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#future-utilities">Future Utilities</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contributing-utilities">Contributing Utilities</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Utilities</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="utilities">Utilities</h1>
+<p>Development utilities to support building backtesting programs with tzutrader.</p>
+<h2 id="overview">Overview</h2>
+<p>The <code>utils/</code> directory contains helper tools that simplify common development tasks. These utilities follow the same Unix philosophy as the main library—small, focused tools that do one thing well.</p>
+<p>Currently available utilities focus on program configuration and setup. As the project evolves, more utilities may be added to support testing, data preparation, and other development needs.</p>
+<h2 id="genopts-command-line-option-parser-generator">genopts - Command-Line Option Parser Generator</h2>
+<h3 id="what-it-does">What It Does</h3>
+<p><code>genopts</code> is an AWK script that generates C++ command-line parsing code from a simple specification file. Instead of manually writing argument parsing logic, you describe your options in a text file and generate a complete parser.</p>
+<p>This is useful when writing backtesting programs that need configurable parameters (strategy periods, portfolio settings, data files, etc.).</p>
+<h3 id="why-it-exists">Why It Exists</h3>
+<p>Command-line parsing in C++ is tedious. Libraries like <code>getopt</code> are C-style and verbose. Modern C++ options exist but add dependencies. <code>genopts</code> generates simple, readable C++ code with no runtime dependencies—you own the generated code.</p>
+<p><strong>Philosophy:</strong></p>
+<ul>
+<li>Generate code, don't depend on a library</li>
+<li>Simple specification format anyone can understand</li>
+<li>Generated code is readable C++ you can modify if needed</li>
+<li>No magic, no hidden behavior</li>
+</ul>
+<h3 id="how-it-works">How It Works</h3>
+<p><strong>1. Write a specification file (<code>opts.txt</code>):</strong></p>
+<pre><code class="language-txt">bool verbose false &quot;Enable verbose output&quot;
+int period 20 &quot;Indicator period&quot;
+double threshold 0.02 &quot;Signal threshold&quot;
+std::string datafile POSITIONAL &quot;CSV data file&quot;
+</code></pre>
+<p><strong>2. Generate the header:</strong></p>
+<pre><code class="language-bash">cd utils/genopts
+./genopts.awk opts.txt &gt; generated_config.h
+</code></pre>
+<p><strong>3. Use in your C++ program:</strong></p>
+<pre><code class="language-cpp">#include &quot;generated_config.h&quot;
+
+int main(int argc, char* argv[]) {
+    Config config;
+    parse_args(config, argc, argv);
+
+    // Use parsed options
+    if (config.verbose) {
+        std::cout &lt;&lt; &quot;Period: &quot; &lt;&lt; config.period &lt;&lt; std::endl;
+    }
+
+    // config.datafile contains the positional argument
+    return 0;
+}
+</code></pre>
+<p><strong>4. Compile and run:</strong></p>
+<pre><code class="language-bash">g++ -std=c++17 my_backtest.cpp -o my_backtest
+./my_backtest --verbose --period 50 data.csv
+./my_backtest --help  # Auto-generated help
+</code></pre>
+<h3 id="specification-format">Specification Format</h3>
+<p>Each line describes one option:</p>
+<pre><code>TYPE NAME DEFAULT &quot;Description&quot;
+</code></pre>
+<p><strong>Fields:</strong>
+- <code>TYPE</code>: C++ type (<code>bool</code>, <code>int</code>, <code>size_t</code>, <code>double</code>, <code>std::string</code>)
+- <code>NAME</code>: Option name (becomes <code>--NAME</code> flag and struct member)
+- <code>DEFAULT</code>: Default value (or <code>POSITIONAL</code> for required argument)
+- <code>Description</code>: Help text in quotes</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">bool verbose false &quot;Enable verbose logging&quot;
+int threads 4 &quot;Number of worker threads&quot;
+size_t limit 1024 &quot;Size limit in bytes&quot;
+std::string output output.txt &quot;Output filename&quot;
+std::string input POSITIONAL &quot;Input file&quot;
+</code></pre>
+<h3 id="generated-code">Generated Code</h3>
+<p>The script generates:</p>
+<p><strong>1. Config struct:</strong></p>
+<pre><code class="language-cpp">struct Config {
+    bool verbose = false;
+    int threads = 4;
+    size_t limit = 1024;
+    std::string output = &quot;output.txt&quot;;
+    std::string input;  // positional
+};
+</code></pre>
+<p><strong>2. parse_args() function:</strong></p>
+<p>Parses command-line arguments and fills the Config struct. Handles:</p>
+<ul>
+<li>Long flags: <code>--verbose</code>, <code>--threads 8</code></li>
+<li>Short flags: <code>-v</code>, <code>-t 8</code> (auto-assigned)</li>
+<li>Help flag: <code>-h</code>, <code>--help</code></li>
+<li>Positional arguments</li>
+<li>Type conversions (string to int, double, etc.)</li>
+</ul>
+<p><strong>3. print_help() function:</strong></p>
+<p>Auto-generated help message showing all options and defaults.</p>
+<h3 id="usage-examples">Usage Examples</h3>
+<p><strong>Basic backtest with options:</strong></p>
+<pre><code class="language-txt"># backtest_opts.txt
+bool verbose false &quot;Print portfolio after each update&quot;
+int fast_period 10 &quot;Fast SMA period&quot;
+int slow_period 30 &quot;Slow SMA period&quot;
+double threshold 0.01 &quot;Crossover threshold percentage&quot;
+std::string datafile POSITIONAL &quot;CSV data file&quot;
+</code></pre>
+<p>Generate and use:</p>
+<pre><code class="language-bash">./genopts.awk backtest_opts.txt &gt; generated_config.h
+</code></pre>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+#include &quot;generated_config.h&quot;
+
+int main(int argc, char* argv[]) {
+    Config cfg;
+    parse_args(cfg, argc, argv);
+
+    tzu::SMACrossover strategy(cfg.fast_period, cfg.slow_period, cfg.threshold);
+    tzu::BasicPortfolio portfolio(100000, 0.001, 0.1, 0.2);
+
+    std::ifstream file(cfg.datafile);
+    tzu::Csv&lt;tzu::Ohlcv&gt; csv(file);
+
+    tzu::BasicRunner&lt;tzu::BasicPortfolio, tzu::SMACrossover, tzu::Csv&lt;tzu::Ohlcv&gt;&gt;
+        runner(portfolio, strategy, csv);
+
+    runner.run(cfg.verbose);
+    return 0;
+}
+</code></pre>
+<p>Run with different parameters:</p>
+<pre><code class="language-bash"># Default parameters
+./backtest data.csv
+
+# Custom parameters
+./backtest --fast-period 5 --slow-period 20 --verbose data.csv
+
+# Show help
+./backtest --help
+</code></pre>
+<h3 id="supported-types">Supported Types</h3>
+<p><strong>Boolean (<code>bool</code>):</strong></p>
+<ul>
+<li>Flags that set to <code>true</code> when present</li>
+<li>Example: <code>--verbose</code> sets <code>config.verbose = true</code></li>
+</ul>
+<p><strong>Integers (<code>int</code>, <code>size_t</code>):</strong></p>
+<ul>
+<li>Converted using <code>std::stoi</code> or <code>std::stoul</code></li>
+<li>Example: <code>--period 50</code> sets <code>config.period = 50</code></li>
+</ul>
+<p><strong>Floating-point (<code>double</code>):</strong></p>
+<ul>
+<li>Converted using <code>std::stod</code></li>
+<li>Example: <code>--threshold 0.05</code> sets <code>config.threshold = 0.05</code></li>
+</ul>
+<p><strong>Strings (<code>std::string</code>):</strong></p>
+<ul>
+<li>Assigned directly</li>
+<li>Example: <code>--output result.txt</code> sets <code>config.output = "result.txt"</code></li>
+</ul>
+<p><strong>Positional arguments:</strong></p>
+<ul>
+<li>Use <code>POSITIONAL</code> as default value</li>
+<li>Must appear after all flags</li>
+<li>Example: <code>input_file</code> in <code>./program [options] input_file</code></li>
+</ul>
+<h3 id="short-flags">Short Flags</h3>
+<p>Short flags are auto-assigned using the first available letter of the option name:</p>
+<ul>
+<li><code>verbose</code> → <code>-v</code></li>
+<li><code>threads</code> → <code>-t</code></li>
+<li><code>output</code> → <code>-o</code></li>
+</ul>
+<p>If the first letter is taken, the next available letter is used. The <code>-h</code> flag is reserved for <code>--help</code>.</p>
+<h3 id="limitations">Limitations</h3>
+<p><strong>Simple by design:</strong></p>
+<ul>
+<li>No combined short flags (<code>-vt</code> for <code>-v -t</code>)</li>
+<li>No advanced getopt-style features</li>
+<li>No option validation (you handle that in your program)</li>
+<li>No complex default values (must be C++ literals)</li>
+</ul>
+<p>These limitations keep the generator simple and the generated code readable.</p>
+<h3 id="when-to-use">When to Use</h3>
+<p><strong>Use genopts when:</strong></p>
+<ul>
+<li>Building backtesting programs with configurable parameters</li>
+<li>You want simple command-line parsing without dependencies</li>
+<li>You prefer generated code over library dependencies</li>
+<li>Your option parsing needs are straightforward</li>
+</ul>
+<p><strong>Don't use genopts when:</strong></p>
+<ul>
+<li>You need complex option parsing (subcommands, validation, etc.)</li>
+<li>You're already using a parsing library you like</li>
+<li>Your program has no command-line options</li>
+</ul>
+<h3 id="files">Files</h3>
+<pre><code>utils/genopts/
+├── genopts.awk        # The generator script
+├── README.md          # Detailed documentation
+├── specs.txt          # Example specification
+├── main.cc            # Example usage
+└── generated_config.h # Example generated output
+</code></pre>
+<p><strong>Try it:</strong></p>
+<pre><code class="language-bash">cd utils/genopts
+./genopts.awk specs.txt &gt; test_config.h
+g++ -std=c++17 main.cc -o test
+./test --help
+./test --verbose --threads 8 input.txt
+</code></pre>
+<h2 id="future-utilities">Future Utilities</h2>
+<p>The <code>utils/</code> directory may expand with additional development tools:</p>
+<p><strong>Potential additions:</strong></p>
+<ul>
+<li>Data format converters (JSON to CSV, etc.)</li>
+<li>Test data generators (synthetic OHLCV)</li>
+<li>Parameter grid search helpers</li>
+<li>Performance profiling wrappers</li>
+<li>Result visualization scripts</li>
+<li>Build configuration helpers</li>
+</ul>
+<p>If you create utilities that would be useful to others, consider contributing them. See <a href="../contributing/">Contributing</a> for details.</p>
+<h2 id="philosophy">Philosophy</h2>
+<p>Utilities follow the same principles as the main library:</p>
+<p><strong>1. Small and focused:</strong> Each utility does one thing well.</p>
+<p><strong>2. No dependencies:</strong> Generate code or use standard tools (AWK, shell scripts).</p>
+<p><strong>3. Composable:</strong> Work with Unix pipes and shell scripting.</p>
+<p><strong>4. Optional:</strong> Use them if helpful, ignore them if not.</p>
+<p><strong>5. Readable:</strong> Simple enough to understand and modify.</p>
+<p>The goal is providing helpful tools without imposing a workflow. If a utility doesn't fit your needs, don't use it or modify it for your situation.</p>
+<h2 id="contributing-utilities">Contributing Utilities</h2>
+<p>If you've created a useful development tool for tzutrader:</p>
+<ol>
+<li>Ensure it's small and focused</li>
+<li>Document clearly what it does and why</li>
+<li>Provide examples of usage</li>
+<li>Keep dependencies minimal</li>
+<li>Submit a pull request with the utility in <code>utils/your_tool/</code></li>
+</ol>
+<p>See <a href="../contributing/">Contributing</a> for the full process.</p>
+<h2 id="getting-help">Getting Help</h2>
+<p>For utility-specific questions:</p>
+<ul>
+<li>Check the README.md in each utility's directory</li>
+<li>Look at example files provided</li>
+<li>File an issue on <a href="https://codeberg.org/jailop/tzutrader/issues">Codeberg</a></li>
+</ul>
+<p>For general questions about tzutrader, see the <a href="../faq/">FAQ</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../architecture/" class="btn btn-neutral float-left" title="Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contributing/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

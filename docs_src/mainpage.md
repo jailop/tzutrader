@@ -35,6 +35,7 @@ Technical indicators that process market data incrementally using circular buffe
 - **MVar**: Moving Variance
 
 All indicators follow a consistent interface:
+
 - `get()`: Returns the current indicator value
 - `update(value)`: Processes a new data point and returns updated value
 
@@ -85,6 +86,7 @@ Performance metric calculation:
 ### Streaming Processing
 
 The library processes data incrementally rather than loading everything into memory. This:
+
 - Mimics real-world trading constraints
 - Prevents look-ahead bias
 - Keeps memory usage bounded
@@ -93,6 +95,7 @@ The library processes data incrementally rather than loading everything into mem
 ### Composability
 
 Components can be mixed and matched:
+
 - Any strategy works with any portfolio
 - Strategies combine multiple indicators
 - Custom components follow the same interfaces
@@ -133,17 +136,20 @@ cat data/prices.csv | ./my_backtest
 ### Custom Indicators
 
 Inherit from `Indicator<YourClass, InputType, OutputType>` and implement:
+
 - `get() const noexcept`: Return current value
 - `update(input)`: Process new data point
 
 ### Custom Strategies
 
 Inherit from `Strategy<YourClass, DataType>` and implement:
+
 - `update(const DataType& data)`: Generate trading signal
 
 ### Custom Portfolios
 
 Inherit from `Portfolio<YourClass>` and implement:
+
 - `update(const Signal& signal)`: Handle trading signals
 
 ### Custom Data Sources
@@ -159,6 +165,7 @@ Create a class with `begin()` and `end()` methods that return iterators yielding
 ## Thread Safety
 
 Components are not thread-safe and maintain mutable state. For parallel backtesting:
+
 - Run separate instances in different threads
 - Each instance has its own data streamer, strategy, and portfolio
 - No shared state between instances
@@ -166,6 +173,7 @@ Components are not thread-safe and maintain mutable state. For parallel backtest
 ## Known Limitations
 
 As an experimental project:
+
 - Single asset trading only
 - All-in/all-out position management
 - Market orders only (no limit/stop orders)

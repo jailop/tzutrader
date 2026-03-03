@@ -70,6 +70,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -279,11 +283,13 @@ public:
 </code></pre>
 <p>See the <a href="../strategies/">Strategies</a> page for examples.</p>
 <h3 id="why-arent-any-trades-being-executed">Why aren't any trades being executed?</h3>
-<p>Common reasons:
-- Strategy isn't generating signals (check verbose mode)
-- Indicators haven't warmed up yet (early data points)
-- CSV format is incorrect (check timestamps and values)
-- Portfolio has no cash left (check transaction costs)</p>
+<p>Common reasons:</p>
+<ul>
+<li>Strategy isn't generating signals (check verbose mode)</li>
+<li>Indicators haven't warmed up yet (early data points)</li>
+<li>CSV format is incorrect (check timestamps and values)</li>
+<li>Portfolio has no cash left (check transaction costs)</li>
+</ul>
 <p>Enable verbose mode to see what's happening:</p>
 <pre><code class="language-cpp">runner.run(true);  // Verbose mode
 </code></pre>
@@ -365,11 +371,13 @@ class SMA: public Indicator&lt;SMA, double, double&gt; {
 <p>Streaming prevents lookahead bias and mimics real trading. You can't peek at future data. It also uses less memory—you don't need to load the entire dataset.</p>
 <p>Vectorized approaches (like pandas) are faster for analysis but make it easy to accidentally introduce lookahead bias.</p>
 <h3 id="can-i-use-this-with-live-data-feeds">Can I use this with live data feeds?</h3>
-<p>tzutrader is designed for backtesting, not live trading. You'd need to:
-- Wrap your data feed as a streamer
-- Handle real-time execution
-- Deal with order management
-- Implement error handling</p>
+<p>tzutrader is designed for backtesting, not live trading. You'd need to:</p>
+<ul>
+<li>Wrap your data feed as a streamer</li>
+<li>Handle real-time execution</li>
+<li>Deal with order management</li>
+<li>Implement error handling</li>
+</ul>
 <p>It's possible but not the intended use case. Production trading systems need much more infrastructure.</p>
 <h3 id="why-no-built-in-parameter-optimization">Why no built-in parameter optimization?</h3>
 <p>Adding optimization would make decisions about search methods, stopping criteria, and validation approaches. That's opinionated. Instead, tzutrader is a tool you use within your own optimization framework.</p>
@@ -400,29 +408,35 @@ clang++ --version  # Clang 5+ required
 gdb ./your_program
 </code></pre>
 <h3 id="results-look-too-good-to-be-true">Results look too good to be true</h3>
-<p>Check for:
-- Lookahead bias (using future data)
-- Incorrect transaction costs (too low or missing)
-- Overfitting (parameters tuned too specifically)
-- Data quality issues (survivorship bias, bad prices)</p>
+<p>Check for:</p>
+<ul>
+<li>Lookahead bias (using future data)</li>
+<li>Incorrect transaction costs (too low or missing)</li>
+<li>Overfitting (parameters tuned too specifically)</li>
+<li>Data quality issues (survivorship bias, bad prices)</li>
+</ul>
 <p>Be skeptical of amazing results. Markets aren't easy.</p>
 <h3 id="my-strategy-was-profitable-in-backtest-but-loses-money-live">My strategy was profitable in backtest but loses money live</h3>
-<p>This is common. Reasons include:
-- <strong>Overfitting</strong>: Optimized for historical quirks that don't repeat
-- <strong>Market regime change</strong>: Markets evolve, strategies stop working
-- <strong>Execution differences</strong>: Slippage, costs, fills differ from simulation
-- <strong>Psychological factors</strong>: Hard to follow rules during drawdowns</p>
+<p>This is common. Reasons include:</p>
+<ul>
+<li><strong>Overfitting</strong>: Optimized for historical quirks that don't repeat</li>
+<li><strong>Market regime change</strong>: Markets evolve, strategies stop working</li>
+<li><strong>Execution differences</strong>: Slippage, costs, fills differ from simulation</li>
+<li><strong>Psychological factors</strong>: Hard to follow rules during drawdowns</li>
+</ul>
 <p>Backtesting is imperfect. It's a filter to eliminate bad ideas, not a guarantee of success.</p>
 <h2 id="design-questions">Design Questions</h2>
 <h3 id="why-templates-instead-of-inheritance">Why templates instead of inheritance?</h3>
 <p>Templates provide compile-time polymorphism with no runtime overhead. For performance-critical backtesting code, avoiding virtual function calls matters.</p>
 <p>It also enables better compiler optimization since the full call graph is known at compile time.</p>
 <h3 id="why-such-a-minimal-feature-set">Why such a minimal feature set?</h3>
-<p>Intentional. The goal is exploring core architecture patterns, not building a feature-complete platform. Small scope means:
-- Easier to understand and modify
-- Fewer dependencies
-- Clearer design tradeoffs
-- Room to experiment</p>
+<p>Intentional. The goal is exploring core architecture patterns, not building a feature-complete platform. Small scope means:</p>
+<ul>
+<li>Easier to understand and modify</li>
+<li>Fewer dependencies</li>
+<li>Clearer design tradeoffs</li>
+<li>Room to experiment</li>
+</ul>
 <p>You can extend it for your needs.</p>
 <h3 id="will-feature-x-be-added">Will feature X be added?</h3>
 <p>Maybe. The roadmap is flexible. File an issue to discuss. Features aligned with the design philosophy (composability, simplicity, streaming) are more likely.</p>

@@ -18,18 +18,21 @@ BasicPortfolio portfolio(
 ### How It Works
 
 **On BUY signals:**
+
 - Uses all available cash to purchase
 - Applies transaction costs
 - Opens a new position
 - Tracks entry price and timestamp
 
 **On SELL signals:**
+
 - Closes all positions
 - Applies transaction costs
 - Records profit/loss
 - Updates performance metrics
 
 **On every update:**
+
 - Checks stop-loss conditions
 - Checks take-profit conditions
 - Automatically liquidates if thresholds are hit
@@ -47,6 +50,7 @@ struct Position {
 ```
 
 Positions track:
+
 - How much you own
 - Your entry price
 - When you entered
@@ -112,6 +116,7 @@ cash -= cost;  // Deducted from your capital
 **Why it matters:** A strategy that trades 100 times per year with 0.1% costs loses 10% to fees alone. High-frequency strategies need very low costs to be profitable.
 
 **Typical costs:**
+
 - Stock broker: 0.05% - 0.5%
 - Crypto exchange: 0.1% - 0.5%
 - Futures: $1-5 per contract
@@ -290,6 +295,7 @@ How do you know if your strategy is working if you don't measure? Track all rele
 Backtests don't capture psychology. Seeing a 30% drawdown on paper is different from watching your actual money decline 30%. Many strategies fail not because the logic is wrong, but because traders can't stick with them through drawdowns.
 
 When designing portfolios, consider:
+
 - Can you handle the max drawdown psychologically?
 - Is the trade frequency manageable?
 - Are the rules clear enough to follow without second-guessing?

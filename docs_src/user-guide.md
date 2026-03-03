@@ -651,14 +651,17 @@ cat ../tests/data/btcusd.csv | ./my_example
 ## Troubleshooting
 
 **Indicator returns NaN**
+
 - Not enough data points to fill the window yet
 - Check that you're providing valid numeric inputs
 
 **No trades executed**
+
 - Strategy might not be generating signals (check verbose mode)
 - Portfolio might have no cash or positions to trade
 
 **Unexpected results**
+
 - Verify CSV data format matches expected structure
 - Check for lookahead bias in strategy logic
 - Validate that indicators are updating correctly

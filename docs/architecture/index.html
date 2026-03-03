@@ -190,6 +190,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -317,10 +321,12 @@ struct CsvParseTraits {
     double sum;                // Running sum
 };
 </code></pre>
-<p>This approach:
-- Uses O(window_size) memory, not O(all_data)
-- Updates in O(1) time after initialization
-- Naturally handles streaming data</p>
+<p>This approach:</p>
+<ul>
+<li>Uses O(window_size) memory, not O(all_data)</li>
+<li>Updates in O(1) time after initialization</li>
+<li>Naturally handles streaming data</li>
+</ul>
 <h3 id="circular-buffers">Circular Buffers</h3>
 <p>Most indicators use circular buffers to maintain rolling windows:</p>
 <pre><code class="language-cpp">double update(double value) {
@@ -366,11 +372,13 @@ class SMA: public Indicator&lt;SMA, double, double&gt; {
 <p>This encourages code reuse and keeps individual components simple.</p>
 <h2 id="strategy-layer">Strategy Layer</h2>
 <h3 id="responsibilities">Responsibilities</h3>
-<p>A strategy:
-- Receives market data
-- Updates indicators
-- Generates trading signals (BUY/SELL/NONE)
-- Maintains state between updates</p>
+<p>A strategy:</p>
+<ul>
+<li>Receives market data</li>
+<li>Updates indicators</li>
+<li>Generates trading signals (BUY/SELL/NONE)</li>
+<li>Maintains state between updates</li>
+</ul>
 <h3 id="signal-generation">Signal Generation</h3>
 <p>Strategies output <code>Signal</code> objects:</p>
 <pre><code class="language-cpp">struct Signal {
@@ -419,17 +427,21 @@ class SMA: public Indicator&lt;SMA, double, double&gt; {
 <p>Custom strategies inherit from <code>Strategy&lt;T, In&gt;</code> and implement:</p>
 <pre><code class="language-cpp">Signal update(const In&amp; data);
 </code></pre>
-<p>The template parameters specify:
-- <code>T</code>: The derived strategy type (for CRTP)
-- <code>In</code>: The input data type (Ohlcv, Tick, SingleValue, etc.)</p>
+<p>The template parameters specify:</p>
+<ul>
+<li><code>T</code>: The derived strategy type (for CRTP)</li>
+<li><code>In</code>: The input data type (Ohlcv, Tick, SingleValue, etc.)</li>
+</ul>
 <h2 id="portfolio-layer">Portfolio Layer</h2>
 <h3 id="responsibilities_1">Responsibilities</h3>
-<p>A portfolio:
-- Manages cash and positions
-- Executes trades based on signals
-- Applies transaction costs
-- Implements risk management (stop-loss, take-profit)
-- Tracks performance metrics</p>
+<p>A portfolio:</p>
+<ul>
+<li>Manages cash and positions</li>
+<li>Executes trades based on signals</li>
+<li>Applies transaction costs</li>
+<li>Implements risk management (stop-loss, take-profit)</li>
+<li>Tracks performance metrics</li>
+</ul>
 <h3 id="position-management">Position Management</h3>
 <p>The <code>BasicPortfolio</code> uses an all-in approach:</p>
 <pre><code class="language-cpp">void update(const Signal&amp; signal) {
@@ -499,23 +511,27 @@ class BasicRunner {
     }
 };
 </code></pre>
-<p>The runner:
-- Pulls data from the streamer
-- Feeds data to the strategy
-- Passes signals to the portfolio
-- Optionally prints state after each step</p>
+<p>The runner:</p>
+<ul>
+<li>Pulls data from the streamer</li>
+<li>Feeds data to the strategy</li>
+<li>Passes signals to the portfolio</li>
+<li>Optionally prints state after each step</li>
+</ul>
 <h3 id="template-based-composition">Template-Based Composition</h3>
 <p>Using templates allows compile-time composition without runtime overhead:</p>
 <pre><code class="language-cpp">BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;&gt; runner(portfolio, strat, csv);
 </code></pre>
 <p>Each combination of components generates specialized code optimized for that exact configuration.</p>
 <h3 id="alternative-runner-designs">Alternative Runner Designs</h3>
-<p>Future runners might:
-- Support multiple strategies simultaneously
-- Enable strategy comparison
-- Add warmup periods
-- Implement walk-forward analysis
-- Support parameter optimization</p>
+<p>Future runners might:</p>
+<ul>
+<li>Support multiple strategies simultaneously</li>
+<li>Enable strategy comparison</li>
+<li>Add warmup periods</li>
+<li>Implement walk-forward analysis</li>
+<li>Support parameter optimization</li>
+</ul>
 <h2 id="design-patterns">Design Patterns</h2>
 <h3 id="crtp-curiously-recurring-template-pattern">CRTP (Curiously Recurring Template Pattern)</h3>
 <p>Used for indicators and strategies to provide static polymorphism:</p>
@@ -526,10 +542,12 @@ class Indicator {
     }
 };
 </code></pre>
-<p>Benefits:
-- No virtual function overhead
-- Type-safe interface
-- Enables compile-time optimization</p>
+<p>Benefits:</p>
+<ul>
+<li>No virtual function overhead</li>
+<li>Type-safe interface</li>
+<li>Enables compile-time optimization</li>
+</ul>
 <h3 id="traits-based-specialization">Traits-Based Specialization</h3>
 <p>Used for parsing different data types:</p>
 <pre><code class="language-cpp">template&lt;typename T&gt;
@@ -537,10 +555,12 @@ struct CsvParseTraits {
     static bool parse(const char* line, T&amp; out);
 };
 </code></pre>
-<p>Benefits:
-- Separates format from parsing logic
-- Easy to extend with new types
-- No runtime dispatch overhead</p>
+<p>Benefits:</p>
+<ul>
+<li>Separates format from parsing logic</li>
+<li>Easy to extend with new types</li>
+<li>No runtime dispatch overhead</li>
+</ul>
 <h3 id="composition-over-inheritance">Composition Over Inheritance</h3>
 <p>Indicators and strategies are composed:</p>
 <pre><code class="language-cpp">class RSI {
@@ -553,10 +573,12 @@ struct CsvParseTraits {
 class RSI: public SMA {
 };
 </code></pre>
-<p>Benefits:
-- More flexible
-- Clearer dependencies
-- Easier to test components in isolation</p>
+<p>Benefits:</p>
+<ul>
+<li>More flexible</li>
+<li>Clearer dependencies</li>
+<li>Easier to test components in isolation</li>
+</ul>
 <h2 id="memory-and-performance">Memory and Performance</h2>
 <h3 id="memory-characteristics">Memory Characteristics</h3>
 <ul>
@@ -673,7 +695,7 @@ class RSI: public SMA {
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../portfolios/" class="btn btn-neutral float-left" title="Portfolios"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../contributing/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../utilities/" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -703,7 +725,7 @@ class RSI: public SMA {
       <span><a href="../portfolios/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../utilities/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

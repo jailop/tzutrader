@@ -130,6 +130,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -215,11 +219,13 @@ Signal update(const Ohlcv&amp; data) {
 <li>Offer parameter optimization</li>
 <li>Connect to live brokers</li>
 </ul>
-<p>This narrow focus means:
-- Less code to understand and maintain
-- Fewer dependencies to manage
-- Clearer mental model
-- Room to experiment without breaking things</p>
+<p>This narrow focus means:</p>
+<ul>
+<li>Less code to understand and maintain</li>
+<li>Fewer dependencies to manage</li>
+<li>Clearer mental model</li>
+<li>Room to experiment without breaking things</li>
+</ul>
 <p>You can add these features yourself if needed. The library provides building blocks, not a complete platform.</p>
 <h3 id="4-no-magic">4. No Magic</h3>
 <p>All behavior should be understandable by reading the code. No hidden state, no implicit behavior, no "framework magic."</p>
@@ -246,11 +252,13 @@ Signal update(const Ohlcv&amp; data) {
 <p>You can trace exactly what happens on each update. No surprises.</p>
 <h3 id="5-performance-through-simplicity">5. Performance Through Simplicity</h3>
 <p>Fast code doesn't need to be complex. Simple algorithms with good data structures often outperform "clever" code.</p>
-<p><strong>Design choices for performance:</strong>
-- Circular buffers for rolling windows (O(1) updates)
-- Templates for zero-cost abstraction
-- Minimal dynamic allocation in hot paths
-- Streaming to avoid loading entire datasets</p>
+<p><strong>Design choices for performance:</strong></p>
+<ul>
+<li>Circular buffers for rolling windows (O(1) updates)</li>
+<li>Templates for zero-cost abstraction</li>
+<li>Minimal dynamic allocation in hot paths</li>
+<li>Streaming to avoid loading entire datasets</li>
+</ul>
 <p>But performance isn't the primary goal—clarity is. Fast code that's unmaintainable isn't useful.</p>
 <h2 id="unix-philosophy-influence">Unix Philosophy Influence</h2>
 <blockquote>
@@ -259,11 +267,13 @@ Signal update(const Ohlcv&amp; data) {
 </blockquote>
 <p>The Unix philosophy shapes tzutrader's design:</p>
 <h3 id="small-focused-tools">Small, Focused Tools</h3>
-<p>Each component does one thing:
-- Indicators calculate values
-- Strategies generate signals
-- Portfolios manage positions
-- Runners orchestrate the process</p>
+<p>Each component does one thing:</p>
+<ul>
+<li>Indicators calculate values</li>
+<li>Strategies generate signals</li>
+<li>Portfolios manage positions</li>
+<li>Runners orchestrate the process</li>
+</ul>
 <p>Like Unix commands (<code>grep</code>, <code>sort</code>, <code>cut</code>), you combine them to create complex behavior.</p>
 <h3 id="text-streams-as-universal-interface">Text Streams as Universal Interface</h3>
 <p>Unix programs communicate through text streams. tzutrader uses standard interfaces:</p>
@@ -293,53 +303,71 @@ class MyStrategy {
 <p>You decide the policies. The library just provides the tools.</p>
 <h2 id="who-this-is-for">Who This Is For</h2>
 <h3 id="target-users">Target Users</h3>
-<p><strong>Primary audience:</strong>
-- Intermediate to advanced programmers comfortable with C++
-- Traders who want systematic strategy testing
-- Students learning about algorithmic trading
-- Developers interested in financial software architecture</p>
-<p><strong>This is NOT for:</strong>
-- Complete programming beginners (C++ is hard)
-- People wanting plug-and-play solutions (requires coding)
-- Those expecting guaranteed profits (no such thing)
-- Users wanting extensive hand-holding (minimal docs, you read code)</p>
+<p><strong>Primary audience:</strong></p>
+<ul>
+<li>Intermediate to advanced programmers comfortable with C++</li>
+<li>Traders who want systematic strategy testing</li>
+<li>Students learning about algorithmic trading</li>
+<li>Developers interested in financial software architecture</li>
+</ul>
+<p><strong>This is NOT for:</strong></p>
+<ul>
+<li>Complete programming beginners (C++ is hard)</li>
+<li>People wanting plug-and-play solutions (requires coding)</li>
+<li>Those expecting guaranteed profits (no such thing)</li>
+<li>Users wanting extensive hand-holding (minimal docs, you read code)</li>
+</ul>
 <h3 id="why-c">Why C++?</h3>
 <p>C++ is harder than Python. So why use it?</p>
-<p><strong>Learning value:</strong>
-- Forces you to think about memory and state
-- No hiding behind framework magic
-- Closer to how production systems work
-- Understanding performance implications</p>
-<p><strong>Performance:</strong>
-- 10-100x faster than Python for compute-heavy tasks
-- Matters when testing thousands of parameter combinations
-- Low latency when processing large datasets</p>
-<p><strong>Production relevance:</strong>
-- Most serious trading systems use C++ (or C, Java, Rust)
-- Skills transfer to professional environment
-- Understanding systems-level concerns</p>
-<p><strong>Trade-offs:</strong>
-- Steeper learning curve than Python
-- More verbose code
-- Harder to prototype quickly
-- Less forgiving of mistakes</p>
+<p><strong>Learning value:</strong></p>
+<ul>
+<li>Forces you to think about memory and state</li>
+<li>No hiding behind framework magic</li>
+<li>Closer to how production systems work</li>
+<li>Understanding performance implications</li>
+</ul>
+<p><strong>Performance:</strong></p>
+<ul>
+<li>10-100x faster than Python for compute-heavy tasks</li>
+<li>Matters when testing thousands of parameter combinations</li>
+<li>Low latency when processing large datasets</li>
+</ul>
+<p><strong>Production relevance:</strong></p>
+<ul>
+<li>Most serious trading systems use C++ (or C, Java, Rust)</li>
+<li>Skills transfer to professional environment</li>
+<li>Understanding systems-level concerns</li>
+</ul>
+<p><strong>Trade-offs:</strong></p>
+<ul>
+<li>Steeper learning curve than Python</li>
+<li>More verbose code</li>
+<li>Harder to prototype quickly</li>
+<li>Less forgiving of mistakes</li>
+</ul>
 <p>If you're learning backtesting, Python is easier. If you're learning systems programming or want production-relevant skills, C++ is valuable.</p>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>To use tzutrader effectively, you should understand:</p>
-<p><strong>C++ fundamentals:</strong>
-- Classes and templates
-- Standard library containers
-- Memory management basics
-- Build systems (CMake)</p>
-<p><strong>Trading basics:</strong>
-- What indicators measure
-- How signals translate to trades
-- Risk management concepts
-- Why backtesting is hard</p>
-<p><strong>Unix/command-line:</strong>
-- Basic shell commands
-- Pipes and redirection
-- Text processing tools</p>
+<p><strong>C++ fundamentals:</strong></p>
+<ul>
+<li>Classes and templates</li>
+<li>Standard library containers</li>
+<li>Memory management basics</li>
+<li>Build systems (CMake)</li>
+</ul>
+<p><strong>Trading basics:</strong></p>
+<ul>
+<li>What indicators measure</li>
+<li>How signals translate to trades</li>
+<li>Risk management concepts</li>
+<li>Why backtesting is hard</li>
+</ul>
+<p><strong>Unix/command-line:</strong></p>
+<ul>
+<li>Basic shell commands</li>
+<li>Pipes and redirection</li>
+<li>Text processing tools</li>
+</ul>
 <p>If you're missing any of these, tzutrader will be frustrating. That's okay—it's not for everyone.</p>
 <h2 id="what-this-means-in-practice">What This Means in Practice</h2>
 <h3 id="you-will-write-code">You Will Write Code</h3>

@@ -7,6 +7,7 @@ tzutrader is an experimental project exploring composable backtesting architectu
 ### Report Bugs
 
 If you find bugs:
+
 - Check if it's already reported in [issues](https://codeberg.org/jailop/tzutrader/issues)
 - Provide a minimal reproducible example
 - Include your compiler version and OS
@@ -15,6 +16,7 @@ If you find bugs:
 ### Share Feedback
 
 Since this is an experimental project, architectural feedback is valuable:
+
 - What patterns work well?
 - What's confusing or difficult to use?
 - Where does the abstraction leak?
@@ -25,6 +27,7 @@ Be honest. Criticism is welcome and helpful.
 ### Submit Code
 
 If you want to contribute code:
+
 - Start with small changes
 - Follow existing code style
 - Add tests for new functionality
@@ -85,6 +88,7 @@ tzutrader/
 ## Code Style
 
 **General principles:**
+
 - Keep it simple
 - Prefer composition over inheritance
 - Use templates for flexibility without runtime cost
@@ -92,6 +96,7 @@ tzutrader/
 - Prefer `const` and `noexcept` where appropriate
 
 **Naming:**
+
 - Classes: `PascalCase`
 - Functions/methods: `snake_case`
 - Variables: `snake_case`
@@ -99,6 +104,7 @@ tzutrader/
 - Template parameters: `PascalCase`
 
 **Example:**
+
 ```cpp
 class MyIndicator: public Indicator<MyIndicator, double, double> {
 private:
@@ -230,12 +236,14 @@ int main() {
 ## Documentation
 
 When adding features:
+
 - Update relevant documentation pages
 - Add code examples
 - Explain limitations and trade-offs
 - Keep an honest tone
 
 Documentation lives in `docs_src/`:
+
 - `getting-started.md`: Introductory content
 - `indicators.md`: Indicator documentation
 - `strategies.md`: Strategy documentation
@@ -255,6 +263,7 @@ Documentation lives in `docs_src/`:
    - Any breaking changes noted
 
 **PR guidelines:**
+
 - Keep changes focused (one feature/fix per PR)
 - Write clear commit messages
 - Ensure tests pass
@@ -271,6 +280,7 @@ Documentation lives in `docs_src/`:
 Since this is experimental, the bar for contributions varies:
 
 **Likely accepted:**
+
 - Bug fixes
 - New indicators with tests
 - New strategies with tests
@@ -279,12 +289,14 @@ Since this is experimental, the bar for contributions varies:
 - Performance optimizations (with benchmarks)
 
 **Needs discussion:**
+
 - Architectural changes
 - New dependencies
 - Breaking API changes
 - Major feature additions
 
 **Unlikely accepted:**
+
 - Large refactors without clear benefit
 - Features that break composability
 - Overly complex additions
@@ -305,6 +317,7 @@ If a contribution aligns with these principles, it's more likely to be accepted.
 ## Code Review
 
 Expect code reviews to focus on:
+
 - Correctness
 - Clarity
 - Performance implications
@@ -316,6 +329,7 @@ Feedback is meant to improve code quality, not personal criticism. Reviews may b
 ## Recognition
 
 Contributors are recognized in:
+
 - Commit history
 - CHANGELOG.txt
 - Repository contributors page

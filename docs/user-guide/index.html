@@ -70,6 +70,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -643,16 +647,22 @@ cat ../tests/data/btcusd.csv | ./my_example
 <li>Use clear, descriptive names</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<p><strong>Indicator returns NaN</strong>
-- Not enough data points to fill the window yet
-- Check that you're providing valid numeric inputs</p>
-<p><strong>No trades executed</strong>
-- Strategy might not be generating signals (check verbose mode)
-- Portfolio might have no cash or positions to trade</p>
-<p><strong>Unexpected results</strong>
-- Verify CSV data format matches expected structure
-- Check for lookahead bias in strategy logic
-- Validate that indicators are updating correctly</p>
+<p><strong>Indicator returns NaN</strong></p>
+<ul>
+<li>Not enough data points to fill the window yet</li>
+<li>Check that you're providing valid numeric inputs</li>
+</ul>
+<p><strong>No trades executed</strong></p>
+<ul>
+<li>Strategy might not be generating signals (check verbose mode)</li>
+<li>Portfolio might have no cash or positions to trade</li>
+</ul>
+<p><strong>Unexpected results</strong></p>
+<ul>
+<li>Verify CSV data format matches expected structure</li>
+<li>Check for lookahead bias in strategy logic</li>
+<li>Validate that indicators are updating correctly</li>
+</ul>
 <h2 id="whats-next">What's Next</h2>
 <p>As an experimental project, tzutrader continues to evolve. Future directions may include:</p>
 <ul>

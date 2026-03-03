@@ -5,11 +5,13 @@ tzutrader is a C++ backtesting library for testing trading strategies. This guid
 ## Prerequisites
 
 **Technical requirements:**
+
 - C++17 or later compiler (GCC, Clang, or MSVC)
 - CMake 3.10 or later
 - Git
 
 **Knowledge requirements:**
+
 - Comfortable with C++ (classes, templates, STL)
 - Basic understanding of trading concepts
 - Familiarity with command-line tools
@@ -143,6 +145,7 @@ cat ../tests/data/btcusd.csv | ./my_backtest | tr ' ' '\n' | column -t -s ':'
 ```
 
 **Key metrics:**
+
 - `total_return`: 0.9742 = 97.42% profit
 - `annual_return`: 0.0638 = 6.38% per year
 - `win_rate`: 0.6087 = 60.87% of trades were winners
@@ -302,6 +305,7 @@ public:
 - Explore [Strategies](strategies.md) for signal generation patterns
 - Understand [Portfolios](portfolios.md) for position management
 - Review [Architecture](architecture.md) to understand the design
+- Check [Utilities](utilities.md) for development helper tools
 
 ## Common Issues
 
@@ -323,12 +327,14 @@ public:
 ## What tzutrader Is and Isn't
 
 **tzutrader is:**
+
 - A library for testing trading ideas
 - Focused on composability and simplicity
 - An educational tool for understanding backtesting
 - Experimental and evolving
 
 **tzutrader is not:**
+
 - A production trading system
 - A guaranteed path to profits
 - A complete trading platform with data feeds and execution

@@ -136,6 +136,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -179,20 +183,26 @@
 );
 </code></pre>
 <h3 id="how-it-works">How It Works</h3>
-<p><strong>On BUY signals:</strong>
-- Uses all available cash to purchase
-- Applies transaction costs
-- Opens a new position
-- Tracks entry price and timestamp</p>
-<p><strong>On SELL signals:</strong>
-- Closes all positions
-- Applies transaction costs
-- Records profit/loss
-- Updates performance metrics</p>
-<p><strong>On every update:</strong>
-- Checks stop-loss conditions
-- Checks take-profit conditions
-- Automatically liquidates if thresholds are hit</p>
+<p><strong>On BUY signals:</strong></p>
+<ul>
+<li>Uses all available cash to purchase</li>
+<li>Applies transaction costs</li>
+<li>Opens a new position</li>
+<li>Tracks entry price and timestamp</li>
+</ul>
+<p><strong>On SELL signals:</strong></p>
+<ul>
+<li>Closes all positions</li>
+<li>Applies transaction costs</li>
+<li>Records profit/loss</li>
+<li>Updates performance metrics</li>
+</ul>
+<p><strong>On every update:</strong></p>
+<ul>
+<li>Checks stop-loss conditions</li>
+<li>Checks take-profit conditions</li>
+<li>Automatically liquidates if thresholds are hit</li>
+</ul>
 <p>This is an "all-in" approach: you're either fully invested or fully in cash. Not realistic for professional trading, but simple for testing strategy ideas.</p>
 <h2 id="position-management">Position Management</h2>
 <pre><code class="language-cpp">struct Position {
@@ -201,10 +211,12 @@
     int64_t timestamp;
 };
 </code></pre>
-<p>Positions track:
-- How much you own
-- Your entry price
-- When you entered</p>
+<p>Positions track:</p>
+<ul>
+<li>How much you own</li>
+<li>Your entry price</li>
+<li>When you entered</li>
+</ul>
 <p>The portfolio uses this to calculate returns and trigger risk management rules.</p>
 <h2 id="risk-management">Risk Management</h2>
 <h3 id="stop-loss">Stop-Loss</h3>
@@ -238,10 +250,12 @@ if (return_pct &lt;= -stop_loss_pct) {
 cash -= cost;  // Deducted from your capital
 </code></pre>
 <p><strong>Why it matters:</strong> A strategy that trades 100 times per year with 0.1% costs loses 10% to fees alone. High-frequency strategies need very low costs to be profitable.</p>
-<p><strong>Typical costs:</strong>
-- Stock broker: 0.05% - 0.5%
-- Crypto exchange: 0.1% - 0.5%
-- Futures: $1-5 per contract</p>
+<p><strong>Typical costs:</strong></p>
+<ul>
+<li>Stock broker: 0.05% - 0.5%</li>
+<li>Crypto exchange: 0.1% - 0.5%</li>
+<li>Futures: $1-5 per contract</li>
+</ul>
 <p>Model costs realistically. Strategies that look profitable before costs often aren't after.</p>
 <h2 id="performance-metrics">Performance Metrics</h2>
 <p>The portfolio tracks:</p>
@@ -357,10 +371,12 @@ if (profit_target_2_hit) {
 <p>How do you know if your strategy is working if you don't measure? Track all relevant performance metrics.</p>
 <h2 id="the-psychology-factor">The Psychology Factor</h2>
 <p>Backtests don't capture psychology. Seeing a 30% drawdown on paper is different from watching your actual money decline 30%. Many strategies fail not because the logic is wrong, but because traders can't stick with them through drawdowns.</p>
-<p>When designing portfolios, consider:
-- Can you handle the max drawdown psychologically?
-- Is the trade frequency manageable?
-- Are the rules clear enough to follow without second-guessing?</p>
+<p>When designing portfolios, consider:</p>
+<ul>
+<li>Can you handle the max drawdown psychologically?</li>
+<li>Is the trade frequency manageable?</li>
+<li>Are the rules clear enough to follow without second-guessing?</li>
+</ul>
 <p>A slightly worse strategy that you can actually execute beats a theoretically better one that you'll abandon after the first losing streak.</p>
 <h2 id="position-management-best-practices">Position Management Best Practices</h2>
 <p><strong>Size positions appropriately:</strong> Don't bet everything on one trade.</p>

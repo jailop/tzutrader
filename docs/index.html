@@ -90,6 +90,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="contributing/">Contributing</a>
                 </li>
               </ul>
@@ -124,24 +128,30 @@
 <p>A composable C++ backtesting library for testing trading strategies.</p>
 <h2 id="what-is-this">What Is This?</h2>
 <p>tzutrader is an experimental library for backtesting algorithmic trading strategies. It's built around composability—mix and match indicators, strategies, and portfolio management components to test your trading ideas.</p>
-<p><strong>Key features:</strong>
-- Streaming data processing to prevent lookahead bias
-- Modular design with composable components
-- Built-in indicators (SMA, EMA, RSI, MACD)
-- Example strategies and portfolio management
-- Simple, understandable C++ code</p>
+<p><strong>Key features:</strong></p>
+<ul>
+<li>Streaming data processing to prevent lookahead bias</li>
+<li>Modular design with composable components</li>
+<li>Built-in indicators (SMA, EMA, RSI, MACD)</li>
+<li>Example strategies and portfolio management</li>
+<li>Simple, understandable C++ code</li>
+</ul>
 <h2 id="current-status">Current Status</h2>
 <p>This is experimental software. It covers basic features to explore design patterns and validate architectural choices. The API may change as the project evolves.</p>
-<p><strong>What works:</strong>
-- Basic indicators and strategies
-- Simple portfolio management with risk controls
-- CSV data input
-- Performance metrics calculation</p>
-<p><strong>What doesn't (yet):</strong>
-- Multi-asset portfolios
-- Complex order types
-- Real-time data feeds
-- Extensive built-in strategy library</p>
+<p><strong>What works:</strong></p>
+<ul>
+<li>Basic indicators and strategies</li>
+<li>Simple portfolio management with risk controls</li>
+<li>CSV data input</li>
+<li>Performance metrics calculation</li>
+</ul>
+<p><strong>What doesn't (yet):</strong></p>
+<ul>
+<li>Multi-asset portfolios</li>
+<li>Complex order types</li>
+<li>Real-time data feeds</li>
+<li>Extensive built-in strategy library</li>
+</ul>
 <h2 id="quick-example">Quick Example</h2>
 <pre><code class="language-cpp">#include &quot;tzu.h&quot;
 using namespace tzu;
@@ -165,41 +175,61 @@ int main() {
 <pre><code class="language-bash">cat data.csv | ./backtest
 </code></pre>
 <h2 id="documentation">Documentation</h2>
-<p><strong>Start here:</strong>
-- <strong><a href="getting-started/">Getting Started</a></strong>: Installation and first backtest
-- <strong><a href="philosophy/">Design Philosophy</a></strong>: Why tzutrader exists and who it's for</p>
-<p><strong>Learn the concepts:</strong>
-- <strong><a href="intro-trading/">Intro to Trading</a></strong>: Backtesting fundamentals and pitfalls</p>
-<p><strong>Build with components:</strong>
-- <strong><a href="indicators/">Indicators</a></strong>: Using and creating indicators
-- <strong><a href="strategies/">Strategies</a></strong>: Building trading strategies
-- <strong><a href="portfolios/">Portfolios</a></strong>: Position and risk management</p>
-<p><strong>Understand the design:</strong>
-- <strong><a href="architecture/">Architecture</a></strong>: Implementation details and patterns</p>
-<p><strong>Get involved:</strong>
-- <strong><a href="contributing/">Contributing</a></strong>: How to contribute
-- <strong><a href="faq/">FAQ</a></strong>: Common questions</p>
+<p><strong>Start here:</strong></p>
+<ul>
+<li><strong><a href="getting-started/">Getting Started</a></strong>: Installation and first backtest</li>
+<li><strong><a href="philosophy/">Design Philosophy</a></strong>: Why tzutrader exists and who it's for</li>
+</ul>
+<p><strong>Learn the concepts:</strong></p>
+<ul>
+<li><strong><a href="intro-trading/">Intro to Trading</a></strong>: Backtesting fundamentals and pitfalls</li>
+</ul>
+<p><strong>Build with components:</strong></p>
+<ul>
+<li><strong><a href="indicators/">Indicators</a></strong>: Using and creating indicators</li>
+<li><strong><a href="strategies/">Strategies</a></strong>: Building trading strategies</li>
+<li><strong><a href="portfolios/">Portfolios</a></strong>: Position and risk management</li>
+</ul>
+<p><strong>Understand the design:</strong></p>
+<ul>
+<li><strong><a href="architecture/">Architecture</a></strong>: Implementation details and patterns</li>
+</ul>
+<p><strong>Development tools:</strong></p>
+<ul>
+<li><strong><a href="utilities/">Utilities</a></strong>: Helper tools for program development</li>
+</ul>
+<p><strong>Get involved:</strong></p>
+<ul>
+<li><strong><a href="contributing/">Contributing</a></strong>: How to contribute</li>
+<li><strong><a href="faq/">FAQ</a></strong>: Common questions</li>
+</ul>
 <p><strong>API Reference:</strong> <a href="https://jailop.codeberg.page/tzutrader/docs/html">https://jailop.codeberg.page/tzutrader/docs/html</a></p>
 <h2 id="philosophy">Philosophy</h2>
 <p>tzutrader follows the Unix philosophy: build small, composable tools that do one thing well. Rather than a monolithic framework, it provides building blocks you combine to create backtests.</p>
-<p><strong>Core principles:</strong>
-- <strong>Composability</strong>: Mix and match indicators, strategies, portfolios
-- <strong>Streaming</strong>: Process data point-by-point to prevent lookahead bias
-- <strong>Simplicity</strong>: Minimal dependencies, focused scope, no magic
-- <strong>Transparency</strong>: Code you can read, understand, and modify</p>
+<p><strong>Core principles:</strong></p>
+<ul>
+<li><strong>Composability</strong>: Mix and match indicators, strategies, portfolios</li>
+<li><strong>Streaming</strong>: Process data point-by-point to prevent lookahead bias</li>
+<li><strong>Simplicity</strong>: Minimal dependencies, focused scope, no magic</li>
+<li><strong>Transparency</strong>: Code you can read, understand, and modify</li>
+</ul>
 <p>Inspired by Unix tools (<code>grep</code>, <code>awk</code>, <code>sort</code>), components do one thing well and work together through standard interfaces.</p>
 <h2 id="who-this-is-for">Who This Is For</h2>
-<p><strong>You'll get value from tzutrader if you:</strong>
-- Are comfortable with C++ and template programming
-- Want to understand backtesting architecture, not just use it
-- Prefer reading code over reading documentation
-- Are willing to write your own indicators and strategies
-- Value performance and learning systems programming</p>
-<p><strong>This is probably not for you if:</strong>
-- You're new to C++ (Python backtesting libraries are easier)
-- You want a GUI or plug-and-play solutions
-- You need production-ready, stable software right now
-- You prefer extensive documentation over code exploration</p>
+<p><strong>You'll get value from tzutrader if you:</strong></p>
+<ul>
+<li>Are comfortable with C++ and template programming</li>
+<li>Want to understand backtesting architecture, not just use it</li>
+<li>Prefer reading code over reading documentation</li>
+<li>Are willing to write your own indicators and strategies</li>
+<li>Value performance and learning systems programming</li>
+</ul>
+<p><strong>This is probably not for you if:</strong></p>
+<ul>
+<li>You're new to C++ (Python backtesting libraries are easier)</li>
+<li>You want a GUI or plug-and-play solutions</li>
+<li>You need production-ready, stable software right now</li>
+<li>You prefer extensive documentation over code exploration</li>
+</ul>
 <p>C++ is harder than Python. We chose it for performance, learning value, and because production trading systems use it. If you're learning algorithmic trading, start with Python. If you're learning systems programming or want skills that transfer to professional trading systems, tzutrader is relevant.</p>
 <p>See <a href="philosophy/">Design Philosophy</a> for the detailed rationale.</p>
 <h2 id="the-reality-check">The Reality Check</h2>
@@ -271,5 +301,5 @@ int main() {
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-03-03 22:05:29.844667+00:00
+Build Date UTC : 2026-03-03 22:26:07.948332+00:00
 -->

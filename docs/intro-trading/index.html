@@ -102,6 +102,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -154,20 +158,24 @@
 <p>tzutrader processes data in a streaming fashion to help avoid this, but you still need to be careful in your strategy logic.</p>
 <h3 id="overfitting">Overfitting</h3>
 <p>Tweaking parameters until a strategy performs well on historical data, but then it fails on new data. This happens when you optimize too much for the specific quirks of your test dataset.</p>
-<p><strong>Warning signs:</strong>
-- Too many parameters (&gt;5)
-- Very specific parameter values (e.g., exactly 23.7)
-- Excellent backtest results but poor out-of-sample performance</p>
+<p><strong>Warning signs:</strong></p>
+<ul>
+<li>Too many parameters (&gt;5)</li>
+<li>Very specific parameter values (e.g., exactly 23.7)</li>
+<li>Excellent backtest results but poor out-of-sample performance</li>
+</ul>
 <h3 id="survivorship-bias">Survivorship Bias</h3>
 <p>Testing only on assets that still exist today, ignoring those that went bankrupt or were delisted. This makes your results look better than they would have been in reality.</p>
 <h3 id="ignoring-transaction-costs">Ignoring Transaction Costs</h3>
 <p>Every trade has costs: commissions, spreads, slippage. A strategy that trades frequently can be profitable before costs but lose money after accounting for them.</p>
 <h3 id="data-quality-issues">Data Quality Issues</h3>
-<p>Bad data leads to bad results. Ensure your historical data is:
-- Complete (no missing periods)
-- Accurate (correct prices)
-- Adjusted for splits and dividends
-- From a reliable source</p>
+<p>Bad data leads to bad results. Ensure your historical data is:</p>
+<ul>
+<li>Complete (no missing periods)</li>
+<li>Accurate (correct prices)</li>
+<li>Adjusted for splits and dividends</li>
+<li>From a reliable source</li>
+</ul>
 <h2 id="building-a-strategy">Building a Strategy</h2>
 <p>A trading strategy needs three components:</p>
 <ol>
@@ -175,10 +183,12 @@
 <li><strong>Exit rules</strong>: When to close a position</li>
 <li><strong>Position sizing</strong>: How much to trade</li>
 </ol>
-<p>Example of a simple strategy:
-- <strong>Entry</strong>: Buy when 20-day SMA crosses above 50-day SMA
-- <strong>Exit</strong>: Sell when 20-day SMA crosses below 50-day SMA
-- <strong>Size</strong>: Use all available capital</p>
+<p>Example of a simple strategy:</p>
+<ul>
+<li><strong>Entry</strong>: Buy when 20-day SMA crosses above 50-day SMA</li>
+<li><strong>Exit</strong>: Sell when 20-day SMA crosses below 50-day SMA</li>
+<li><strong>Size</strong>: Use all available capital</li>
+</ul>
 <p>This is simple but probably not profitable. Real strategies are more nuanced, often combining multiple indicators and conditions.</p>
 <h2 id="what-makes-a-good-strategy">What Makes a Good Strategy?</h2>
 <p>There's no universal answer, but some characteristics of robust strategies:</p>
@@ -191,11 +201,13 @@
 </ul>
 <h2 id="the-honest-truth">The Honest Truth</h2>
 <p>Most retail traders lose money. Professional trading is competitive, with well-funded firms using sophisticated technology. You're not going to get rich quick with a simple moving average crossover.</p>
-<p>That said, backtesting is valuable for:
-- Learning about market behavior
-- Understanding risk and position management
-- Testing ideas systematically
-- Avoiding obvious mistakes</p>
+<p>That said, backtesting is valuable for:</p>
+<ul>
+<li>Learning about market behavior</li>
+<li>Understanding risk and position management</li>
+<li>Testing ideas systematically</li>
+<li>Avoiding obvious mistakes</li>
+</ul>
 <p>Treat it as education, not a guaranteed path to profits. If you do trade live, start small and be prepared to lose money while you learn.</p>
 <h2 id="using-tzutrader">Using tzutrader</h2>
 <p>tzutrader is designed to help you backtest ideas honestly:</p>
@@ -217,11 +229,13 @@ cat data.txt | grep &quot;pattern&quot; | sort | uniq -c
 # Portfolio executes trades
 cat data.csv | ./backtest | tr ' ' '\n' | column -t
 </code></pre>
-<p>You compose simple pieces into complex systems. This makes it easier to:
-- Understand each component in isolation
-- Test components independently
-- Replace one part without rewriting everything
-- Build exactly what you need</p>
+<p>You compose simple pieces into complex systems. This makes it easier to:</p>
+<ul>
+<li>Understand each component in isolation</li>
+<li>Test components independently</li>
+<li>Replace one part without rewriting everything</li>
+<li>Build exactly what you need</li>
+</ul>
 <p>The trade-off is you write more code. But you understand what that code does, because you wrote it. No hidden magic, no black boxes.</p>
               
             </div>

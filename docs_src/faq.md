@@ -101,6 +101,7 @@ See the [Strategies](strategies.md) page for examples.
 ### Why aren't any trades being executed?
 
 Common reasons:
+
 - Strategy isn't generating signals (check verbose mode)
 - Indicators haven't warmed up yet (early data points)
 - CSV format is incorrect (check timestamps and values)
@@ -235,6 +236,7 @@ Vectorized approaches (like pandas) are faster for analysis but make it easy to 
 ### Can I use this with live data feeds?
 
 tzutrader is designed for backtesting, not live trading. You'd need to:
+
 - Wrap your data feed as a streamer
 - Handle real-time execution
 - Deal with order management
@@ -289,6 +291,7 @@ gdb ./your_program
 ### Results look too good to be true
 
 Check for:
+
 - Lookahead bias (using future data)
 - Incorrect transaction costs (too low or missing)
 - Overfitting (parameters tuned too specifically)
@@ -299,6 +302,7 @@ Be skeptical of amazing results. Markets aren't easy.
 ### My strategy was profitable in backtest but loses money live
 
 This is common. Reasons include:
+
 - **Overfitting**: Optimized for historical quirks that don't repeat
 - **Market regime change**: Markets evolve, strategies stop working
 - **Execution differences**: Slippage, costs, fills differ from simulation
@@ -317,6 +321,7 @@ It also enables better compiler optimization since the full call graph is known 
 ### Why such a minimal feature set?
 
 Intentional. The goal is exploring core architecture patterns, not building a feature-complete platform. Small scope means:
+
 - Easier to understand and modify
 - Fewer dependencies
 - Clearer design tradeoffs

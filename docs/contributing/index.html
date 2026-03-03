@@ -69,6 +69,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Contributing</a>
     <ul class="current">
@@ -158,24 +162,30 @@
 <p>tzutrader is an experimental project exploring composable backtesting architecture. Contributions, feedback, and criticism are welcome.</p>
 <h2 id="ways-to-contribute">Ways to Contribute</h2>
 <h3 id="report-bugs">Report Bugs</h3>
-<p>If you find bugs:
-- Check if it's already reported in <a href="https://codeberg.org/jailop/tzutrader/issues">issues</a>
-- Provide a minimal reproducible example
-- Include your compiler version and OS
-- Describe expected vs actual behavior</p>
+<p>If you find bugs:</p>
+<ul>
+<li>Check if it's already reported in <a href="https://codeberg.org/jailop/tzutrader/issues">issues</a></li>
+<li>Provide a minimal reproducible example</li>
+<li>Include your compiler version and OS</li>
+<li>Describe expected vs actual behavior</li>
+</ul>
 <h3 id="share-feedback">Share Feedback</h3>
-<p>Since this is an experimental project, architectural feedback is valuable:
-- What patterns work well?
-- What's confusing or difficult to use?
-- Where does the abstraction leak?
-- What would you change?</p>
+<p>Since this is an experimental project, architectural feedback is valuable:</p>
+<ul>
+<li>What patterns work well?</li>
+<li>What's confusing or difficult to use?</li>
+<li>Where does the abstraction leak?</li>
+<li>What would you change?</li>
+</ul>
 <p>Be honest. Criticism is welcome and helpful.</p>
 <h3 id="submit-code">Submit Code</h3>
-<p>If you want to contribute code:
-- Start with small changes
-- Follow existing code style
-- Add tests for new functionality
-- Update documentation</p>
+<p>If you want to contribute code:</p>
+<ul>
+<li>Start with small changes</li>
+<li>Follow existing code style</li>
+<li>Add tests for new functionality</li>
+<li>Update documentation</li>
+</ul>
 <h2 id="development-setup">Development Setup</h2>
 <h3 id="clone-and-build">Clone and Build</h3>
 <pre><code class="language-bash">git clone https://codeberg.org/jailop/tzutrader
@@ -215,18 +225,22 @@ ctest
 └── docs/              # Generated documentation
 </code></pre>
 <h2 id="code-style">Code Style</h2>
-<p><strong>General principles:</strong>
-- Keep it simple
-- Prefer composition over inheritance
-- Use templates for flexibility without runtime cost
-- Comment non-obvious logic, not obvious code
-- Prefer <code>const</code> and <code>noexcept</code> where appropriate</p>
-<p><strong>Naming:</strong>
-- Classes: <code>PascalCase</code>
-- Functions/methods: <code>snake_case</code>
-- Variables: <code>snake_case</code>
-- Constants: <code>UPPER_SNAKE_CASE</code>
-- Template parameters: <code>PascalCase</code></p>
+<p><strong>General principles:</strong></p>
+<ul>
+<li>Keep it simple</li>
+<li>Prefer composition over inheritance</li>
+<li>Use templates for flexibility without runtime cost</li>
+<li>Comment non-obvious logic, not obvious code</li>
+<li>Prefer <code>const</code> and <code>noexcept</code> where appropriate</li>
+</ul>
+<p><strong>Naming:</strong></p>
+<ul>
+<li>Classes: <code>PascalCase</code></li>
+<li>Functions/methods: <code>snake_case</code></li>
+<li>Variables: <code>snake_case</code></li>
+<li>Constants: <code>UPPER_SNAKE_CASE</code></li>
+<li>Template parameters: <code>PascalCase</code></li>
+</ul>
 <p><strong>Example:</strong></p>
 <pre><code class="language-cpp">class MyIndicator: public Indicator&lt;MyIndicator, double, double&gt; {
 private:
@@ -347,17 +361,21 @@ int main() {
 }
 </code></pre>
 <h2 id="documentation">Documentation</h2>
-<p>When adding features:
-- Update relevant documentation pages
-- Add code examples
-- Explain limitations and trade-offs
-- Keep an honest tone</p>
-<p>Documentation lives in <code>docs_src/</code>:
-- <code>getting-started.md</code>: Introductory content
-- <code>indicators.md</code>: Indicator documentation
-- <code>strategies.md</code>: Strategy documentation
-- <code>portfolios.md</code>: Portfolio management
-- <code>architecture.md</code>: Design details</p>
+<p>When adding features:</p>
+<ul>
+<li>Update relevant documentation pages</li>
+<li>Add code examples</li>
+<li>Explain limitations and trade-offs</li>
+<li>Keep an honest tone</li>
+</ul>
+<p>Documentation lives in <code>docs_src/</code>:</p>
+<ul>
+<li><code>getting-started.md</code>: Introductory content</li>
+<li><code>indicators.md</code>: Indicator documentation</li>
+<li><code>strategies.md</code>: Strategy documentation</li>
+<li><code>portfolios.md</code>: Portfolio management</li>
+<li><code>architecture.md</code>: Design details</li>
+</ul>
 <h2 id="pull-request-process">Pull Request Process</h2>
 <ol>
 <li><strong>Fork the repository</strong> on Codeberg</li>
@@ -370,11 +388,13 @@ int main() {
 <li>Rationale for the change</li>
 <li>Any breaking changes noted</li>
 </ol>
-<p><strong>PR guidelines:</strong>
-- Keep changes focused (one feature/fix per PR)
-- Write clear commit messages
-- Ensure tests pass
-- Update documentation</p>
+<p><strong>PR guidelines:</strong></p>
+<ul>
+<li>Keep changes focused (one feature/fix per PR)</li>
+<li>Write clear commit messages</li>
+<li>Ensure tests pass</li>
+<li>Update documentation</li>
+</ul>
 <h2 id="communication">Communication</h2>
 <ul>
 <li><strong>Issues</strong>: Use for bugs, feature requests, questions</li>
@@ -383,23 +403,29 @@ int main() {
 </ul>
 <h2 id="what-gets-accepted">What Gets Accepted</h2>
 <p>Since this is experimental, the bar for contributions varies:</p>
-<p><strong>Likely accepted:</strong>
-- Bug fixes
-- New indicators with tests
-- New strategies with tests
-- Documentation improvements
-- Test coverage improvements
-- Performance optimizations (with benchmarks)</p>
-<p><strong>Needs discussion:</strong>
-- Architectural changes
-- New dependencies
-- Breaking API changes
-- Major feature additions</p>
-<p><strong>Unlikely accepted:</strong>
-- Large refactors without clear benefit
-- Features that break composability
-- Overly complex additions
-- Changes without tests</p>
+<p><strong>Likely accepted:</strong></p>
+<ul>
+<li>Bug fixes</li>
+<li>New indicators with tests</li>
+<li>New strategies with tests</li>
+<li>Documentation improvements</li>
+<li>Test coverage improvements</li>
+<li>Performance optimizations (with benchmarks)</li>
+</ul>
+<p><strong>Needs discussion:</strong></p>
+<ul>
+<li>Architectural changes</li>
+<li>New dependencies</li>
+<li>Breaking API changes</li>
+<li>Major feature additions</li>
+</ul>
+<p><strong>Unlikely accepted:</strong></p>
+<ul>
+<li>Large refactors without clear benefit</li>
+<li>Features that break composability</li>
+<li>Overly complex additions</li>
+<li>Changes without tests</li>
+</ul>
 <h2 id="design-philosophy">Design Philosophy</h2>
 <p>Keep these principles in mind:</p>
 <ol>
@@ -411,18 +437,22 @@ int main() {
 </ol>
 <p>If a contribution aligns with these principles, it's more likely to be accepted.</p>
 <h2 id="code-review">Code Review</h2>
-<p>Expect code reviews to focus on:
-- Correctness
-- Clarity
-- Performance implications
-- API design
-- Test coverage</p>
+<p>Expect code reviews to focus on:</p>
+<ul>
+<li>Correctness</li>
+<li>Clarity</li>
+<li>Performance implications</li>
+<li>API design</li>
+<li>Test coverage</li>
+</ul>
 <p>Feedback is meant to improve code quality, not personal criticism. Reviews may be thorough—that's because the maintainers care about the project.</p>
 <h2 id="recognition">Recognition</h2>
-<p>Contributors are recognized in:
-- Commit history
-- CHANGELOG.txt
-- Repository contributors page</p>
+<p>Contributors are recognized in:</p>
+<ul>
+<li>Commit history</li>
+<li>CHANGELOG.txt</li>
+<li>Repository contributors page</li>
+</ul>
 <p>Significant contributions may be noted in documentation.</p>
 <h2 id="license">License</h2>
 <p>By contributing, you agree that your contributions will be licensed under the same license as the project. Check the LICENSE file in the repository.</p>
@@ -447,7 +477,7 @@ int main() {
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../architecture/" class="btn btn-neutral float-left" title="Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utilities/" class="btn btn-neutral float-left" title="Utilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../faq/" class="btn btn-neutral float-right" title="FAQ">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -475,7 +505,7 @@ int main() {
         </span>
     
     
-      <span><a href="../architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../utilities/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../faq/" style="color: #fcfcfc">Next &raquo;</a></span>

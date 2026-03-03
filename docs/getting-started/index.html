@@ -130,6 +130,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -163,14 +167,18 @@
                 <h1 id="getting-started">Getting Started</h1>
 <p>tzutrader is a C++ backtesting library for testing trading strategies. This guide will get you up and running.</p>
 <h2 id="prerequisites">Prerequisites</h2>
-<p><strong>Technical requirements:</strong>
-- C++17 or later compiler (GCC, Clang, or MSVC)
-- CMake 3.10 or later
-- Git</p>
-<p><strong>Knowledge requirements:</strong>
-- Comfortable with C++ (classes, templates, STL)
-- Basic understanding of trading concepts
-- Familiarity with command-line tools</p>
+<p><strong>Technical requirements:</strong></p>
+<ul>
+<li>C++17 or later compiler (GCC, Clang, or MSVC)</li>
+<li>CMake 3.10 or later</li>
+<li>Git</li>
+</ul>
+<p><strong>Knowledge requirements:</strong></p>
+<ul>
+<li>Comfortable with C++ (classes, templates, STL)</li>
+<li>Basic understanding of trading concepts</li>
+<li>Familiarity with command-line tools</li>
+</ul>
 <p>If you're new to C++, this library will be challenging. Python backtesting libraries (like Backtrader or VectorBT) are more beginner-friendly. tzutrader is for developers who want to understand low-level implementation details or need the performance and systems programming skills that C++ provides.</p>
 <p>See <a href="../philosophy/">Design Philosophy</a> for more on who this is for.</p>
 <h2 id="installation">Installation</h2>
@@ -263,12 +271,14 @@ buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
 <p>Format it nicely:</p>
 <pre><code class="language-bash">cat ../tests/data/btcusd.csv | ./my_backtest | tr ' ' '\n' | column -t -s ':'
 </code></pre>
-<p><strong>Key metrics:</strong>
-- <code>total_return</code>: 0.9742 = 97.42% profit
-- <code>annual_return</code>: 0.0638 = 6.38% per year
-- <code>win_rate</code>: 0.6087 = 60.87% of trades were winners
-- <code>max_drawdown</code>: 0.5280 = 52.8% largest decline from peak
-- <code>sharpe</code>: 0.3694 = risk-adjusted return</p>
+<p><strong>Key metrics:</strong></p>
+<ul>
+<li><code>total_return</code>: 0.9742 = 97.42% profit</li>
+<li><code>annual_return</code>: 0.0638 = 6.38% per year</li>
+<li><code>win_rate</code>: 0.6087 = 60.87% of trades were winners</li>
+<li><code>max_drawdown</code>: 0.5280 = 52.8% largest decline from peak</li>
+<li><code>sharpe</code>: 0.3694 = risk-adjusted return</li>
+</ul>
 <h2 id="core-data-types">Core Data Types</h2>
 <h3 id="ohlcv">Ohlcv</h3>
 <p>Open-High-Low-Close-Volume candlestick data:</p>
@@ -380,6 +390,7 @@ public:
 <li>Explore <a href="../strategies/">Strategies</a> for signal generation patterns</li>
 <li>Understand <a href="../portfolios/">Portfolios</a> for position management</li>
 <li>Review <a href="../architecture/">Architecture</a> to understand the design</li>
+<li>Check <a href="../utilities/">Utilities</a> for development helper tools</li>
 </ul>
 <h2 id="common-issues">Common Issues</h2>
 <p><strong>"No indicators ready" / lots of NaN values</strong>: Indicators need data to warm up. SMA(20) needs 20 data points before returning valid values.</p>
@@ -394,16 +405,20 @@ public:
 <li>File issues on <a href="https://codeberg.org/jailop/tzutrader/issues">Codeberg</a></li>
 </ul>
 <h2 id="what-tzutrader-is-and-isnt">What tzutrader Is and Isn't</h2>
-<p><strong>tzutrader is:</strong>
-- A library for testing trading ideas
-- Focused on composability and simplicity
-- An educational tool for understanding backtesting
-- Experimental and evolving</p>
-<p><strong>tzutrader is not:</strong>
-- A production trading system
-- A guaranteed path to profits
-- A complete trading platform with data feeds and execution
-- Finished software (it's experimental)</p>
+<p><strong>tzutrader is:</strong></p>
+<ul>
+<li>A library for testing trading ideas</li>
+<li>Focused on composability and simplicity</li>
+<li>An educational tool for understanding backtesting</li>
+<li>Experimental and evolving</li>
+</ul>
+<p><strong>tzutrader is not:</strong></p>
+<ul>
+<li>A production trading system</li>
+<li>A guaranteed path to profits</li>
+<li>A complete trading platform with data feeds and execution</li>
+<li>Finished software (it's experimental)</li>
+</ul>
 <p>Treat it as a learning tool and a way to test ideas systematically before risking real money.</p>
               
             </div>

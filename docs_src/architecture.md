@@ -125,6 +125,7 @@ class SMA {
 ```
 
 This approach:
+
 - Uses O(window_size) memory, not O(all_data)
 - Updates in O(1) time after initialization
 - Naturally handles streaming data
@@ -197,6 +198,7 @@ This encourages code reuse and keeps individual components simple.
 ### Responsibilities
 
 A strategy:
+
 - Receives market data
 - Updates indicators
 - Generates trading signals (BUY/SELL/NONE)
@@ -269,6 +271,7 @@ Signal update(const In& data);
 ```
 
 The template parameters specify:
+
 - `T`: The derived strategy type (for CRTP)
 - `In`: The input data type (Ohlcv, Tick, SingleValue, etc.)
 
@@ -277,6 +280,7 @@ The template parameters specify:
 ### Responsibilities
 
 A portfolio:
+
 - Manages cash and positions
 - Executes trades based on signals
 - Applies transaction costs
@@ -374,6 +378,7 @@ class BasicRunner {
 ```
 
 The runner:
+
 - Pulls data from the streamer
 - Feeds data to the strategy
 - Passes signals to the portfolio
@@ -392,6 +397,7 @@ Each combination of components generates specialized code optimized for that exa
 ### Alternative Runner Designs
 
 Future runners might:
+
 - Support multiple strategies simultaneously
 - Enable strategy comparison
 - Add warmup periods
@@ -414,6 +420,7 @@ class Indicator {
 ```
 
 Benefits:
+
 - No virtual function overhead
 - Type-safe interface
 - Enables compile-time optimization
@@ -430,6 +437,7 @@ struct CsvParseTraits {
 ```
 
 Benefits:
+
 - Separates format from parsing logic
 - Easy to extend with new types
 - No runtime dispatch overhead
@@ -454,6 +462,7 @@ class RSI: public SMA {
 ```
 
 Benefits:
+
 - More flexible
 - Clearer dependencies
 - Easier to test components in isolation

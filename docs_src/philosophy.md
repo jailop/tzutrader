@@ -18,6 +18,7 @@ Components should mix and match like LEGO blocks. Any indicator works with any s
 - Understand each part in isolation
 
 **Example:**
+
 ```cpp
 // These all work together
 SMA sma(20);
@@ -73,6 +74,7 @@ Small is beautiful. The library does one thing: backtest single-asset strategies
 - Connect to live brokers
 
 This narrow focus means:
+
 - Less code to understand and maintain
 - Fewer dependencies to manage
 - Clearer mental model
@@ -114,6 +116,7 @@ You can trace exactly what happens on each update. No surprises.
 Fast code doesn't need to be complex. Simple algorithms with good data structures often outperform "clever" code.
 
 **Design choices for performance:**
+
 - Circular buffers for rolling windows (O(1) updates)
 - Templates for zero-cost abstraction
 - Minimal dynamic allocation in hot paths
@@ -131,6 +134,7 @@ The Unix philosophy shapes tzutrader's design:
 ### Small, Focused Tools
 
 Each component does one thing:
+
 - Indicators calculate values
 - Strategies generate signals
 - Portfolios manage positions
@@ -181,12 +185,14 @@ You decide the policies. The library just provides the tools.
 ### Target Users
 
 **Primary audience:**
+
 - Intermediate to advanced programmers comfortable with C++
 - Traders who want systematic strategy testing
 - Students learning about algorithmic trading
 - Developers interested in financial software architecture
 
 **This is NOT for:**
+
 - Complete programming beginners (C++ is hard)
 - People wanting plug-and-play solutions (requires coding)
 - Those expecting guaranteed profits (no such thing)
@@ -197,22 +203,26 @@ You decide the policies. The library just provides the tools.
 C++ is harder than Python. So why use it?
 
 **Learning value:**
+
 - Forces you to think about memory and state
 - No hiding behind framework magic
 - Closer to how production systems work
 - Understanding performance implications
 
 **Performance:**
+
 - 10-100x faster than Python for compute-heavy tasks
 - Matters when testing thousands of parameter combinations
 - Low latency when processing large datasets
 
 **Production relevance:**
+
 - Most serious trading systems use C++ (or C, Java, Rust)
 - Skills transfer to professional environment
 - Understanding systems-level concerns
 
 **Trade-offs:**
+
 - Steeper learning curve than Python
 - More verbose code
 - Harder to prototype quickly
@@ -225,18 +235,21 @@ If you're learning backtesting, Python is easier. If you're learning systems pro
 To use tzutrader effectively, you should understand:
 
 **C++ fundamentals:**
+
 - Classes and templates
 - Standard library containers
 - Memory management basics
 - Build systems (CMake)
 
 **Trading basics:**
+
 - What indicators measure
 - How signals translate to trades
 - Risk management concepts
 - Why backtesting is hard
 
 **Unix/command-line:**
+
 - Basic shell commands
 - Pipes and redirection
 - Text processing tools

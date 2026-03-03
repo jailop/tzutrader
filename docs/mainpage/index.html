@@ -70,6 +70,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -129,9 +133,11 @@
 <li><strong>MACD</strong>: Moving Average Convergence Divergence</li>
 <li><strong>MVar</strong>: Moving Variance</li>
 </ul>
-<p>All indicators follow a consistent interface:
-- <code>get()</code>: Returns the current indicator value
-- <code>update(value)</code>: Processes a new data point and returns updated value</p>
+<p>All indicators follow a consistent interface:</p>
+<ul>
+<li><code>get()</code>: Returns the current indicator value</li>
+<li><code>update(value)</code>: Processes a new data point and returns updated value</li>
+</ul>
 <p>Indicators return <code>NaN</code> until enough data has been collected to compute a valid result.</p>
 <h3 id="strategies-strategiesh">Strategies (strategies.h)</h3>
 <p>Trading strategies that generate buy/sell signals based on indicators:</p>
@@ -166,16 +172,20 @@
 </ul>
 <h2 id="architecture-principles">Architecture Principles</h2>
 <h3 id="streaming-processing">Streaming Processing</h3>
-<p>The library processes data incrementally rather than loading everything into memory. This:
-- Mimics real-world trading constraints
-- Prevents look-ahead bias
-- Keeps memory usage bounded
-- Scales to large datasets</p>
+<p>The library processes data incrementally rather than loading everything into memory. This:</p>
+<ul>
+<li>Mimics real-world trading constraints</li>
+<li>Prevents look-ahead bias</li>
+<li>Keeps memory usage bounded</li>
+<li>Scales to large datasets</li>
+</ul>
 <h3 id="composability">Composability</h3>
-<p>Components can be mixed and matched:
-- Any strategy works with any portfolio
-- Strategies combine multiple indicators
-- Custom components follow the same interfaces</p>
+<p>Components can be mixed and matched:</p>
+<ul>
+<li>Any strategy works with any portfolio</li>
+<li>Strategies combine multiple indicators</li>
+<li>Custom components follow the same interfaces</li>
+</ul>
 <h3 id="static-polymorphism">Static Polymorphism</h3>
 <p>The library uses templates and CRTP (Curiously Recurring Template Pattern) instead of virtual functions for zero-overhead abstraction.</p>
 <h2 id="quick-start-example">Quick Start Example</h2>
@@ -202,15 +212,21 @@ int main() {
 </code></pre>
 <h2 id="extending-the-library">Extending the Library</h2>
 <h3 id="custom-indicators">Custom Indicators</h3>
-<p>Inherit from <code>Indicator&lt;YourClass, InputType, OutputType&gt;</code> and implement:
-- <code>get() const noexcept</code>: Return current value
-- <code>update(input)</code>: Process new data point</p>
+<p>Inherit from <code>Indicator&lt;YourClass, InputType, OutputType&gt;</code> and implement:</p>
+<ul>
+<li><code>get() const noexcept</code>: Return current value</li>
+<li><code>update(input)</code>: Process new data point</li>
+</ul>
 <h3 id="custom-strategies">Custom Strategies</h3>
-<p>Inherit from <code>Strategy&lt;YourClass, DataType&gt;</code> and implement:
-- <code>update(const DataType&amp; data)</code>: Generate trading signal</p>
+<p>Inherit from <code>Strategy&lt;YourClass, DataType&gt;</code> and implement:</p>
+<ul>
+<li><code>update(const DataType&amp; data)</code>: Generate trading signal</li>
+</ul>
 <h3 id="custom-portfolios">Custom Portfolios</h3>
-<p>Inherit from <code>Portfolio&lt;YourClass&gt;</code> and implement:
-- <code>update(const Signal&amp; signal)</code>: Handle trading signals</p>
+<p>Inherit from <code>Portfolio&lt;YourClass&gt;</code> and implement:</p>
+<ul>
+<li><code>update(const Signal&amp; signal)</code>: Handle trading signals</li>
+</ul>
 <h3 id="custom-data-sources">Custom Data Sources</h3>
 <p>Create a class with <code>begin()</code> and <code>end()</code> methods that return iterators yielding data points. Optionally specialize <code>CsvParseTraits</code> for custom CSV formats.</p>
 <h2 id="performance-characteristics">Performance Characteristics</h2>
@@ -220,18 +236,22 @@ int main() {
 <li><strong>Throughput</strong>: Processes millions of data points efficiently</li>
 </ul>
 <h2 id="thread-safety">Thread Safety</h2>
-<p>Components are not thread-safe and maintain mutable state. For parallel backtesting:
-- Run separate instances in different threads
-- Each instance has its own data streamer, strategy, and portfolio
-- No shared state between instances</p>
+<p>Components are not thread-safe and maintain mutable state. For parallel backtesting:</p>
+<ul>
+<li>Run separate instances in different threads</li>
+<li>Each instance has its own data streamer, strategy, and portfolio</li>
+<li>No shared state between instances</li>
+</ul>
 <h2 id="known-limitations">Known Limitations</h2>
-<p>As an experimental project:
-- Single asset trading only
-- All-in/all-out position management
-- Market orders only (no limit/stop orders)
-- No slippage modeling
-- CSV input only currently
-- Minimal error handling</p>
+<p>As an experimental project:</p>
+<ul>
+<li>Single asset trading only</li>
+<li>All-in/all-out position management</li>
+<li>Market orders only (no limit/stop orders)</li>
+<li>No slippage modeling</li>
+<li>CSV input only currently</li>
+<li>Minimal error handling</li>
+</ul>
 <p>These limitations help keep the core design simple and focused.</p>
 <h2 id="getting-help">Getting Help</h2>
 <ul>

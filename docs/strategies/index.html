@@ -122,6 +122,10 @@
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                 </li>
               </ul>
@@ -179,18 +183,22 @@ public:
 // threshold adds a percentage buffer to avoid false signals
 // e.g., 0.01 = 1% buffer
 </code></pre>
-<p><strong>How it works:</strong>
-- Buy when fast_sma &gt; slow_sma * (1 + threshold)
-- Sell when fast_sma &lt; slow_sma * (1 - threshold)</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Buy when fast_sma &gt; slow_sma * (1 + threshold)</li>
+<li>Sell when fast_sma &lt; slow_sma * (1 - threshold)</li>
+</ul>
 <p><strong>Typical use case:</strong> Trend following in markets with clear directional moves.</p>
 <p><strong>Weaknesses:</strong> Many false signals in choppy markets, lags at trend changes.</p>
 <h3 id="rsistrat-strategy">RSIStrat Strategy</h3>
 <p>Buys when RSI falls below the oversold threshold and sells when it rises above the overbought threshold.</p>
 <pre><code class="language-cpp">RSIStrat strat(14, 30, 70);  // period, oversold, overbought
 </code></pre>
-<p><strong>How it works:</strong>
-- Buy when RSI &lt; 30
-- Sell when RSI &gt; 70</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Buy when RSI &lt; 30</li>
+<li>Sell when RSI &gt; 70</li>
+</ul>
 <p><strong>Typical use case:</strong> Mean reversion in ranging markets.</p>
 <p><strong>Weaknesses:</strong> Can trigger too early in strong trends, thresholds aren't universal.</p>
 <h3 id="macdstrat-strategy">MACDStrat Strategy</h3>
@@ -198,9 +206,11 @@ public:
 <pre><code class="language-cpp">MACDStrat strat(12, 26, 9, 2.0, 0.0);
 // short_period, long_period, signal_period, smoothing, threshold
 </code></pre>
-<p><strong>How it works:</strong>
-- Buy when MACD line crosses above signal line
-- Sell when MACD line crosses below signal line</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Buy when MACD line crosses above signal line</li>
+<li>Sell when MACD line crosses below signal line</li>
+</ul>
 <p><strong>Typical use case:</strong> Momentum trading, capturing trending moves.</p>
 <p><strong>Weaknesses:</strong> Multiple parameters to optimize, whipsaws in consolidation.</p>
 <h2 id="creating-custom-strategies">Creating Custom Strategies</h2>

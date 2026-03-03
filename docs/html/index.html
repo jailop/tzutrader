@@ -126,7 +126,8 @@ Indicators (indicators.h)</h2>
 <li><b>MACD</b>: Moving Average Convergence Divergence</li>
 <li><b>MVar</b>: Moving Variance</li>
 </ul>
-<p>All indicators follow a consistent interface:</p><ul>
+<p>All indicators follow a consistent interface:</p>
+<ul>
 <li><span class="tt">get()</span>: Returns the current indicator value</li>
 <li><span class="tt">update(value)</span>: Processes a new data point and returns updated value</li>
 </ul>
@@ -171,7 +172,8 @@ Performance Statistics (stats.h)</h2>
 Architecture Principles</h1>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md12"></a>
 Streaming Processing</h2>
-<p>The library processes data incrementally rather than loading everything into memory. This:</p><ul>
+<p>The library processes data incrementally rather than loading everything into memory. This:</p>
+<ul>
 <li>Mimics real-world trading constraints</li>
 <li>Prevents look-ahead bias</li>
 <li>Keeps memory usage bounded</li>
@@ -179,7 +181,8 @@ Streaming Processing</h2>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md13"></a>
 Composability</h2>
-<p>Components can be mixed and matched:</p><ul>
+<p>Components can be mixed and matched:</p>
+<ul>
 <li>Any strategy works with any portfolio</li>
 <li>Strategies combine multiple indicators</li>
 <li>Custom components follow the same interfaces</li>
@@ -217,18 +220,21 @@ Quick Start Example</h1>
 Extending the Library</h1>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md17"></a>
 Custom Indicators</h2>
-<p>Inherit from <span class="tt">Indicator&lt;YourClass, InputType, OutputType&gt;</span> and implement:</p><ul>
+<p>Inherit from <span class="tt">Indicator&lt;YourClass, InputType, OutputType&gt;</span> and implement:</p>
+<ul>
 <li><span class="tt">get() const noexcept</span>: Return current value</li>
 <li><span class="tt">update(input)</span>: Process new data point</li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md18"></a>
 Custom Strategies</h2>
-<p>Inherit from <span class="tt">Strategy&lt;YourClass, DataType&gt;</span> and implement:</p><ul>
+<p>Inherit from <span class="tt">Strategy&lt;YourClass, DataType&gt;</span> and implement:</p>
+<ul>
 <li><span class="tt">update(const DataType&amp; data)</span>: Generate trading signal</li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md19"></a>
 Custom Portfolios</h2>
-<p>Inherit from <span class="tt">Portfolio&lt;YourClass&gt;</span> and implement:</p><ul>
+<p>Inherit from <span class="tt">Portfolio&lt;YourClass&gt;</span> and implement:</p>
+<ul>
 <li><span class="tt">update(const Signal&amp; signal)</span>: Handle trading signals</li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="autotoc_md20"></a>
@@ -243,14 +249,16 @@ Performance Characteristics</h1>
 </ul>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
 Thread Safety</h1>
-<p>Components are not thread-safe and maintain mutable state. For parallel backtesting:</p><ul>
+<p>Components are not thread-safe and maintain mutable state. For parallel backtesting:</p>
+<ul>
 <li>Run separate instances in different threads</li>
 <li>Each instance has its own data streamer, strategy, and portfolio</li>
 <li>No shared state between instances</li>
 </ul>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md23"></a>
 Known Limitations</h1>
-<p>As an experimental project:</p><ul>
+<p>As an experimental project:</p>
+<ul>
 <li>Single asset trading only</li>
 <li>All-in/all-out position management</li>
 <li>Market orders only (no limit/stop orders)</li>

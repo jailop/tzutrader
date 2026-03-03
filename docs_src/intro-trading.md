@@ -34,6 +34,7 @@ tzutrader processes data in a streaming fashion to help avoid this, but you stil
 Tweaking parameters until a strategy performs well on historical data, but then it fails on new data. This happens when you optimize too much for the specific quirks of your test dataset.
 
 **Warning signs:**
+
 - Too many parameters (>5)
 - Very specific parameter values (e.g., exactly 23.7)
 - Excellent backtest results but poor out-of-sample performance
@@ -49,6 +50,7 @@ Every trade has costs: commissions, spreads, slippage. A strategy that trades fr
 ### Data Quality Issues
 
 Bad data leads to bad results. Ensure your historical data is:
+
 - Complete (no missing periods)
 - Accurate (correct prices)
 - Adjusted for splits and dividends
@@ -63,6 +65,7 @@ A trading strategy needs three components:
 3. **Position sizing**: How much to trade
 
 Example of a simple strategy:
+
 - **Entry**: Buy when 20-day SMA crosses above 50-day SMA
 - **Exit**: Sell when 20-day SMA crosses below 50-day SMA
 - **Size**: Use all available capital
@@ -84,6 +87,7 @@ There's no universal answer, but some characteristics of robust strategies:
 Most retail traders lose money. Professional trading is competitive, with well-funded firms using sophisticated technology. You're not going to get rich quick with a simple moving average crossover.
 
 That said, backtesting is valuable for:
+
 - Learning about market behavior
 - Understanding risk and position management
 - Testing ideas systematically
@@ -118,6 +122,7 @@ cat data.csv | ./backtest | tr ' ' '\n' | column -t
 ```
 
 You compose simple pieces into complex systems. This makes it easier to:
+
 - Understand each component in isolation
 - Test components independently
 - Replace one part without rewriting everything

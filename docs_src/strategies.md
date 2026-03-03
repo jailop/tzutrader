@@ -39,6 +39,7 @@ SMACrossover strat(10, 30, 0.01);  // fast period, slow period, threshold
 ```
 
 **How it works:**
+
 - Buy when fast_sma > slow_sma * (1 + threshold)
 - Sell when fast_sma < slow_sma * (1 - threshold)
 
@@ -55,6 +56,7 @@ RSIStrat strat(14, 30, 70);  // period, oversold, overbought
 ```
 
 **How it works:**
+
 - Buy when RSI < 30
 - Sell when RSI > 70
 
@@ -72,6 +74,7 @@ MACDStrat strat(12, 26, 9, 2.0, 0.0);
 ```
 
 **How it works:**
+
 - Buy when MACD line crosses above signal line
 - Sell when MACD line crosses below signal line
 
@@ -190,6 +193,7 @@ if (data[i+1].close > data[i].close) {
 ```
 
 **Correct:**
+
 ```cpp
 // Using only current and past data
 if (data.close > yesterday_close) {
