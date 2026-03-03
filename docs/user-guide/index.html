@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>User Guide - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "User Guide";
+        var mkdocs_page_input_path = "user-guide.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">User Guide</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#understanding-the-architecture">Understanding the Architecture</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#component-flow">Component Flow</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#core-data-types">Core Data Types</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#streaming-philosophy">Streaming Philosophy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#working-with-indicators">Working with Indicators</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-built-in-indicators">Using Built-in Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#available-indicators">Available Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-custom-indicators">Creating Custom Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#combining-indicators">Combining Indicators</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#building-strategies">Building Strategies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#strategy-interface">Strategy Interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-built-in-strategies">Using Built-in Strategies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-custom-strategies">Creating Custom Strategies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#more-complex-strategy-example">More Complex Strategy Example</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#strategy-design-tips">Strategy Design Tips</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#portfolio-management">Portfolio Management</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#basicportfolio">BasicPortfolio</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-custom-portfolios">Creating Custom Portfolios</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#running-backtests">Running Backtests</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#basic-setup">Basic Setup</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output-format">Output Format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#verbose-mode">Verbose Mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#data-input">Data Input</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#csv-format">CSV Format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#custom-data-parsers">Custom Data Parsers</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#complete-example">Complete Example</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#best-practices">Best Practices</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#correctness">Correctness</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#design">Design</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#whats-next">What's Next</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">User Guide</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="user-guide">User Guide</h1>
+<p><strong>Note:</strong> tzutrader is an experimental project. The API and architecture are subject to change as we explore different design patterns and refine the library's approach.</p>
+<p><strong>Documentation Links:</strong>
+- <strong>User Guide</strong>: <a href="https://jailop.codeberg.page/tzutrader/docs/">https://jailop.codeberg.page/tzutrader/docs/</a>
+- <strong>API Reference</strong>: <a href="https://jailop.codeberg.page/tzutrader/docs/html/">https://jailop.codeberg.page/tzutrader/docs/html/</a></p>
+<h2 id="overview">Overview</h2>
+<p>tzutrader is a C++ backtesting library built around composability and streaming data processing. Rather than loading entire datasets into memory, it processes market data point-by-point, similar to how live trading systems operate. This approach helps avoid look-ahead bias and keeps memory usage low.</p>
+<p>The library follows a modular design where you combine different components:</p>
+<ul>
+<li><strong>Data streamers</strong> read and parse input data (e.g., CSV files)</li>
+<li><strong>Indicators</strong> calculate technical values (SMA, RSI, MACD, etc.)</li>
+<li><strong>Strategies</strong> generate trading signals based on indicators</li>
+<li><strong>Portfolios</strong> manage positions, cash, and track performance</li>
+<li><strong>Runners</strong> orchestrate the backtesting process</li>
+</ul>
+<h2 id="understanding-the-architecture">Understanding the Architecture</h2>
+<h3 id="component-flow">Component Flow</h3>
+<p>The typical flow in a backtest is:</p>
+<pre><code>Data Streamer → Strategy → Portfolio → Performance Metrics
+                    ↓
+               Indicators
+</code></pre>
+<ol>
+<li>The <strong>data streamer</strong> reads market data one row at a time</li>
+<li>The <strong>strategy</strong> receives each data point, updates its indicators, and generates signals</li>
+<li>The <strong>portfolio</strong> receives signals and decides whether to execute trades</li>
+<li>Performance metrics are calculated as the backtest progresses</li>
+</ol>
+<h3 id="core-data-types">Core Data Types</h3>
+<p>The library defines several data structures in <code>defs.h</code>:</p>
+<ul>
+<li><code>Ohlcv</code>: Open-High-Low-Close-Volume candlestick data</li>
+<li><code>Tick</code>: Individual trade data with timestamp, price, volume, and side</li>
+<li><code>SingleValue</code>: Generic time-series data with timestamp and value</li>
+<li><code>Signal</code>: Trading signals with timestamp, side (BUY/SELL/NONE), price, and volume</li>
+<li><code>Side</code>: Enum representing BUY, SELL, or NONE</li>
+</ul>
+<h3 id="streaming-philosophy">Streaming Philosophy</h3>
+<p>All components work with streaming data. Indicators maintain internal state (circular buffers) to compute values efficiently as new data arrives. Strategies generate signals without looking ahead. This design mimics real-world trading constraints.</p>
+<h2 id="working-with-indicators">Working with Indicators</h2>
+<h3 id="using-built-in-indicators">Using Built-in Indicators</h3>
+<p>Indicators follow a consistent interface with two main methods:</p>
+<ul>
+<li><code>get()</code>: Returns the current indicator value</li>
+<li><code>update(value)</code>: Processes a new data point and returns the updated value</li>
+</ul>
+<p>Example using Simple Moving Average:</p>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+using namespace tzu;
+
+// Create a 20-period SMA
+SMA sma(20);
+
+// Update with values
+double result = sma.update(100.5);
+// Returns NaN until 20 values are provided
+
+// After 20 updates, returns the average
+for (int i = 0; i &lt; 20; i++) {
+    sma.update(prices[i]);
+}
+double avg = sma.get();  // Now contains valid average
+</code></pre>
+<h3 id="available-indicators">Available Indicators</h3>
+<p><strong>SMA (Simple Moving Average)</strong></p>
+<pre><code class="language-cpp">SMA sma(window_size);
+</code></pre>
+<p>Computes the arithmetic mean over a fixed window. Returns NaN until the window is full.</p>
+<p><strong>EMA (Exponential Moving Average)</strong></p>
+<pre><code class="language-cpp">EMA ema(period, smoothing);  // smoothing defaults to 2.0
+</code></pre>
+<p>Gives more weight to recent values using exponential smoothing.</p>
+<p><strong>RSI (Relative Strength Index)</strong></p>
+<pre><code class="language-cpp">RSI rsi(period);
+</code></pre>
+<p>Measures momentum by comparing average gains to average losses. Takes <code>Ohlcv</code> data as input. Returns a value between 0 and 100.</p>
+<p><strong>MACD (Moving Average Convergence Divergence)</strong></p>
+<pre><code class="language-cpp">MACD macd(short_period, long_period, signal_period);
+</code></pre>
+<p>Returns a <code>MACDResult</code> struct containing the MACD line, signal line, and histogram.</p>
+<p><strong>MVar (Moving Variance)</strong></p>
+<pre><code class="language-cpp">MVar mvar(window_size, degrees_of_freedom);
+</code></pre>
+<p>Computes variance over a rolling window. Use <code>dof=1</code> for sample variance, <code>dof=0</code> for population variance.</p>
+<h3 id="creating-custom-indicators">Creating Custom Indicators</h3>
+<p>To create a custom indicator, inherit from the <code>Indicator</code> base class template:</p>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+
+class CustomIndicator: public tzu::Indicator&lt;CustomIndicator, double, double&gt; {
+private:
+    // Internal state
+    double sum = 0.0;
+    size_t count = 0;
+
+public:
+    CustomIndicator() {}
+
+    double get() const noexcept {
+        return count &gt; 0 ? sum / count : std::nan(&quot;&quot;);
+    }
+
+    double update(double value) {
+        sum += value;
+        count++;
+        return get();
+    }
+};
+</code></pre>
+<p><strong>Key principles for custom indicators:</strong></p>
+<ul>
+<li>Use circular buffers or running sums to avoid storing all historical data</li>
+<li>Return <code>std::nan("")</code> when there isn't enough data to compute a valid value</li>
+<li>Keep state minimal and update incrementally</li>
+<li>Make the <code>get()</code> method <code>const</code> and <code>noexcept</code></li>
+</ul>
+<p>Example of an indicator with a rolling window:</p>
+<pre><code class="language-cpp">class CustomRolling: public tzu::Indicator&lt;CustomRolling, double, double&gt; {
+private:
+    std::vector&lt;double&gt; buffer;
+    size_t pos = 0;
+    size_t len = 0;
+    double sum = 0.0;
+    size_t window;
+
+public:
+    CustomRolling(size_t window_size) 
+        : buffer(window_size, std::nan(&quot;&quot;)), window(window_size) {}
+
+    double get() const noexcept {
+        return len &lt; window ? std::nan(&quot;&quot;) : sum / window;
+    }
+
+    double update(double value) {
+        if (len &lt; window) {
+            len++;
+        } else {
+            // Remove oldest value from sum
+            sum -= buffer[pos];
+        }
+
+        sum += value;
+        buffer[pos] = value;
+        pos = (pos + 1) % window;
+
+        return get();
+    }
+};
+</code></pre>
+<h3 id="combining-indicators">Combining Indicators</h3>
+<p>You can build more complex indicators by composing simpler ones:</p>
+<pre><code class="language-cpp">class BollingerBands {
+private:
+    SMA sma;
+    MVar mvar;
+    double num_std;
+
+public:
+    BollingerBands(size_t period, double num_std = 2.0)
+        : sma(period), mvar(period, 1), num_std(num_std) {}
+
+    struct Result {
+        double middle;
+        double upper;
+        double lower;
+    };
+
+    Result update(double value) {
+        double middle = sma.update(value);
+        double variance = mvar.update(value);
+
+        if (std::isnan(middle) || std::isnan(variance)) {
+            return {std::nan(&quot;&quot;), std::nan(&quot;&quot;), std::nan(&quot;&quot;)};
+        }
+
+        double std_dev = std::sqrt(variance);
+        return {
+            middle,
+            middle + num_std * std_dev,
+            middle - num_std * std_dev
+        };
+    }
+};
+</code></pre>
+<h2 id="building-strategies">Building Strategies</h2>
+<h3 id="strategy-interface">Strategy Interface</h3>
+<p>Strategies generate trading signals based on market data and indicator values. They inherit from the <code>Strategy</code> template:</p>
+<pre><code class="language-cpp">template &lt;class T, typename In&gt;
+class Strategy {
+public:
+    Signal update(const In&amp; data);
+};
+</code></pre>
+<h3 id="using-built-in-strategies">Using Built-in Strategies</h3>
+<p><strong>SMACrossover Strategy</strong></p>
+<pre><code class="language-cpp">SMACrossover strat(short_period, long_period, threshold);
+</code></pre>
+<p>Generates buy signals when the short SMA crosses above the long SMA, and sell signals on the opposite crossover. The threshold parameter adds a percentage buffer to avoid false signals.</p>
+<p><strong>RSIStrat Strategy</strong></p>
+<pre><code class="language-cpp">RSIStrat strat(period, oversold, overbought);
+</code></pre>
+<p>Buys when RSI falls below the oversold threshold (default 30) and sells when it rises above the overbought threshold (default 70).</p>
+<p><strong>MACDStrat Strategy</strong></p>
+<pre><code class="language-cpp">MACDStrat strat(short_period, long_period, signal_period, smoothing, threshold);
+</code></pre>
+<p>Generates signals based on MACD line and signal line crossovers.</p>
+<h3 id="creating-custom-strategies">Creating Custom Strategies</h3>
+<p>Here's a simple custom strategy:</p>
+<pre><code class="language-cpp">class MyStrategy: public tzu::Strategy&lt;MyStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::SMA fast;
+    tzu::SMA slow;
+    tzu::Side last_side;
+
+public:
+    MyStrategy(size_t fast_period = 10, size_t slow_period = 30)
+        : fast(fast_period), slow(slow_period), last_side(tzu::Side::NONE) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double fast_val = fast.update(data.close);
+        double slow_val = slow.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        // Wait until indicators are ready
+        if (std::isnan(fast_val) || std::isnan(slow_val)) {
+            return signal;
+        }
+
+        // Generate signals on crossovers
+        if (fast_val &gt; slow_val &amp;&amp; last_side != tzu::Side::BUY) {
+            signal.side = tzu::Side::BUY;
+            last_side = tzu::Side::BUY;
+        } else if (fast_val &lt; slow_val &amp;&amp; last_side != tzu::Side::SELL) {
+            signal.side = tzu::Side::SELL;
+            last_side = tzu::Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<p><strong>Important points:</strong></p>
+<ul>
+<li>Track <code>last_side</code> to avoid generating repeated signals</li>
+<li>Return <code>Side::NONE</code> when indicators aren't ready or no action is needed</li>
+<li>Always return a <code>Signal</code> object with timestamp and price</li>
+<li>Handle NaN values from indicators appropriately</li>
+</ul>
+<h3 id="more-complex-strategy-example">More Complex Strategy Example</h3>
+<p>A strategy using multiple indicators with custom logic:</p>
+<pre><code class="language-cpp">class MultiIndicatorStrategy: public tzu::Strategy&lt;MultiIndicatorStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::RSI rsi;
+    tzu::SMA sma_short;
+    tzu::SMA sma_long;
+    tzu::Side last_side;
+
+public:
+    MultiIndicatorStrategy()
+        : rsi(14), sma_short(20), sma_long(50), last_side(tzu::Side::NONE) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double rsi_val = rsi.update(data);
+        double short_ma = sma_short.update(data.close);
+        double long_ma = sma_long.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        if (std::isnan(rsi_val) || std::isnan(short_ma) || std::isnan(long_ma)) {
+            return signal;
+        }
+
+        // Buy when RSI is oversold AND short MA is above long MA
+        if (rsi_val &lt; 30 &amp;&amp; short_ma &gt; long_ma &amp;&amp; last_side != tzu::Side::BUY) {
+            signal.side = tzu::Side::BUY;
+            last_side = tzu::Side::BUY;
+        }
+        // Sell when RSI is overbought OR short MA crosses below long MA
+        else if ((rsi_val &gt; 70 || short_ma &lt; long_ma) &amp;&amp; last_side != tzu::Side::SELL) {
+            signal.side = tzu::Side::SELL;
+            last_side = tzu::Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<h3 id="strategy-design-tips">Strategy Design Tips</h3>
+<ul>
+<li>Keep strategies stateful but simple</li>
+<li>Avoid lookahead bias - only use data available up to the current timestamp</li>
+<li>Test indicator values for NaN before using them</li>
+<li>Consider adding parameters for thresholds and periods as constructor arguments</li>
+<li>Use <code>last_side</code> tracking to prevent signal spam</li>
+<li>Return clear signals that the portfolio can act on</li>
+</ul>
+<h2 id="portfolio-management">Portfolio Management</h2>
+<h3 id="basicportfolio">BasicPortfolio</h3>
+<p>The <code>BasicPortfolio</code> class handles position management, transaction costs, and risk management:</p>
+<pre><code class="language-cpp">BasicPortfolio portfolio(
+    initial_capital,      // Starting cash
+    transaction_cost_pct, // e.g., 0.001 for 0.1%
+    stop_loss_pct,       // e.g., 0.10 for 10%
+    take_profit_pct      // e.g., 0.20 for 20%
+);
+</code></pre>
+<p><strong>Features:</strong></p>
+<ul>
+<li>All-in positions: uses all available cash on buy signals</li>
+<li>Automatic liquidation on sell signals</li>
+<li>Stop-loss and take-profit monitoring on each update</li>
+<li>Transaction cost tracking</li>
+<li>Performance metrics calculation</li>
+</ul>
+<h3 id="creating-custom-portfolios">Creating Custom Portfolios</h3>
+<p>You can implement custom portfolio logic by inheriting from the <code>Portfolio</code> template:</p>
+<pre><code class="language-cpp">class MyPortfolio: public tzu::Portfolio&lt;MyPortfolio&gt; {
+private:
+    double cash;
+    double quantity;
+    double avg_price;
+    // ... other state
+
+public:
+    MyPortfolio(double initial_cash) : cash(initial_cash), quantity(0), avg_price(0) {}
+
+    void update(const tzu::Signal&amp; signal) {
+        if (signal.side == tzu::Side::BUY &amp;&amp; cash &gt; 0) {
+            // Custom buy logic
+            double shares = cash / signal.price;
+            quantity += shares;
+            cash = 0;
+            avg_price = signal.price;
+        } else if (signal.side == tzu::Side::SELL &amp;&amp; quantity &gt; 0) {
+            // Custom sell logic
+            cash += quantity * signal.price;
+            quantity = 0;
+        }
+    }
+
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const MyPortfolio&amp; p) {
+        os &lt;&lt; &quot;cash:&quot; &lt;&lt; p.cash &lt;&lt; &quot; quantity:&quot; &lt;&lt; p.quantity;
+        return os;
+    }
+};
+</code></pre>
+<p><strong>Portfolio customization ideas:</strong></p>
+<ul>
+<li>Position sizing based on Kelly criterion or risk percentage</li>
+<li>Multiple simultaneous positions across different assets</li>
+<li>Partial position exits</li>
+<li>Trailing stop-loss implementation</li>
+<li>Dynamic risk adjustment based on volatility</li>
+<li>Order types (limit, stop orders)</li>
+</ul>
+<h2 id="running-backtests">Running Backtests</h2>
+<h3 id="basic-setup">Basic Setup</h3>
+<p>The <code>BasicRunner</code> orchestrates the backtesting process:</p>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+using namespace tzu;
+
+int main() {
+    // Create strategy
+    RSIStrat strategy(14, 30, 70);
+
+    // Create portfolio
+    BasicPortfolio portfolio(100000.0, 0.001, 0.10, 0.20);
+
+    // Create data streamer
+    Csv&lt;Ohlcv&gt; csv(std::cin);
+
+    // Create runner
+    BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;&gt; runner(
+        portfolio, strategy, csv
+    );
+
+    // Run backtest
+    runner.run(false);  // false = quiet mode, true = verbose
+
+    return 0;
+}
+</code></pre>
+<p>Run the backtest:</p>
+<pre><code class="language-bash">cat data/prices.csv | ./my_backtest
+</code></pre>
+<h3 id="output-format">Output Format</h3>
+<p>The portfolio outputs performance metrics:</p>
+<pre><code>init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
+curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28
+num_losses:18 win_rate:0.6087 num_stop_loss:18 num_take_profit:7
+quantity:0.0000 holdings:0.0000 valuation:197422.2894
+total_costs:14952.7706 profit:97422.2894 total_return:0.9742
+annual_return:0.0638 buy_and_hold_return:277.2788
+buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
+</code></pre>
+<p>Format output nicely:</p>
+<pre><code class="language-bash">cat data/prices.csv | ./my_backtest | tr ' ' '\n' | column -t -s ':'
+</code></pre>
+<h3 id="verbose-mode">Verbose Mode</h3>
+<p>Enable verbose mode to see portfolio state after each update:</p>
+<pre><code class="language-cpp">runner.run(true);
+</code></pre>
+<p>This prints the portfolio state on every data point, useful for debugging strategies.</p>
+<h2 id="data-input">Data Input</h2>
+<h3 id="csv-format">CSV Format</h3>
+<p>The <code>Csv</code> streamer expects comma-separated values. For OHLCV data:</p>
+<pre><code>timestamp,open,high,low,close,volume
+1419984000,320.0,325.0,315.0,322.0,1000.0
+1419984060,322.0,328.0,321.0,326.0,1500.0
+</code></pre>
+<p>Timestamps are Unix timestamps (seconds since epoch).</p>
+<h3 id="custom-data-parsers">Custom Data Parsers</h3>
+<p>To parse custom CSV formats, specialize the <code>CsvParseTraits</code> template:</p>
+<pre><code class="language-cpp">struct MyDataType {
+    int64_t timestamp;
+    double value1;
+    double value2;
+};
+
+template&lt;&gt;
+struct tzu::CsvParseTraits&lt;MyDataType&gt; {
+    static bool parse(const char* line_buffer, MyDataType&amp; out) {
+        char* end;
+        int64_t ts = std::strtol(line_buffer, &amp;end, 10);
+        double v1 = std::strtod(end, &amp;end);
+        double v2 = std::strtod(end, &amp;end);
+
+        if (*end != '\0' &amp;&amp; *end != '\n') return false;
+
+        out = MyDataType{ts, v1, v2};
+        return true;
+    }
+};
+</code></pre>
+<p>Then use it with the CSV streamer:</p>
+<pre><code class="language-cpp">Csv&lt;MyDataType&gt; csv(std::cin);
+</code></pre>
+<h2 id="complete-example">Complete Example</h2>
+<p>Here's a complete working example putting everything together:</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &quot;tzu.h&quot;
+
+using namespace tzu;
+
+// Custom indicator: Exponential Hull Moving Average
+class EHMA: public Indicator&lt;EHMA, double, double&gt; {
+private:
+    EMA ema1;
+    EMA ema2;
+
+public:
+    EHMA(size_t period) : ema1(period), ema2(period / 2) {}
+
+    double get() const noexcept {
+        return ema1.get();
+    }
+
+    double update(double value) {
+        double slow = ema1.update(value);
+        double fast = ema2.update(value);
+        return 2.0 * fast - slow;
+    }
+};
+
+// Custom strategy using EHMA
+class EHMAStrategy: public Strategy&lt;EHMAStrategy, Ohlcv&gt; {
+private:
+    EHMA ehma;
+    Side last_side;
+    double last_price;
+
+public:
+    EHMAStrategy(size_t period = 20) 
+        : ehma(period), last_side(Side::NONE), last_price(0) {}
+
+    Signal update(const Ohlcv&amp; data) {
+        double indicator = ehma.update(data.close);
+        Signal signal = {data.timestamp, Side::NONE, data.close};
+
+        if (std::isnan(indicator)) {
+            last_price = data.close;
+            return signal;
+        }
+
+        // Buy when price crosses above indicator
+        if (last_price &lt;= indicator &amp;&amp; data.close &gt; indicator 
+            &amp;&amp; last_side != Side::BUY) {
+            signal.side = Side::BUY;
+            last_side = Side::BUY;
+        }
+        // Sell when price crosses below indicator
+        else if (last_price &gt;= indicator &amp;&amp; data.close &lt; indicator 
+                 &amp;&amp; last_side != Side::SELL) {
+            signal.side = Side::SELL;
+            last_side = Side::SELL;
+        }
+
+        last_price = data.close;
+        return signal;
+    }
+};
+
+int main(int argc, char** argv) {
+    bool verbose = (argc &gt; 1 &amp;&amp; std::string(argv[1]) == &quot;-v&quot;);
+
+    EHMAStrategy strategy(20);
+    BasicPortfolio portfolio(100000.0, 0.001, 0.15, 0.30);
+    Csv&lt;Ohlcv&gt; csv(std::cin);
+
+    BasicRunner&lt;BasicPortfolio, EHMAStrategy, Csv&lt;Ohlcv&gt;&gt; runner(
+        portfolio, strategy, csv
+    );
+
+    runner.run(verbose);
+    return 0;
+}
+</code></pre>
+<p>Build and run:</p>
+<pre><code class="language-bash">cd build
+cmake .. &amp;&amp; cmake --build .
+cat ../tests/data/btcusd.csv | ./my_example
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Use circular buffers for indicators that need historical data</li>
+<li>Avoid dynamic memory allocation in hot loops</li>
+<li>Keep indicator state minimal</li>
+<li>Process data in a streaming fashion</li>
+</ul>
+<h3 id="correctness">Correctness</h3>
+<ul>
+<li>Always check for NaN values from indicators</li>
+<li>Never peek ahead at future data</li>
+<li>Test strategies on out-of-sample data</li>
+<li>Validate CSV data before backtesting</li>
+</ul>
+<h3 id="design">Design</h3>
+<ul>
+<li>Keep components small and focused</li>
+<li>Compose complex behaviors from simple pieces</li>
+<li>Make indicators and strategies reusable</li>
+<li>Use clear, descriptive names</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>Indicator returns NaN</strong>
+- Not enough data points to fill the window yet
+- Check that you're providing valid numeric inputs</p>
+<p><strong>No trades executed</strong>
+- Strategy might not be generating signals (check verbose mode)
+- Portfolio might have no cash or positions to trade</p>
+<p><strong>Unexpected results</strong>
+- Verify CSV data format matches expected structure
+- Check for lookahead bias in strategy logic
+- Validate that indicators are updating correctly</p>
+<h2 id="whats-next">What's Next</h2>
+<p>As an experimental project, tzutrader continues to evolve. Future directions may include:</p>
+<ul>
+<li>Additional data input formats</li>
+<li>More sophisticated portfolio management options</li>
+<li>Extended performance metrics</li>
+<li>Multi-asset portfolio support</li>
+</ul>
+<p>The API may change as we discover better patterns and approaches. Check the repository for updates and feel free to contribute ideas or feedback.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../architecture/" class="btn btn-neutral float-right" title="Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../architecture/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

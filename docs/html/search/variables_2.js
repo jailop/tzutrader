@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['low_0',['low',['../structtzu_1_1Ohlcv.html#a53ce9a033fbfdd7f4a9925e0cba78bb7',1,'tzu::Ohlcv']]]
+  ['final_5fvalue_0',['final_value',['../structtzu_1_1BuyAndHoldMetrics.html#a0864b799d7181741be93785cf8fcb818',1,'tzu::BuyAndHoldMetrics']]]
 ];

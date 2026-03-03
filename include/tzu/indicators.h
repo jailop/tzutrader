@@ -1,11 +1,7 @@
-#ifndef INDICATORS_H
-#define INDICATORS_H
-
-#include <cstddef>
-#include <vector>
-#include "defs.h"
-
 /**
+ * @file indicators.h
+ * @brief Technical indicators for financial analysis
+ * 
  * This header defines several technical indicators commonly used in
  * financial analysis. Each indicator is implemented as a class that
  * maintains the necessary state to calculate the indicator values
@@ -13,15 +9,32 @@
  * similar interface, with a `get()` method to retrieve the current
  * value and an `update()` method to add a new data point and
  * recalculate the indicator.
+ * 
+ * Indicators use circular buffers and running calculations to achieve
+ * O(1) update complexity after initialization. They return NaN until
+ * enough data has been collected.
  */
+
+#ifndef INDICATORS_H
+#define INDICATORS_H
+
+#include <cstddef>
+#include <vector>
+#include "defs.h"
 
 namespace tzu {
 
+/**
+ * @brief Base indicator class using CRTP for static polymorphism
+ * @tparam T Derived indicator class
+ * @tparam In Input data type
+ * @tparam Out Output/result type
+ */
 template <class T, typename In, typename Out>
 class Indicator {
 public:
     Out get() const noexcept {
-        return static_cast<T*>(this)->get();
+        return static_cast<const T*>(this)->get();
     }
     Out update(In value) {
         return static_cast<T*>(this)->update(value);
@@ -29,7 +42,7 @@ public:
 };
 
 /**
- * Simple Moving Average (SMA)
+ * @brief Simple Moving Average (SMA)
  *
  * Maintains a fixed-size window of the most recent values and
  * calculates the average. Returns NaN until enough values have been
@@ -37,7 +50,11 @@ public:
  * average efficiently by keeping a running sum and subtracting the
  * value that falls out of the window.
  *
- * Template parameter `window_size` specifies the size of the window.
+ * @par Usage
+ * @code
+ * SMA sma(20);  // 20-period moving average
+ * double result = sma.update(price);
+ * @endcode
  */
 class SMA: public Indicator<SMA, double, double> {
     double data = std::nan("");

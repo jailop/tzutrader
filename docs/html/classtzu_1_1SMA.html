@@ -28,6 +28,7 @@
   <td id="projectalign">
    <div id="projectname">tzutrader
    </div>
+   <div id="projectbrief">A composable C++ backtesting library for trading strategies (experimental)</div>
   </td>
  </tr>
  </tbody>
@@ -92,6 +93,9 @@ $(function(){initNavTree('classtzu_1_1SMA.html','','classtzu_1_1SMA-members'); }
 </div><!--header-->
 <div class="contents">
 
+<p>Simple Moving Average (<a class="el" href="classtzu_1_1SMA.html" title="Simple Moving Average (SMA).">SMA</a>).  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="indicators_8h_source.html">indicators.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for tzu::SMA:</div>
@@ -113,9 +117,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb26593f13bff759bf8af97ec306a45b inherit pub_methods_classtzu_1_1Indicator" id="r_aeb26593f13bff759bf8af97ec306a45b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1Indicator.html#aeb26593f13bff759bf8af97ec306a45b">update</a> (double value)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Simple Moving Average (<a class="el" href="classtzu_1_1SMA.html">SMA</a>)</p>
+<div class="textblock"><p>Simple Moving Average (<a class="el" href="classtzu_1_1SMA.html" title="Simple Moving Average (SMA).">SMA</a>). </p>
 <p>Maintains a fixed-size window of the most recent values and calculates the average. Returns NaN until enough values have been added to fill the window. Once the window is full, it updates the average efficiently by keeping a running sum and subtracting the value that falls out of the window.</p>
-<p>Template parameter <span class="tt">window_size</span> specifies the size of the window. </p>
+<dl class="section user"><dt>Usage</dt><dd><div class="fragment"><div class="line"><a class="code hl_function" href="#a6785352b0bc409b79521722e6dee6110">SMA</a> sma(20);  <span class="comment">// 20-period moving average</span></div>
+<div class="line"><span class="keywordtype">double</span> result = sma.update(price);</div>
+<div class="ttc" id="aclasstzu_1_1SMA_html_a6785352b0bc409b79521722e6dee6110"><div class="ttname"><a href="#a6785352b0bc409b79521722e6dee6110">tzu::SMA::SMA</a></div><div class="ttdeci">SMA(size_t window_size)</div><div class="ttdef"><b>Definition</b> indicators.h:66</div></div>
+</div><!-- fragment --> </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6785352b0bc409b79521722e6dee6110" name="a6785352b0bc409b79521722e6dee6110"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6785352b0bc409b79521722e6dee6110">&#9670;&#160;</a></span>SMA()</h2>
@@ -194,7 +201,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/<a class="el" href="indicators_8h_source.html">indicators.h</a></li>
+<li>include/tzu/<a class="el" href="indicators_8h_source.html">indicators.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

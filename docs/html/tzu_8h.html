@@ -28,6 +28,7 @@
   <td id="projectalign">
    <div id="projectname">tzutrader
    </div>
+   <div id="projectbrief">A composable C++ backtesting library for trading strategies (experimental)</div>
   </td>
  </tr>
  </tbody>
@@ -91,10 +92,61 @@ $(function(){initNavTree('tzu_8h.html','',''); });
   <div class="headertitle"><div class="title">tzu.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="runners_8h_source.html">runners.h</a>&quot;</code><br />
+
+<p>Main header file for the tzutrader library.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="runners_8h_source.html">tzu/runners.h</a>&quot;</code><br />
 </div>
 <p><a href="tzu_8h_source.html">Go to the source code of this file.</a></p>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Main header file for the tzutrader library. </p>
+<p>Include this header to access all components of the tzutrader backtesting library.</p>
+<h1 class="doxsection"><a class="anchor" id="intro_sec"></a>
+Introduction</h1>
+<p>tzutrader is a composable C++ backtesting library that processes market data in a streaming fashion. The library is designed around small, focused components that can be combined to create custom backtesting systems.</p>
+<h1 class="doxsection"><a class="anchor" id="components_sec"></a>
+Core Components</h1>
+<ul>
+<li><b>Data Types</b> (<a class="el" href="defs_8h.html" title="Core data structures and types for the tzutrader library.">defs.h</a>): Fundamental structures like Ohlcv, Signal, Tick</li>
+<li><b>Indicators</b> (<a class="el" href="indicators_8h.html" title="Technical indicators for financial analysis.">indicators.h</a>): SMA, EMA, RSI, MACD, and more</li>
+<li><b>Strategies</b> (<a class="el" href="strategies_8h.html">strategies.h</a>): Trading signal generation</li>
+<li><b>Portfolios</b> (<a class="el" href="portfolios_8h.html">portfolios.h</a>): <a class="el" href="structPosition.html">Position</a> and risk management</li>
+<li><b>Streamers</b> (<a class="el" href="streamers_8h.html">streamers.h</a>): Data input and parsing</li>
+<li><b>Runners</b> (<a class="el" href="runners_8h.html">runners.h</a>): Backtest orchestration</li>
+</ul>
+<h1 class="doxsection"><a class="anchor" id="example_sec"></a>
+Quick Example</h1>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="tzu_8h.html">tzu.h</a>&quot;</span></div>
+<div class="line"><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespacetzu.html">tzu</a>;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main() {</div>
+<div class="line">    <a class="code hl_class" href="classtzu_1_1RSIStrat.html">RSIStrat</a> strategy(14, 30, 70);</div>
+<div class="line">    <a class="code hl_class" href="classtzu_1_1BasicPortfolio.html">BasicPortfolio</a> portfolio(100000.0, 0.001, 0.10, 0.20);</div>
+<div class="line">    <a class="code hl_class" href="classtzu_1_1Csv.html">Csv&lt;Ohlcv&gt;</a> csv(std::cin);</div>
+<div class="line">    </div>
+<div class="line">    <a class="code hl_class" href="classtzu_1_1BasicRunner.html">BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;</a>&gt; runner(</div>
+<div class="line">        portfolio, strategy, csv</div>
+<div class="line">    );</div>
+<div class="line">    runner.run(<span class="keyword">false</span>);</div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+<div class="ttc" id="aclasstzu_1_1BasicPortfolio_html"><div class="ttname"><a href="classtzu_1_1BasicPortfolio.html">tzu::BasicPortfolio</a></div><div class="ttdef"><b>Definition</b> portfolios.h:35</div></div>
+<div class="ttc" id="aclasstzu_1_1BasicRunner_html"><div class="ttname"><a href="classtzu_1_1BasicRunner.html">tzu::BasicRunner</a></div><div class="ttdef"><b>Definition</b> runners.h:32</div></div>
+<div class="ttc" id="aclasstzu_1_1Csv_html"><div class="ttname"><a href="classtzu_1_1Csv.html">tzu::Csv</a></div><div class="ttdef"><b>Definition</b> streamers.h:176</div></div>
+<div class="ttc" id="aclasstzu_1_1RSIStrat_html"><div class="ttname"><a href="classtzu_1_1RSIStrat.html">tzu::RSIStrat</a></div><div class="ttdef"><b>Definition</b> strategies.h:68</div></div>
+<div class="ttc" id="anamespacetzu_html"><div class="ttname"><a href="namespacetzu.html">tzu</a></div><div class="ttdef"><b>Definition</b> defs.h:20</div></div>
+<div class="ttc" id="atzu_8h_html"><div class="ttname"><a href="tzu_8h.html">tzu.h</a></div><div class="ttdoc">Main header file for the tzutrader library.</div></div>
+</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="links_sec"></a>
+Links</h1>
+<ul>
+<li>User Guide: <a href="https://jailop.codeberg.page/tzutrader/docs/">https://jailop.codeberg.page/tzutrader/docs/</a></li>
+<li>API Reference: <a href="https://jailop.codeberg.page/tzutrader/docs/html/">https://jailop.codeberg.page/tzutrader/docs/html/</a></li>
+<li>Repository: <a href="https://codeberg.org/jailop/tzutrader">https://codeberg.org/jailop/tzutrader</a></li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>This is an experimental project. The API may change as the design evolves.</dd></dl>
+<dl class="section author"><dt>Author</dt><dd>Jaime Lopez </dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>2026 </dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['compute_5fholdings_5fqty_0',['compute_holdings_qty',['../namespacetzu.html#a6dd364969cbea86884d6416cea1a1771',1,'tzu']]],
-  ['compute_5fperformance_5fmetrics_1',['compute_performance_metrics',['../namespacetzu.html#acc2a52c4d848d5e34dbb7b02469c6fdb',1,'tzu']]],
-  ['compute_5ftotal_5fvalue_2',['compute_total_value',['../namespacetzu.html#ab2395c63791854abe313806f4ce80261',1,'tzu']]],
-  ['csv_3',['Csv',['../classtzu_1_1Csv.html#a78371aa60447581762fb03cb6c62ebf7',1,'tzu::Csv']]]
+  ['basicportfolio_0',['BasicPortfolio',['../classtzu_1_1BasicPortfolio.html#aec30f65df64a544e32e6bd86e4da5c06',1,'tzu::BasicPortfolio']]],
+  ['basicrunner_1',['BasicRunner',['../classtzu_1_1BasicRunner.html#aaa5e32edb3e5be58ea19357b9ca51048',1,'tzu::BasicRunner']]],
+  ['begin_2',['begin',['../classtzu_1_1Csv.html#ac41857a25cd7694f42df28ddedafd452',1,'tzu::Csv']]]
 ];

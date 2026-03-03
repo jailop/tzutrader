@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Architecture - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Architecture";
+        var mkdocs_page_input_path = "architecture.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../user-guide/">User Guide</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#design-philosophy">Design Philosophy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#component-architecture">Component Architecture</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#layer-overview">Layer Overview</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#data-layer">Data Layer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#design-goals">Design Goals</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#implementation-pattern">Implementation Pattern</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#iterator-interface">Iterator Interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#buffer-management">Buffer Management</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#extension-points">Extension Points</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#indicator-layer">Indicator Layer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#state-management">State Management</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#circular-buffers">Circular Buffers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nan-handling">NaN Handling</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#crtp-pattern">CRTP Pattern</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#composition">Composition</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#strategy-layer">Strategy Layer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#responsibilities">Responsibilities</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#signal-generation">Signal Generation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#state-tracking">State Tracking</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#multi-indicator-coordination">Multi-Indicator Coordination</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#extension-points_1">Extension Points</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#portfolio-layer">Portfolio Layer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#responsibilities_1">Responsibilities</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#position-management">Position Management</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#risk-management">Risk Management</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performance-metrics">Performance Metrics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#extension-points_2">Extension Points</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#orchestration-layer">Orchestration Layer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#runner-design">Runner Design</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#template-based-composition">Template-Based Composition</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#alternative-runner-designs">Alternative Runner Designs</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-patterns">Design Patterns</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#crtp-curiously-recurring-template-pattern">CRTP (Curiously Recurring Template Pattern)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#traits-based-specialization">Traits-Based Specialization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#composition-over-inheritance">Composition Over Inheritance</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#memory-and-performance">Memory and Performance</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#memory-characteristics">Memory Characteristics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#performance-characteristics">Performance Characteristics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optimization-opportunities">Optimization Opportunities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#threading-and-concurrency">Threading and Concurrency</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#extensibility">Extensibility</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#adding-new-indicators">Adding New Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#adding-new-strategies">Adding New Strategies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#adding-new-data-sources">Adding New Data Sources</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#adding-new-portfolio-types">Adding New Portfolio Types</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#testing-strategy">Testing Strategy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#known-limitations">Known Limitations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#evolution-and-future-directions">Evolution and Future Directions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learning-resources">Learning Resources</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="architecture-guide">Architecture Guide</h1>
+<p><strong>Note:</strong> This is an experimental project exploring different architectural patterns for backtesting libraries. The design choices described here may evolve as we learn what works well in practice.</p>
+<h2 id="design-philosophy">Design Philosophy</h2>
+<p>tzutrader is built around three core principles:</p>
+<ol>
+<li><strong>Composability</strong>: Components can be mixed and matched to create different backtesting configurations</li>
+<li><strong>Streaming</strong>: Data is processed incrementally without loading everything into memory</li>
+<li><strong>Simplicity</strong>: Focus on core functionality with minimal dependencies</li>
+</ol>
+<p>These principles are inspired by the Unix philosophy of building small, focused tools that do one thing well.</p>
+<h2 id="component-architecture">Component Architecture</h2>
+<h3 id="layer-overview">Layer Overview</h3>
+<pre><code>┌─────────────────────────────────────────┐
+│            Application Layer            │
+│     (User code combining components)    │
+└─────────────────────────────────────────┘
+                    │
+┌─────────────────────────────────────────┐
+│           Orchestration Layer           │
+│              (Runners)                  │
+└─────────────────────────────────────────┘
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+┌───────▼────────┐    ┌────────▼───────┐
+│   Strategy     │    │   Portfolio    │
+│    Layer       │    │     Layer      │
+└───────┬────────┘    └────────────────┘
+        │
+┌───────▼────────┐
+│   Indicator    │
+│     Layer      │
+└───────┬────────┘
+        │
+┌───────▼────────┐
+│  Data Layer    │
+│  (Streamers)   │
+└────────────────┘
+</code></pre>
+<h3 id="data-flow">Data Flow</h3>
+<p>Data flows upward through the layers:</p>
+<ol>
+<li><strong>Data Layer</strong> reads and parses raw data</li>
+<li><strong>Indicator Layer</strong> computes technical values</li>
+<li><strong>Strategy Layer</strong> generates trading signals</li>
+<li><strong>Portfolio Layer</strong> executes trades and tracks state</li>
+<li><strong>Orchestration Layer</strong> coordinates the process</li>
+</ol>
+<p>Each layer is independent and replaceable.</p>
+<h2 id="data-layer">Data Layer</h2>
+<h3 id="design-goals">Design Goals</h3>
+<ul>
+<li>Support multiple data formats (CSV, JSON, etc.)</li>
+<li>Stream data point-by-point</li>
+<li>Parse efficiently without excessive allocation</li>
+<li>Handle malformed data gracefully</li>
+</ul>
+<h3 id="implementation-pattern">Implementation Pattern</h3>
+<p>The data layer uses a template-based design with specialized parsers:</p>
+<pre><code class="language-cpp">template&lt;typename T&gt;
+class Csv {
+    // Generic CSV reader
+};
+
+template&lt;typename T&gt;
+struct CsvParseTraits {
+    // Specialized parser for type T
+    static bool parse(const char* line, T&amp; out);
+};
+</code></pre>
+<p>This separates the streaming mechanism from format-specific parsing logic.</p>
+<h3 id="iterator-interface">Iterator Interface</h3>
+<p>The <code>Csv</code> class provides an STL-compatible iterator:</p>
+<pre><code class="language-cpp">for (const auto&amp; data_point : csv_reader) {
+    // Process data_point
+}
+</code></pre>
+<p>This makes data sources compatible with standard algorithms and easy to integrate.</p>
+<h3 id="buffer-management">Buffer Management</h3>
+<p>Fixed-size buffers (2048 bytes) are used for line parsing to avoid dynamic allocation in hot loops. This is a trade-off between flexibility and performance. For most financial data, 2KB per line is sufficient.</p>
+<h3 id="extension-points">Extension Points</h3>
+<p>To add support for new formats:</p>
+<ol>
+<li>Create a new reader class (e.g., <code>JsonReader</code>)</li>
+<li>Implement an iterator that yields data points</li>
+<li>Optionally specialize parse traits for custom data types</li>
+</ol>
+<h2 id="indicator-layer">Indicator Layer</h2>
+<h3 id="state-management">State Management</h3>
+<p>Indicators maintain minimal state to compute values incrementally:</p>
+<pre><code class="language-cpp">class SMA {
+    std::vector&lt;double&gt; prev;  // Circular buffer
+    size_t pos;                // Current position
+    size_t len;                // Number of values seen
+    double sum;                // Running sum
+};
+</code></pre>
+<p>This approach:
+- Uses O(window_size) memory, not O(all_data)
+- Updates in O(1) time after initialization
+- Naturally handles streaming data</p>
+<h3 id="circular-buffers">Circular Buffers</h3>
+<p>Most indicators use circular buffers to maintain rolling windows:</p>
+<pre><code class="language-cpp">double update(double value) {
+    if (len &lt; window_size) {
+        len++;
+    } else {
+        sum -= prev[pos];  // Remove oldest value
+    }
+    sum += value;
+    prev[pos] = value;
+    pos = (pos + 1) % window_size;
+    return sum / window_size;
+}
+</code></pre>
+<p>This pattern efficiently implements sliding windows without shifting array elements.</p>
+<h3 id="nan-handling">NaN Handling</h3>
+<p>Indicators return <code>std::nan("")</code> when they don't have enough data:</p>
+<pre><code class="language-cpp">return len &lt; window_size ? std::nan(&quot;&quot;) : computed_value;
+</code></pre>
+<p>This signals to strategies that the indicator isn't ready yet, avoiding premature trading.</p>
+<h3 id="crtp-pattern">CRTP Pattern</h3>
+<p>Indicators use the Curiously Recurring Template Pattern (CRTP) for static polymorphism:</p>
+<pre><code class="language-cpp">template &lt;class T, typename In, typename Out&gt;
+class Indicator {
+public:
+    Out update(In value) {
+        return static_cast&lt;T*&gt;(this)-&gt;update(value);
+    }
+};
+
+class SMA: public Indicator&lt;SMA, double, double&gt; {
+    // Implementation
+};
+</code></pre>
+<p>This provides a uniform interface without virtual function overhead.</p>
+<h3 id="composition">Composition</h3>
+<p>Complex indicators are built by composing simpler ones:</p>
+<pre><code class="language-cpp">class RSI {
+    SMA gains;   // Reuse SMA for average gains
+    SMA losses;  // Reuse SMA for average losses
+};
+</code></pre>
+<p>This encourages code reuse and keeps individual components simple.</p>
+<h2 id="strategy-layer">Strategy Layer</h2>
+<h3 id="responsibilities">Responsibilities</h3>
+<p>A strategy:
+- Receives market data
+- Updates indicators
+- Generates trading signals (BUY/SELL/NONE)
+- Maintains state between updates</p>
+<h3 id="signal-generation">Signal Generation</h3>
+<p>Strategies output <code>Signal</code> objects:</p>
+<pre><code class="language-cpp">struct Signal {
+    int64_t timestamp;
+    Side side;        // BUY, SELL, or NONE
+    double price;
+    double volume;
+};
+</code></pre>
+<p>This standardized interface allows any portfolio to consume signals from any strategy.</p>
+<h3 id="state-tracking">State Tracking</h3>
+<p>Strategies track the last signal to avoid spam:</p>
+<pre><code class="language-cpp">class MyStrategy {
+    Side last_side;
+
+    Signal update(const Data&amp; data) {
+        if (should_buy &amp;&amp; last_side != Side::BUY) {
+            last_side = Side::BUY;
+            return buy_signal;
+        }
+        // ...
+    }
+};
+</code></pre>
+<p>This prevents generating 100 consecutive BUY signals in a strong uptrend.</p>
+<h3 id="multi-indicator-coordination">Multi-Indicator Coordination</h3>
+<p>Strategies coordinate multiple indicators to implement complex logic:</p>
+<pre><code class="language-cpp">Signal update(const Ohlcv&amp; data) {
+    double rsi_val = rsi.update(data);
+    double ma_fast = fast_ma.update(data.close);
+    double ma_slow = slow_ma.update(data.close);
+
+    // Wait for all indicators
+    if (std::isnan(rsi_val) || std::isnan(ma_fast) || std::isnan(ma_slow)) {
+        return no_signal;
+    }
+
+    // Combine indicators
+    if (rsi_val &lt; 30 &amp;&amp; ma_fast &gt; ma_slow) {
+        return buy_signal;
+    }
+    // ...
+}
+</code></pre>
+<h3 id="extension-points_1">Extension Points</h3>
+<p>Custom strategies inherit from <code>Strategy&lt;T, In&gt;</code> and implement:</p>
+<pre><code class="language-cpp">Signal update(const In&amp; data);
+</code></pre>
+<p>The template parameters specify:
+- <code>T</code>: The derived strategy type (for CRTP)
+- <code>In</code>: The input data type (Ohlcv, Tick, SingleValue, etc.)</p>
+<h2 id="portfolio-layer">Portfolio Layer</h2>
+<h3 id="responsibilities_1">Responsibilities</h3>
+<p>A portfolio:
+- Manages cash and positions
+- Executes trades based on signals
+- Applies transaction costs
+- Implements risk management (stop-loss, take-profit)
+- Tracks performance metrics</p>
+<h3 id="position-management">Position Management</h3>
+<p>The <code>BasicPortfolio</code> uses an all-in approach:</p>
+<pre><code class="language-cpp">void update(const Signal&amp; signal) {
+    if (signal.side == Side::BUY) {
+        // Use all available cash
+        double quantity = cash / signal.price;
+        open_position(quantity, signal.price);
+    } else if (signal.side == Side::SELL) {
+        // Close all positions
+        close_all_positions(signal.price);
+    }
+}
+</code></pre>
+<p>This simplifies the implementation but isn't realistic for production trading.</p>
+<h3 id="risk-management">Risk Management</h3>
+<p>Stop-loss and take-profit are checked on every update:</p>
+<pre><code class="language-cpp">void check_stop_loss_take_profit(double price, int64_t timestamp) {
+    for (auto&amp; position : positions) {
+        double return_pct = (price - position.price) / position.price;
+
+        if (return_pct &lt;= -stop_loss_pct) {
+            liquidate_position(position, price, timestamp, true, false);
+        } else if (return_pct &gt;= take_profit_pct) {
+            liquidate_position(position, price, timestamp, false, true);
+        }
+    }
+}
+</code></pre>
+<p>This protects against large losses and locks in profits.</p>
+<h3 id="performance-metrics">Performance Metrics</h3>
+<p>The portfolio delegates metric calculation to <code>PortfolioStats</code>:</p>
+<pre><code class="language-cpp">class PortfolioStats {
+    void record_trade_close(...);
+    void add_costs(double cost);
+    double compute_sharpe_ratio();
+    double compute_max_drawdown();
+    // ...
+};
+</code></pre>
+<p>This separation keeps portfolio logic focused on trade execution.</p>
+<h3 id="extension-points_2">Extension Points</h3>
+<p>Custom portfolios can implement:</p>
+<ul>
+<li>Position sizing based on risk (e.g., Kelly criterion)</li>
+<li>Multiple simultaneous positions</li>
+<li>Partial exits and scaling in/out</li>
+<li>Different order types (limit, stop)</li>
+<li>Slippage modeling</li>
+<li>Multi-asset support</li>
+</ul>
+<h2 id="orchestration-layer">Orchestration Layer</h2>
+<h3 id="runner-design">Runner Design</h3>
+<p>The <code>BasicRunner</code> connects all components:</p>
+<pre><code class="language-cpp">template &lt;typename Portfolio, typename Strategy, typename Streamer&gt;
+class BasicRunner {
+    Portfolio portfolio;
+    Strategy strategy;
+    Streamer streamer;
+
+    void run(bool verbose) {
+        for (const auto&amp; data : streamer) {
+            Signal signal = strategy.update(data);
+            portfolio.update(signal);
+            if (verbose) print(portfolio);
+        }
+        print(portfolio);
+    }
+};
+</code></pre>
+<p>The runner:
+- Pulls data from the streamer
+- Feeds data to the strategy
+- Passes signals to the portfolio
+- Optionally prints state after each step</p>
+<h3 id="template-based-composition">Template-Based Composition</h3>
+<p>Using templates allows compile-time composition without runtime overhead:</p>
+<pre><code class="language-cpp">BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;&gt; runner(portfolio, strat, csv);
+</code></pre>
+<p>Each combination of components generates specialized code optimized for that exact configuration.</p>
+<h3 id="alternative-runner-designs">Alternative Runner Designs</h3>
+<p>Future runners might:
+- Support multiple strategies simultaneously
+- Enable strategy comparison
+- Add warmup periods
+- Implement walk-forward analysis
+- Support parameter optimization</p>
+<h2 id="design-patterns">Design Patterns</h2>
+<h3 id="crtp-curiously-recurring-template-pattern">CRTP (Curiously Recurring Template Pattern)</h3>
+<p>Used for indicators and strategies to provide static polymorphism:</p>
+<pre><code class="language-cpp">template &lt;class Derived, typename In, typename Out&gt;
+class Indicator {
+    Out update(In value) {
+        return static_cast&lt;Derived*&gt;(this)-&gt;update(value);
+    }
+};
+</code></pre>
+<p>Benefits:
+- No virtual function overhead
+- Type-safe interface
+- Enables compile-time optimization</p>
+<h3 id="traits-based-specialization">Traits-Based Specialization</h3>
+<p>Used for parsing different data types:</p>
+<pre><code class="language-cpp">template&lt;typename T&gt;
+struct CsvParseTraits {
+    static bool parse(const char* line, T&amp; out);
+};
+</code></pre>
+<p>Benefits:
+- Separates format from parsing logic
+- Easy to extend with new types
+- No runtime dispatch overhead</p>
+<h3 id="composition-over-inheritance">Composition Over Inheritance</h3>
+<p>Indicators and strategies are composed:</p>
+<pre><code class="language-cpp">class RSI {
+    SMA gains;  // Has-a relationship
+    SMA losses;
+};
+</code></pre>
+<p>Rather than inherited:</p>
+<pre><code class="language-cpp">// Not done this way
+class RSI: public SMA {
+};
+</code></pre>
+<p>Benefits:
+- More flexible
+- Clearer dependencies
+- Easier to test components in isolation</p>
+<h2 id="memory-and-performance">Memory and Performance</h2>
+<h3 id="memory-characteristics">Memory Characteristics</h3>
+<ul>
+<li><strong>Data Layer</strong>: Fixed 2KB buffer per reader</li>
+<li><strong>Indicators</strong>: O(window_size) per indicator</li>
+<li><strong>Strategies</strong>: O(1) for most strategies</li>
+<li><strong>Portfolios</strong>: O(number_of_positions)</li>
+</ul>
+<p>Total memory usage is bounded and predictable.</p>
+<h3 id="performance-characteristics">Performance Characteristics</h3>
+<ul>
+<li><strong>Data Reading</strong>: O(1) per data point</li>
+<li><strong>Indicator Updates</strong>: O(1) after warmup</li>
+<li><strong>Strategy Updates</strong>: O(number_of_indicators)</li>
+<li><strong>Portfolio Updates</strong>: O(number_of_positions)</li>
+</ul>
+<p>The library processes millions of data points efficiently.</p>
+<h3 id="optimization-opportunities">Optimization Opportunities</h3>
+<p>Current focus is on correctness and simplicity. Future optimizations might include:</p>
+<ul>
+<li>SIMD for indicator calculations</li>
+<li>Parallel processing of multiple strategies</li>
+<li>Memory-mapped file I/O</li>
+<li>Zero-copy data structures</li>
+</ul>
+<p>These will be considered if profiling reveals bottlenecks.</p>
+<h2 id="threading-and-concurrency">Threading and Concurrency</h2>
+<p>The current design is single-threaded. All components maintain mutable state and are not thread-safe.</p>
+<p>For concurrent backtesting:</p>
+<ul>
+<li>Run separate backtest instances in different threads</li>
+<li>Each instance has its own data streamer, strategy, and portfolio</li>
+<li>No shared state between instances</li>
+</ul>
+<p>This "shared-nothing" approach is simple and scales well.</p>
+<h2 id="extensibility">Extensibility</h2>
+<h3 id="adding-new-indicators">Adding New Indicators</h3>
+<ol>
+<li>Inherit from <code>Indicator&lt;YourIndicator, InputType, OutputType&gt;</code></li>
+<li>Implement <code>get()</code> and <code>update()</code></li>
+<li>Use existing indicators as building blocks</li>
+<li>Return NaN when not enough data</li>
+</ol>
+<h3 id="adding-new-strategies">Adding New Strategies</h3>
+<ol>
+<li>Inherit from <code>Strategy&lt;YourStrategy, DataType&gt;</code></li>
+<li>Implement <code>update(const DataType&amp;) -&gt; Signal</code></li>
+<li>Use indicators to compute values</li>
+<li>Track state to avoid signal spam</li>
+</ol>
+<h3 id="adding-new-data-sources">Adding New Data Sources</h3>
+<ol>
+<li>Create a class with begin()/end() methods</li>
+<li>Implement an iterator that returns data points</li>
+<li>Optionally specialize CsvParseTraits for custom types</li>
+<li>Ensure iterator is STL-compatible</li>
+</ol>
+<h3 id="adding-new-portfolio-types">Adding New Portfolio Types</h3>
+<ol>
+<li>Inherit from <code>Portfolio&lt;YourPortfolio&gt;</code></li>
+<li>Implement <code>update(const Signal&amp;)</code></li>
+<li>Track positions and cash</li>
+<li>Implement operator&lt;&lt; for output</li>
+</ol>
+<h2 id="testing-strategy">Testing Strategy</h2>
+<p>The library includes tests for:</p>
+<ul>
+<li>Individual indicators (correctness of calculations)</li>
+<li>Parsing logic (handling valid and invalid input)</li>
+<li>End-to-end backtests (comparing expected vs actual results)</li>
+</ul>
+<p>Testing approach:</p>
+<ul>
+<li>Unit tests for indicators with known outputs</li>
+<li>Property-based tests for invariants</li>
+<li>Integration tests with sample data</li>
+</ul>
+<h2 id="known-limitations">Known Limitations</h2>
+<p>As an experimental project, there are known limitations:</p>
+<ul>
+<li><strong>Single asset</strong>: Only one tradable asset at a time</li>
+<li><strong>Simple portfolio</strong>: All-in/all-out position management</li>
+<li><strong>Limited orders</strong>: Market orders only</li>
+<li><strong>No slippage</strong>: Assumes perfect execution at signal price</li>
+<li><strong>CSV only</strong>: Limited data format support currently</li>
+<li><strong>Minimal error handling</strong>: Expects well-formed input</li>
+</ul>
+<p>These limitations are intentional to keep the core design simple while exploring the architecture.</p>
+<h2 id="evolution-and-future-directions">Evolution and Future Directions</h2>
+<p>The architecture may evolve as we explore:</p>
+<ul>
+<li>Multi-asset portfolio management</li>
+<li>More realistic order execution</li>
+<li>Additional data formats and sources</li>
+<li>Alternative runner designs</li>
+<li>Plugin system for custom components</li>
+</ul>
+<p>Changes will prioritize:
+- Maintaining simplicity
+- Preserving composability
+- Avoiding breaking changes when possible</p>
+<p>Feedback and experimentation will guide future architectural decisions.</p>
+<h2 id="learning-resources">Learning Resources</h2>
+<p>To understand the design better:</p>
+<ol>
+<li>Read the header files in <code>include/tzu/</code> - they're well-commented</li>
+<li>Study the example implementations in <code>examples/</code></li>
+<li>Look at the test cases in <code>tests/</code></li>
+<li>Experiment with custom indicators and strategies</li>
+</ol>
+<p>The best way to understand the architecture is to use it and try extending it.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../user-guide/" class="btn btn-neutral float-left" title="User Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../user-guide/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

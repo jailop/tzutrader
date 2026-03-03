@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['signal_0',['Signal',['../structtzu_1_1Signal.html#a285fb6d5253ee563efb3c3c704129a7d',1,'tzu::Signal']]],
-  ['singlevalue_1',['SingleValue',['../structtzu_1_1SingleValue.html#ada0f4a1a1bcf6026a8a1857ee0fd5938',1,'tzu::SingleValue::SingleValue()=default'],['../structtzu_1_1SingleValue.html#a36c1339318fe0c15c31faf76a0516c10',1,'tzu::SingleValue::SingleValue(int64_t ts, double v)']]],
-  ['sma_2',['SMA',['../classtzu_1_1SMA.html#a6785352b0bc409b79521722e6dee6110',1,'tzu::SMA']]],
-  ['smacrossover_3',['SMACrossover',['../classtzu_1_1SMACrossover.html#a39c06ba69266810495f564f517ee2b16',1,'tzu::SMACrossover']]]
+  ['parse_0',['parse',['../structtzu_1_1CsvParseTraits_3_01Ohlcv_01_4.html#a45bf5927f4948f8aa292576b0a00deeb',1,'tzu::CsvParseTraits&lt; Ohlcv &gt;::parse()'],['../structtzu_1_1CsvParseTraits_3_01Tick_01_4.html#abd348ac2fa5f641535f9a37e0185b5a2',1,'tzu::CsvParseTraits&lt; Tick &gt;::parse()'],['../structtzu_1_1CsvParseTraits_3_01SingleValue_01_4.html#a72bbe720daee69ef3c4114f8cfdffb27',1,'tzu::CsvParseTraits&lt; SingleValue &gt;::parse()']]],
+  ['parseiterator_1',['ParseIterator',['../classtzu_1_1ParseIterator.html#a45653a577d4e4d4c59069f3cd306dc66',1,'tzu::ParseIterator']]],
+  ['position_2',['Position',['../structPosition.html#ad41f9ab056a989ba5b2a7a5d8d501257',1,'Position']]],
+  ['print_5fsummary_3',['print_summary',['../classtzu_1_1PortfolioStats.html#afbd8ac95f309d30ae898b709a4ae2b88',1,'tzu::PortfolioStats']]]
 ];

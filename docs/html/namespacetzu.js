@@ -15,6 +15,10 @@ var namespacetzu =
     [ "BasicPortfolio", "classtzu_1_1BasicPortfolio.html", "classtzu_1_1BasicPortfolio" ],
     [ "Runner", "classtzu_1_1Runner.html", "classtzu_1_1Runner" ],
     [ "BasicRunner", "classtzu_1_1BasicRunner.html", "classtzu_1_1BasicRunner" ],
+    [ "Trade", "structtzu_1_1Trade.html", "structtzu_1_1Trade" ],
+    [ "PerformanceMetrics", "structtzu_1_1PerformanceMetrics.html", "structtzu_1_1PerformanceMetrics" ],
+    [ "BuyAndHoldMetrics", "structtzu_1_1BuyAndHoldMetrics.html", "structtzu_1_1BuyAndHoldMetrics" ],
+    [ "PortfolioStats", "classtzu_1_1PortfolioStats.html", "classtzu_1_1PortfolioStats" ],
     [ "Strategy", "classtzu_1_1Strategy.html", "classtzu_1_1Strategy" ],
     [ "SMACrossover", "classtzu_1_1SMACrossover.html", "classtzu_1_1SMACrossover" ],
     [ "RSIStrat", "classtzu_1_1RSIStrat.html", "classtzu_1_1RSIStrat" ],
@@ -42,9 +46,11 @@ var namespacetzu =
       [ "SELL", "namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9a860926e6fc3f191e18ee7a98259164b8", null ],
       [ "NONE", "namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693", null ]
     ] ],
-    [ "compute_holdings_qty", "namespacetzu.html#a6dd364969cbea86884d6416cea1a1771", null ],
-    [ "compute_performance_metrics", "namespacetzu.html#acc2a52c4d848d5e34dbb7b02469c6fdb", null ],
-    [ "compute_total_value", "namespacetzu.html#ab2395c63791854abe313806f4ce80261", null ],
+    [ "compute_buy_and_hold_metrics", "namespacetzu.html#a1e49b0b2148832f45471cf42e26e5e6f", null ],
+    [ "compute_max_drawdown", "namespacetzu.html#a931e3e213875204396e5c4184afdf865", null ],
+    [ "compute_performance_metrics", "namespacetzu.html#a205f547c05a624e3b56748b831b23e8c", null ],
+    [ "compute_returns", "namespacetzu.html#a277bf2f2a502866eaa00a1a76f8b8cbd", null ],
+    [ "compute_sharpe_ratio", "namespacetzu.html#aa1e1a6d5c65259f92effe74fc73acdf5", null ],
     [ "operator<<", "namespacetzu.html#a16b41fa1b702da65f893873f954dda82", null ],
     [ "MAX_BUFFER_SIZE", "namespacetzu.html#a6f9848e960c64bbbe78d1b4d6984a48e", null ]
 ];

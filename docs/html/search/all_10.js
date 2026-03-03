@@ -1,4 +1,15 @@
 var searchData=
 [
-  ['update_0',['update',['../classtzu_1_1Indicator.html#aeb26593f13bff759bf8af97ec306a45b',1,'tzu::Indicator::update()'],['../classtzu_1_1SMA.html#aa01db1390c5241870186edf0798ad900',1,'tzu::SMA::update()'],['../classtzu_1_1EMA.html#a9990910f173f28e524a70e2c86c9a821',1,'tzu::EMA::update()'],['../classtzu_1_1MVar.html#ac447bf22baf57740599e81c869cbb44f',1,'tzu::MVar::update()'],['../classtzu_1_1RSI.html#a059e1e0154f305ad9e0d1a5968a92f33',1,'tzu::RSI::update()'],['../classtzu_1_1MACD.html#aeac74d4bc1b039eaaaba857c7e5a7ba3',1,'tzu::MACD::update()'],['../classtzu_1_1Portfolio.html#a0b3a8b23cf09f6094c1abceb0297484b',1,'tzu::Portfolio::update()'],['../classtzu_1_1BasicPortfolio.html#ac48966bd1c75e99c49edd6fe9a540517',1,'tzu::BasicPortfolio::update()'],['../classtzu_1_1Strategy.html#afe120b3e4f2ad55999ec4d2518a54da4',1,'tzu::Strategy::update()'],['../classtzu_1_1SMACrossover.html#a0787b5b17228ceaec4be30d7921f7033',1,'tzu::SMACrossover::update()'],['../classtzu_1_1RSIStrat.html#ae643cbc1697a842871b5c737d3634589',1,'tzu::RSIStrat::update()'],['../classtzu_1_1MACDStrat.html#a49f3da03102ba4fc5d8394d148898c77',1,'tzu::MACDStrat::update()']]]
+  ['record_5fequity_0',['record_equity',['../classtzu_1_1PortfolioStats.html#aa6be99a7754092627005affe3d6df2ef',1,'tzu::PortfolioStats']]],
+  ['record_5ftrade_5fclose_1',['record_trade_close',['../classtzu_1_1PortfolioStats.html#a103893f98ebfb8415434dadf794a43ea',1,'tzu::PortfolioStats']]],
+  ['record_5ftrade_5fopen_2',['record_trade_open',['../classtzu_1_1PortfolioStats.html#aaadc6d3f944ace25b59638e80aa11509',1,'tzu::PortfolioStats']]],
+  ['reference_3',['tzutrader API Reference',['../index.html',1,'']]],
+  ['rsi_4',['RSI',['../classtzu_1_1RSI.html',1,'tzu::RSI'],['../classtzu_1_1RSI.html#ad54dfe7db8fc28ef5ee7297ed94a2281',1,'tzu::RSI::RSI()']]],
+  ['rsistrat_5',['RSIStrat',['../classtzu_1_1RSIStrat.html',1,'tzu::RSIStrat'],['../classtzu_1_1RSIStrat.html#ae675e12771d5dfb86cbf9d1837ef9532',1,'tzu::RSIStrat::RSIStrat()']]],
+  ['run_6',['run',['../classtzu_1_1Runner.html#a8c21e960c1faa53dc68cfedc3c983212',1,'tzu::Runner::run()'],['../classtzu_1_1BasicRunner.html#abfbe82fc36f6c373abf345481e47d824',1,'tzu::BasicRunner::run()']]],
+  ['runner_7',['Runner',['../classtzu_1_1Runner.html',1,'tzu']]],
+  ['runner_3c_20basicrunner_3c_20portfolio_2c_20strat_2c_20streamer_20_3e_20_3e_8',['Runner&lt; BasicRunner&lt; Portfolio, Strat, Streamer &gt; &gt;',['../classtzu_1_1Runner.html',1,'tzu']]],
+  ['runners_20h_9',['Runners (runners.h)',['../index.html#autotoc_md9',1,'']]],
+  ['runners_20runners_20h_10',['Runners (runners.h)',['../index.html#autotoc_md9',1,'']]],
+  ['runners_2eh_11',['runners.h',['../runners_8h.html',1,'']]]
 ];

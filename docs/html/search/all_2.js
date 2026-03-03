@@ -1,5 +1,29 @@
 var searchData=
 [
-  ['datatype_0',['DataType',['../namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81',1,'tzu']]],
-  ['defs_2eh_1',['defs.h',['../defs_8h.html',1,'']]]
+  ['cash_5fleft_0',['cash_left',['../structtzu_1_1BuyAndHoldMetrics.html#a228652949143a0c281e11d8b62ec1795',1,'tzu::BuyAndHoldMetrics']]],
+  ['characteristics_1',['Performance Characteristics',['../index.html#autotoc_md21',1,'']]],
+  ['close_2',['CLOSE',['../namespacetzu.html#aa13c5408f0c4918008f4f0f0d26edae3a7286293c9125ac7d7bace94c190bc16d',1,'tzu']]],
+  ['close_3',['close',['../structtzu_1_1Ohlcv.html#a26eea0a191b8dfaee0f6c8d49f305655',1,'tzu::Ohlcv']]],
+  ['close_5fprice_4',['close_price',['../structtzu_1_1Trade.html#abd9982a86377f121fb39cd4b9bb8919c',1,'tzu::Trade']]],
+  ['close_5ftime_5',['close_time',['../structtzu_1_1Trade.html#a8ae18bec558b722e0806c207a2c7df47',1,'tzu::Trade']]],
+  ['closed_6',['closed',['../structtzu_1_1Trade.html#a3035b76b601b6721589bf16f00004afc',1,'tzu::Trade']]],
+  ['components_7',['Components',['../tzu_8h.html#components_sec',1,'Core Components'],['../index.html#autotoc_md3',1,'Library Components']]],
+  ['composability_8',['Composability',['../index.html#autotoc_md13',1,'']]],
+  ['compute_5fbuy_5fand_5fhold_5fmetrics_9',['compute_buy_and_hold_metrics',['../namespacetzu.html#a1e49b0b2148832f45471cf42e26e5e6f',1,'tzu']]],
+  ['compute_5fmax_5fdrawdown_10',['compute_max_drawdown',['../namespacetzu.html#a931e3e213875204396e5c4184afdf865',1,'tzu']]],
+  ['compute_5fperformance_5fmetrics_11',['compute_performance_metrics',['../namespacetzu.html#a205f547c05a624e3b56748b831b23e8c',1,'tzu']]],
+  ['compute_5freturns_12',['compute_returns',['../namespacetzu.html#a277bf2f2a502866eaa00a1a76f8b8cbd',1,'tzu']]],
+  ['compute_5fsharpe_5fratio_13',['compute_sharpe_ratio',['../namespacetzu.html#aa1e1a6d5c65259f92effe74fc73acdf5',1,'tzu']]],
+  ['contributing_14',['Contributing',['../index.html#autotoc_md25',1,'']]],
+  ['core_20components_15',['Core Components',['../tzu_8h.html#components_sec',1,'']]],
+  ['core_20data_20types_20defs_20h_16',['Core Data Types (defs.h)',['../index.html#autotoc_md4',1,'']]],
+  ['csv_17',['Csv',['../classtzu_1_1Csv.html',1,'tzu::Csv&lt; T &gt;'],['../classtzu_1_1Csv.html#a78371aa60447581762fb03cb6c62ebf7',1,'tzu::Csv::Csv()']]],
+  ['csvparsetraits_18',['CsvParseTraits',['../structtzu_1_1CsvParseTraits.html',1,'tzu']]],
+  ['csvparsetraits_3c_20ohlcv_20_3e_19',['CsvParseTraits&lt; Ohlcv &gt;',['../structtzu_1_1CsvParseTraits_3_01Ohlcv_01_4.html',1,'tzu']]],
+  ['csvparsetraits_3c_20singlevalue_20_3e_20',['CsvParseTraits&lt; SingleValue &gt;',['../structtzu_1_1CsvParseTraits_3_01SingleValue_01_4.html',1,'tzu']]],
+  ['csvparsetraits_3c_20tick_20_3e_21',['CsvParseTraits&lt; Tick &gt;',['../structtzu_1_1CsvParseTraits_3_01Tick_01_4.html',1,'tzu']]],
+  ['custom_20data_20sources_22',['Custom Data Sources',['../index.html#autotoc_md20',1,'']]],
+  ['custom_20indicators_23',['Custom Indicators',['../index.html#autotoc_md17',1,'']]],
+  ['custom_20portfolios_24',['Custom Portfolios',['../index.html#autotoc_md19',1,'']]],
+  ['custom_20strategies_25',['Custom Strategies',['../index.html#autotoc_md18',1,'']]]
 ];

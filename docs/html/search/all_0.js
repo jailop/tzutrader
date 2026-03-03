@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['basicportfolio_0',['BasicPortfolio',['../classtzu_1_1BasicPortfolio.html',1,'tzu::BasicPortfolio'],['../classtzu_1_1BasicPortfolio.html#aec30f65df64a544e32e6bd86e4da5c06',1,'tzu::BasicPortfolio::BasicPortfolio()']]],
-  ['basicrunner_1',['BasicRunner',['../classtzu_1_1BasicRunner.html',1,'tzu::BasicRunner&lt; Portfolio, Strat, Streamer &gt;'],['../classtzu_1_1BasicRunner.html#aaa5e32edb3e5be58ea19357b9ca51048',1,'tzu::BasicRunner::BasicRunner()']]],
-  ['begin_2',['begin',['../classtzu_1_1Csv.html#ac41857a25cd7694f42df28ddedafd452',1,'tzu::Csv']]],
-  ['buy_3',['BUY',['../namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ac45b496ec0828772c8088e4118f09b33',1,'tzu']]]
+  ['add_5fcosts_0',['add_costs',['../classtzu_1_1PortfolioStats.html#a1096acd42b79204467b820b6f7d31075',1,'tzu::PortfolioStats']]],
+  ['annual_5freturn_1',['annual_return',['../structtzu_1_1PerformanceMetrics.html#a38d9c30cd5351391262dd73bb2de2bf5',1,'tzu::PerformanceMetrics::annual_return'],['../structtzu_1_1BuyAndHoldMetrics.html#a3443d81185c4b590b372dc79816ccafb',1,'tzu::BuyAndHoldMetrics::annual_return']]],
+  ['api_20reference_2',['tzutrader API Reference',['../index.html',1,'']]],
+  ['architecture_20principles_3',['Architecture Principles',['../index.html#autotoc_md11',1,'']]]
 ];

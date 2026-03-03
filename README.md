@@ -8,7 +8,11 @@ order to explore and validate design and architecture choices.
 
 Criticism is very welcome!
 
-API Reference: <https://jailop.codeberg.page/tzutrader/docs/html/>
+Documentation
+-------------
+
+- User Guide: <https://jailop.codeberg.page/tzutrader/docs/>
+- API Reference: <https://jailop.codeberg.page/tzutrader/docs/html/>
 
 Example
 -------
@@ -128,18 +132,16 @@ Initial Features
 - Basic portfolio management
 - Initial testing suite for the core components
 
-Critically, it still pending proper documentation, with a conceptual
-overview of the library's design and architecture, as well as detailed
-usage instructions and examples about the built-in components, and a
-guide on implementing custom indicators, strategies,
-and portfolio management approaches.
+Documentation is available through the user guide and API reference listed
+above, with tutorials for creating custom indicators and strategies, and
+detailed explanations of the library's architecture.
 
 Architecture
 ------------
 
 The library is designed into several core components:
 
-- Data Sources: Responsible for reading and streaming input data in
+- Data Streamers: Responsible for reading and streaming input data in
   various formats (e.g. CSV).
 - Indicators: Implement various indicators (e.g. SMA, EMA,
   RSI, MACD) that can be used by trading strategies to generate
@@ -186,8 +188,9 @@ create more complex systems.
 Roadmap
 -------
 
-- Produce documentation and add more examples to demonstrate the
-  library's features and usage.
+- Improve the architecture and design of the library, based on feedback and
+  experimentation.
+- Add more examples to demonstrate the library's features and usage.
 - Add support for the most common input data formats, e.g. JSON.
 - Implement a minimal but useful set of built-in trading strategies and
   indicators.
@@ -203,3 +206,26 @@ Not considered:
 - Support for data retrieval APIs. The library is designed to be
   agnostic to data sources, and users can implement their own
   data retrieval logic using the provided interfaces.
+
+Building Documentation
+----------------------
+
+To build the documentation locally:
+
+    make -f Makefile.docs all
+
+This will generate:
+
+- User guide and tutorials in `./docs/`
+- API reference in `./docs/html/`
+
+Requirements:
+
+- mkdocs: `pip install mkdocs`
+- doxygen: `apt install doxygen` (or equivalent)
+
+To serve the documentation locally:
+
+    make -f Makefile.docs serve
+
+Available targets: `all`, `docs`, `api`, `serve`, `clean`, `rebuild`, `help`

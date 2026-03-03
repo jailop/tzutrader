@@ -28,6 +28,7 @@
   <td id="projectalign">
    <div id="projectname">tzutrader
    </div>
+   <div id="projectbrief">A composable C++ backtesting library for trading strategies (experimental)</div>
   </td>
  </tr>
  </tbody>
@@ -92,6 +93,9 @@ $(function(){initNavTree('classtzu_1_1Indicator.html','','classtzu_1_1Indicator-
 </div><!--header-->
 <div class="contents">
 
+<p>Base indicator class using CRTP for static polymorphism.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="indicators_8h_source.html">indicators.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -99,7 +103,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac6442c70a2faa7be4ab24039ad36ad54" id="r_ac6442c70a2faa7be4ab24039ad36ad54"><td class="memItemLeft">Out&#160;</td><td class="memItemRight"><a class="el" href="#ac6442c70a2faa7be4ab24039ad36ad54">get</a> () const noexcept</td></tr>
 <tr class="memitem:aeb26593f13bff759bf8af97ec306a45b" id="r_aeb26593f13bff759bf8af97ec306a45b"><td class="memItemLeft">Out&#160;</td><td class="memItemRight"><a class="el" href="#aeb26593f13bff759bf8af97ec306a45b">update</a> (In value)</td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;class T, typename In, typename Out&gt;<br />
+class tzu::Indicator&lt; T, In, Out &gt;</div><p>Base indicator class using CRTP for static polymorphism. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Derived indicator class </td></tr>
+    <tr><td class="paramname">In</td><td>Input data type </td></tr>
+    <tr><td class="paramname">Out</td><td>Output/result type </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ac6442c70a2faa7be4ab24039ad36ad54" name="ac6442c70a2faa7be4ab24039ad36ad54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6442c70a2faa7be4ab24039ad36ad54">&#9670;&#160;</a></span>get()</h2>
 
@@ -155,7 +170,7 @@ template&lt;class T, typename In, typename Out&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/<a class="el" href="indicators_8h_source.html">indicators.h</a></li>
+<li>include/tzu/<a class="el" href="indicators_8h_source.html">indicators.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

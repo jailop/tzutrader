@@ -28,6 +28,7 @@
   <td id="projectalign">
    <div id="projectname">tzutrader
    </div>
+   <div id="projectbrief">A composable C++ backtesting library for trading strategies (experimental)</div>
   </td>
  </tr>
  </tbody>
@@ -115,7 +116,7 @@ Friends</h2></td></tr>
 <tr class="memitem:a27243f4ed5968d43e7d1a08a87a3a675" id="r_a27243f4ed5968d43e7d1a08a87a3a675"><td class="memItemLeft">std::ostream &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a27243f4ed5968d43e7d1a08a87a3a675">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="#aec30f65df64a544e32e6bd86e4da5c06">BasicPortfolio</a> &amp;portfolio)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classtzu_1_1BasicPortfolio.html">BasicPortfolio</a> implements transaction costs and simple stop-loss / take-profit policies. Transaction costs are expressed as a fraction of the transaction value (e.g. 0.001 == 0.1%). This porfolio uses all available cash to buy as many units as possible at each buy signal, and liquidates all positions at each sell signal. Stop-loss and take-profit are checked at each update and positions are liquidated if the price breaches the stop-loss or take-profit thresholds. Stop-loss and take-profit are fractions relative to the acquisition price (e.g. 0.1 == 10%). By default transaction costs are 0 and stop-loss / take-profit are NaN (disabled). </p>
+<div class="textblock"><p><a class="el" href="classtzu_1_1BasicPortfolio.html">BasicPortfolio</a> implements transaction costs and simple stop-loss / take-profit policies. Transaction costs are expressed as a fraction of the transaction value (e.g. 0.001 == 0.1%). This portfolio uses all available cash to buy as many units as possible at each buy signal, and liquidates all positions at each sell signal. Stop-loss and take-profit are checked at each update and positions are liquidated if the price breaches the stop-loss or take-profit thresholds. Stop-loss and take-profit are fractions relative to the acquisition price (e.g. 0.1 == 10%). By default transaction costs are 0 and stop-loss / take-profit are NaN (disabled). </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aec30f65df64a544e32e6bd86e4da5c06" name="aec30f65df64a544e32e6bd86e4da5c06"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aec30f65df64a544e32e6bd86e4da5c06">&#9670;&#160;</a></span>BasicPortfolio()</h2>
@@ -213,7 +214,7 @@ Friends</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/<a class="el" href="portfolios_8h_source.html">portfolios.h</a></li>
+<li>include/tzu/<a class="el" href="portfolios_8h_source.html">portfolios.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

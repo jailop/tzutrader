@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['price_0',['price',['../structtzu_1_1Signal.html#a7b682cd12987968ec93097da71986bd6',1,'tzu::Signal::price'],['../structtzu_1_1Tick.html#a5d6534963359701b1fdc15c3cdfc7208',1,'tzu::Tick::price'],['../structPosition.html#ac4ae38829eeeba8166cf5a8cbe9e4452',1,'Position::price']]]
+  ['macd_0',['macd',['../structtzu_1_1MACDResult.html#a7760083f4600dc8da1897a2721f44601',1,'tzu::MACDResult']]],
+  ['max_5fbuffer_5fsize_1',['MAX_BUFFER_SIZE',['../namespacetzu.html#a6f9848e960c64bbbe78d1b4d6984a48e',1,'tzu']]],
+  ['max_5fdrawdown_2',['max_drawdown',['../structtzu_1_1PerformanceMetrics.html#ada63757d50c871dd27ac441f549bf231',1,'tzu::PerformanceMetrics']]]
 ];

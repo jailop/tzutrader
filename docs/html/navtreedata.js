@@ -25,6 +25,7 @@
 var NAVTREE =
 [
   [ "tzutrader", "index.html", [
+    [ "tzutrader API Reference", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -58,7 +59,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"annotated.html",
+"structtzu_1_1CsvParseTraits_3_01Tick_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

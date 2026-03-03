@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tzutrader: include/strategies.h Source File</title>
+<title>tzutrader: include/tzu/strategies.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -28,6 +28,7 @@
   <td id="projectalign">
    <div id="projectname">tzutrader
    </div>
+   <div id="projectbrief">A composable C++ backtesting library for trading strategies (experimental)</div>
   </td>
  </tr>
  </tbody>
@@ -205,39 +206,39 @@ $(function(){initNavTree('strategies_8h_source.html','',''); });
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">#endif </span><span class="comment">// STRATEGIES_H</span></div>
 <div class="ttc" id="aclasstzu_1_1MACDStrat_html_a49f3da03102ba4fc5d8394d148898c77"><div class="ttname"><a href="classtzu_1_1MACDStrat.html#a49f3da03102ba4fc5d8394d148898c77">tzu::MACDStrat::update</a></div><div class="ttdeci">Signal update(const SingleValue &amp;data)</div><div class="ttdef"><b>Definition</b> strategies.h:111</div></div>
 <div class="ttc" id="aclasstzu_1_1MACDStrat_html_a74ee8e247f530f02d51b94ddd595e2c2"><div class="ttname"><a href="classtzu_1_1MACDStrat.html#a74ee8e247f530f02d51b94ddd595e2c2">tzu::MACDStrat::MACDStrat</a></div><div class="ttdeci">MACDStrat(size_t short_period, size_t long_period, size_t signal_period, double smoothing=2.0, double threshold=0.0)</div><div class="ttdef"><b>Definition</b> strategies.h:107</div></div>
-<div class="ttc" id="aclasstzu_1_1MACD_html"><div class="ttname"><a href="classtzu_1_1MACD.html">tzu::MACD</a></div><div class="ttdef"><b>Definition</b> indicators.h:216</div></div>
+<div class="ttc" id="aclasstzu_1_1MACD_html"><div class="ttname"><a href="classtzu_1_1MACD.html">tzu::MACD</a></div><div class="ttdef"><b>Definition</b> indicators.h:233</div></div>
 <div class="ttc" id="aclasstzu_1_1RSIStrat_html_ae643cbc1697a842871b5c737d3634589"><div class="ttname"><a href="classtzu_1_1RSIStrat.html#ae643cbc1697a842871b5c737d3634589">tzu::RSIStrat::update</a></div><div class="ttdeci">Signal update(const Ohlcv &amp;data)</div><div class="ttdef"><b>Definition</b> strategies.h:78</div></div>
 <div class="ttc" id="aclasstzu_1_1RSIStrat_html_ae675e12771d5dfb86cbf9d1837ef9532"><div class="ttname"><a href="classtzu_1_1RSIStrat.html#ae675e12771d5dfb86cbf9d1837ef9532">tzu::RSIStrat::RSIStrat</a></div><div class="ttdeci">RSIStrat(size_t window_size=14, double oversold=30.0, double overbought=70.0)</div><div class="ttdef"><b>Definition</b> strategies.h:74</div></div>
-<div class="ttc" id="aclasstzu_1_1RSI_html"><div class="ttname"><a href="classtzu_1_1RSI.html">tzu::RSI</a></div><div class="ttdef"><b>Definition</b> indicators.h:172</div></div>
+<div class="ttc" id="aclasstzu_1_1RSI_html"><div class="ttname"><a href="classtzu_1_1RSI.html">tzu::RSI</a></div><div class="ttdef"><b>Definition</b> indicators.h:189</div></div>
 <div class="ttc" id="aclasstzu_1_1SMACrossover_html_a0787b5b17228ceaec4be30d7921f7033"><div class="ttname"><a href="classtzu_1_1SMACrossover.html#a0787b5b17228ceaec4be30d7921f7033">tzu::SMACrossover::update</a></div><div class="ttdeci">Signal update(const SingleValue &amp;data)</div><div class="ttdef"><b>Definition</b> strategies.h:44</div></div>
 <div class="ttc" id="aclasstzu_1_1SMACrossover_html_a39c06ba69266810495f564f517ee2b16"><div class="ttname"><a href="classtzu_1_1SMACrossover.html#a39c06ba69266810495f564f517ee2b16">tzu::SMACrossover::SMACrossover</a></div><div class="ttdeci">SMACrossover(size_t short_period, size_t long_period, double threshold=0.0)</div><div class="ttdef"><b>Definition</b> strategies.h:40</div></div>
-<div class="ttc" id="aclasstzu_1_1SMA_html"><div class="ttname"><a href="classtzu_1_1SMA.html">tzu::SMA</a></div><div class="ttdef"><b>Definition</b> indicators.h:42</div></div>
+<div class="ttc" id="aclasstzu_1_1SMA_html"><div class="ttname"><a href="classtzu_1_1SMA.html">tzu::SMA</a></div><div class="ttdoc">Simple Moving Average (SMA).</div><div class="ttdef"><b>Definition</b> indicators.h:59</div></div>
 <div class="ttc" id="aclasstzu_1_1Strategy_html"><div class="ttname"><a href="classtzu_1_1Strategy.html">tzu::Strategy</a></div><div class="ttdef"><b>Definition</b> strategies.h:20</div></div>
 <div class="ttc" id="aclasstzu_1_1Strategy_html_afe120b3e4f2ad55999ec4d2518a54da4"><div class="ttname"><a href="classtzu_1_1Strategy.html#afe120b3e4f2ad55999ec4d2518a54da4">tzu::Strategy::update</a></div><div class="ttdeci">Signal update(const In &amp;data)</div><div class="ttdef"><b>Definition</b> strategies.h:22</div></div>
-<div class="ttc" id="aindicators_8h_html"><div class="ttname"><a href="indicators_8h.html">indicators.h</a></div></div>
-<div class="ttc" id="anamespacetzu_html"><div class="ttname"><a href="namespacetzu.html">tzu</a></div><div class="ttdef"><b>Definition</b> defs.h:8</div></div>
-<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9">tzu::Side</a></div><div class="ttdeci">Side</div><div class="ttdef"><b>Definition</b> defs.h:14</div></div>
-<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9a860926e6fc3f191e18ee7a98259164b8"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9a860926e6fc3f191e18ee7a98259164b8">tzu::Side::SELL</a></div><div class="ttdeci">@ SELL</div><div class="ttdef"><b>Definition</b> defs.h:16</div></div>
-<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693">tzu::Side::NONE</a></div><div class="ttdeci">@ NONE</div><div class="ttdef"><b>Definition</b> defs.h:17</div></div>
-<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9ac45b496ec0828772c8088e4118f09b33"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ac45b496ec0828772c8088e4118f09b33">tzu::Side::BUY</a></div><div class="ttdeci">@ BUY</div><div class="ttdef"><b>Definition</b> defs.h:15</div></div>
-<div class="ttc" id="astructtzu_1_1MACDResult_html"><div class="ttname"><a href="structtzu_1_1MACDResult.html">tzu::MACDResult</a></div><div class="ttdef"><b>Definition</b> indicators.h:199</div></div>
-<div class="ttc" id="astructtzu_1_1MACDResult_html_a1c53d0e10f7ea7ced65785670f615ae7"><div class="ttname"><a href="structtzu_1_1MACDResult.html#a1c53d0e10f7ea7ced65785670f615ae7">tzu::MACDResult::signal</a></div><div class="ttdeci">double signal</div><div class="ttdef"><b>Definition</b> indicators.h:201</div></div>
-<div class="ttc" id="astructtzu_1_1MACDResult_html_a7760083f4600dc8da1897a2721f44601"><div class="ttname"><a href="structtzu_1_1MACDResult.html#a7760083f4600dc8da1897a2721f44601">tzu::MACDResult::macd</a></div><div class="ttdeci">double macd</div><div class="ttdef"><b>Definition</b> indicators.h:200</div></div>
-<div class="ttc" id="astructtzu_1_1Ohlcv_html"><div class="ttname"><a href="structtzu_1_1Ohlcv.html">tzu::Ohlcv</a></div><div class="ttdef"><b>Definition</b> defs.h:52</div></div>
-<div class="ttc" id="astructtzu_1_1Ohlcv_html_a26eea0a191b8dfaee0f6c8d49f305655"><div class="ttname"><a href="structtzu_1_1Ohlcv.html#a26eea0a191b8dfaee0f6c8d49f305655">tzu::Ohlcv::close</a></div><div class="ttdeci">double close</div><div class="ttdef"><b>Definition</b> defs.h:57</div></div>
-<div class="ttc" id="astructtzu_1_1Ohlcv_html_a51f7523c4c366501d464b838998aa6f7"><div class="ttname"><a href="structtzu_1_1Ohlcv.html#a51f7523c4c366501d464b838998aa6f7">tzu::Ohlcv::timestamp</a></div><div class="ttdeci">int64_t timestamp</div><div class="ttdef"><b>Definition</b> defs.h:53</div></div>
-<div class="ttc" id="astructtzu_1_1Signal_html"><div class="ttname"><a href="structtzu_1_1Signal.html">tzu::Signal</a></div><div class="ttdef"><b>Definition</b> defs.h:26</div></div>
-<div class="ttc" id="astructtzu_1_1Signal_html_ade59768de4f313bab3d66774bc47b0bb"><div class="ttname"><a href="structtzu_1_1Signal.html#ade59768de4f313bab3d66774bc47b0bb">tzu::Signal::side</a></div><div class="ttdeci">Side side</div><div class="ttdef"><b>Definition</b> defs.h:28</div></div>
-<div class="ttc" id="astructtzu_1_1SingleValue_html"><div class="ttname"><a href="structtzu_1_1SingleValue.html">tzu::SingleValue</a></div><div class="ttdef"><b>Definition</b> defs.h:102</div></div>
-<div class="ttc" id="astructtzu_1_1SingleValue_html_aee861754544b2475d527b51b20f32cd2"><div class="ttname"><a href="structtzu_1_1SingleValue.html#aee861754544b2475d527b51b20f32cd2">tzu::SingleValue::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> defs.h:104</div></div>
-<div class="ttc" id="astructtzu_1_1SingleValue_html_afc0a5639a4c66cd446eb8d99857cf604"><div class="ttname"><a href="structtzu_1_1SingleValue.html#afc0a5639a4c66cd446eb8d99857cf604">tzu::SingleValue::timestamp</a></div><div class="ttdeci">int64_t timestamp</div><div class="ttdef"><b>Definition</b> defs.h:103</div></div>
+<div class="ttc" id="aindicators_8h_html"><div class="ttname"><a href="indicators_8h.html">indicators.h</a></div><div class="ttdoc">Technical indicators for financial analysis.</div></div>
+<div class="ttc" id="anamespacetzu_html"><div class="ttname"><a href="namespacetzu.html">tzu</a></div><div class="ttdef"><b>Definition</b> defs.h:20</div></div>
+<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9">tzu::Side</a></div><div class="ttdeci">Side</div><div class="ttdoc">Trade direction enumeration.</div><div class="ttdef"><b>Definition</b> defs.h:28</div></div>
+<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9a860926e6fc3f191e18ee7a98259164b8"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9a860926e6fc3f191e18ee7a98259164b8">tzu::Side::SELL</a></div><div class="ttdeci">@ SELL</div><div class="ttdoc">Sell signal or short position.</div><div class="ttdef"><b>Definition</b> defs.h:30</div></div>
+<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693">tzu::Side::NONE</a></div><div class="ttdeci">@ NONE</div><div class="ttdoc">No action, hold current position.</div><div class="ttdef"><b>Definition</b> defs.h:31</div></div>
+<div class="ttc" id="anamespacetzu_html_a99a6191d8d696e5ea6c8f625c83678b9ac45b496ec0828772c8088e4118f09b33"><div class="ttname"><a href="namespacetzu.html#a99a6191d8d696e5ea6c8f625c83678b9ac45b496ec0828772c8088e4118f09b33">tzu::Side::BUY</a></div><div class="ttdeci">@ BUY</div><div class="ttdoc">Buy signal or long position.</div><div class="ttdef"><b>Definition</b> defs.h:29</div></div>
+<div class="ttc" id="astructtzu_1_1MACDResult_html"><div class="ttname"><a href="structtzu_1_1MACDResult.html">tzu::MACDResult</a></div><div class="ttdef"><b>Definition</b> indicators.h:216</div></div>
+<div class="ttc" id="astructtzu_1_1MACDResult_html_a1c53d0e10f7ea7ced65785670f615ae7"><div class="ttname"><a href="structtzu_1_1MACDResult.html#a1c53d0e10f7ea7ced65785670f615ae7">tzu::MACDResult::signal</a></div><div class="ttdeci">double signal</div><div class="ttdef"><b>Definition</b> indicators.h:218</div></div>
+<div class="ttc" id="astructtzu_1_1MACDResult_html_a7760083f4600dc8da1897a2721f44601"><div class="ttname"><a href="structtzu_1_1MACDResult.html#a7760083f4600dc8da1897a2721f44601">tzu::MACDResult::macd</a></div><div class="ttdeci">double macd</div><div class="ttdef"><b>Definition</b> indicators.h:217</div></div>
+<div class="ttc" id="astructtzu_1_1Ohlcv_html"><div class="ttname"><a href="structtzu_1_1Ohlcv.html">tzu::Ohlcv</a></div><div class="ttdoc">Open-High-Low-Close-Volume candlestick data.</div><div class="ttdef"><b>Definition</b> defs.h:84</div></div>
+<div class="ttc" id="astructtzu_1_1Ohlcv_html_a26eea0a191b8dfaee0f6c8d49f305655"><div class="ttname"><a href="structtzu_1_1Ohlcv.html#a26eea0a191b8dfaee0f6c8d49f305655">tzu::Ohlcv::close</a></div><div class="ttdeci">double close</div><div class="ttdoc">Closing price.</div><div class="ttdef"><b>Definition</b> defs.h:89</div></div>
+<div class="ttc" id="astructtzu_1_1Ohlcv_html_a51f7523c4c366501d464b838998aa6f7"><div class="ttname"><a href="structtzu_1_1Ohlcv.html#a51f7523c4c366501d464b838998aa6f7">tzu::Ohlcv::timestamp</a></div><div class="ttdeci">int64_t timestamp</div><div class="ttdoc">Unix timestamp for the candle.</div><div class="ttdef"><b>Definition</b> defs.h:85</div></div>
+<div class="ttc" id="astructtzu_1_1Signal_html"><div class="ttname"><a href="structtzu_1_1Signal.html">tzu::Signal</a></div><div class="ttdoc">Trading signal generated by a strategy.</div><div class="ttdef"><b>Definition</b> defs.h:44</div></div>
+<div class="ttc" id="astructtzu_1_1Signal_html_ade59768de4f313bab3d66774bc47b0bb"><div class="ttname"><a href="structtzu_1_1Signal.html#ade59768de4f313bab3d66774bc47b0bb">tzu::Signal::side</a></div><div class="ttdeci">Side side</div><div class="ttdoc">Trade direction (BUY/SELL/NONE).</div><div class="ttdef"><b>Definition</b> defs.h:46</div></div>
+<div class="ttc" id="astructtzu_1_1SingleValue_html"><div class="ttname"><a href="structtzu_1_1SingleValue.html">tzu::SingleValue</a></div><div class="ttdef"><b>Definition</b> defs.h:134</div></div>
+<div class="ttc" id="astructtzu_1_1SingleValue_html_aee861754544b2475d527b51b20f32cd2"><div class="ttname"><a href="structtzu_1_1SingleValue.html#aee861754544b2475d527b51b20f32cd2">tzu::SingleValue::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> defs.h:136</div></div>
+<div class="ttc" id="astructtzu_1_1SingleValue_html_afc0a5639a4c66cd446eb8d99857cf604"><div class="ttname"><a href="structtzu_1_1SingleValue.html#afc0a5639a4c66cd446eb8d99857cf604">tzu::SingleValue::timestamp</a></div><div class="ttdeci">int64_t timestamp</div><div class="ttdef"><b>Definition</b> defs.h:135</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="strategies_8h.html">strategies.h</a></li>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_c280af2d9489e5b7a81a79bfb05e24be.html">tzu</a></li><li class="navelem"><a href="strategies_8h.html">strategies.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1 </li>
   </ul>
 </div>

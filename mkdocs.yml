@@ -5,5 +5,7 @@ docs_dir: docs_src
 site_dir: ./docs
 nav:
   - Home: index.md
+  - User Guide: user-guide.md
+  - Architecture: architecture.md
 theme:
   name: readthedocs
