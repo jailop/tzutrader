@@ -283,10 +283,20 @@ inline void PortfolioStats::print_summary(std::ostream& os, double curr_cash, do
         << " profit:" << profit_loss;
 
     PerformanceMetrics perf = compute_performance_metrics(equity_curve);
-    os << " total_return:" << perf.total_return;
+    double adjusted_total_return = (total_value / init_cash) - 1.0;
+    double adjusted_annual_return = 0.0;
+    bool has_adjusted_annual_return = false;
     
-    if (perf.has_annual_return) {
-        os << " annual_return:" << perf.annual_return;
+    const double min_period_years = 30.0 / 365.0;
+    if (perf.years >= min_period_years) {
+        adjusted_annual_return = std::pow(total_value / init_cash, 1.0 / perf.years) - 1.0;
+        has_adjusted_annual_return = true;
+    }
+    
+    os << " total_return:" << adjusted_total_return;
+    
+    if (has_adjusted_annual_return) {
+        os << " annual_return:" << adjusted_annual_return;
     } else {
         os << " annual_return:N/A";
     }

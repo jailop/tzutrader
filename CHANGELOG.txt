@@ -1,0 +1,4 @@
+2026-03-01:
+
+- genopts.awk script - generates an .h file to parse command line
+  arguments and provide a help output.
