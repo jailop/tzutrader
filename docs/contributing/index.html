@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Contributing - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Contributing";
+        var mkdocs_page_input_path = "contributing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Contributing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#ways-to-contribute">Ways to Contribute</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#report-bugs">Report Bugs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#share-feedback">Share Feedback</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#submit-code">Submit Code</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#development-setup">Development Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#clone-and-build">Clone and Build</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-tests">Run Tests</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-documentation">Build Documentation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-style">Code Style</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-new-indicators">Adding New Indicators</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-new-strategies">Adding New Strategies</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-tests">Adding Tests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pull-request-process">Pull Request Process</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#communication">Communication</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-gets-accepted">What Gets Accepted</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-philosophy">Design Philosophy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-review">Code Review</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#recognition">Recognition</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started-as-a-contributor">Getting Started as a Contributor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#experimental-nature">Experimental Nature</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#final-notes">Final Notes</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="contributing">Contributing</h1>
+<p>tzutrader is an experimental project exploring composable backtesting architecture. Contributions, feedback, and criticism are welcome.</p>
+<h2 id="ways-to-contribute">Ways to Contribute</h2>
+<h3 id="report-bugs">Report Bugs</h3>
+<p>If you find bugs:
+- Check if it's already reported in <a href="https://codeberg.org/jailop/tzutrader/issues">issues</a>
+- Provide a minimal reproducible example
+- Include your compiler version and OS
+- Describe expected vs actual behavior</p>
+<h3 id="share-feedback">Share Feedback</h3>
+<p>Since this is an experimental project, architectural feedback is valuable:
+- What patterns work well?
+- What's confusing or difficult to use?
+- Where does the abstraction leak?
+- What would you change?</p>
+<p>Be honest. Criticism is welcome and helpful.</p>
+<h3 id="submit-code">Submit Code</h3>
+<p>If you want to contribute code:
+- Start with small changes
+- Follow existing code style
+- Add tests for new functionality
+- Update documentation</p>
+<h2 id="development-setup">Development Setup</h2>
+<h3 id="clone-and-build">Clone and Build</h3>
+<pre><code class="language-bash">git clone https://codeberg.org/jailop/tzutrader
+cd tzutrader
+mkdir build &amp;&amp; cd build
+cmake ..
+cmake --build .
+</code></pre>
+<h3 id="run-tests">Run Tests</h3>
+<pre><code class="language-bash">cd build
+./test_indicators
+./test_strategies
+# Or run all tests
+ctest
+</code></pre>
+<h3 id="build-documentation">Build Documentation</h3>
+<pre><code class="language-bash">make -f Makefile.docs all
+</code></pre>
+<p>Requires:
+- <code>mkdocs</code> for user documentation
+- <code>doxygen</code> for API reference</p>
+<h2 id="project-structure">Project Structure</h2>
+<pre><code>tzutrader/
+├── include/tzu/          # Header files
+│   ├── defs.h           # Core data structures
+│   ├── indicators.h     # Indicator implementations
+│   ├── strategies.h     # Strategy implementations
+│   ├── portfolio.h      # Portfolio management
+│   ├── runner.h         # Backtest orchestration
+│   └── streamers.h      # Data input
+├── src/                 # Implementation files (if any)
+├── tests/               # Test suite
+│   ├── data/           # Test data
+│   └── *.cpp           # Test files
+├── examples/           # Example programs
+├── docs_src/          # Documentation source
+└── docs/              # Generated documentation
+</code></pre>
+<h2 id="code-style">Code Style</h2>
+<p><strong>General principles:</strong>
+- Keep it simple
+- Prefer composition over inheritance
+- Use templates for flexibility without runtime cost
+- Comment non-obvious logic, not obvious code
+- Prefer <code>const</code> and <code>noexcept</code> where appropriate</p>
+<p><strong>Naming:</strong>
+- Classes: <code>PascalCase</code>
+- Functions/methods: <code>snake_case</code>
+- Variables: <code>snake_case</code>
+- Constants: <code>UPPER_SNAKE_CASE</code>
+- Template parameters: <code>PascalCase</code></p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-cpp">class MyIndicator: public Indicator&lt;MyIndicator, double, double&gt; {
+private:
+    double internal_state;
+
+public:
+    double get() const noexcept;
+    double update(double value);
+};
+</code></pre>
+<h2 id="adding-new-indicators">Adding New Indicators</h2>
+<ol>
+<li>Create class inheriting from <code>Indicator&lt;Derived, InputType, OutputType&gt;</code></li>
+<li>Implement <code>get()</code> const noexcept method</li>
+<li>Implement <code>update(InputType)</code> method</li>
+<li>Use circular buffers for rolling windows</li>
+<li>Return <code>std::nan("")</code> when insufficient data</li>
+<li>Add test cases</li>
+<li>Document usage and limitations</li>
+</ol>
+<p><strong>Template:</strong></p>
+<pre><code class="language-cpp">class NewIndicator: public Indicator&lt;NewIndicator, double, double&gt; {
+private:
+    // Minimal state
+    std::vector&lt;double&gt; buffer;
+    size_t window;
+
+public:
+    NewIndicator(size_t window) : window(window) {
+        buffer.reserve(window);
+    }
+
+    double get() const noexcept {
+        // Return current value or NaN
+        return buffer.size() &lt; window ? std::nan(&quot;&quot;) : compute();
+    }
+
+    double update(double value) {
+        // Update state
+        buffer.push_back(value);
+        if (buffer.size() &gt; window) {
+            buffer.erase(buffer.begin());
+        }
+        return get();
+    }
+};
+</code></pre>
+<h2 id="adding-new-strategies">Adding New Strategies</h2>
+<ol>
+<li>Inherit from <code>Strategy&lt;Derived, InputType&gt;</code></li>
+<li>Implement <code>update(const InputType&amp;) -&gt; Signal</code></li>
+<li>Track <code>last_side</code> to avoid signal spam</li>
+<li>Check for NaN values from indicators</li>
+<li>Make parameters configurable via constructor</li>
+<li>Add test with known outcomes</li>
+<li>Document strategy logic and use cases</li>
+</ol>
+<p><strong>Template:</strong></p>
+<pre><code class="language-cpp">class NewStrategy: public Strategy&lt;NewStrategy, Ohlcv&gt; {
+private:
+    Indicator1 ind1;
+    Indicator2 ind2;
+    Side last_side;
+
+public:
+    NewStrategy(/* parameters */)
+        : ind1(params), ind2(params), last_side(Side::NONE) {}
+
+    Signal update(const Ohlcv&amp; data) {
+        double val1 = ind1.update(data.close);
+        double val2 = ind2.update(data.close);
+
+        Signal signal = {data.timestamp, Side::NONE, data.close};
+
+        if (std::isnan(val1) || std::isnan(val2)) {
+            return signal;
+        }
+
+        // Strategy logic here
+        if (buy_condition &amp;&amp; last_side != Side::BUY) {
+            signal.side = Side::BUY;
+            last_side = Side::BUY;
+        } else if (sell_condition &amp;&amp; last_side != Side::SELL) {
+            signal.side = Side::SELL;
+            last_side = Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<h2 id="adding-tests">Adding Tests</h2>
+<p>Tests live in <code>tests/</code> directory. Use a simple testing framework or plain assertions.</p>
+<p><strong>Example test:</strong></p>
+<pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;cmath&gt;
+#include &quot;tzu.h&quot;
+
+void test_new_indicator() {
+    tzu::NewIndicator ind(5);
+
+    // Test insufficient data
+    assert(std::isnan(ind.update(1.0)));
+    assert(std::isnan(ind.update(2.0)));
+
+    // Test with enough data
+    for (int i = 0; i &lt; 5; i++) {
+        ind.update(i);
+    }
+    double result = ind.get();
+    assert(!std::isnan(result));
+    // Check expected value
+}
+
+int main() {
+    test_new_indicator();
+    return 0;
+}
+</code></pre>
+<h2 id="documentation">Documentation</h2>
+<p>When adding features:
+- Update relevant documentation pages
+- Add code examples
+- Explain limitations and trade-offs
+- Keep an honest tone</p>
+<p>Documentation lives in <code>docs_src/</code>:
+- <code>getting-started.md</code>: Introductory content
+- <code>indicators.md</code>: Indicator documentation
+- <code>strategies.md</code>: Strategy documentation
+- <code>portfolios.md</code>: Portfolio management
+- <code>architecture.md</code>: Design details</p>
+<h2 id="pull-request-process">Pull Request Process</h2>
+<ol>
+<li><strong>Fork the repository</strong> on Codeberg</li>
+<li><strong>Create a feature branch</strong>: <code>git checkout -b feature/my-feature</code></li>
+<li><strong>Make your changes</strong> with clear commits</li>
+<li><strong>Test your changes</strong> locally</li>
+<li><strong>Update documentation</strong> if needed</li>
+<li><strong>Submit a pull request</strong> with:</li>
+<li>Description of changes</li>
+<li>Rationale for the change</li>
+<li>Any breaking changes noted</li>
+</ol>
+<p><strong>PR guidelines:</strong>
+- Keep changes focused (one feature/fix per PR)
+- Write clear commit messages
+- Ensure tests pass
+- Update documentation</p>
+<h2 id="communication">Communication</h2>
+<ul>
+<li><strong>Issues</strong>: Use for bugs, feature requests, questions</li>
+<li><strong>Pull Requests</strong>: Use for code contributions</li>
+<li><strong>Email</strong>: Contact maintainers for private discussions</li>
+</ul>
+<h2 id="what-gets-accepted">What Gets Accepted</h2>
+<p>Since this is experimental, the bar for contributions varies:</p>
+<p><strong>Likely accepted:</strong>
+- Bug fixes
+- New indicators with tests
+- New strategies with tests
+- Documentation improvements
+- Test coverage improvements
+- Performance optimizations (with benchmarks)</p>
+<p><strong>Needs discussion:</strong>
+- Architectural changes
+- New dependencies
+- Breaking API changes
+- Major feature additions</p>
+<p><strong>Unlikely accepted:</strong>
+- Large refactors without clear benefit
+- Features that break composability
+- Overly complex additions
+- Changes without tests</p>
+<h2 id="design-philosophy">Design Philosophy</h2>
+<p>Keep these principles in mind:</p>
+<ol>
+<li><strong>Simplicity over features</strong>: Small, focused tools</li>
+<li><strong>Composability</strong>: Components mix and match</li>
+<li><strong>Streaming</strong>: Process data incrementally</li>
+<li><strong>No magic</strong>: Clear, understandable code</li>
+<li><strong>Educational</strong>: Easy to learn from</li>
+</ol>
+<p>If a contribution aligns with these principles, it's more likely to be accepted.</p>
+<h2 id="code-review">Code Review</h2>
+<p>Expect code reviews to focus on:
+- Correctness
+- Clarity
+- Performance implications
+- API design
+- Test coverage</p>
+<p>Feedback is meant to improve code quality, not personal criticism. Reviews may be thorough—that's because the maintainers care about the project.</p>
+<h2 id="recognition">Recognition</h2>
+<p>Contributors are recognized in:
+- Commit history
+- CHANGELOG.txt
+- Repository contributors page</p>
+<p>Significant contributions may be noted in documentation.</p>
+<h2 id="license">License</h2>
+<p>By contributing, you agree that your contributions will be licensed under the same license as the project. Check the LICENSE file in the repository.</p>
+<h2 id="getting-started-as-a-contributor">Getting Started as a Contributor</h2>
+<p>If you want to contribute but don't know where to start:</p>
+<ol>
+<li><strong>Read the code</strong>: Start with <code>include/tzu/</code> headers</li>
+<li><strong>Run examples</strong>: Understand how components work together</li>
+<li><strong>Try the tests</strong>: See what's currently tested</li>
+<li><strong>Look at issues</strong>: Find something labeled "good first issue"</li>
+<li><strong>Ask questions</strong>: File an issue if something is unclear</li>
+</ol>
+<p>The best way to start is small: fix a typo, improve a comment, add a test case. Build familiarity before tackling larger changes.</p>
+<h2 id="experimental-nature">Experimental Nature</h2>
+<p>Remember: tzutrader is experimental. The API may change, architectural decisions may be revisited, and features may be removed. This is intentional.</p>
+<p>If you contribute, understand that your code might be refactored or even removed as the project evolves. That's not a rejection of your work—it's part of the exploration process.</p>
+<h2 id="final-notes">Final Notes</h2>
+<p>Contributions are appreciated, but there's no obligation. If you use tzutrader and find value in it, that's contribution enough.</p>
+<p>If you do contribute code, be patient. This is a side project, and review/merge may take time. Quality over speed.</p>
+<p>Thank you for your interest in improving tzutrader.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../architecture/" class="btn btn-neutral float-left" title="Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../faq/" class="btn btn-neutral float-right" title="FAQ">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../faq/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

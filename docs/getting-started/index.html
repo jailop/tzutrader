@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Getting Started - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Getting Started";
+        var mkdocs_page_input_path = "getting-started.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Getting Started</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#clone-the-repository">Clone the Repository</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-the-library">Build the Library</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#create-a-simple-strategy">Create a Simple Strategy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compile-your-backtest">Compile Your Backtest</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prepare-your-data">Prepare Your Data</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-the-backtest">Run the Backtest</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#understand-the-output">Understand the Output</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#core-data-types">Core Data Types</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ohlcv">Ohlcv</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#signal">Signal</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#side-enum">Side Enum</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#basic-workflow">Basic Workflow</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#component-overview">Component Overview</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#data-streamers">Data Streamers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#indicators">Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#strategies">Strategies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#portfolios">Portfolios</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#runners">Runners</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#verbose-mode">Verbose Mode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-custom-strategy">Example: Custom Strategy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-issues">Common Issues</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-tzutrader-is-and-isnt">What tzutrader Is and Isn't</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="getting-started">Getting Started</h1>
+<p>tzutrader is a C++ backtesting library for testing trading strategies. This guide will get you up and running.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p><strong>Technical requirements:</strong>
+- C++17 or later compiler (GCC, Clang, or MSVC)
+- CMake 3.10 or later
+- Git</p>
+<p><strong>Knowledge requirements:</strong>
+- Comfortable with C++ (classes, templates, STL)
+- Basic understanding of trading concepts
+- Familiarity with command-line tools</p>
+<p>If you're new to C++, this library will be challenging. Python backtesting libraries (like Backtrader or VectorBT) are more beginner-friendly. tzutrader is for developers who want to understand low-level implementation details or need the performance and systems programming skills that C++ provides.</p>
+<p>See <a href="../philosophy/">Design Philosophy</a> for more on who this is for.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-bash">git clone https://codeberg.org/jailop/tzutrader
+cd tzutrader
+</code></pre>
+<h3 id="clone-the-repository">Clone the Repository</h3>
+<pre><code class="language-bash">mkdir build
+cd build
+cmake ..
+cmake --build .
+</code></pre>
+<p>This compiles the library and examples. The compiled binaries will be in the <code>build/</code> directory.</p>
+<h3 id="build-the-library">Build the Library</h3>
+<h3 id="create-a-simple-strategy">Create a Simple Strategy</h3>
+<p>Create a file <code>my_backtest.cpp</code>:</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &quot;tzu.h&quot;
+
+using namespace tzu;
+
+int main() {
+    // Create an RSI strategy
+    RSIStrat strategy(14, 30, 70);  // 14-period RSI, buy &lt; 30, sell &gt; 70
+
+    // Create portfolio with $100k initial capital
+    BasicPortfolio portfolio(
+        100000.0,   // initial cash
+        0.001,      // 0.1% transaction costs
+        0.10,       // 10% stop-loss
+        0.20        // 20% take-profit
+    );
+
+    // Create data streamer from stdin
+    Csv&lt;Ohlcv&gt; csv(std::cin);
+
+    // Create runner
+    BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;&gt; runner(
+        portfolio, strategy, csv
+    );
+
+    // Run backtest
+    runner.run(false);  // false = quiet mode
+
+    return 0;
+}
+</code></pre>
+<h3 id="compile-your-backtest">Compile Your Backtest</h3>
+<p>Create a <code>CMakeLists.txt</code>:</p>
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.10)
+project(MyBacktest)
+
+set(CMAKE_CXX_STANDARD 17)
+
+# Add tzutrader include directory
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+add_executable(my_backtest my_backtest.cpp)
+</code></pre>
+<p>Or compile directly:</p>
+<pre><code class="language-bash">cd build
+g++ -std=c++17 -I../include -O2 ../my_backtest.cpp -o my_backtest
+</code></pre>
+<h3 id="prepare-your-data">Prepare Your Data</h3>
+<p>tzutrader expects CSV format with OHLCV data:</p>
+<pre><code class="language-csv">timestamp,open,high,low,close,volume
+1419984000,320.0,325.0,315.0,322.0,1000.0
+1419984060,322.0,328.0,321.0,326.0,1500.0
+</code></pre>
+<ul>
+<li><strong>timestamp</strong>: Unix timestamp (seconds since epoch)</li>
+<li><strong>open, high, low, close</strong>: Prices</li>
+<li><strong>volume</strong>: Trading volume</li>
+</ul>
+<h3 id="run-the-backtest">Run the Backtest</h3>
+<pre><code class="language-bash">cat your_data.csv | ./my_backtest
+</code></pre>
+<p>Or use the test data:</p>
+<pre><code class="language-bash">cat ../tests/data/btcusd.csv | ./my_backtest
+</code></pre>
+<h3 id="understand-the-output">Understand the Output</h3>
+<pre><code>init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
+curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28
+num_losses:18 win_rate:0.6087 num_stop_loss:18 num_take_profit:7
+quantity:0.0000 holdings:0.0000 valuation:197422.2894
+total_costs:14952.7706 profit:97422.2894 total_return:0.9742
+annual_return:0.0638 buy_and_hold_return:277.2788
+buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
+</code></pre>
+<p>Format it nicely:</p>
+<pre><code class="language-bash">cat ../tests/data/btcusd.csv | ./my_backtest | tr ' ' '\n' | column -t -s ':'
+</code></pre>
+<p><strong>Key metrics:</strong>
+- <code>total_return</code>: 0.9742 = 97.42% profit
+- <code>annual_return</code>: 0.0638 = 6.38% per year
+- <code>win_rate</code>: 0.6087 = 60.87% of trades were winners
+- <code>max_drawdown</code>: 0.5280 = 52.8% largest decline from peak
+- <code>sharpe</code>: 0.3694 = risk-adjusted return</p>
+<h2 id="core-data-types">Core Data Types</h2>
+<h3 id="ohlcv">Ohlcv</h3>
+<p>Open-High-Low-Close-Volume candlestick data:</p>
+<pre><code class="language-cpp">struct Ohlcv {
+    int64_t timestamp;
+    double open;
+    double high;
+    double low;
+    double close;
+    double volume;
+};
+</code></pre>
+<h3 id="signal">Signal</h3>
+<p>Trading signals generated by strategies:</p>
+<pre><code class="language-cpp">struct Signal {
+    int64_t timestamp;
+    Side side;        // BUY, SELL, or NONE
+    double price;
+    double volume;
+};
+</code></pre>
+<h3 id="side-enum">Side Enum</h3>
+<pre><code class="language-cpp">enum class Side {
+    NONE,   // No action
+    BUY,    // Buy signal
+    SELL    // Sell signal
+};
+</code></pre>
+<h2 id="basic-workflow">Basic Workflow</h2>
+<ol>
+<li><strong>Prepare data</strong> in CSV format</li>
+<li><strong>Choose or create a strategy</strong> (indicators + logic)</li>
+<li><strong>Configure portfolio</strong> (capital, costs, risk limits)</li>
+<li><strong>Run backtest</strong> with data streamed through strategy to portfolio</li>
+<li><strong>Analyze results</strong> (metrics, drawdowns, trade count)</li>
+<li><strong>Iterate</strong> (adjust parameters, test different periods, try different assets)</li>
+</ol>
+<h2 id="component-overview">Component Overview</h2>
+<h3 id="data-streamers">Data Streamers</h3>
+<p>Read and parse input data. Currently supports CSV format.</p>
+<pre><code class="language-cpp">Csv&lt;Ohlcv&gt; csv(std::cin);  // Read OHLCV from stdin
+</code></pre>
+<h3 id="indicators">Indicators</h3>
+<p>Calculate technical values:</p>
+<pre><code class="language-cpp">SMA sma(20);                    // 20-period simple moving average
+EMA ema(20);                    // 20-period exponential moving average
+RSI rsi(14);                    // 14-period RSI
+MACD macd(12, 26, 9);          // Standard MACD
+MVar mvar(20, 1);              // 20-period variance
+</code></pre>
+<h3 id="strategies">Strategies</h3>
+<p>Generate trading signals:</p>
+<pre><code class="language-cpp">SMACrossover strat(10, 30, 0.01);  // Fast/slow crossover
+RSIStrat strat(14, 30, 70);        // RSI overbought/oversold
+MACDStrat strat(12, 26, 9);        // MACD crossover
+</code></pre>
+<p>Or create custom strategies.</p>
+<h3 id="portfolios">Portfolios</h3>
+<p>Manage positions and capital:</p>
+<pre><code class="language-cpp">BasicPortfolio portfolio(initial_capital, costs, stop_loss, take_profit);
+</code></pre>
+<h3 id="runners">Runners</h3>
+<p>Orchestrate the backtesting process:</p>
+<pre><code class="language-cpp">BasicRunner&lt;Portfolio, Strategy, Streamer&gt; runner(portfolio, strategy, csv);
+runner.run(verbose);
+</code></pre>
+<h2 id="verbose-mode">Verbose Mode</h2>
+<p>Enable verbose output to see portfolio state after each data point:</p>
+<pre><code class="language-cpp">runner.run(true);  // Print portfolio after each update
+</code></pre>
+<p>Useful for debugging strategies and understanding trade execution.</p>
+<h2 id="example-custom-strategy">Example: Custom Strategy</h2>
+<pre><code class="language-cpp">class MyStrategy: public tzu::Strategy&lt;MyStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::SMA fast;
+    tzu::SMA slow;
+    tzu::Side last_side;
+
+public:
+    MyStrategy(size_t fast_period = 10, size_t slow_period = 30)
+        : fast(fast_period), slow(slow_period), last_side(tzu::Side::NONE) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double fast_val = fast.update(data.close);
+        double slow_val = slow.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        if (std::isnan(fast_val) || std::isnan(slow_val)) {
+            return signal;  // Indicators not ready
+        }
+
+        if (fast_val &gt; slow_val &amp;&amp; last_side != tzu::Side::BUY) {
+            signal.side = tzu::Side::BUY;
+            last_side = tzu::Side::BUY;
+        } else if (fast_val &lt; slow_val &amp;&amp; last_side != tzu::Side::SELL) {
+            signal.side = tzu::Side::SELL;
+            last_side = tzu::Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Read <a href="../intro-trading/">Intro to Trading</a> to understand backtesting fundamentals</li>
+<li>Learn about <a href="../indicators/">Indicators</a> and how to create custom ones</li>
+<li>Explore <a href="../strategies/">Strategies</a> for signal generation patterns</li>
+<li>Understand <a href="../portfolios/">Portfolios</a> for position management</li>
+<li>Review <a href="../architecture/">Architecture</a> to understand the design</li>
+</ul>
+<h2 id="common-issues">Common Issues</h2>
+<p><strong>"No indicators ready" / lots of NaN values</strong>: Indicators need data to warm up. SMA(20) needs 20 data points before returning valid values.</p>
+<p><strong>No trades executed</strong>: Check if your strategy is generating signals (use verbose mode). Verify your data format is correct.</p>
+<p><strong>Unrealistic results</strong>: Check for lookahead bias in your strategy. Make sure you're not using future data to make current decisions.</p>
+<p><strong>Compile errors</strong>: Ensure you're using C++17 or later and including the tzutrader headers correctly.</p>
+<h2 id="getting-help">Getting Help</h2>
+<ul>
+<li>Check the <a href="../faq/">FAQ</a> for common questions</li>
+<li>Read the <a href="https://jailop.codeberg.page/tzutrader/docs/html/">API documentation</a></li>
+<li>Review example code in the <code>examples/</code> directory</li>
+<li>File issues on <a href="https://codeberg.org/jailop/tzutrader/issues">Codeberg</a></li>
+</ul>
+<h2 id="what-tzutrader-is-and-isnt">What tzutrader Is and Isn't</h2>
+<p><strong>tzutrader is:</strong>
+- A library for testing trading ideas
+- Focused on composability and simplicity
+- An educational tool for understanding backtesting
+- Experimental and evolving</p>
+<p><strong>tzutrader is not:</strong>
+- A production trading system
+- A guaranteed path to profits
+- A complete trading platform with data feeds and execution
+- Finished software (it's experimental)</p>
+<p>Treat it as a learning tool and a way to test ideas systematically before risking real money.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../philosophy/" class="btn btn-neutral float-right" title="Design Philosophy">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../philosophy/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

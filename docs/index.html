@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="An experiment on building a composable C++ trading backtesting library." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A composable C++ backtesting library for testing trading strategies" />
       <link rel="shortcut icon" href="img/favicon.ico" />
     <title>tzutrader</title>
     <link rel="stylesheet" href="css/theme.css" />
@@ -42,15 +42,59 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-this">What Is This?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#current-status">Current Status</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quick-example">Quick Example</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#who-this-is-for">Who This Is For</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-reality-check">The Reality Check</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#community">Community</a>
+    </li>
     </ul>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="user-guide/">User Guide</a>
+                <li class="toctree-l1"><a class="reference internal" href="getting-started/">Getting Started</a>
                 </li>
               </ul>
               <ul>
+                <li class="toctree-l1"><a class="reference internal" href="philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="faq/">FAQ</a>
                 </li>
               </ul>
       </div>
@@ -77,19 +121,109 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="tzutrader">tzutrader</h1>
-<p>An experiment on building a composable C++ trading backtesting library.</p>
-<p>At this moment, the implementation covers only very basic features, in
-order to explore and validate design and architecture choices.</p>
-<p>Criticism is very welcome!</p>
+<p>A composable C++ backtesting library for testing trading strategies.</p>
+<h2 id="what-is-this">What Is This?</h2>
+<p>tzutrader is an experimental library for backtesting algorithmic trading strategies. It's built around composability—mix and match indicators, strategies, and portfolio management components to test your trading ideas.</p>
+<p><strong>Key features:</strong>
+- Streaming data processing to prevent lookahead bias
+- Modular design with composable components
+- Built-in indicators (SMA, EMA, RSI, MACD)
+- Example strategies and portfolio management
+- Simple, understandable C++ code</p>
+<h2 id="current-status">Current Status</h2>
+<p>This is experimental software. It covers basic features to explore design patterns and validate architectural choices. The API may change as the project evolves.</p>
+<p><strong>What works:</strong>
+- Basic indicators and strategies
+- Simple portfolio management with risk controls
+- CSV data input
+- Performance metrics calculation</p>
+<p><strong>What doesn't (yet):</strong>
+- Multi-asset portfolios
+- Complex order types
+- Real-time data feeds
+- Extensive built-in strategy library</p>
+<h2 id="quick-example">Quick Example</h2>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+using namespace tzu;
+
+int main() {
+    // Create strategy and portfolio
+    RSIStrat strategy(14, 30, 70);
+    BasicPortfolio portfolio(100000.0, 0.001, 0.10, 0.20);
+
+    // Stream data and run backtest
+    Csv&lt;Ohlcv&gt; csv(std::cin);
+    BasicRunner&lt;BasicPortfolio, RSIStrat, Csv&lt;Ohlcv&gt;&gt; runner(
+        portfolio, strategy, csv
+    );
+
+    runner.run(false);
+    return 0;
+}
+</code></pre>
+<p>Run it:</p>
+<pre><code class="language-bash">cat data.csv | ./backtest
+</code></pre>
+<h2 id="documentation">Documentation</h2>
+<p><strong>Start here:</strong>
+- <strong><a href="getting-started/">Getting Started</a></strong>: Installation and first backtest
+- <strong><a href="philosophy/">Design Philosophy</a></strong>: Why tzutrader exists and who it's for</p>
+<p><strong>Learn the concepts:</strong>
+- <strong><a href="intro-trading/">Intro to Trading</a></strong>: Backtesting fundamentals and pitfalls</p>
+<p><strong>Build with components:</strong>
+- <strong><a href="indicators/">Indicators</a></strong>: Using and creating indicators
+- <strong><a href="strategies/">Strategies</a></strong>: Building trading strategies
+- <strong><a href="portfolios/">Portfolios</a></strong>: Position and risk management</p>
+<p><strong>Understand the design:</strong>
+- <strong><a href="architecture/">Architecture</a></strong>: Implementation details and patterns</p>
+<p><strong>Get involved:</strong>
+- <strong><a href="contributing/">Contributing</a></strong>: How to contribute
+- <strong><a href="faq/">FAQ</a></strong>: Common questions</p>
+<p><strong>API Reference:</strong> <a href="https://jailop.codeberg.page/tzutrader/docs/html">https://jailop.codeberg.page/tzutrader/docs/html</a></p>
+<h2 id="philosophy">Philosophy</h2>
+<p>tzutrader follows the Unix philosophy: build small, composable tools that do one thing well. Rather than a monolithic framework, it provides building blocks you combine to create backtests.</p>
+<p><strong>Core principles:</strong>
+- <strong>Composability</strong>: Mix and match indicators, strategies, portfolios
+- <strong>Streaming</strong>: Process data point-by-point to prevent lookahead bias
+- <strong>Simplicity</strong>: Minimal dependencies, focused scope, no magic
+- <strong>Transparency</strong>: Code you can read, understand, and modify</p>
+<p>Inspired by Unix tools (<code>grep</code>, <code>awk</code>, <code>sort</code>), components do one thing well and work together through standard interfaces.</p>
+<h2 id="who-this-is-for">Who This Is For</h2>
+<p><strong>You'll get value from tzutrader if you:</strong>
+- Are comfortable with C++ and template programming
+- Want to understand backtesting architecture, not just use it
+- Prefer reading code over reading documentation
+- Are willing to write your own indicators and strategies
+- Value performance and learning systems programming</p>
+<p><strong>This is probably not for you if:</strong>
+- You're new to C++ (Python backtesting libraries are easier)
+- You want a GUI or plug-and-play solutions
+- You need production-ready, stable software right now
+- You prefer extensive documentation over code exploration</p>
+<p>C++ is harder than Python. We chose it for performance, learning value, and because production trading systems use it. If you're learning algorithmic trading, start with Python. If you're learning systems programming or want skills that transfer to professional trading systems, tzutrader is relevant.</p>
+<p>See <a href="philosophy/">Design Philosophy</a> for the detailed rationale.</p>
+<h2 id="the-reality-check">The Reality Check</h2>
+<p>Most trading strategies don't work. Even strategies that backtest well often fail in live trading. This library won't make you rich—it's a tool for systematically testing ideas before risking money.</p>
+<p>Treat backtesting as education, not a guarantee. If you do trade live, start small and be prepared to lose money while learning.</p>
+<h2 id="getting-started">Getting Started</h2>
+<ol>
+<li>Clone the repository: <code>git clone https://codeberg.org/jailop/tzutrader</code></li>
+<li>Build: <code>mkdir build &amp;&amp; cd build &amp;&amp; cmake .. &amp;&amp; cmake --build .</code></li>
+<li>Run examples: <code>cat ../tests/data/btcusd.csv | ./example01</code></li>
+<li>Read the <a href="getting-started/">Getting Started</a> guide</li>
+</ol>
+<h2 id="community">Community</h2>
 <ul>
-<li>Source code: <a href="https://codeberg.org/jailop/tzutrader">https://codeberg.org/jailop/tzutrader</a></li>
-<li>API documentation: <a href="https://jailop.codeberg.page/tzutrader/docs/html">https://jailop.codeberg.page/tzutrader/docs/html</a></li>
+<li><strong>Source code</strong>: <a href="https://codeberg.org/jailop/tzutrader">https://codeberg.org/jailop/tzutrader</a></li>
+<li><strong>Issues</strong>: <a href="https://codeberg.org/jailop/tzutrader/issues">https://codeberg.org/jailop/tzutrader/issues</a></li>
+<li><strong>License</strong>: See LICENSE file in repository</li>
 </ul>
+<p>Feedback and criticism are welcome. This is an experiment—help make it better.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="user-guide/" class="btn btn-neutral float-right" title="User Guide">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="getting-started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -117,7 +251,7 @@ order to explore and validate design and architecture choices.</p>
     
     
     
-      <span><a href="user-guide/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -137,5 +271,5 @@ order to explore and validate design and architecture choices.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-03-03 17:30:37.234136+00:00
+Build Date UTC : 2026-03-03 22:05:29.844667+00:00
 -->

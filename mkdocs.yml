@@ -1,11 +1,20 @@
 site_name: tzutrader
-site_description: An experiment on building a composable C++ trading backtesting library.
+site_description: A composable C++ backtesting library for testing trading strategies
 repo_url: https://codeberg.org/jailop/tzutrader
 docs_dir: docs_src
 site_dir: ./docs
 nav:
   - Home: index.md
-  - User Guide: user-guide.md
+  - Getting Started: getting-started.md
+  - Design Philosophy: philosophy.md
+  - Trading & Backtesting:
+    - Intro to Trading: intro-trading.md
+  - Components:
+    - Indicators: indicators.md
+    - Strategies: strategies.md
+    - Portfolios: portfolios.md
   - Architecture: architecture.md
+  - Contributing: contributing.md
+  - FAQ: faq.md
 theme:
   name: readthedocs

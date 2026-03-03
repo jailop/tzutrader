@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>FAQ - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "FAQ";
+        var mkdocs_page_input_path = "faq.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">FAQ</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-questions">General Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-is-tzutrader">What is tzutrader?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#who-is-this-for">Who is this for?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#is-this-production-ready">Is this production-ready?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-make-money-with-this">Can I make money with this?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-setup">Installation &amp; Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-do-i-need-to-install">What do I need to install?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-build-it">How do I build it?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-use-this-on-windows">Can I use this on Windows?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#do-i-need-pythonrother-languages">Do I need Python/R/other languages?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage-questions">Usage Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-load-my-data">How do I load my data?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-is-my-indicator-returning-nan">Why is my indicator returning NaN?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-create-a-custom-indicator">How do I create a custom indicator?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-create-a-custom-strategy">How do I create a custom strategy?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-arent-any-trades-being-executed">Why aren't any trades being executed?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-test-different-parameters">How do I test different parameters?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-backtest-multiple-assets-simultaneously">Can I backtest multiple assets simultaneously?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-add-transaction-costs">How do I add transaction costs?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-model-slippage">Can I model slippage?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-save-backtest-results">How do I save backtest results?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#performance-questions">Performance Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#how-fast-is-it">How fast is it?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-parallelize-backtests">Can I parallelize backtests?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-use-c-instead-of-python">Why use C++ instead of Python?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#technical-questions">Technical Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#whats-the-crtp-pattern">What's the CRTP pattern?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-streaming-instead-of-vectorized">Why streaming instead of vectorized?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-use-this-with-live-data-feeds">Can I use this with live data feeds?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-no-built-in-parameter-optimization">Why no built-in parameter optimization?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-do-i-handle-corporate-actions-splits-dividends">How do I handle corporate actions (splits, dividends)?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#compilation-fails-with-c17-errors">Compilation fails with C++17 errors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#segmentation-fault-when-running">Segmentation fault when running</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#results-look-too-good-to-be-true">Results look too good to be true</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#my-strategy-was-profitable-in-backtest-but-loses-money-live">My strategy was profitable in backtest but loses money live</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-questions">Design Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#why-templates-instead-of-inheritance">Why templates instead of inheritance?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-such-a-minimal-feature-set">Why such a minimal feature set?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#will-feature-x-be-added">Will feature X be added?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#can-i-use-this-in-my-project">Can I use this in my project?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#how-can-i-contribute">How can I contribute?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#philosophy-questions">Philosophy Questions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#why-unix-philosophy-for-a-trading-library">Why Unix philosophy for a trading library?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-be-honest-about-limitations">Why be honest about limitations?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-not-include-tons-of-indicators-and-strategies">Why not include tons of indicators and strategies?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#whats-the-long-term-vision">What's the long-term vision?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#still-have-questions">Still Have Questions?</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">FAQ</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="faq">FAQ</h1>
+<h2 id="general-questions">General Questions</h2>
+<h3 id="what-is-tzutrader">What is tzutrader?</h3>
+<p>A C++ library for backtesting trading strategies. It's experimental, focused on composability and streaming data processing. Think of it as a toolkit for testing trading ideas before risking real money.</p>
+<h3 id="who-is-this-for">Who is this for?</h3>
+<ul>
+<li>Developers learning about algorithmic trading</li>
+<li>Traders who want to test strategies systematically</li>
+<li>Anyone interested in backtesting architecture</li>
+<li>People who prefer C++ for performance-critical tasks</li>
+</ul>
+<p>It's not for complete beginners to programming or trading. Some C++ knowledge and basic trading understanding is expected.</p>
+<h3 id="is-this-production-ready">Is this production-ready?</h3>
+<p>No. It's experimental software exploring different design patterns. The API can change, features may be added or removed, and bugs likely exist. Use it for learning and experimentation, not for live trading.</p>
+<h3 id="can-i-make-money-with-this">Can I make money with this?</h3>
+<p>tzutrader is a tool for testing ideas. Whether those ideas make money is up to you. Most strategies don't work. Even good backtests don't guarantee live trading success. Treat this as education, not a money-making machine.</p>
+<h2 id="installation-setup">Installation &amp; Setup</h2>
+<h3 id="what-do-i-need-to-install">What do I need to install?</h3>
+<ul>
+<li>C++17 or later compiler (GCC, Clang, MSVC)</li>
+<li>CMake 3.10 or later</li>
+<li>Git (to clone the repository)</li>
+</ul>
+<h3 id="how-do-i-build-it">How do I build it?</h3>
+<pre><code class="language-bash">git clone https://codeberg.org/jailop/tzutrader
+cd tzutrader
+mkdir build &amp;&amp; cd build
+cmake ..
+cmake --build .
+</code></pre>
+<h3 id="can-i-use-this-on-windows">Can I use this on Windows?</h3>
+<p>Yes, with a C++17 compiler. Visual Studio 2017 or later should work. You may need to adjust CMake settings for your environment.</p>
+<h3 id="do-i-need-pythonrother-languages">Do I need Python/R/other languages?</h3>
+<p>No. tzutrader is pure C++. You can use other languages for data preparation or analysis, but the library itself doesn't require them.</p>
+<h2 id="usage-questions">Usage Questions</h2>
+<h3 id="how-do-i-load-my-data">How do I load my data?</h3>
+<p>tzutrader expects CSV format piped through stdin:</p>
+<pre><code class="language-bash">cat your_data.csv | ./your_backtest
+</code></pre>
+<p>CSV format for OHLCV:</p>
+<pre><code class="language-csv">timestamp,open,high,low,close,volume
+1419984000,320.0,325.0,315.0,322.0,1000.0
+</code></pre>
+<h3 id="why-is-my-indicator-returning-nan">Why is my indicator returning NaN?</h3>
+<p>Indicators need data to warm up. A 20-period SMA returns NaN until it has 20 data points. This is intentional—it prevents using incomplete indicator values in strategies.</p>
+<h3 id="how-do-i-create-a-custom-indicator">How do I create a custom indicator?</h3>
+<p>Inherit from <code>Indicator&lt;YourIndicator, InputType, OutputType&gt;</code> and implement <code>get()</code> and <code>update()</code>:</p>
+<pre><code class="language-cpp">class MyIndicator: public tzu::Indicator&lt;MyIndicator, double, double&gt; {
+public:
+    double get() const noexcept { /* return value */ }
+    double update(double value) { /* update and return */ }
+};
+</code></pre>
+<p>See the <a href="../indicators/">Indicators</a> page for detailed examples.</p>
+<h3 id="how-do-i-create-a-custom-strategy">How do I create a custom strategy?</h3>
+<p>Inherit from <code>Strategy&lt;YourStrategy, InputType&gt;</code> and implement <code>update()</code>:</p>
+<pre><code class="language-cpp">class MyStrategy: public tzu::Strategy&lt;MyStrategy, tzu::Ohlcv&gt; {
+public:
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        // Your logic here
+    }
+};
+</code></pre>
+<p>See the <a href="../strategies/">Strategies</a> page for examples.</p>
+<h3 id="why-arent-any-trades-being-executed">Why aren't any trades being executed?</h3>
+<p>Common reasons:
+- Strategy isn't generating signals (check verbose mode)
+- Indicators haven't warmed up yet (early data points)
+- CSV format is incorrect (check timestamps and values)
+- Portfolio has no cash left (check transaction costs)</p>
+<p>Enable verbose mode to see what's happening:</p>
+<pre><code class="language-cpp">runner.run(true);  // Verbose mode
+</code></pre>
+<h3 id="how-do-i-test-different-parameters">How do I test different parameters?</h3>
+<p>Recompile with different parameter values or make them command-line arguments:</p>
+<pre><code class="language-cpp">int main(int argc, char** argv) {
+    int period = (argc &gt; 1) ? std::atoi(argv[1]) : 20;
+    SMA sma(period);
+    // ...
+}
+</code></pre>
+<p>Then run:</p>
+<pre><code class="language-bash">cat data.csv | ./backtest 20
+cat data.csv | ./backtest 50
+</code></pre>
+<p>For systematic parameter optimization, you'll need to write your own loop or use external tools.</p>
+<h3 id="can-i-backtest-multiple-assets-simultaneously">Can I backtest multiple assets simultaneously?</h3>
+<p>Not with the current <code>BasicPortfolio</code>. It's designed for single-asset backtesting. You'd need to implement a custom portfolio that handles multiple positions. See the <a href="../portfolios/">Portfolios</a> page for ideas.</p>
+<h3 id="how-do-i-add-transaction-costs">How do I add transaction costs?</h3>
+<p>Pass them to the portfolio constructor:</p>
+<pre><code class="language-cpp">BasicPortfolio portfolio(
+    100000.0,  // initial capital
+    0.001,     // 0.1% transaction cost
+    0.10,      // stop-loss
+    0.20       // take-profit
+);
+</code></pre>
+<p>Costs are applied on every buy and sell.</p>
+<h3 id="can-i-model-slippage">Can I model slippage?</h3>
+<p>Not directly. <code>BasicPortfolio</code> assumes execution at signal price. For slippage, you'd need a custom portfolio that adjusts execution prices:</p>
+<pre><code class="language-cpp">void update(const Signal&amp; signal) {
+    double adjusted_price = signal.price * (1 + slippage_pct);
+    // Execute at adjusted_price
+}
+</code></pre>
+<h3 id="how-do-i-save-backtest-results">How do I save backtest results?</h3>
+<p>Redirect output to a file:</p>
+<pre><code class="language-bash">cat data.csv | ./backtest &gt; results.txt
+</code></pre>
+<p>Or modify your code to write to files directly:</p>
+<pre><code class="language-cpp">std::ofstream out(&quot;results.csv&quot;);
+// Write trades, metrics, etc.
+</code></pre>
+<h2 id="performance-questions">Performance Questions</h2>
+<h3 id="how-fast-is-it">How fast is it?</h3>
+<p>Fast enough for typical backtests. Processing millions of data points takes seconds on modern hardware. Exact speed depends on strategy complexity and indicator calculations.</p>
+<p>If performance is critical, profile first. Most bottlenecks are in I/O or inefficient strategy logic, not the library itself.</p>
+<h3 id="can-i-parallelize-backtests">Can I parallelize backtests?</h3>
+<p>The library is single-threaded. For parallel backtests (e.g., testing multiple parameter sets):</p>
+<pre><code class="language-bash"># Run separate instances in parallel
+cat data.csv | ./backtest1 &gt; results1.txt &amp;
+cat data.csv | ./backtest2 &gt; results2.txt &amp;
+wait
+</code></pre>
+<p>Each instance is independent, so this scales well.</p>
+<h3 id="why-use-c-instead-of-python">Why use C++ instead of Python?</h3>
+<ul>
+<li>Performance: C++ is much faster for computation-heavy tasks</li>
+<li>Learning: Understanding memory management and efficiency</li>
+<li>Production: Closer to what real trading systems use</li>
+</ul>
+<p>Python is easier for prototyping. C++ is better for production or learning systems programming. Choose based on your goals.</p>
+<h2 id="technical-questions">Technical Questions</h2>
+<h3 id="whats-the-crtp-pattern">What's the CRTP pattern?</h3>
+<p>Curiously Recurring Template Pattern. It's used for static polymorphism:</p>
+<pre><code class="language-cpp">template &lt;class Derived, typename In, typename Out&gt;
+class Indicator {
+    Out update(In value) {
+        return static_cast&lt;Derived*&gt;(this)-&gt;update(value);
+    }
+};
+
+class SMA: public Indicator&lt;SMA, double, double&gt; {
+    double update(double value) { /* implementation */ }
+};
+</code></pre>
+<p>This gives you polymorphic-like behavior without virtual function overhead.</p>
+<h3 id="why-streaming-instead-of-vectorized">Why streaming instead of vectorized?</h3>
+<p>Streaming prevents lookahead bias and mimics real trading. You can't peek at future data. It also uses less memory—you don't need to load the entire dataset.</p>
+<p>Vectorized approaches (like pandas) are faster for analysis but make it easy to accidentally introduce lookahead bias.</p>
+<h3 id="can-i-use-this-with-live-data-feeds">Can I use this with live data feeds?</h3>
+<p>tzutrader is designed for backtesting, not live trading. You'd need to:
+- Wrap your data feed as a streamer
+- Handle real-time execution
+- Deal with order management
+- Implement error handling</p>
+<p>It's possible but not the intended use case. Production trading systems need much more infrastructure.</p>
+<h3 id="why-no-built-in-parameter-optimization">Why no built-in parameter optimization?</h3>
+<p>Adding optimization would make decisions about search methods, stopping criteria, and validation approaches. That's opinionated. Instead, tzutrader is a tool you use within your own optimization framework.</p>
+<p>Write a script that runs backtests with different parameters and collects results. Use the tool of your choice (grid search, random search, Bayesian optimization, etc.).</p>
+<h3 id="how-do-i-handle-corporate-actions-splits-dividends">How do I handle corporate actions (splits, dividends)?</h3>
+<p>Adjust your input data before feeding it to tzutrader. Most data providers offer adjusted prices. If you have unadjusted data:</p>
+<ul>
+<li><strong>Splits</strong>: Divide prices before the split date by the split ratio</li>
+<li><strong>Dividends</strong>: Adjust prices to account for value paid out</li>
+</ul>
+<p>This preprocessing step is outside tzutrader's scope.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="compilation-fails-with-c17-errors">Compilation fails with C++17 errors</h3>
+<p>Ensure your compiler supports C++17:</p>
+<pre><code class="language-bash">g++ --version  # GCC 7+ required
+clang++ --version  # Clang 5+ required
+</code></pre>
+<p>Set the standard explicitly:</p>
+<pre><code class="language-bash">g++ -std=c++17 your_file.cpp
+</code></pre>
+<h3 id="segmentation-fault-when-running">Segmentation fault when running</h3>
+<p>Common causes:
+- Accessing uninitialized indicators
+- Buffer overflow in custom indicators
+- Invalid CSV data</p>
+<p>Enable debugging symbols and use a debugger:</p>
+<pre><code class="language-bash">g++ -g -std=c++17 your_file.cpp
+gdb ./your_program
+</code></pre>
+<h3 id="results-look-too-good-to-be-true">Results look too good to be true</h3>
+<p>Check for:
+- Lookahead bias (using future data)
+- Incorrect transaction costs (too low or missing)
+- Overfitting (parameters tuned too specifically)
+- Data quality issues (survivorship bias, bad prices)</p>
+<p>Be skeptical of amazing results. Markets aren't easy.</p>
+<h3 id="my-strategy-was-profitable-in-backtest-but-loses-money-live">My strategy was profitable in backtest but loses money live</h3>
+<p>This is common. Reasons include:
+- <strong>Overfitting</strong>: Optimized for historical quirks that don't repeat
+- <strong>Market regime change</strong>: Markets evolve, strategies stop working
+- <strong>Execution differences</strong>: Slippage, costs, fills differ from simulation
+- <strong>Psychological factors</strong>: Hard to follow rules during drawdowns</p>
+<p>Backtesting is imperfect. It's a filter to eliminate bad ideas, not a guarantee of success.</p>
+<h2 id="design-questions">Design Questions</h2>
+<h3 id="why-templates-instead-of-inheritance">Why templates instead of inheritance?</h3>
+<p>Templates provide compile-time polymorphism with no runtime overhead. For performance-critical backtesting code, avoiding virtual function calls matters.</p>
+<p>It also enables better compiler optimization since the full call graph is known at compile time.</p>
+<h3 id="why-such-a-minimal-feature-set">Why such a minimal feature set?</h3>
+<p>Intentional. The goal is exploring core architecture patterns, not building a feature-complete platform. Small scope means:
+- Easier to understand and modify
+- Fewer dependencies
+- Clearer design tradeoffs
+- Room to experiment</p>
+<p>You can extend it for your needs.</p>
+<h3 id="will-feature-x-be-added">Will feature X be added?</h3>
+<p>Maybe. The roadmap is flexible. File an issue to discuss. Features aligned with the design philosophy (composability, simplicity, streaming) are more likely.</p>
+<p>Features that add complexity, break composability, or introduce heavy dependencies are less likely.</p>
+<h3 id="can-i-use-this-in-my-project">Can I use this in my project?</h3>
+<p>Yes, subject to the license. Check the LICENSE file in the repository. If you build something interesting with it, let us know.</p>
+<h3 id="how-can-i-contribute">How can I contribute?</h3>
+<p>See the <a href="../contributing/">Contributing</a> page. Bug reports, documentation improvements, and code contributions are welcome.</p>
+<h2 id="philosophy-questions">Philosophy Questions</h2>
+<h3 id="why-unix-philosophy-for-a-trading-library">Why Unix philosophy for a trading library?</h3>
+<p>The Unix philosophy ("do one thing well, work together") fits backtesting naturally:</p>
+<ul>
+<li><strong>Small tools</strong>: Indicators, strategies, portfolios are separate</li>
+<li><strong>Text streams</strong>: CSV in, metrics out—simple and scriptable</li>
+<li><strong>Composability</strong>: Combine components like Unix pipelines</li>
+<li><strong>Mechanism not policy</strong>: Library provides tools, you make decisions</li>
+</ul>
+<p>This approach trades convenience for flexibility and understanding. You write more code, but you understand exactly what it does.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Unix composability
+cat data | grep pattern | sort | uniq
+
+# tzutrader composability
+Indicator + Strategy + Portfolio = Backtest
+</code></pre>
+<p>Each component is simple. Power comes from composition.</p>
+<h3 id="why-be-honest-about-limitations">Why be honest about limitations?</h3>
+<p>Because overselling backtesting tools is common and harmful. People lose money believing backtests guarantee profits. They don't.</p>
+<p>Being upfront about limitations helps users understand what they're actually testing and where the blind spots are.</p>
+<h3 id="why-not-include-tons-of-indicators-and-strategies">Why not include tons of indicators and strategies?</h3>
+<p>Quality over quantity. A few well-tested components you understand are better than dozens you don't. Plus, writing your own indicators and strategies is educational—you learn how they actually work.</p>
+<p>The library provides building blocks. You compose them into solutions.</p>
+<h3 id="whats-the-long-term-vision">What's the long-term vision?</h3>
+<p>There isn't one, really. This is an experiment in architecture and design. It might evolve into something more substantial, or it might remain a small educational tool.</p>
+<p>The goal is learning and exploration, not building a commercial product.</p>
+<h2 id="still-have-questions">Still Have Questions?</h2>
+<ul>
+<li>Check the <a href="../user-guide/">User Guide</a> for detailed documentation</li>
+<li>Review <a href="../architecture/">Architecture</a> for design details</li>
+<li>Look at example code in the <code>examples/</code> directory</li>
+<li>File an issue on <a href="https://codeberg.org/jailop/tzutrader/issues">Codeberg</a></li>
+</ul>
+<p>If your question isn't answered, it's probably a good one to add to this FAQ. Let us know.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../contributing/" class="btn btn-neutral float-left" title="Contributing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../contributing/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

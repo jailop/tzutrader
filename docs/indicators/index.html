@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Indicators - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Indicators";
+        var mkdocs_page_input_path = "indicators.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Indicators</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-indicators-work-in-tzutrader">How Indicators Work in tzutrader</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#available-indicators">Available Indicators</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#sma-simple-moving-average">SMA (Simple Moving Average)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ema-exponential-moving-average">EMA (Exponential Moving Average)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rsi-relative-strength-index">RSI (Relative Strength Index)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macd-moving-average-convergence-divergence">MACD (Moving Average Convergence Divergence)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mvar-moving-variance">MVar (Moving Variance)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#creating-custom-indicators">Creating Custom Indicators</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#example-rolling-window-indicator">Example: Rolling Window Indicator</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#combining-indicators">Combining Indicators</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#indicator-best-practices">Indicator Best Practices</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common Mistakes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#when-indicators-dont-work">When Indicators Don't Work</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Components</li>
+      <li class="breadcrumb-item active">Indicators</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="indicators">Indicators</h1>
+<p>Indicators are mathematical calculations based on price, volume, or other market data. They help identify patterns and generate trading signals.</p>
+<h2 id="how-indicators-work-in-tzutrader">How Indicators Work in tzutrader</h2>
+<p>All indicators follow a consistent streaming interface:</p>
+<ul>
+<li><code>get()</code>: Returns the current indicator value</li>
+<li><code>update(value)</code>: Processes a new data point and returns the updated value</li>
+</ul>
+<p>Indicators maintain internal state (usually circular buffers) to compute values efficiently as new data arrives. This streaming approach mimics how indicators work in live trading.</p>
+<h2 id="available-indicators">Available Indicators</h2>
+<h3 id="sma-simple-moving-average">SMA (Simple Moving Average)</h3>
+<p>Computes the arithmetic mean over a fixed window.</p>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+using namespace tzu;
+
+SMA sma(20);  // 20-period moving average
+
+// Update with new values
+double result = sma.update(100.5);
+// Returns NaN until 20 values are provided
+
+// After 20 updates, returns valid averages
+for (int i = 0; i &lt; 20; i++) {
+    sma.update(prices[i]);
+}
+double avg = sma.get();  // Now contains valid average
+</code></pre>
+<p><strong>Usage:</strong> Trend identification, support/resistance levels, crossover strategies.</p>
+<p><strong>Limitations:</strong> Lags price action, equal weight to all values in window.</p>
+<h3 id="ema-exponential-moving-average">EMA (Exponential Moving Average)</h3>
+<p>Gives more weight to recent values using exponential smoothing.</p>
+<pre><code class="language-cpp">EMA ema(20);         // 20-period EMA with default smoothing
+EMA ema(20, 2.0);    // Explicit smoothing factor
+</code></pre>
+<p>The smoothing factor determines how much weight recent values receive. Default is 2.0.</p>
+<p><strong>Usage:</strong> Faster response to price changes than SMA, popular in momentum strategies.</p>
+<p><strong>Limitations:</strong> Still lags price, sensitive to smoothing parameter choice.</p>
+<h3 id="rsi-relative-strength-index">RSI (Relative Strength Index)</h3>
+<p>Measures momentum by comparing average gains to average losses. Returns a value between 0 and 100.</p>
+<pre><code class="language-cpp">RSI rsi(14);  // 14-period RSI
+
+// Takes Ohlcv data as input
+double rsi_value = rsi.update(ohlcv_data);
+
+// Typical interpretation:
+// RSI &lt; 30: oversold (potential buy)
+// RSI &gt; 70: overbought (potential sell)
+</code></pre>
+<p><strong>Usage:</strong> Identify overbought/oversold conditions, divergence trading.</p>
+<p><strong>Limitations:</strong> Can stay overbought/oversold for extended periods in strong trends. Thresholds (30/70) aren't magic numbers.</p>
+<h3 id="macd-moving-average-convergence-divergence">MACD (Moving Average Convergence Divergence)</h3>
+<p>Tracks the relationship between two moving averages.</p>
+<pre><code class="language-cpp">MACD macd(12, 26, 9);  // Standard parameters
+
+MACDResult result = macd.update(price);
+// result.macd_line: Difference between fast and slow EMAs
+// result.signal_line: EMA of the MACD line
+// result.histogram: Difference between MACD and signal lines
+</code></pre>
+<p><strong>Usage:</strong> Trend following, momentum, crossover signals.</p>
+<p><strong>Limitations:</strong> Multiple parameters to tune, lags in choppy markets.</p>
+<h3 id="mvar-moving-variance">MVar (Moving Variance)</h3>
+<p>Computes variance over a rolling window.</p>
+<pre><code class="language-cpp">MVar mvar(20, 1);  // 20-period variance, sample variance (dof=1)
+MVar mvar(20, 0);  // Population variance (dof=0)
+</code></pre>
+<p><strong>Usage:</strong> Volatility measurement, basis for other indicators like Bollinger Bands.</p>
+<p><strong>Limitations:</strong> Sensitive to outliers, requires choosing appropriate degrees of freedom.</p>
+<h2 id="creating-custom-indicators">Creating Custom Indicators</h2>
+<p>Inherit from the <code>Indicator</code> base class template:</p>
+<pre><code class="language-cpp">#include &quot;tzu.h&quot;
+
+class CustomIndicator: public tzu::Indicator&lt;CustomIndicator, double, double&gt; {
+private:
+    double sum = 0.0;
+    size_t count = 0;
+
+public:
+    CustomIndicator() {}
+
+    double get() const noexcept {
+        return count &gt; 0 ? sum / count : std::nan(&quot;&quot;);
+    }
+
+    double update(double value) {
+        sum += value;
+        count++;
+        return get();
+    }
+};
+</code></pre>
+<p><strong>Key principles:</strong></p>
+<ul>
+<li>Use circular buffers or running sums to avoid storing all historical data</li>
+<li>Return <code>std::nan("")</code> when there isn't enough data to compute a valid value</li>
+<li>Keep state minimal and update incrementally</li>
+<li>Make the <code>get()</code> method <code>const</code> and <code>noexcept</code></li>
+</ul>
+<h3 id="example-rolling-window-indicator">Example: Rolling Window Indicator</h3>
+<pre><code class="language-cpp">class CustomRolling: public tzu::Indicator&lt;CustomRolling, double, double&gt; {
+private:
+    std::vector&lt;double&gt; buffer;
+    size_t pos = 0;
+    size_t len = 0;
+    double sum = 0.0;
+    size_t window;
+
+public:
+    CustomRolling(size_t window_size) 
+        : buffer(window_size, std::nan(&quot;&quot;)), window(window_size) {}
+
+    double get() const noexcept {
+        return len &lt; window ? std::nan(&quot;&quot;) : sum / window;
+    }
+
+    double update(double value) {
+        if (len &lt; window) {
+            len++;
+        } else {
+            sum -= buffer[pos];  // Remove oldest value
+        }
+
+        sum += value;
+        buffer[pos] = value;
+        pos = (pos + 1) % window;
+
+        return get();
+    }
+};
+</code></pre>
+<h2 id="combining-indicators">Combining Indicators</h2>
+<p>Build complex indicators by composing simpler ones:</p>
+<pre><code class="language-cpp">class BollingerBands {
+private:
+    SMA sma;
+    MVar mvar;
+    double num_std;
+
+public:
+    BollingerBands(size_t period, double num_std = 2.0)
+        : sma(period), mvar(period, 1), num_std(num_std) {}
+
+    struct Result {
+        double middle;
+        double upper;
+        double lower;
+    };
+
+    Result update(double value) {
+        double middle = sma.update(value);
+        double variance = mvar.update(value);
+
+        if (std::isnan(middle) || std::isnan(variance)) {
+            return {std::nan(&quot;&quot;), std::nan(&quot;&quot;), std::nan(&quot;&quot;)};
+        }
+
+        double std_dev = std::sqrt(variance);
+        return {
+            middle,
+            middle + num_std * std_dev,
+            middle - num_std * std_dev
+        };
+    }
+};
+</code></pre>
+<h2 id="indicator-best-practices">Indicator Best Practices</h2>
+<p><strong>Handle NaN values:</strong> Always check if indicators are ready before using their values in strategies.</p>
+<pre><code class="language-cpp">double value = sma.update(price);
+if (std::isnan(value)) {
+    return;  // Not enough data yet
+}
+</code></pre>
+<p><strong>Choose appropriate periods:</strong> Shorter periods are more responsive but noisier. Longer periods are smoother but lag more. There's no universal "best" period.</p>
+<p><strong>Avoid over-optimization:</strong> Don't tweak parameters endlessly to fit historical data. Test on out-of-sample data.</p>
+<p><strong>Understand what you're measuring:</strong> Indicators are tools, not magic. Know why an indicator might be useful for your strategy, not just that it has been.</p>
+<p><strong>Memory efficiency:</strong> Custom indicators should use O(window_size) memory, not O(all_historical_data).</p>
+<h2 id="common-mistakes">Common Mistakes</h2>
+<p><strong>Using indicators without context:</strong> RSI &lt; 30 doesn't always mean "buy." Markets can stay oversold for long periods.</p>
+<p><strong>Mixing timeframes incorrectly:</strong> Using a daily indicator on minute data without proper adjustment.</p>
+<p><strong>Ignoring indicator lag:</strong> All moving average-based indicators lag price. They tell you what already happened, not what will happen.</p>
+<p><strong>Signal chasing:</strong> Adding more indicators doesn't necessarily improve results. Often it just adds complexity and overfitting risk.</p>
+<h2 id="when-indicators-dont-work">When Indicators Don't Work</h2>
+<p>Indicators are derived from price. They can't predict the future—they can only summarize the past. They work better in trending markets than choppy, sideways markets. In reality, no indicator works reliably all the time. That's why risk management (stop-loss, position sizing) is crucial.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../intro-trading/" class="btn btn-neutral float-left" title="Intro to Trading"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../strategies/" class="btn btn-neutral float-right" title="Strategies">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../intro-trading/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../strategies/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

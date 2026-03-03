@@ -2,10 +2,6 @@
 
 **Note:** tzutrader is an experimental project. The API and architecture are subject to change as we explore different design patterns and refine the library's approach.
 
-**Documentation Links:**
-- **User Guide**: [https://jailop.codeberg.page/tzutrader/docs/](https://jailop.codeberg.page/tzutrader/docs/)
-- **API Reference**: [https://jailop.codeberg.page/tzutrader/docs/html/](https://jailop.codeberg.page/tzutrader/docs/html/)
-
 ## Overview
 
 tzutrader is a C++ backtesting library built around composability and streaming data processing. Rather than loading entire datasets into memory, it processes market data point-by-point, similar to how live trading systems operate. This approach helps avoid look-ahead bias and keeps memory usage low.

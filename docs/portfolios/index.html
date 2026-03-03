@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Portfolios - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Portfolios";
+        var mkdocs_page_input_path = "portfolios.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Portfolios</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#basicportfolio">BasicPortfolio</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#how-it-works">How It Works</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#position-management">Position Management</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#risk-management">Risk Management</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#stop-loss">Stop-Loss</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#take-profit">Take-Profit</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#setting-appropriate-levels">Setting Appropriate Levels</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#transaction-costs">Transaction Costs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#performance-metrics">Performance Metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#understanding-metrics">Understanding Metrics</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#output-format">Output Format</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#creating-custom-portfolios">Creating Custom Portfolios</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advanced-portfolio-ideas">Advanced Portfolio Ideas</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#position-sizing">Position Sizing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kelly-criterion">Kelly Criterion</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#multiple-positions">Multiple Positions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#partial-exits">Partial Exits</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#trailing-stop-loss">Trailing Stop-Loss</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limit-orders">Limit Orders</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-portfolio-mistakes">Common Portfolio Mistakes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ignoring-costs">Ignoring Costs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#over-leveraging">Over-leveraging</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#no-risk-management">No Risk Management</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unrealistic-fills">Unrealistic Fills</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#not-tracking-metrics">Not Tracking Metrics</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-psychology-factor">The Psychology Factor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#position-management-best-practices">Position Management Best Practices</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Components</li>
+      <li class="breadcrumb-item active">Portfolios</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="portfolios">Portfolios</h1>
+<p>A portfolio manages capital, positions, and trade execution. It receives signals from strategies and decides how to act on them, tracking performance along the way.</p>
+<h2 id="basicportfolio">BasicPortfolio</h2>
+<p>The <code>BasicPortfolio</code> class provides simple position management with risk controls:</p>
+<pre><code class="language-cpp">BasicPortfolio portfolio(
+    100000.0,  // initial_capital
+    0.001,     // transaction_cost_pct (0.1%)
+    0.10,      // stop_loss_pct (10%)
+    0.20       // take_profit_pct (20%)
+);
+</code></pre>
+<h3 id="how-it-works">How It Works</h3>
+<p><strong>On BUY signals:</strong>
+- Uses all available cash to purchase
+- Applies transaction costs
+- Opens a new position
+- Tracks entry price and timestamp</p>
+<p><strong>On SELL signals:</strong>
+- Closes all positions
+- Applies transaction costs
+- Records profit/loss
+- Updates performance metrics</p>
+<p><strong>On every update:</strong>
+- Checks stop-loss conditions
+- Checks take-profit conditions
+- Automatically liquidates if thresholds are hit</p>
+<p>This is an "all-in" approach: you're either fully invested or fully in cash. Not realistic for professional trading, but simple for testing strategy ideas.</p>
+<h2 id="position-management">Position Management</h2>
+<pre><code class="language-cpp">struct Position {
+    double quantity;
+    double price;
+    int64_t timestamp;
+};
+</code></pre>
+<p>Positions track:
+- How much you own
+- Your entry price
+- When you entered</p>
+<p>The portfolio uses this to calculate returns and trigger risk management rules.</p>
+<h2 id="risk-management">Risk Management</h2>
+<h3 id="stop-loss">Stop-Loss</h3>
+<p>Automatically sells if the price drops by a certain percentage from your entry:</p>
+<pre><code class="language-cpp">double return_pct = (current_price - entry_price) / entry_price;
+if (return_pct &lt;= -stop_loss_pct) {
+    liquidate_position();  // Cut losses
+}
+</code></pre>
+<p>Example: With a 10% stop-loss, if you buy at $100 and price drops to $90, the position is automatically closed.</p>
+<p><strong>Why it matters:</strong> Limits maximum loss on any single trade. Prevents holding losers too long.</p>
+<p><strong>Limitation:</strong> Can get stopped out right before a reversal. Markets are noisy.</p>
+<h3 id="take-profit">Take-Profit</h3>
+<p>Automatically sells if the price rises by a certain percentage from your entry:</p>
+<pre><code class="language-cpp">if (return_pct &gt;= take_profit_pct) {
+    liquidate_position();  // Lock in gains
+}
+</code></pre>
+<p>Example: With a 20% take-profit, if you buy at $100 and price rises to $120, the position is automatically closed.</p>
+<p><strong>Why it matters:</strong> Locks in profits before they disappear. Prevents greed from turning winners into losers.</p>
+<p><strong>Limitation:</strong> Caps your upside. You might miss bigger moves.</p>
+<h3 id="setting-appropriate-levels">Setting Appropriate Levels</h3>
+<p><strong>Tight stops (5%)</strong>: Less risk per trade, but more false exits on noise.</p>
+<p><strong>Wide stops (20%)</strong>: More room for normal fluctuation, but larger losses when wrong.</p>
+<p><strong>Tight profits (10%)</strong>: Frequent small wins, but misses big moves.</p>
+<p><strong>Wide profits (50%)</strong>: Rare but large wins, many small losses along the way.</p>
+<p>There's no universal "best" setting. It depends on your strategy, asset volatility, and risk tolerance. Test different values in your backtests.</p>
+<h2 id="transaction-costs">Transaction Costs</h2>
+<p>Every trade has costs:</p>
+<pre><code class="language-cpp">double cost = quantity * price * transaction_cost_pct;
+cash -= cost;  // Deducted from your capital
+</code></pre>
+<p><strong>Why it matters:</strong> A strategy that trades 100 times per year with 0.1% costs loses 10% to fees alone. High-frequency strategies need very low costs to be profitable.</p>
+<p><strong>Typical costs:</strong>
+- Stock broker: 0.05% - 0.5%
+- Crypto exchange: 0.1% - 0.5%
+- Futures: $1-5 per contract</p>
+<p>Model costs realistically. Strategies that look profitable before costs often aren't after.</p>
+<h2 id="performance-metrics">Performance Metrics</h2>
+<p>The portfolio tracks:</p>
+<ul>
+<li><strong>Total return</strong>: (final_value - initial_value) / initial_value</li>
+<li><strong>Annual return</strong>: Total return annualized based on time period</li>
+<li><strong>Win rate</strong>: Winning trades / total trades</li>
+<li><strong>Max drawdown</strong>: Largest peak-to-trough decline</li>
+<li><strong>Sharpe ratio</strong>: Risk-adjusted return (higher is better)</li>
+<li><strong>Buy and hold return</strong>: What you'd make just holding the asset</li>
+</ul>
+<h3 id="understanding-metrics">Understanding Metrics</h3>
+<p><strong>Total return of 50%</strong> sounds great, but over what period? 1 year or 10 years makes a huge difference.</p>
+<p><strong>Win rate of 60%</strong> doesn't guarantee profitability. You can win 60% of trades but lose money if your losers are bigger than your winners.</p>
+<p><strong>Max drawdown of 50%</strong> means at some point you were down 50% from your peak. Can you stomach that psychologically?</p>
+<p><strong>Sharpe ratio above 1</strong> is decent, above 2 is very good, above 3 is exceptional (and possibly too good to be true).</p>
+<p><strong>Beating buy and hold</strong> is the minimum bar. If your complex strategy can't beat simply buying and holding, what's the point?</p>
+<h2 id="output-format">Output Format</h2>
+<p>The portfolio prints performance metrics:</p>
+<pre><code>init_time:1419984000 curr_time:1767052000 init_cash:100000.0000
+curr_cash:197422.2894 num_trades:92 num_closed:46 num_wins:28
+num_losses:18 win_rate:0.6087 num_stop_loss:18 num_take_profit:7
+quantity:0.0000 holdings:0.0000 valuation:197422.2894
+total_costs:14952.7706 profit:97422.2894 total_return:0.9742
+annual_return:0.0638 buy_and_hold_return:277.2788
+buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
+</code></pre>
+<p>Format it nicely with Unix tools:</p>
+<pre><code class="language-bash">cat data/prices.csv | ./backtest | tr ' ' '\n' | column -t -s ':'
+</code></pre>
+<h2 id="creating-custom-portfolios">Creating Custom Portfolios</h2>
+<p>You can implement custom portfolio logic by inheriting from the <code>Portfolio</code> template:</p>
+<pre><code class="language-cpp">class MyPortfolio: public tzu::Portfolio&lt;MyPortfolio&gt; {
+private:
+    double cash;
+    double quantity;
+    double avg_price;
+
+public:
+    MyPortfolio(double initial_cash) 
+        : cash(initial_cash), quantity(0), avg_price(0) {}
+
+    void update(const tzu::Signal&amp; signal) {
+        if (signal.side == tzu::Side::BUY &amp;&amp; cash &gt; 0) {
+            // Custom buy logic
+            double shares = cash / signal.price;
+            quantity += shares;
+            cash = 0;
+            avg_price = signal.price;
+        } else if (signal.side == tzu::Side::SELL &amp;&amp; quantity &gt; 0) {
+            // Custom sell logic
+            cash += quantity * signal.price;
+            quantity = 0;
+        }
+    }
+
+    friend std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const MyPortfolio&amp; p) {
+        os &lt;&lt; &quot;cash:&quot; &lt;&lt; p.cash &lt;&lt; &quot; quantity:&quot; &lt;&lt; p.quantity;
+        return os;
+    }
+};
+</code></pre>
+<h2 id="advanced-portfolio-ideas">Advanced Portfolio Ideas</h2>
+<h3 id="position-sizing">Position Sizing</h3>
+<p>Instead of all-in, use a fixed percentage of capital per trade:</p>
+<pre><code class="language-cpp">double position_size = cash * 0.10;  // Risk 10% per trade
+double shares = position_size / signal.price;
+</code></pre>
+<h3 id="kelly-criterion">Kelly Criterion</h3>
+<p>Size positions based on win probability and win/loss ratio:</p>
+<pre><code class="language-cpp">double kelly = (win_rate * avg_win - (1 - win_rate) * avg_loss) / avg_win;
+double position_size = cash * kelly * safety_factor;  // e.g., 0.5 for half-Kelly
+</code></pre>
+<h3 id="multiple-positions">Multiple Positions</h3>
+<p>Hold positions in different assets simultaneously:</p>
+<pre><code class="language-cpp">std::vector&lt;Position&gt; positions;  // Track multiple positions
+std::map&lt;std::string, double&gt; holdings;  // By symbol
+</code></pre>
+<h3 id="partial-exits">Partial Exits</h3>
+<p>Scale out of positions gradually:</p>
+<pre><code class="language-cpp">if (profit_target_1_hit) {
+    sell(quantity * 0.33);  // Take 1/3 off
+}
+if (profit_target_2_hit) {
+    sell(quantity * 0.50);  // Take half of remaining
+}
+</code></pre>
+<h3 id="trailing-stop-loss">Trailing Stop-Loss</h3>
+<p>Adjust stop level as price moves in your favor:</p>
+<pre><code class="language-cpp">if (current_price &gt; highest_price) {
+    highest_price = current_price;
+    stop_loss_price = highest_price * (1 - trailing_stop_pct);
+}
+</code></pre>
+<h3 id="limit-orders">Limit Orders</h3>
+<p>Instead of market orders, use limit prices:</p>
+<pre><code class="language-cpp">if (signal.side == Side::BUY) {
+    limit_price = signal.price * 0.99;  // Buy 1% below signal
+    // In reality, order may not fill if price doesn't reach limit
+}
+</code></pre>
+<p>Modeling this accurately is complex. You need to simulate whether orders fill based on subsequent price action.</p>
+<h2 id="common-portfolio-mistakes">Common Portfolio Mistakes</h2>
+<h3 id="ignoring-costs">Ignoring Costs</h3>
+<p>Transaction costs add up quickly. Model them realistically.</p>
+<h3 id="over-leveraging">Over-leveraging</h3>
+<p>Using all your capital on every trade amplifies both gains and losses. Consider position sizing.</p>
+<h3 id="no-risk-management">No Risk Management</h3>
+<p>Trading without stop-losses can lead to catastrophic losses. Always have an exit plan.</p>
+<h3 id="unrealistic-fills">Unrealistic Fills</h3>
+<p>Assuming you can always buy/sell exactly at the signal price. In reality there's slippage, especially in illiquid markets.</p>
+<h3 id="not-tracking-metrics">Not Tracking Metrics</h3>
+<p>How do you know if your strategy is working if you don't measure? Track all relevant performance metrics.</p>
+<h2 id="the-psychology-factor">The Psychology Factor</h2>
+<p>Backtests don't capture psychology. Seeing a 30% drawdown on paper is different from watching your actual money decline 30%. Many strategies fail not because the logic is wrong, but because traders can't stick with them through drawdowns.</p>
+<p>When designing portfolios, consider:
+- Can you handle the max drawdown psychologically?
+- Is the trade frequency manageable?
+- Are the rules clear enough to follow without second-guessing?</p>
+<p>A slightly worse strategy that you can actually execute beats a theoretically better one that you'll abandon after the first losing streak.</p>
+<h2 id="position-management-best-practices">Position Management Best Practices</h2>
+<p><strong>Size positions appropriately:</strong> Don't bet everything on one trade.</p>
+<p><strong>Use stop-losses:</strong> Protect against large losses.</p>
+<p><strong>Track costs:</strong> Model transaction costs realistically.</p>
+<p><strong>Calculate metrics:</strong> Measure performance objectively.</p>
+<p><strong>Test different approaches:</strong> Try various position sizing and risk management methods.</p>
+<p><strong>Be honest:</strong> Don't cherry-pick metrics that make your strategy look good.</p>
+<p>The portfolio is where your strategy meets reality. Good strategy with poor portfolio management can still lose money. Pay attention to this layer.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../strategies/" class="btn btn-neutral float-left" title="Strategies"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../architecture/" class="btn btn-neutral float-right" title="Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../strategies/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../architecture/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

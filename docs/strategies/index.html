@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Strategies - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Strategies";
+        var mkdocs_page_input_path = "strategies.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../philosophy/">Design Philosophy</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Strategies</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#strategy-interface">Strategy Interface</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#built-in-strategies">Built-in Strategies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#smacrossover-strategy">SMACrossover Strategy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rsistrat-strategy">RSIStrat Strategy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macdstrat-strategy">MACDStrat Strategy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#creating-custom-strategies">Creating Custom Strategies</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#multi-indicator-strategy">Multi-Indicator Strategy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#strategy-design-guidelines">Strategy Design Guidelines</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#keep-it-simple">Keep it Simple</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#avoid-lookahead-bias">Avoid Lookahead Bias</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#test-for-nan">Test for NaN</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#track-state-properly">Track State Properly</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#make-parameters-configurable">Make Parameters Configurable</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#return-clear-signals">Return Clear Signals</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advanced-strategy-example">Advanced Strategy Example</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-strategy-mistakes">Common Strategy Mistakes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#over-optimization">Over-optimization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#too-many-indicators">Too Many Indicators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ignoring-market-context">Ignoring Market Context</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unrealistic-assumptions">Unrealistic Assumptions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#strategy-testing-workflow">Strategy Testing Workflow</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-reality-of-strategy-development">The Reality of Strategy Development</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Components</li>
+      <li class="breadcrumb-item active">Strategies</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="strategies">Strategies</h1>
+<p>Strategies generate trading signals based on market data and indicator values. They implement the logic that decides when to buy, sell, or do nothing.</p>
+<h2 id="strategy-interface">Strategy Interface</h2>
+<p>Strategies inherit from the <code>Strategy</code> template and implement an <code>update</code> method:</p>
+<pre><code class="language-cpp">template &lt;class T, typename In&gt;
+class Strategy {
+public:
+    Signal update(const In&amp; data);
+};
+</code></pre>
+<p>The <code>update</code> method receives market data and returns a <code>Signal</code> object:</p>
+<pre><code class="language-cpp">struct Signal {
+    int64_t timestamp;
+    Side side;        // BUY, SELL, or NONE
+    double price;
+    double volume;
+};
+</code></pre>
+<h2 id="built-in-strategies">Built-in Strategies</h2>
+<h3 id="smacrossover-strategy">SMACrossover Strategy</h3>
+<p>Generates buy signals when a short-period SMA crosses above a long-period SMA, and sell signals on the opposite crossover.</p>
+<pre><code class="language-cpp">SMACrossover strat(10, 30, 0.01);  // fast period, slow period, threshold
+
+// threshold adds a percentage buffer to avoid false signals
+// e.g., 0.01 = 1% buffer
+</code></pre>
+<p><strong>How it works:</strong>
+- Buy when fast_sma &gt; slow_sma * (1 + threshold)
+- Sell when fast_sma &lt; slow_sma * (1 - threshold)</p>
+<p><strong>Typical use case:</strong> Trend following in markets with clear directional moves.</p>
+<p><strong>Weaknesses:</strong> Many false signals in choppy markets, lags at trend changes.</p>
+<h3 id="rsistrat-strategy">RSIStrat Strategy</h3>
+<p>Buys when RSI falls below the oversold threshold and sells when it rises above the overbought threshold.</p>
+<pre><code class="language-cpp">RSIStrat strat(14, 30, 70);  // period, oversold, overbought
+</code></pre>
+<p><strong>How it works:</strong>
+- Buy when RSI &lt; 30
+- Sell when RSI &gt; 70</p>
+<p><strong>Typical use case:</strong> Mean reversion in ranging markets.</p>
+<p><strong>Weaknesses:</strong> Can trigger too early in strong trends, thresholds aren't universal.</p>
+<h3 id="macdstrat-strategy">MACDStrat Strategy</h3>
+<p>Generates signals based on MACD line and signal line crossovers.</p>
+<pre><code class="language-cpp">MACDStrat strat(12, 26, 9, 2.0, 0.0);
+// short_period, long_period, signal_period, smoothing, threshold
+</code></pre>
+<p><strong>How it works:</strong>
+- Buy when MACD line crosses above signal line
+- Sell when MACD line crosses below signal line</p>
+<p><strong>Typical use case:</strong> Momentum trading, capturing trending moves.</p>
+<p><strong>Weaknesses:</strong> Multiple parameters to optimize, whipsaws in consolidation.</p>
+<h2 id="creating-custom-strategies">Creating Custom Strategies</h2>
+<p>Here's a simple custom strategy:</p>
+<pre><code class="language-cpp">class MyStrategy: public tzu::Strategy&lt;MyStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::SMA fast;
+    tzu::SMA slow;
+    tzu::Side last_side;
+
+public:
+    MyStrategy(size_t fast_period = 10, size_t slow_period = 30)
+        : fast(fast_period), slow(slow_period), last_side(tzu::Side::NONE) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double fast_val = fast.update(data.close);
+        double slow_val = slow.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        // Wait until indicators are ready
+        if (std::isnan(fast_val) || std::isnan(slow_val)) {
+            return signal;
+        }
+
+        // Generate signals on crossovers
+        if (fast_val &gt; slow_val &amp;&amp; last_side != tzu::Side::BUY) {
+            signal.side = tzu::Side::BUY;
+            last_side = tzu::Side::BUY;
+        } else if (fast_val &lt; slow_val &amp;&amp; last_side != tzu::Side::SELL) {
+            signal.side = tzu::Side::SELL;
+            last_side = tzu::Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<p><strong>Important points:</strong></p>
+<ul>
+<li>Track <code>last_side</code> to avoid generating repeated signals</li>
+<li>Return <code>Side::NONE</code> when indicators aren't ready or no action is needed</li>
+<li>Always return a <code>Signal</code> object with timestamp and price</li>
+<li>Handle NaN values from indicators appropriately</li>
+</ul>
+<h2 id="multi-indicator-strategy">Multi-Indicator Strategy</h2>
+<p>A strategy using multiple indicators with custom logic:</p>
+<pre><code class="language-cpp">class MultiIndicatorStrategy: public tzu::Strategy&lt;MultiIndicatorStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::RSI rsi;
+    tzu::SMA sma_short;
+    tzu::SMA sma_long;
+    tzu::Side last_side;
+
+public:
+    MultiIndicatorStrategy()
+        : rsi(14), sma_short(20), sma_long(50), last_side(tzu::Side::NONE) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double rsi_val = rsi.update(data);
+        double short_ma = sma_short.update(data.close);
+        double long_ma = sma_long.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        if (std::isnan(rsi_val) || std::isnan(short_ma) || std::isnan(long_ma)) {
+            return signal;
+        }
+
+        // Buy when RSI is oversold AND short MA is above long MA
+        if (rsi_val &lt; 30 &amp;&amp; short_ma &gt; long_ma &amp;&amp; last_side != tzu::Side::BUY) {
+            signal.side = tzu::Side::BUY;
+            last_side = tzu::Side::BUY;
+        }
+        // Sell when RSI is overbought OR short MA crosses below long MA
+        else if ((rsi_val &gt; 70 || short_ma &lt; long_ma) &amp;&amp; last_side != tzu::Side::SELL) {
+            signal.side = tzu::Side::SELL;
+            last_side = tzu::Side::SELL;
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<p>This combines trend (moving averages) and momentum (RSI) to filter signals. It only buys when both conditions align.</p>
+<h2 id="strategy-design-guidelines">Strategy Design Guidelines</h2>
+<h3 id="keep-it-simple">Keep it Simple</h3>
+<p>Complex strategies aren't better. Simple logic is easier to understand, debug, and reason about. If you can't explain your strategy in a few sentences, it's probably too complex.</p>
+<h3 id="avoid-lookahead-bias">Avoid Lookahead Bias</h3>
+<p>Only use data available up to the current timestamp. Never peek at future prices to make current decisions.</p>
+<p><strong>Wrong:</strong></p>
+<pre><code class="language-cpp">// Using tomorrow's price today
+if (data[i+1].close &gt; data[i].close) {
+    return buy_signal;
+}
+</code></pre>
+<p><strong>Correct:</strong></p>
+<pre><code class="language-cpp">// Using only current and past data
+if (data.close &gt; yesterday_close) {
+    return buy_signal;
+}
+</code></pre>
+<h3 id="test-for-nan">Test for NaN</h3>
+<p>Always check indicator values before using them:</p>
+<pre><code class="language-cpp">double sma_val = sma.update(data.close);
+if (std::isnan(sma_val)) {
+    return no_signal;  // Not enough data yet
+}
+</code></pre>
+<h3 id="track-state-properly">Track State Properly</h3>
+<p>Use <code>last_side</code> to prevent signal spam:</p>
+<pre><code class="language-cpp">if (buy_condition &amp;&amp; last_side != Side::BUY) {
+    last_side = Side::BUY;
+    return buy_signal;
+}
+</code></pre>
+<p>Without this, you'd generate 50 consecutive buy signals during an uptrend.</p>
+<h3 id="make-parameters-configurable">Make Parameters Configurable</h3>
+<p>Use constructor arguments for thresholds and periods:</p>
+<pre><code class="language-cpp">class MyStrategy {
+public:
+    MyStrategy(size_t period = 20, double threshold = 0.02)
+        : sma(period), threshold(threshold) {}
+private:
+    SMA sma;
+    double threshold;
+};
+</code></pre>
+<p>This makes testing different parameter values easier.</p>
+<h3 id="return-clear-signals">Return Clear Signals</h3>
+<p>The portfolio needs clear BUY/SELL/NONE signals. Don't return ambiguous values or partial signals.</p>
+<h2 id="advanced-strategy-example">Advanced Strategy Example</h2>
+<pre><code class="language-cpp">class AdaptiveStrategy: public tzu::Strategy&lt;AdaptiveStrategy, tzu::Ohlcv&gt; {
+private:
+    tzu::RSI rsi;
+    tzu::SMA sma_fast;
+    tzu::SMA sma_slow;
+    tzu::MVar volatility;
+    tzu::Side last_side;
+    double vol_threshold;
+
+public:
+    AdaptiveStrategy(double vol_threshold = 0.02)
+        : rsi(14), sma_fast(10), sma_slow(30), 
+          volatility(20, 1), last_side(tzu::Side::NONE),
+          vol_threshold(vol_threshold) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        double rsi_val = rsi.update(data);
+        double fast = sma_fast.update(data.close);
+        double slow = sma_slow.update(data.close);
+        double vol = volatility.update(data.close);
+
+        tzu::Signal signal = {data.timestamp, tzu::Side::NONE, data.close};
+
+        // Wait for all indicators
+        if (std::isnan(rsi_val) || std::isnan(fast) || 
+            std::isnan(slow) || std::isnan(vol)) {
+            return signal;
+        }
+
+        // Adapt strategy based on volatility
+        double vol_normalized = std::sqrt(vol) / data.close;
+
+        if (vol_normalized &lt; vol_threshold) {
+            // Low volatility: use mean reversion (RSI)
+            if (rsi_val &lt; 30 &amp;&amp; last_side != tzu::Side::BUY) {
+                signal.side = tzu::Side::BUY;
+                last_side = tzu::Side::BUY;
+            } else if (rsi_val &gt; 70 &amp;&amp; last_side != tzu::Side::SELL) {
+                signal.side = tzu::Side::SELL;
+                last_side = tzu::Side::SELL;
+            }
+        } else {
+            // High volatility: use trend following (MA crossover)
+            if (fast &gt; slow &amp;&amp; last_side != tzu::Side::BUY) {
+                signal.side = tzu::Side::BUY;
+                last_side = tzu::Side::BUY;
+            } else if (fast &lt; slow &amp;&amp; last_side != tzu::Side::SELL) {
+                signal.side = tzu::Side::SELL;
+                last_side = tzu::Side::SELL;
+            }
+        }
+
+        return signal;
+    }
+};
+</code></pre>
+<p>This strategy adapts its approach based on market volatility. In low volatility, it uses mean reversion. In high volatility, it follows trends.</p>
+<h2 id="common-strategy-mistakes">Common Strategy Mistakes</h2>
+<h3 id="over-optimization">Over-optimization</h3>
+<p>Tweaking parameters until the backtest looks perfect, then failing on new data.</p>
+<p><strong>Symptom:</strong> Amazing results on test data, poor results on out-of-sample data.</p>
+<p><strong>Solution:</strong> Use train/test splits, walk-forward analysis, or cross-validation.</p>
+<h3 id="too-many-indicators">Too Many Indicators</h3>
+<p>Adding more indicators doesn't automatically improve performance. Often it just creates more noise.</p>
+<p><strong>Symptom:</strong> 5+ indicators with complex logic, marginal improvement over simpler strategy.</p>
+<p><strong>Solution:</strong> Start simple, add complexity only if it clearly helps.</p>
+<h3 id="ignoring-market-context">Ignoring Market Context</h3>
+<p>Strategies that work in trending markets often fail in ranging markets, and vice versa.</p>
+<p><strong>Symptom:</strong> Great performance in some periods, terrible in others.</p>
+<p><strong>Solution:</strong> Accept that no strategy works all the time, or build adaptive strategies.</p>
+<h3 id="unrealistic-assumptions">Unrealistic Assumptions</h3>
+<p>Assuming perfect execution at signal price, no slippage, no transaction costs.</p>
+<p><strong>Symptom:</strong> Profitable in backtest, unprofitable in live trading.</p>
+<p><strong>Solution:</strong> Model costs realistically, add buffer to signal prices.</p>
+<h2 id="strategy-testing-workflow">Strategy Testing Workflow</h2>
+<ol>
+<li><strong>Implement the strategy</strong> with reasonable parameters</li>
+<li><strong>Run initial backtest</strong> on historical data</li>
+<li><strong>Analyze results</strong> - look at metrics, drawdowns, trade frequency</li>
+<li><strong>Test on different periods</strong> - does it work in bull markets? Bear markets?</li>
+<li><strong>Vary parameters</strong> slightly - are results stable or sensitive?</li>
+<li><strong>Test on different assets</strong> - does it generalize?</li>
+<li><strong>Calculate realistic costs</strong> - is it still profitable?</li>
+<li><strong>Out-of-sample test</strong> - run on data not used for development</li>
+</ol>
+<p>If it passes all these steps and still looks promising, then maybe—maybe—it's worth considering for live trading. Start with small position sizes.</p>
+<h2 id="the-reality-of-strategy-development">The Reality of Strategy Development</h2>
+<p>Most strategies you develop won't work. That's normal. Even professionals have low hit rates when developing new strategies. The goal isn't to find the holy grail—it's to systematically test ideas, learn what doesn't work, and occasionally find something that might work.</p>
+<p>Be skeptical of your own results. If something looks too good to be true, it probably is. Double-check for bugs, lookahead bias, or overfitting. Stay humble.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../indicators/" class="btn btn-neutral float-left" title="Indicators"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../portfolios/" class="btn btn-neutral float-right" title="Portfolios">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../indicators/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../portfolios/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

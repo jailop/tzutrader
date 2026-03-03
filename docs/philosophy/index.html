@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Design Philosophy - tzutrader</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Design Philosophy";
+        var mkdocs_page_input_path = "philosophy.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> tzutrader
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Design Philosophy</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#why-tzutrader-exists">Why tzutrader Exists</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#core-principles">Core Principles</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-composability">1. Composability</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-streaming-over-vectorization">2. Streaming Over Vectorization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-simplicity-and-focus">3. Simplicity and Focus</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-no-magic">4. No Magic</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-performance-through-simplicity">5. Performance Through Simplicity</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unix-philosophy-influence">Unix Philosophy Influence</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#small-focused-tools">Small, Focused Tools</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#text-streams-as-universal-interface">Text Streams as Universal Interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sharp-tools">Sharp Tools</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mechanism-not-policy">Mechanism, Not Policy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#who-this-is-for">Who This Is For</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#target-users">Target Users</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-c">Why C++?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-this-means-in-practice">What This Means in Practice</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#you-will-write-code">You Will Write Code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#you-will-read-code">You Will Read Code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#you-will-experiment">You Will Experiment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#you-will-think-about-design">You Will Think About Design</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#non-goals">Non-Goals</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why-this-matters">Why This Matters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#evolution">Evolution</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contributing-to-the-philosophy">Contributing to the Philosophy</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Trading & Backtesting</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../intro-trading/">Intro to Trading</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Components</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../indicators/">Indicators</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../strategies/">Strategies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../portfolios/">Portfolios</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../architecture/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../faq/">FAQ</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">tzutrader</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Design Philosophy</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="design-philosophy">Design Philosophy</h1>
+<h2 id="why-tzutrader-exists">Why tzutrader Exists</h2>
+<p>Most backtesting libraries fall into two camps: either they're huge frameworks trying to do everything, or they're simple scripts that get rewritten for each project. tzutrader explores a middle path—composable building blocks you can understand and extend.</p>
+<p>This is an experiment in architecture. The goal isn't to build the most feature-complete backtesting platform. It's to explore patterns for composable, streaming financial data processing in C++.</p>
+<h2 id="core-principles">Core Principles</h2>
+<h3 id="1-composability">1. Composability</h3>
+<p>Components should mix and match like LEGO blocks. Any indicator works with any strategy. Any strategy works with any portfolio. This modularity lets you:</p>
+<ul>
+<li>Test different combinations quickly</li>
+<li>Replace one component without rewriting everything</li>
+<li>Build complex behavior from simple pieces</li>
+<li>Understand each part in isolation</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-cpp">// These all work together
+SMA sma(20);
+RSI rsi(14);
+SMACrossover strategy(10, 30);
+BasicPortfolio portfolio(100000, 0.001, 0.1, 0.2);
+
+// Easy to swap components
+EMA ema(20);  // Drop-in replacement for SMA
+MACDStrat different_strategy(12, 26, 9);  // Different strategy, same interface
+</code></pre>
+<p>This is harder to achieve than it sounds. It requires careful interface design and resisting the urge to couple components together.</p>
+<h3 id="2-streaming-over-vectorization">2. Streaming Over Vectorization</h3>
+<p>Financial data arrives sequentially in real trading. Backtests should too. Processing data point-by-point:</p>
+<ul>
+<li>Prevents lookahead bias (can't peek at future data)</li>
+<li>Uses constant memory regardless of dataset size</li>
+<li>Mimics how live trading systems actually work</li>
+<li>Forces you to think about state management</li>
+</ul>
+<p><strong>Why this matters:</strong></p>
+<p>Vectorized libraries (pandas, numpy) are fast and convenient for analysis. But they make it easy to accidentally use future data:</p>
+<pre><code class="language-python"># Easy to accidentally introduce lookahead bias
+df['signal'] = (df['close'].shift(-1) &gt; df['close'])  # Using tomorrow's price!
+</code></pre>
+<p>With streaming, you physically can't access data that hasn't arrived yet:</p>
+<pre><code class="language-cpp">// Only current data is available
+Signal update(const Ohlcv&amp; data) {
+    double ma = sma.update(data.close);  // Can only use current and past data
+    // No way to peek ahead
+}
+</code></pre>
+<p>This constraint is a feature, not a limitation.</p>
+<h3 id="3-simplicity-and-focus">3. Simplicity and Focus</h3>
+<p>Small is beautiful. The library does one thing: backtest single-asset strategies on historical data. It doesn't:</p>
+<ul>
+<li>Fetch data from APIs</li>
+<li>Provide a GUI</li>
+<li>Include 100+ built-in strategies</li>
+<li>Offer parameter optimization</li>
+<li>Connect to live brokers</li>
+</ul>
+<p>This narrow focus means:
+- Less code to understand and maintain
+- Fewer dependencies to manage
+- Clearer mental model
+- Room to experiment without breaking things</p>
+<p>You can add these features yourself if needed. The library provides building blocks, not a complete platform.</p>
+<h3 id="4-no-magic">4. No Magic</h3>
+<p>All behavior should be understandable by reading the code. No hidden state, no implicit behavior, no "framework magic."</p>
+<p><strong>What you see is what you get:</strong></p>
+<pre><code class="language-cpp">class SMA {
+    std::vector&lt;double&gt; buffer;  // Visible state
+    size_t pos;
+    double sum;
+
+    double update(double value) {
+        // Clear logic, no hidden behavior
+        if (len &lt; window) {
+            len++;
+        } else {
+            sum -= buffer[pos];
+        }
+        sum += value;
+        buffer[pos] = value;
+        pos = (pos + 1) % window;
+        return sum / window;
+    }
+};
+</code></pre>
+<p>You can trace exactly what happens on each update. No surprises.</p>
+<h3 id="5-performance-through-simplicity">5. Performance Through Simplicity</h3>
+<p>Fast code doesn't need to be complex. Simple algorithms with good data structures often outperform "clever" code.</p>
+<p><strong>Design choices for performance:</strong>
+- Circular buffers for rolling windows (O(1) updates)
+- Templates for zero-cost abstraction
+- Minimal dynamic allocation in hot paths
+- Streaming to avoid loading entire datasets</p>
+<p>But performance isn't the primary goal—clarity is. Fast code that's unmaintainable isn't useful.</p>
+<h2 id="unix-philosophy-influence">Unix Philosophy Influence</h2>
+<blockquote>
+<p>Write programs that do one thing and do it well. Write programs to work together.
+— Doug McIlroy</p>
+</blockquote>
+<p>The Unix philosophy shapes tzutrader's design:</p>
+<h3 id="small-focused-tools">Small, Focused Tools</h3>
+<p>Each component does one thing:
+- Indicators calculate values
+- Strategies generate signals
+- Portfolios manage positions
+- Runners orchestrate the process</p>
+<p>Like Unix commands (<code>grep</code>, <code>sort</code>, <code>cut</code>), you combine them to create complex behavior.</p>
+<h3 id="text-streams-as-universal-interface">Text Streams as Universal Interface</h3>
+<p>Unix programs communicate through text streams. tzutrader uses standard interfaces:</p>
+<pre><code class="language-bash"># Unix pipeline
+cat data.csv | grep &quot;2024&quot; | cut -d',' -f5 | awk '{sum+=$1} END {print sum}'
+
+# tzutrader pipeline
+cat data.csv | ./my_backtest | tr ' ' '\n' | column -t -s ':'
+</code></pre>
+<p>CSV in, metrics out. Simple, composable, scriptable.</p>
+<h3 id="sharp-tools">Sharp Tools</h3>
+<p>Each component should be a "sharp tool"—simple interface, powerful when composed:</p>
+<pre><code class="language-cpp">// Sharp tools
+SMA sma(20);
+EMA ema(20);
+RSI rsi(14);
+
+// Composed into something more powerful
+class MyStrategy {
+    SMA sma;
+    RSI rsi;
+    // Use both together
+};
+</code></pre>
+<h3 id="mechanism-not-policy">Mechanism, Not Policy</h3>
+<p>The library provides mechanisms (indicators, signal generation, position tracking) but doesn't enforce policies (which strategy to use, how to size positions).</p>
+<p>You decide the policies. The library just provides the tools.</p>
+<h2 id="who-this-is-for">Who This Is For</h2>
+<h3 id="target-users">Target Users</h3>
+<p><strong>Primary audience:</strong>
+- Intermediate to advanced programmers comfortable with C++
+- Traders who want systematic strategy testing
+- Students learning about algorithmic trading
+- Developers interested in financial software architecture</p>
+<p><strong>This is NOT for:</strong>
+- Complete programming beginners (C++ is hard)
+- People wanting plug-and-play solutions (requires coding)
+- Those expecting guaranteed profits (no such thing)
+- Users wanting extensive hand-holding (minimal docs, you read code)</p>
+<h3 id="why-c">Why C++?</h3>
+<p>C++ is harder than Python. So why use it?</p>
+<p><strong>Learning value:</strong>
+- Forces you to think about memory and state
+- No hiding behind framework magic
+- Closer to how production systems work
+- Understanding performance implications</p>
+<p><strong>Performance:</strong>
+- 10-100x faster than Python for compute-heavy tasks
+- Matters when testing thousands of parameter combinations
+- Low latency when processing large datasets</p>
+<p><strong>Production relevance:</strong>
+- Most serious trading systems use C++ (or C, Java, Rust)
+- Skills transfer to professional environment
+- Understanding systems-level concerns</p>
+<p><strong>Trade-offs:</strong>
+- Steeper learning curve than Python
+- More verbose code
+- Harder to prototype quickly
+- Less forgiving of mistakes</p>
+<p>If you're learning backtesting, Python is easier. If you're learning systems programming or want production-relevant skills, C++ is valuable.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>To use tzutrader effectively, you should understand:</p>
+<p><strong>C++ fundamentals:</strong>
+- Classes and templates
+- Standard library containers
+- Memory management basics
+- Build systems (CMake)</p>
+<p><strong>Trading basics:</strong>
+- What indicators measure
+- How signals translate to trades
+- Risk management concepts
+- Why backtesting is hard</p>
+<p><strong>Unix/command-line:</strong>
+- Basic shell commands
+- Pipes and redirection
+- Text processing tools</p>
+<p>If you're missing any of these, tzutrader will be frustrating. That's okay—it's not for everyone.</p>
+<h2 id="what-this-means-in-practice">What This Means in Practice</h2>
+<h3 id="you-will-write-code">You Will Write Code</h3>
+<p>This isn't a GUI application where you click buttons. You write C++ code to define strategies:</p>
+<pre><code class="language-cpp">class MyStrategy: public tzu::Strategy&lt;MyStrategy, tzu::Ohlcv&gt; {
+    tzu::SMA fast;
+    tzu::SMA slow;
+
+public:
+    MyStrategy() : fast(10), slow(30) {}
+
+    tzu::Signal update(const tzu::Ohlcv&amp; data) {
+        // Your logic here
+    }
+};
+</code></pre>
+<p>If you're not comfortable writing and compiling C++, this isn't the right tool.</p>
+<h3 id="you-will-read-code">You Will Read Code</h3>
+<p>Documentation is minimal by design. To understand how things work, read the headers in <code>include/tzu/</code>. They're commented and relatively short.</p>
+<p>If you expect comprehensive documentation explaining every detail, you'll be disappointed. The code IS the documentation.</p>
+<h3 id="you-will-experiment">You Will Experiment</h3>
+<p>This is experimental software. You'll encounter rough edges. You might need to fix bugs yourself. You'll definitely need to extend it for your needs.</p>
+<p>If you want stable, well-supported software, use a mature library. This is for people who want to understand and modify their tools.</p>
+<h3 id="you-will-think-about-design">You Will Think About Design</h3>
+<p>The architecture is intentionally visible. You see how components connect, where state lives, how data flows. This is educational but requires engagement.</p>
+<p>If you just want to run backtests without understanding the internals, other tools are better suited.</p>
+<h2 id="non-goals">Non-Goals</h2>
+<p>Just as important as what tzutrader is—here's what it's not trying to be:</p>
+<p><strong>Not a complete trading platform:</strong> No data feeds, no broker connections, no live trading support.</p>
+<p><strong>Not beginner-friendly:</strong> Assumes C++ proficiency and trading knowledge.</p>
+<p><strong>Not feature-complete:</strong> Minimal built-in strategies and indicators. You build what you need.</p>
+<p><strong>Not production-ready:</strong> Experimental, APIs can change, bugs exist.</p>
+<p><strong>Not optimized to death:</strong> Performance is good, not obsessive. Clarity over speed.</p>
+<p><strong>Not a framework:</strong> Provides libraries, not a framework you inherit from.</p>
+<p><strong>Not trying to be Python:</strong> If you want Python ergonomics, use Python. This is C++.</p>
+<h2 id="why-this-matters">Why This Matters</h2>
+<p>These design principles aren't arbitrary. They serve specific goals:</p>
+<p><strong>For learning:</strong> Small, understandable components teach better than massive frameworks.</p>
+<p><strong>For experimentation:</strong> Easy to modify and extend when the architecture is simple.</p>
+<p><strong>For correctness:</strong> Streaming prevents lookahead bias; composability enables testing in isolation.</p>
+<p><strong>For longevity:</strong> Simple code with few dependencies ages better than complex systems.</p>
+<p>This is an opinionated approach. It won't suit everyone. That's fine—use what works for you.</p>
+<h2 id="evolution">Evolution</h2>
+<p>Design philosophy guides decisions but isn't dogma. As we learn what works, things will change:</p>
+<ul>
+<li>Components might be refactored</li>
+<li>Interfaces might be simplified</li>
+<li>New patterns might emerge</li>
+<li>Bad ideas will be abandoned</li>
+</ul>
+<p>The principles provide direction, not constraints. If violating a principle makes the library genuinely better, we'll violate it.</p>
+<p>This is an experiment. Experiments mean learning, and learning means changing.</p>
+<h2 id="contributing-to-the-philosophy">Contributing to the Philosophy</h2>
+<p>If you use tzutrader, your feedback shapes its evolution:</p>
+<ul>
+<li>What works well?</li>
+<li>What's confusing?</li>
+<li>Where do the principles help?</li>
+<li>Where do they hurt?</li>
+</ul>
+<p>File issues, start discussions, share your experience. Philosophy emerges from practice, not theory.</p>
+<p>The goal is finding patterns that make backtesting code clear, composable, and correct. If you discover better patterns, share them.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../intro-trading/" class="btn btn-neutral float-right" title="Intro to Trading">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://codeberg.org/jailop/tzutrader" class="fa fa-code-fork" style="color: #fcfcfc"> Codeberg</a>
+        </span>
+    
+    
+      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../intro-trading/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
