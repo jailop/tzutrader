@@ -169,7 +169,7 @@
 <h2 id="prerequisites">Prerequisites</h2>
 <p><strong>Technical requirements:</strong></p>
 <ul>
-<li>C++17 or later compiler (GCC, Clang, or MSVC)</li>
+<li>C++11 or later compiler (GCC, Clang, or MSVC)</li>
 <li>CMake 3.10 or later</li>
 <li>Git</li>
 </ul>
@@ -240,7 +240,7 @@ add_executable(my_backtest my_backtest.cpp)
 </code></pre>
 <p>Or compile directly:</p>
 <pre><code class="language-bash">cd build
-g++ -std=c++17 -I../include -O2 ../my_backtest.cpp -o my_backtest
+g++ -std=c++11 -I../include -O2 ../my_backtest.cpp -o my_backtest
 </code></pre>
 <h3 id="prepare-your-data">Prepare Your Data</h3>
 <p>tzutrader expects CSV format with OHLCV data:</p>
@@ -396,7 +396,7 @@ public:
 <p><strong>"No indicators ready" / lots of NaN values</strong>: Indicators need data to warm up. SMA(20) needs 20 data points before returning valid values.</p>
 <p><strong>No trades executed</strong>: Check if your strategy is generating signals (use verbose mode). Verify your data format is correct.</p>
 <p><strong>Unrealistic results</strong>: Check for lookahead bias in your strategy. Make sure you're not using future data to make current decisions.</p>
-<p><strong>Compile errors</strong>: Ensure you're using C++17 or later and including the tzutrader headers correctly.</p>
+<p><strong>Compile errors</strong>: Ensure you're using C++11 or later and including the tzutrader headers correctly.</p>
 <h2 id="getting-help">Getting Help</h2>
 <ul>
 <li>Check the <a href="../faq/">FAQ</a> for common questions</li>

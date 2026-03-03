@@ -6,7 +6,7 @@ tzutrader is a C++ backtesting library for testing trading strategies. This guid
 
 **Technical requirements:**
 
-- C++17 or later compiler (GCC, Clang, or MSVC)
+- C++11 or later compiler (GCC, Clang, or MSVC)
 - CMake 3.10 or later
 - Git
 
@@ -97,7 +97,7 @@ Or compile directly:
 
 ```bash
 cd build
-g++ -std=c++17 -I../include -O2 ../my_backtest.cpp -o my_backtest
+g++ -std=c++11 -I../include -O2 ../my_backtest.cpp -o my_backtest
 ```
 
 ### Prepare Your Data
@@ -315,7 +315,7 @@ public:
 
 **Unrealistic results**: Check for lookahead bias in your strategy. Make sure you're not using future data to make current decisions.
 
-**Compile errors**: Ensure you're using C++17 or later and including the tzutrader headers correctly.
+**Compile errors**: Ensure you're using C++11 or later and including the tzutrader headers correctly.
 
 ## Getting Help
 

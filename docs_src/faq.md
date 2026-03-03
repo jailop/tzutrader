@@ -27,7 +27,7 @@ tzutrader is a tool for testing ideas. Whether those ideas make money is up to y
 
 ### What do I need to install?
 
-- C++17 or later compiler (GCC, Clang, MSVC)
+- C++11 or later compiler (GCC, Clang, MSVC)
 - CMake 3.10 or later
 - Git (to clone the repository)
 
@@ -43,7 +43,7 @@ cmake --build .
 
 ### Can I use this on Windows?
 
-Yes, with a C++17 compiler. Visual Studio 2017 or later should work. You may need to adjust CMake settings for your environment.
+Yes, with a C++11 compiler. Visual Studio 2017 or later should work. You may need to adjust CMake settings for your environment.
 
 ### Do I need Python/R/other languages?
 
@@ -261,9 +261,9 @@ This preprocessing step is outside tzutrader's scope.
 
 ## Troubleshooting
 
-### Compilation fails with C++17 errors
+### Compilation fails with C++11 errors
 
-Ensure your compiler supports C++17:
+Ensure your compiler supports C++11:
 
 ```bash
 g++ --version  # GCC 7+ required
@@ -272,7 +272,7 @@ clang++ --version  # Clang 5+ required
 
 Set the standard explicitly:
 ```bash
-g++ -std=c++17 your_file.cpp
+g++ -std=c++11 your_file.cpp
 ```
 
 ### Segmentation fault when running
@@ -284,7 +284,7 @@ Common causes:
 
 Enable debugging symbols and use a debugger:
 ```bash
-g++ -g -std=c++17 your_file.cpp
+g++ -g -std=c++11 your_file.cpp
 gdb ./your_program
 ```
 

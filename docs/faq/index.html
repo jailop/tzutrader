@@ -154,7 +154,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#compilation-fails-with-c17-errors">Compilation fails with C++17 errors</a>
+    <li class="toctree-l3"><a class="reference internal" href="#compilation-fails-with-c11-errors">Compilation fails with C++11 errors</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#segmentation-fault-when-running">Segmentation fault when running</a>
     </li>
@@ -237,7 +237,7 @@
 <h2 id="installation-setup">Installation &amp; Setup</h2>
 <h3 id="what-do-i-need-to-install">What do I need to install?</h3>
 <ul>
-<li>C++17 or later compiler (GCC, Clang, MSVC)</li>
+<li>C++11 or later compiler (GCC, Clang, MSVC)</li>
 <li>CMake 3.10 or later</li>
 <li>Git (to clone the repository)</li>
 </ul>
@@ -249,7 +249,7 @@ cmake ..
 cmake --build .
 </code></pre>
 <h3 id="can-i-use-this-on-windows">Can I use this on Windows?</h3>
-<p>Yes, with a C++17 compiler. Visual Studio 2017 or later should work. You may need to adjust CMake settings for your environment.</p>
+<p>Yes, with a C++11 compiler. Visual Studio 2017 or later should work. You may need to adjust CMake settings for your environment.</p>
 <h3 id="do-i-need-pythonrother-languages">Do I need Python/R/other languages?</h3>
 <p>No. tzutrader is pure C++. You can use other languages for data preparation or analysis, but the library itself doesn't require them.</p>
 <h2 id="usage-questions">Usage Questions</h2>
@@ -390,13 +390,13 @@ class SMA: public Indicator&lt;SMA, double, double&gt; {
 </ul>
 <p>This preprocessing step is outside tzutrader's scope.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="compilation-fails-with-c17-errors">Compilation fails with C++17 errors</h3>
-<p>Ensure your compiler supports C++17:</p>
+<h3 id="compilation-fails-with-c11-errors">Compilation fails with C++11 errors</h3>
+<p>Ensure your compiler supports C++11:</p>
 <pre><code class="language-bash">g++ --version  # GCC 7+ required
 clang++ --version  # Clang 5+ required
 </code></pre>
 <p>Set the standard explicitly:</p>
-<pre><code class="language-bash">g++ -std=c++17 your_file.cpp
+<pre><code class="language-bash">g++ -std=c++11 your_file.cpp
 </code></pre>
 <h3 id="segmentation-fault-when-running">Segmentation fault when running</h3>
 <p>Common causes:
@@ -404,7 +404,7 @@ clang++ --version  # Clang 5+ required
 - Buffer overflow in custom indicators
 - Invalid CSV data</p>
 <p>Enable debugging symbols and use a debugger:</p>
-<pre><code class="language-bash">g++ -g -std=c++17 your_file.cpp
+<pre><code class="language-bash">g++ -g -std=c++11 your_file.cpp
 gdb ./your_program
 </code></pre>
 <h3 id="results-look-too-good-to-be-true">Results look too good to be true</h3>
