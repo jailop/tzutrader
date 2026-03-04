@@ -36,7 +36,9 @@ This is harder to achieve than it sounds. It requires careful interface design a
 ### 2. Composability for Integration
 
 A backtesting library that forces you into its own runtime, data model, or lifecycle becomes a walled garden. You end up writing adapters to get data in, adapters to get results out, and workarounds whenever your workflow doesn't match the framework's assumptions.
+
 tzutrader avoids this by keeping its boundaries thin. Data enters as a stream — in the simplest case, plain CSV on stdin. Results exit as a flat key-value string on stdout. This means the library slots naturally into Unix pipelines: fetch data with a shell script, run the backtest, pipe results into awk or column for formatting, feed them into a Python analysis notebook. No special export formats, no proprietary connectors, no mandatory GUI.
+
 The internal design reinforces this. The Runner doesn't own the event loop — you call it. The Portfolio doesn't prescribe how results are consumed. Strategies and indicators are composed at the call site, not registered into a framework. Each component does its job and hands off cleanly, which means any of them can be replaced or wrapped without disturbing the rest.
 
 ### 3. Streaming Over Vectorization
