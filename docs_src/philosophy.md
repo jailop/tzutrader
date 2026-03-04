@@ -4,7 +4,7 @@
 
 Most backtesting libraries fall into two camps: either they're huge frameworks trying to do everything, or they're simple scripts that get rewritten for each project. tzutrader explores a middle path—composable building blocks you can understand and extend.
 
-This is an experiment in architecture. The goal isn't to build the most feature-complete backtesting platform. It's to explore patterns for composable, streaming financial data processing in C++.
+This is an experiment in architecture. The goal isn't to build the most feature-complete backtesting platform. It's to explore patterns for composable, streaming financial data processing.
 
 ## Core Principles
 
@@ -33,7 +33,13 @@ MACDStrat different_strategy(12, 26, 9);  // Different strategy, same interface
 
 This is harder to achieve than it sounds. It requires careful interface design and resisting the urge to couple components together.
 
-### 2. Streaming Over Vectorization
+### 2. Composability for Integration
+
+Composability isn't just about swapping components within the library—it’s about integrating into larger data processing pipelines and workflows.
+
+Most trading systems aren’t standalone; they’re part of a larger ecosystem. Data comes from external sources, strategies need optimization, and results feed into analysis tools. By keeping interfaces simple and avoiding framework lock-in, a composable library can fit naturally into these pipelines without requiring complex adapters or wrappers.
+
+### 3. Streaming Over Vectorization
 
 Financial data arrives sequentially in real trading. Backtests should too. Processing data point-by-point:
 
@@ -65,12 +71,10 @@ This constraint is a feature, not a limitation.
 
 ### 3. Simplicity and Focus
 
-Small is beautiful. The library does one thing: backtest single-asset strategies on historical data. It doesn't:
+Small is beautiful. The library does one thing: backtest strategies on historical data. It doesn't:
 
 - Fetch data from APIs
 - Provide a GUI
-- Include 100+ built-in strategies
-- Offer parameter optimization
 - Connect to live brokers
 
 This narrow focus means:
@@ -123,6 +127,8 @@ Fast code doesn't need to be complex. Simple algorithms with good data structure
 - Streaming to avoid loading entire datasets
 
 But performance isn't the primary goal—clarity is. Fast code that's unmaintainable isn't useful.
+
+
 
 ## Unix Philosophy Influence
 
@@ -229,6 +235,18 @@ C++ is harder than Python. So why use it?
 - Less forgiving of mistakes
 
 If you're learning backtesting, Python is easier. If you're learning systems programming or want production-relevant skills, C++ is valuable.
+
+**Why C++ and not Rust?**
+
+Rust is a compelling modern alternative with memory safety guarantees. But for tzutrader's goal of composability, C++ has advantages:
+
+- **Easier integration:** C++ libraries compose naturally with existing systems. Most financial platforms, optimization libraries, and data providers expose C/C++ high performance interfaces. Rust's ownership model, while safe, often requires rewrites or complex FFI wrappers to integrate with external code.
+
+- **Rich standard library:** C++'s extensive standard library means fewer external dependencies. Rust's standard library is intentionally minimal, pushing more functionality to crates—which increases dependency chains and complicates integration.
+
+- **Established ecosystem:** The C++ trading and scientific computing ecosystem is mature and huge. Integrating with existing tools can be straightforward.
+
+This is an opinionated choice, not a universal truth. Rust's safety is valuable, especially for complex systems. But for a library designed to be a composable building block in diverse environments, C++'s flexibility and compatibility matter more.
 
 ### Prerequisites
 
