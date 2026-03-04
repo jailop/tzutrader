@@ -241,10 +241,15 @@ If you're learning backtesting, Python is easier. If you're learning systems pro
 
 The honest answer is that this is a learning project targeting skills that transfer to professional trading systems — and those systems are written in C++. That context shapes everything.
 Rust is the better language for new safety-critical software in isolation. Its memory safety guarantees, superior build tooling, and modern type system are genuine advantages. If tzutrader were a standalone application, Rust would be the defensible default.
+
 But tzutrader is designed as a composable library — a building block meant to integrate with real-world financial infrastructure. That changes the calculus. Bloomberg terminals, vendor SDKs, QuantLib, and most high-performance data providers expose C/C++ interfaces. Rust can consume these via FFI, but doing so correctly requires careful unsafe blocks and often non-trivial wrapper code. C++ composes with this ecosystem with no friction at all.
+
 There's also a subtler point: the C++ template system, for all its notorious complexity, is exceptionally well-suited to zero-cost composability. The CRTP patterns used throughout tzutrader — where strategies, indicators, and runners are composed at compile time with no virtual dispatch overhead — are idiomatic C++. Rust's traits and generics can achieve similar results, but the patterns are different, and the existing literature on this style of systems design is written in C++.
+
 The real costs of this choice are serious and shouldn't be minimized. C++ gives you memory bugs, subtle undefined behavior, and CMake. These aren't just inconveniences — a silent memory corruption in portfolio state is financially dangerous even in a backtesting context. This is the price of the choice, and it demands disciplined, conservative code.
+
 The bottom line: C++ here is not a claim that it's a better language in general. It's the right tool for someone learning the architecture of professional trading systems, working in the ecosystem those systems inhabit.
+
 ### Prerequisites
 
 To use tzutrader effectively, you should understand:
