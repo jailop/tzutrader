@@ -56,7 +56,9 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#1-composability">1. Composability</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#2-streaming-over-vectorization">2. Streaming Over Vectorization</a>
+    <li class="toctree-l3"><a class="reference internal" href="#2-composability-for-integration">2. Composability for Integration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-streaming-over-vectorization">3. Streaming Over Vectorization</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#3-simplicity-and-focus">3. Simplicity and Focus</a>
     </li>
@@ -167,7 +169,7 @@
                 <h1 id="design-philosophy">Design Philosophy</h1>
 <h2 id="why-tzutrader-exists">Why tzutrader Exists</h2>
 <p>Most backtesting libraries fall into two camps: either they're huge frameworks trying to do everything, or they're simple scripts that get rewritten for each project. tzutrader explores a middle path—composable building blocks you can understand and extend.</p>
-<p>This is an experiment in architecture. The goal isn't to build the most feature-complete backtesting platform. It's to explore patterns for composable, streaming financial data processing in C++.</p>
+<p>This is an experiment in architecture. The goal isn't to build the most feature-complete backtesting platform. It's to explore patterns for composable, streaming financial data processing.</p>
 <h2 id="core-principles">Core Principles</h2>
 <h3 id="1-composability">1. Composability</h3>
 <p>Components should mix and match like LEGO blocks. Any indicator works with any strategy. Any strategy works with any portfolio. This modularity lets you:</p>
@@ -189,7 +191,10 @@ EMA ema(20);  // Drop-in replacement for SMA
 MACDStrat different_strategy(12, 26, 9);  // Different strategy, same interface
 </code></pre>
 <p>This is harder to achieve than it sounds. It requires careful interface design and resisting the urge to couple components together.</p>
-<h3 id="2-streaming-over-vectorization">2. Streaming Over Vectorization</h3>
+<h3 id="2-composability-for-integration">2. Composability for Integration</h3>
+<p>Composability isn't just about swapping components within the library—it’s about integrating into larger data processing pipelines and workflows.</p>
+<p>Most trading systems aren’t standalone; they’re part of a larger ecosystem. Data comes from external sources, strategies need optimization, and results feed into analysis tools. By keeping interfaces simple and avoiding framework lock-in, a composable library can fit naturally into these pipelines without requiring complex adapters or wrappers.</p>
+<h3 id="3-streaming-over-vectorization">3. Streaming Over Vectorization</h3>
 <p>Financial data arrives sequentially in real trading. Backtests should too. Processing data point-by-point:</p>
 <ul>
 <li>Prevents lookahead bias (can't peek at future data)</li>
@@ -211,12 +216,10 @@ Signal update(const Ohlcv&amp; data) {
 </code></pre>
 <p>This constraint is a feature, not a limitation.</p>
 <h3 id="3-simplicity-and-focus">3. Simplicity and Focus</h3>
-<p>Small is beautiful. The library does one thing: backtest single-asset strategies on historical data. It doesn't:</p>
+<p>Small is beautiful. The library does one thing: backtest strategies on historical data. It doesn't:</p>
 <ul>
 <li>Fetch data from APIs</li>
 <li>Provide a GUI</li>
-<li>Include 100+ built-in strategies</li>
-<li>Offer parameter optimization</li>
 <li>Connect to live brokers</li>
 </ul>
 <p>This narrow focus means:</p>
@@ -346,6 +349,20 @@ class MyStrategy {
 <li>Less forgiving of mistakes</li>
 </ul>
 <p>If you're learning backtesting, Python is easier. If you're learning systems programming or want production-relevant skills, C++ is valuable.</p>
+<p><strong>Why C++ and not Rust?</strong></p>
+<p>Rust is a compelling modern alternative with memory safety guarantees. But for tzutrader's goal of composability, C++ has advantages:</p>
+<ul>
+<li>
+<p><strong>Easier integration:</strong> C++ libraries compose naturally with existing systems. Most financial platforms, optimization libraries, and data providers expose C/C++ high performance interfaces. Rust's ownership model, while safe, often requires rewrites or complex FFI wrappers to integrate with external code.</p>
+</li>
+<li>
+<p><strong>Rich standard library:</strong> C++'s extensive standard library means fewer external dependencies. Rust's standard library is intentionally minimal, pushing more functionality to crates—which increases dependency chains and complicates integration.</p>
+</li>
+<li>
+<p><strong>Established ecosystem:</strong> The C++ trading and scientific computing ecosystem is mature and huge. Integrating with existing tools can be straightforward.</p>
+</li>
+</ul>
+<p>This is an opinionated choice, not a universal truth. Rust's safety is valuable, especially for complex systems. But for a library designed to be a composable building block in diverse environments, C++'s flexibility and compatibility matter more.</p>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>To use tzutrader effectively, you should understand:</p>
 <p><strong>C++ fundamentals:</strong></p>
