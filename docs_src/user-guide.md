@@ -1,6 +1,6 @@
 # User Guide
 
-**Note:** tzutrader is an experimental project. The API and architecture are subject to change as we explore different design patterns and refine the library's approach.
+**Note:** tzutrader is an experimental project. The API and architecture are subject to change as I explore different design patterns and refine the library's approach.
 
 ## Overview
 
@@ -675,4 +675,4 @@ As an experimental project, tzutrader continues to evolve. Future directions may
 - Extended performance metrics
 - Multi-asset portfolio support
 
-The API may change as we discover better patterns and approaches. Check the repository for updates and feel free to contribute ideas or feedback.
+The API may change as I discover better patterns and approaches. Check the repository for updates and feel free to contribute ideas or feedback.

@@ -1,6 +1,6 @@
 # Architecture Guide
 
-**Note:** This is an experimental project exploring different architectural patterns for backtesting libraries. The design choices described here may evolve as we learn what works well in practice.
+**Note:** This is an experimental project exploring different architectural patterns for backtesting libraries. The design choices described here may evolve as I learn what works well in practice.
 
 ## Design Philosophy
 
@@ -569,7 +569,7 @@ These limitations are intentional to keep the core design simple while exploring
 
 ## Evolution and Future Directions
 
-The architecture may evolve as we explore:
+The architecture may evolve as I explore:
 
 - Multi-asset portfolio management
 - More realistic order execution

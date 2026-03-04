@@ -191,7 +191,7 @@ public:
         if (buy_condition && last_side != Side::BUY) {
             signal.side = Side::BUY;
             last_side = Side::BUY;
-        } else if (sell_condition && last_side != Side::SELL) {
+         else if (sell_condition && last_side != Side::SELL) {
             signal.side = Side::SELL;
             last_side = Side::SELL;
         }
@@ -273,7 +273,7 @@ Documentation lives in `docs_src/`:
 
 - **Issues**: Use for bugs, feature requests, questions
 - **Pull Requests**: Use for code contributions
-- **Email**: Contact maintainers for private discussions
+- **Email**: Contact maintainer for private discussions
 
 ## What Gets Accepted
 
@@ -324,7 +324,7 @@ Expect code reviews to focus on:
 - API design
 - Test coverage
 
-Feedback is meant to improve code quality, not personal criticism. Reviews may be thorough—that's because the maintainers care about the project.
+Feedback is meant to improve code quality, not personal criticism. Reviews may be thorough—that's because the maintainer care about the project.
 
 ## Recognition
 

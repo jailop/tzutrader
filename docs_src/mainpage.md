@@ -4,7 +4,7 @@
 
 tzutrader is an experimental C++ backtesting library for trading strategies. This documentation covers the public API and internal components.
 
-**Note:** This is an experimental project. The API is subject to change as we explore and refine different design approaches.
+**Note:** This is an experimental project. The API is subject to change as I explore and refine different design approaches.
 
 ## Project Links
 
