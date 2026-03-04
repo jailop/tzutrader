@@ -121,7 +121,7 @@ Inspired by Unix tools (`grep`, `awk`, `sort`), components do one thing well and
 - You need production-ready, stable software right now
 - You prefer extensive documentation over code exploration
 
-C++ is harder than Python. We chose it for performance, learning value, and because production trading systems use it. If you're learning algorithmic trading, start with Python. If you're learning systems programming or want skills that transfer to professional trading systems, tzutrader is relevant.
+C++ is harder than Python. I chose it for performance, learning value, and because production trading systems use it. If you're learning algorithmic trading, start with Python. If you're learning systems programming or want skills that transfer to professional trading systems, tzutrader is relevant.
 
 See [Design Philosophy](philosophy.md) for the detailed rationale.
 

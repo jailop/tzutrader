@@ -330,14 +330,14 @@ This is an opinionated approach. It won't suit everyone. That's fine—use what 
 
 ## Evolution
 
-Design philosophy guides decisions but isn't dogma. As we learn what works, things will change:
+Design philosophy guides decisions but isn't dogma. As I learn what works, things will change:
 
 - Components might be refactored
 - Interfaces might be simplified
 - New patterns might emerge
 - Bad ideas will be abandoned
 
-The principles provide direction, not constraints. If violating a principle makes the library genuinely better, we'll violate it.
+The principles provide direction, not constraints. If violating a principle makes the library genuinely better, I'll violate it.
 
 This is an experiment. Experiments mean learning, and learning means changing.
 
