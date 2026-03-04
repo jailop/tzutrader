@@ -35,9 +35,9 @@ This is harder to achieve than it sounds. It requires careful interface design a
 
 ### 2. Composability for Integration
 
-Composability isn't just about swapping components within the library—it’s about integrating into larger data processing pipelines and workflows.
-
-Most trading systems aren’t standalone; they’re part of a larger ecosystem. Data comes from external sources, strategies need optimization, and results feed into analysis tools. By keeping interfaces simple and avoiding framework lock-in, a composable library can fit naturally into these pipelines without requiring complex adapters or wrappers.
+A backtesting library that forces you into its own runtime, data model, or lifecycle becomes a walled garden. You end up writing adapters to get data in, adapters to get results out, and workarounds whenever your workflow doesn't match the framework's assumptions.
+tzutrader avoids this by keeping its boundaries thin. Data enters as a stream — in the simplest case, plain CSV on stdin. Results exit as a flat key-value string on stdout. This means the library slots naturally into Unix pipelines: fetch data with a shell script, run the backtest, pipe results into awk or column for formatting, feed them into a Python analysis notebook. No special export formats, no proprietary connectors, no mandatory GUI.
+The internal design reinforces this. The Runner doesn't own the event loop — you call it. The Portfolio doesn't prescribe how results are consumed. Strategies and indicators are composed at the call site, not registered into a framework. Each component does its job and hands off cleanly, which means any of them can be replaced or wrapped without disturbing the rest.
 
 ### 3. Streaming Over Vectorization
 
@@ -186,6 +186,8 @@ The library provides mechanisms (indicators, signal generation, position trackin
 
 You decide the policies. The library just provides the tools.
 
+All of this is is what the Unix philosophy actually means in practice: not just that components are modular internally, but that the library itself is a good citizen in a larger system it doesn't control.
+
 ## Who This Is For
 
 ### Target Users
@@ -201,7 +203,6 @@ You decide the policies. The library just provides the tools.
 
 - Complete programming beginners (C++ is hard)
 - People wanting plug-and-play solutions (requires coding)
-- Those expecting guaranteed profits (no such thing)
 - Users wanting extensive hand-holding (minimal docs, you read code)
 
 ### Why C++?
@@ -230,7 +231,7 @@ C++ is harder than Python. So why use it?
 **Trade-offs:**
 
 - Steeper learning curve than Python
-- More verbose code
+- More verbose or less readable code
 - Harder to prototype quickly
 - Less forgiving of mistakes
 
@@ -238,16 +239,12 @@ If you're learning backtesting, Python is easier. If you're learning systems pro
 
 **Why C++ and not Rust?**
 
-Rust is a compelling modern alternative with memory safety guarantees. But for tzutrader's goal of composability, C++ has advantages:
-
-- **Easier integration:** C++ libraries compose naturally with existing systems. Most financial platforms, optimization libraries, and data providers expose C/C++ high performance interfaces. Rust's ownership model, while safe, often requires rewrites or complex FFI wrappers to integrate with external code.
-
-- **Rich standard library:** C++'s extensive standard library means fewer external dependencies. Rust's standard library is intentionally minimal, pushing more functionality to crates—which increases dependency chains and complicates integration.
-
-- **Established ecosystem:** The C++ trading and scientific computing ecosystem is mature and huge. Integrating with existing tools can be straightforward.
-
-This is an opinionated choice, not a universal truth. Rust's safety is valuable, especially for complex systems. But for a library designed to be a composable building block in diverse environments, C++'s flexibility and compatibility matter more.
-
+The honest answer is that this is a learning project targeting skills that transfer to professional trading systems — and those systems are written in C++. That context shapes everything.
+Rust is the better language for new safety-critical software in isolation. Its memory safety guarantees, superior build tooling, and modern type system are genuine advantages. If tzutrader were a standalone application, Rust would be the defensible default.
+But tzutrader is designed as a composable library — a building block meant to integrate with real-world financial infrastructure. That changes the calculus. Bloomberg terminals, vendor SDKs, QuantLib, and most high-performance data providers expose C/C++ interfaces. Rust can consume these via FFI, but doing so correctly requires careful unsafe blocks and often non-trivial wrapper code. C++ composes with this ecosystem with no friction at all.
+There's also a subtler point: the C++ template system, for all its notorious complexity, is exceptionally well-suited to zero-cost composability. The CRTP patterns used throughout tzutrader — where strategies, indicators, and runners are composed at compile time with no virtual dispatch overhead — are idiomatic C++. Rust's traits and generics can achieve similar results, but the patterns are different, and the existing literature on this style of systems design is written in C++.
+The real costs of this choice are serious and shouldn't be minimized. C++ gives you memory bugs, subtle undefined behavior, and CMake. These aren't just inconveniences — a silent memory corruption in portfolio state is financially dangerous even in a backtesting context. This is the price of the choice, and it demands disciplined, conservative code.
+The bottom line: C++ here is not a claim that it's a better language in general. It's the right tool for someone learning the architecture of professional trading systems, working in the ecosystem those systems inhabit.
 ### Prerequisites
 
 To use tzutrader effectively, you should understand:
@@ -320,7 +317,7 @@ Just as important as what tzutrader is—here's what it's not trying to be:
 
 **Not a complete trading platform:** No data feeds, no broker connections, no live trading support.
 
-**Not beginner-friendly:** Assumes C++ proficiency and trading knowledge.
+**Not beginner-friendly:** Assumes minimal C++ proficiency and trading knowledge.
 
 **Not feature-complete:** Minimal built-in strategies and indicators. You build what you need.
 
@@ -329,8 +326,6 @@ Just as important as what tzutrader is—here's what it's not trying to be:
 **Not optimized to death:** Performance is good, not obsessive. Clarity over speed.
 
 **Not a framework:** Provides libraries, not a framework you inherit from.
-
-**Not trying to be Python:** If you want Python ergonomics, use Python. This is C++.
 
 ## Why This Matters
 
