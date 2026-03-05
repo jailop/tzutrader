@@ -2,3 +2,21 @@
 
 - genopts.awk script - generates an .h file to parse command line
   arguments and provide a help output.
+
+2026-03-04:
+
+- MDD (Maximum Drawdown) indicator included: implementation, tests,
+  example, and documentation. This is the first indicator that is
+  intended to be used to evaluate portfolio performance. The current
+  implementation in stats is not compatible with this library approach.
+  Other performance indicators will be added in order to be able to
+  refactor the stats module.
+- A new header file has been added: timeutils. A function to convert
+  from unix time to string timestamps has been included. It is able to
+  convert not only seconds, but milliseconds, microseconds, and
+  nanoseconds. Also, it can convert to local or gmt time.
+- A clarification has been included in the documentation that the
+  library is not assuming that unix time is trated as seconds. It is an
+  option of library's users to define the interval of time they are
+  working on, like microseconds, and to keep a consistent interpretation
+  of timestamps.

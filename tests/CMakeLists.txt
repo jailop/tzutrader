@@ -11,7 +11,7 @@ file(GLOB TEST_SOURCES
     "${CMAKE_SOURCE_DIR}/streamers/test_*.cc"
     "${CMAKE_SOURCE_DIR}/strategies/test_*.cc"
 )
-add_executable(tests ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/indicators/main.cc)
+add_executable(tests ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/main.cc)
 target_link_libraries(tests ${GTEST_LIBRARIES} pthread)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../include)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../../include)

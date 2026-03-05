@@ -102,6 +102,21 @@ MVar mvar(20, 0);  // Population variance (dof=0)
 
 **Limitations:** Sensitive to outliers, requires choosing appropriate degrees of freedom.
 
+### MDD (Maximum Drawdown)
+
+Tracks the largest peak-to-trough decline in value. Returns a negative
+value between -1 and 0 representing the proportional drawdown.
+
+```cpp
+MDD mdd;
+double drawdown = mdd.update(portfolio_value);
+```
+
+**Usage:** Risk assessment, performance evaluation.
+
+**Limitations:** Doesn´t capture recovery time or frequency of
+drawdowns.
+
 ## Creating Custom Indicators
 
 Inherit from the `Indicator` base class template:
