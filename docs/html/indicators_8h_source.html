@@ -281,10 +281,31 @@ $(function(){initNavTree('indicators_8h_source.html','',''); });
 </div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>};</div>
 </div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>} <span class="comment">// namespace tzu</span></div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span><span class="preprocessor">#endif </span><span class="comment">// INDICATORS_H</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span></div>
+<div class="foldopen" id="foldopen00272" data-start="{" data-end="};">
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno"><a class="line" href="classtzu_1_1MDD.html">  272</a></span><span class="keyword">class </span><a class="code hl_class" href="classtzu_1_1MDD.html">MDD</a>: <span class="keyword">public</span> <a class="code hl_class" href="classtzu_1_1Indicator.html">Indicator</a>&lt;MDD, double, double&gt; {</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordtype">double</span> data = 0.0;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordtype">double</span> peak = 0.0;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classtzu_1_1MDD.html#ab416fea9dfac7a162173321a1b250fe4">  276</a></span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classtzu_1_1MDD.html#ab416fea9dfac7a162173321a1b250fe4">get</a>() const noexcept { <span class="keywordflow">return</span> data; }</div>
+<div class="foldopen" id="foldopen00277" data-start="{" data-end="}">
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno"><a class="line" href="classtzu_1_1MDD.html#a33eba6c3c05549794c1c0bb43b7623fe">  277</a></span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classtzu_1_1MDD.html#a33eba6c3c05549794c1c0bb43b7623fe">update</a>(<span class="keywordtype">double</span> value) {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="keywordflow">if</span> (value &gt; peak)</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            peak = value;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        <span class="keywordflow">if</span> (peak &gt; 0.0) {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            <span class="keywordtype">double</span> curr = (value - peak) / peak;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            <span class="keywordflow">if</span> (curr &lt; data)</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                data = curr;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        }</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">return</span> data;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    }</div>
+</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>};</div>
+</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>} <span class="comment">// namespace tzu</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="preprocessor">#endif </span><span class="comment">// INDICATORS_H</span></div>
 <div class="ttc" id="aclasstzu_1_1EMA_html"><div class="ttname"><a href="classtzu_1_1EMA.html">tzu::EMA</a></div><div class="ttdef"><b>Definition</b> indicators.h:100</div></div>
 <div class="ttc" id="aclasstzu_1_1EMA_html_a8a445443c4e55b1cf47450168fd39e23"><div class="ttname"><a href="classtzu_1_1EMA.html#a8a445443c4e55b1cf47450168fd39e23">tzu::EMA::get</a></div><div class="ttdeci">double get() const noexcept</div><div class="ttdef"><b>Definition</b> indicators.h:109</div></div>
 <div class="ttc" id="aclasstzu_1_1EMA_html_a8e52cbe59fa286d112f61672a9518efb"><div class="ttname"><a href="classtzu_1_1EMA.html#a8e52cbe59fa286d112f61672a9518efb">tzu::EMA::EMA</a></div><div class="ttdeci">EMA(size_t period, double smoothing=2.0)</div><div class="ttdef"><b>Definition</b> indicators.h:107</div></div>
@@ -295,6 +316,9 @@ $(function(){initNavTree('indicators_8h_source.html','',''); });
 <div class="ttc" id="aclasstzu_1_1MACD_html_a108b7a38ef1db326ff14bd77b908ac56"><div class="ttname"><a href="classtzu_1_1MACD.html#a108b7a38ef1db326ff14bd77b908ac56">tzu::MACD::get</a></div><div class="ttdeci">MACDResult get() const noexcept</div><div class="ttdef"><b>Definition</b> indicators.h:247</div></div>
 <div class="ttc" id="aclasstzu_1_1MACD_html_ab1e531d7ec71236bcf47162dd251fe96"><div class="ttname"><a href="classtzu_1_1MACD.html#ab1e531d7ec71236bcf47162dd251fe96">tzu::MACD::MACD</a></div><div class="ttdeci">MACD(size_t short_period, size_t long_period, size_t signal_period, double smoothing=2.0)</div><div class="ttdef"><b>Definition</b> indicators.h:241</div></div>
 <div class="ttc" id="aclasstzu_1_1MACD_html_aeac74d4bc1b039eaaaba857c7e5a7ba3"><div class="ttname"><a href="classtzu_1_1MACD.html#aeac74d4bc1b039eaaaba857c7e5a7ba3">tzu::MACD::update</a></div><div class="ttdeci">MACDResult update(double value)</div><div class="ttdef"><b>Definition</b> indicators.h:248</div></div>
+<div class="ttc" id="aclasstzu_1_1MDD_html"><div class="ttname"><a href="classtzu_1_1MDD.html">tzu::MDD</a></div><div class="ttdef"><b>Definition</b> indicators.h:272</div></div>
+<div class="ttc" id="aclasstzu_1_1MDD_html_a33eba6c3c05549794c1c0bb43b7623fe"><div class="ttname"><a href="classtzu_1_1MDD.html#a33eba6c3c05549794c1c0bb43b7623fe">tzu::MDD::update</a></div><div class="ttdeci">double update(double value)</div><div class="ttdef"><b>Definition</b> indicators.h:277</div></div>
+<div class="ttc" id="aclasstzu_1_1MDD_html_ab416fea9dfac7a162173321a1b250fe4"><div class="ttname"><a href="classtzu_1_1MDD.html#ab416fea9dfac7a162173321a1b250fe4">tzu::MDD::get</a></div><div class="ttdeci">double get() const noexcept</div><div class="ttdef"><b>Definition</b> indicators.h:276</div></div>
 <div class="ttc" id="aclasstzu_1_1MVar_html_a9168a8fbd8a315659c2c13a44bb7d3b7"><div class="ttname"><a href="classtzu_1_1MVar.html#a9168a8fbd8a315659c2c13a44bb7d3b7">tzu::MVar::MVar</a></div><div class="ttdeci">MVar(size_t window_size, size_t dof)</div><div class="ttdef"><b>Definition</b> indicators.h:152</div></div>
 <div class="ttc" id="aclasstzu_1_1MVar_html_aa6d761847e994a7c2cf5ab542c17c740"><div class="ttname"><a href="classtzu_1_1MVar.html#aa6d761847e994a7c2cf5ab542c17c740">tzu::MVar::get</a></div><div class="ttdeci">double get() const noexcept</div><div class="ttdef"><b>Definition</b> indicators.h:154</div></div>
 <div class="ttc" id="aclasstzu_1_1MVar_html_ac447bf22baf57740599e81c869cbb44f"><div class="ttname"><a href="classtzu_1_1MVar.html#ac447bf22baf57740599e81c869cbb44f">tzu::MVar::update</a></div><div class="ttdeci">double update(double value)</div><div class="ttdef"><b>Definition</b> indicators.h:155</div></div>

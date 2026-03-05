@@ -13,6 +13,9 @@ var hierarchy =
     [ "tzu::Indicator&lt; MACD, double, MACDResult &gt;", "classtzu_1_1Indicator.html", [
       [ "tzu::MACD", "classtzu_1_1MACD.html", null ]
     ] ],
+    [ "tzu::Indicator&lt; MDD, double, double &gt;", "classtzu_1_1Indicator.html", [
+      [ "tzu::MDD", "classtzu_1_1MDD.html", null ]
+    ] ],
     [ "tzu::Indicator&lt; RSI, Ohlcv, double &gt;", "classtzu_1_1Indicator.html", [
       [ "tzu::RSI", "classtzu_1_1RSI.html", null ]
     ] ],
@@ -30,7 +33,7 @@ var hierarchy =
       [ "tzu::BasicPortfolio", "classtzu_1_1BasicPortfolio.html", null ]
     ] ],
     [ "tzu::PortfolioStats", "classtzu_1_1PortfolioStats.html", null ],
-    [ "Position", "structPosition.html", null ],
+    [ "tzu::Position", "structtzu_1_1Position.html", null ],
     [ "tzu::Runner&lt; T &gt;", "classtzu_1_1Runner.html", null ],
     [ "tzu::Runner&lt; BasicRunner&lt; Portfolio, Strat, Streamer &gt; &gt;", "classtzu_1_1Runner.html", [
       [ "tzu::BasicRunner< Portfolio, Strat, Streamer >", "classtzu_1_1BasicRunner.html", null ]

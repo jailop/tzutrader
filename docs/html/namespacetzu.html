@@ -101,6 +101,10 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open-High-Low-Close-Volume candlestick data.  <a href="structtzu_1_1Ohlcv.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Tick" id="r_Tick"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Tick.html">Tick</a></td></tr>
 <tr class="memitem:SingleValue" id="r_SingleValue"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1SingleValue.html">SingleValue</a></td></tr>
+<tr class="memitem:Position" id="r_Position"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Position.html">Position</a></td></tr>
+<tr class="memitem:Trade" id="r_Trade"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Trade.html">Trade</a></td></tr>
+<tr class="memitem:PerformanceMetrics" id="r_PerformanceMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1PerformanceMetrics.html">PerformanceMetrics</a></td></tr>
+<tr class="memitem:BuyAndHoldMetrics" id="r_BuyAndHoldMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1BuyAndHoldMetrics.html">BuyAndHoldMetrics</a></td></tr>
 <tr class="memitem:Indicator" id="r_Indicator"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1Indicator.html">Indicator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base indicator class using CRTP for static polymorphism.  <a href="classtzu_1_1Indicator.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SMA" id="r_SMA"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1SMA.html">SMA</a></td></tr>
@@ -110,13 +114,11 @@ Classes</h2></td></tr>
 <tr class="memitem:RSI" id="r_RSI"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1RSI.html">RSI</a></td></tr>
 <tr class="memitem:MACDResult" id="r_MACDResult"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1MACDResult.html">MACDResult</a></td></tr>
 <tr class="memitem:MACD" id="r_MACD"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1MACD.html">MACD</a></td></tr>
+<tr class="memitem:MDD" id="r_MDD"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1MDD.html">MDD</a></td></tr>
 <tr class="memitem:Portfolio" id="r_Portfolio"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1Portfolio.html">Portfolio</a></td></tr>
 <tr class="memitem:BasicPortfolio" id="r_BasicPortfolio"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1BasicPortfolio.html">BasicPortfolio</a></td></tr>
 <tr class="memitem:Runner" id="r_Runner"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1Runner.html">Runner</a></td></tr>
 <tr class="memitem:BasicRunner" id="r_BasicRunner"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1BasicRunner.html">BasicRunner</a></td></tr>
-<tr class="memitem:Trade" id="r_Trade"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Trade.html">Trade</a></td></tr>
-<tr class="memitem:PerformanceMetrics" id="r_PerformanceMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1PerformanceMetrics.html">PerformanceMetrics</a></td></tr>
-<tr class="memitem:BuyAndHoldMetrics" id="r_BuyAndHoldMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1BuyAndHoldMetrics.html">BuyAndHoldMetrics</a></td></tr>
 <tr class="memitem:PortfolioStats" id="r_PortfolioStats"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1PortfolioStats.html">PortfolioStats</a></td></tr>
 <tr class="memitem:Strategy" id="r_Strategy"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1Strategy.html">Strategy</a></td></tr>
 <tr class="memitem:SMACrossover" id="r_SMACrossover"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classtzu_1_1SMACrossover.html">SMACrossover</a></td></tr>
@@ -150,6 +152,21 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#addb44dda2def7f79a0035bcc22ed4d81a1de1c752385bf565da9d1ca8e85b58f0">TICK</a>
 , <a class="el" href="#addb44dda2def7f79a0035bcc22ed4d81ac8946fa6a83e99cc3e25a9c564b13c8e">SINGLE_VALUE</a>
  }</td></tr>
+<tr class="memitem:a9f9313e5fad43ae11251296960a5ac54" id="r_a9f9313e5fad43ae11251296960a5ac54"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#a9f9313e5fad43ae11251296960a5ac54">TimeInterval</a> { <br />
+&#160;&#160;<a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a5b3b43ddfdecac6712fd1dbc20798e6b">NANOSECONDS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea">MICROSECONDS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936">MILLISECONDS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5">SECONDS</a>
+, <br />
+&#160;&#160;<a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2">MINUTES</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a5ab9376a7869a83e84e94bcb25aa8cbd">HOURS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a85367c3faf74b058939654bdef8968d7">DAYS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54a6484d64b73b49c6ac39afe314f4b035a">WEEKS</a>
+, <br />
+&#160;&#160;<a class="el" href="#a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa">MONTHS</a>
+, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54ac6407e1804447362468229fd4a430f9c">YEARS</a>
+<br />
+ }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -159,6 +176,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a277bf2f2a502866eaa00a1a76f8b8cbd" id="r_a277bf2f2a502866eaa00a1a76f8b8cbd"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a277bf2f2a502866eaa00a1a76f8b8cbd">compute_returns</a> (const std::vector&lt; std::pair&lt; int64_t, double &gt; &gt; &amp;equity_curve)</td></tr>
 <tr class="memitem:a205f547c05a624e3b56748b831b23e8c" id="r_a205f547c05a624e3b56748b831b23e8c"><td class="memItemLeft"><a class="el" href="structtzu_1_1PerformanceMetrics.html">PerformanceMetrics</a>&#160;</td><td class="memItemRight"><a class="el" href="#a205f547c05a624e3b56748b831b23e8c">compute_performance_metrics</a> (const std::vector&lt; std::pair&lt; int64_t, double &gt; &gt; &amp;equity_curve)</td></tr>
 <tr class="memitem:a1e49b0b2148832f45471cf42e26e5e6f" id="r_a1e49b0b2148832f45471cf42e26e5e6f"><td class="memItemLeft"><a class="el" href="structtzu_1_1BuyAndHoldMetrics.html">BuyAndHoldMetrics</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1e49b0b2148832f45471cf42e26e5e6f">compute_buy_and_hold_metrics</a> (double init_cash, double init_price, double final_price, double years)</td></tr>
+<tr class="memitem:aa89c5da6d23e3ebd0f9e273d07c91135" id="r_aa89c5da6d23e3ebd0f9e273d07c91135"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aa89c5da6d23e3ebd0f9e273d07c91135">unixTimeToString</a> (int64_t unixTime, <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54">TimeInterval</a> interval=<a class="el" href="#a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5">TimeInterval::SECONDS</a>, bool local_time=false)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -264,6 +282,40 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693" name="a99a6191d8d696e5ea6c8f625c83678b9ab50339a10e1de285ac99d4c3990b8693"></a>NONE&#160;</td><td class="fielddoc"><p>No action, hold current position. </p>
 </td></tr>
+</table>
+
+</div>
+</div>
+<a id="a9f9313e5fad43ae11251296960a5ac54" name="a9f9313e5fad43ae11251296960a5ac54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f9313e5fad43ae11251296960a5ac54">&#9670;&#160;</a></span>TimeInterval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a9f9313e5fad43ae11251296960a5ac54">tzu::TimeInterval</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a5b3b43ddfdecac6712fd1dbc20798e6b" name="a9f9313e5fad43ae11251296960a5ac54a5b3b43ddfdecac6712fd1dbc20798e6b"></a>NANOSECONDS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea" name="a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea"></a>MICROSECONDS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936" name="a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936"></a>MILLISECONDS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5" name="a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5"></a>SECONDS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2" name="a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2"></a>MINUTES&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a5ab9376a7869a83e84e94bcb25aa8cbd" name="a9f9313e5fad43ae11251296960a5ac54a5ab9376a7869a83e84e94bcb25aa8cbd"></a>HOURS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a85367c3faf74b058939654bdef8968d7" name="a9f9313e5fad43ae11251296960a5ac54a85367c3faf74b058939654bdef8968d7"></a>DAYS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54a6484d64b73b49c6ac39afe314f4b035a" name="a9f9313e5fad43ae11251296960a5ac54a6484d64b73b49c6ac39afe314f4b035a"></a>WEEKS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa" name="a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa"></a>MONTHS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f9313e5fad43ae11251296960a5ac54ac6407e1804447362468229fd4a430f9c" name="a9f9313e5fad43ae11251296960a5ac54ac6407e1804447362468229fd4a430f9c"></a>YEARS&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
@@ -443,6 +495,33 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa89c5da6d23e3ebd0f9e273d07c91135" name="aa89c5da6d23e3ebd0f9e273d07c91135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89c5da6d23e3ebd0f9e273d07c91135">&#9670;&#160;</a></span>unixTimeToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string tzu::unixTimeToString </td>
+          <td>(</td>
+          <td class="paramtype">int64_t</td>          <td class="paramname"><span class="paramname"><em>unixTime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a9f9313e5fad43ae11251296960a5ac54">TimeInterval</a></td>          <td class="paramname"><span class="paramname"><em>interval</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="#a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5">TimeInterval::SECONDS</a></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>local_time</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert a unix time to a string representation. Unix time is represented as an integer that can represent seconds or fractions of seconds. </p>
 
 </div>
 </div>

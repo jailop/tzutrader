@@ -60,7 +60,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"structtzu_1_1CsvParseTraits_3_01Tick_01_4.html"
+"structtzu_1_1BuyAndHoldMetrics.html#a3f757cda81f751cb3ef97b1e029c2ee0"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

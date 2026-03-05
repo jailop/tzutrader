@@ -5,6 +5,10 @@ var annotated_dup =
       [ "Ohlcv", "structtzu_1_1Ohlcv.html", "structtzu_1_1Ohlcv" ],
       [ "Tick", "structtzu_1_1Tick.html", "structtzu_1_1Tick" ],
       [ "SingleValue", "structtzu_1_1SingleValue.html", "structtzu_1_1SingleValue" ],
+      [ "Position", "structtzu_1_1Position.html", "structtzu_1_1Position" ],
+      [ "Trade", "structtzu_1_1Trade.html", "structtzu_1_1Trade" ],
+      [ "PerformanceMetrics", "structtzu_1_1PerformanceMetrics.html", "structtzu_1_1PerformanceMetrics" ],
+      [ "BuyAndHoldMetrics", "structtzu_1_1BuyAndHoldMetrics.html", "structtzu_1_1BuyAndHoldMetrics" ],
       [ "Indicator", "classtzu_1_1Indicator.html", "classtzu_1_1Indicator" ],
       [ "SMA", "classtzu_1_1SMA.html", "classtzu_1_1SMA" ],
       [ "EMA", "classtzu_1_1EMA.html", "classtzu_1_1EMA" ],
@@ -12,13 +16,11 @@ var annotated_dup =
       [ "RSI", "classtzu_1_1RSI.html", "classtzu_1_1RSI" ],
       [ "MACDResult", "structtzu_1_1MACDResult.html", "structtzu_1_1MACDResult" ],
       [ "MACD", "classtzu_1_1MACD.html", "classtzu_1_1MACD" ],
+      [ "MDD", "classtzu_1_1MDD.html", "classtzu_1_1MDD" ],
       [ "Portfolio", "classtzu_1_1Portfolio.html", "classtzu_1_1Portfolio" ],
       [ "BasicPortfolio", "classtzu_1_1BasicPortfolio.html", "classtzu_1_1BasicPortfolio" ],
       [ "Runner", "classtzu_1_1Runner.html", "classtzu_1_1Runner" ],
       [ "BasicRunner", "classtzu_1_1BasicRunner.html", "classtzu_1_1BasicRunner" ],
-      [ "Trade", "structtzu_1_1Trade.html", "structtzu_1_1Trade" ],
-      [ "PerformanceMetrics", "structtzu_1_1PerformanceMetrics.html", "structtzu_1_1PerformanceMetrics" ],
-      [ "BuyAndHoldMetrics", "structtzu_1_1BuyAndHoldMetrics.html", "structtzu_1_1BuyAndHoldMetrics" ],
       [ "PortfolioStats", "classtzu_1_1PortfolioStats.html", "classtzu_1_1PortfolioStats" ],
       [ "Strategy", "classtzu_1_1Strategy.html", "classtzu_1_1Strategy" ],
       [ "SMACrossover", "classtzu_1_1SMACrossover.html", "classtzu_1_1SMACrossover" ],
@@ -30,6 +32,5 @@ var annotated_dup =
       [ "CsvParseTraits&lt; SingleValue &gt;", "structtzu_1_1CsvParseTraits_3_01SingleValue_01_4.html", null ],
       [ "ParseIterator", "classtzu_1_1ParseIterator.html", "classtzu_1_1ParseIterator" ],
       [ "Csv", "classtzu_1_1Csv.html", "classtzu_1_1Csv" ]
-    ] ],
-    [ "Position", "structPosition.html", "structPosition" ]
+    ] ]
 ];

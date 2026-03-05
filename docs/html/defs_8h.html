@@ -109,7 +109,10 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open-High-Low-Close-Volume candlestick data.  <a href="structtzu_1_1Ohlcv.html#details">More...</a><br /></td></tr>
 <tr class="memitem:tzu_3A_3ATick" id="r_tzu_3A_3ATick"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Tick.html">tzu::Tick</a></td></tr>
 <tr class="memitem:tzu_3A_3ASingleValue" id="r_tzu_3A_3ASingleValue"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1SingleValue.html">tzu::SingleValue</a></td></tr>
-<tr class="memitem:Position" id="r_Position"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structPosition.html">Position</a></td></tr>
+<tr class="memitem:tzu_3A_3APosition" id="r_tzu_3A_3APosition"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Position.html">tzu::Position</a></td></tr>
+<tr class="memitem:tzu_3A_3ATrade" id="r_tzu_3A_3ATrade"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1Trade.html">tzu::Trade</a></td></tr>
+<tr class="memitem:tzu_3A_3APerformanceMetrics" id="r_tzu_3A_3APerformanceMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1PerformanceMetrics.html">tzu::PerformanceMetrics</a></td></tr>
+<tr class="memitem:tzu_3A_3ABuyAndHoldMetrics" id="r_tzu_3A_3ABuyAndHoldMetrics"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structtzu_1_1BuyAndHoldMetrics.html">tzu::BuyAndHoldMetrics</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -135,6 +138,21 @@ Enumerations</h2></td></tr>
 <tr class="memitem:addb44dda2def7f79a0035bcc22ed4d81" id="r_addb44dda2def7f79a0035bcc22ed4d81"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81">tzu::DataType</a> { <a class="el" href="namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81a4e6ef426380d12429024546e64465f86">tzu::OHLCV</a>
 , <a class="el" href="namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81a1de1c752385bf565da9d1ca8e85b58f0">tzu::TICK</a>
 , <a class="el" href="namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81ac8946fa6a83e99cc3e25a9c564b13c8e">tzu::SINGLE_VALUE</a>
+ }</td></tr>
+<tr class="memitem:a9f9313e5fad43ae11251296960a5ac54" id="r_a9f9313e5fad43ae11251296960a5ac54"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54">tzu::TimeInterval</a> { <br />
+&#160;&#160;<a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a5b3b43ddfdecac6712fd1dbc20798e6b">tzu::NANOSECONDS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea">tzu::MICROSECONDS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936">tzu::MILLISECONDS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54aa9126caa6ef3db9cf3c35ac627ad22b5">tzu::SECONDS</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2">tzu::MINUTES</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a5ab9376a7869a83e84e94bcb25aa8cbd">tzu::HOURS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a85367c3faf74b058939654bdef8968d7">tzu::DAYS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a6484d64b73b49c6ac39afe314f4b035a">tzu::WEEKS</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa">tzu::MONTHS</a>
+, <a class="el" href="namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54ac6407e1804447362468229fd4a430f9c">tzu::YEARS</a>
+<br />
  }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>

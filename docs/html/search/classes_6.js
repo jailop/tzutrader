@@ -6,5 +6,5 @@ var searchData=
   ['portfolio_3',['Portfolio',['../classtzu_1_1Portfolio.html',1,'tzu']]],
   ['portfolio_3c_20basicportfolio_20_3e_4',['Portfolio&lt; BasicPortfolio &gt;',['../classtzu_1_1Portfolio.html',1,'tzu']]],
   ['portfoliostats_5',['PortfolioStats',['../classtzu_1_1PortfolioStats.html',1,'tzu']]],
-  ['position_6',['Position',['../structPosition.html',1,'']]]
+  ['position_6',['Position',['../structtzu_1_1Position.html',1,'tzu']]]
 ];

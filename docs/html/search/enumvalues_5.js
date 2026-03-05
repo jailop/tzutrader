@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['ohlcv_0',['OHLCV',['../namespacetzu.html#addb44dda2def7f79a0035bcc22ed4d81a4e6ef426380d12429024546e64465f86',1,'tzu']]],
-  ['open_1',['OPEN',['../namespacetzu.html#aa13c5408f0c4918008f4f0f0d26edae3aa38bd5138bf35514df41a1795ebbf5c3',1,'tzu']]]
+  ['microseconds_0',['MICROSECONDS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea',1,'tzu']]],
+  ['milliseconds_1',['MILLISECONDS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936',1,'tzu']]],
+  ['minutes_2',['MINUTES',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2',1,'tzu']]],
+  ['months_3',['MONTHS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa',1,'tzu']]]
 ];

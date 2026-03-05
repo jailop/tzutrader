@@ -74,6 +74,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#mvar-moving-variance">MVar (Moving Variance)</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mdd-maximum-drawdown">MDD (Maximum Drawdown)</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#creating-custom-indicators">Creating Custom Indicators</a>
@@ -205,6 +207,15 @@ MVar mvar(20, 0);  // Population variance (dof=0)
 </code></pre>
 <p><strong>Usage:</strong> Volatility measurement, basis for other indicators like Bollinger Bands.</p>
 <p><strong>Limitations:</strong> Sensitive to outliers, requires choosing appropriate degrees of freedom.</p>
+<h3 id="mdd-maximum-drawdown">MDD (Maximum Drawdown)</h3>
+<p>Tracks the largest peak-to-trough decline in value. Returns a negative
+value between -1 and 0 representing the proportional drawdown.</p>
+<pre><code class="language-cpp">MDD mdd;
+double drawdown = mdd.update(portfolio_value);
+</code></pre>
+<p><strong>Usage:</strong> Risk assessment, performance evaluation.</p>
+<p><strong>Limitations:</strong> Doesn´t capture recovery time or frequency of
+drawdowns.</p>
 <h2 id="creating-custom-indicators">Creating Custom Indicators</h2>
 <p>Inherit from the <code>Indicator</code> base class template:</p>
 <pre><code class="language-cpp">#include &quot;tzu.h&quot;

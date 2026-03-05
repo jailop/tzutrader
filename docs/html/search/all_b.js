@@ -8,5 +8,10 @@ var searchData=
   ['management_20portfolios_20h_5',['Portfolio Management (portfolios.h)',['../index.html#autotoc_md7',1,'']]],
   ['max_5fbuffer_5fsize_6',['MAX_BUFFER_SIZE',['../namespacetzu.html#a6f9848e960c64bbbe78d1b4d6984a48e',1,'tzu']]],
   ['max_5fdrawdown_7',['max_drawdown',['../structtzu_1_1PerformanceMetrics.html#ada63757d50c871dd27ac441f549bf231',1,'tzu::PerformanceMetrics']]],
-  ['mvar_8',['MVar',['../classtzu_1_1MVar.html',1,'tzu::MVar'],['../classtzu_1_1MVar.html#a9168a8fbd8a315659c2c13a44bb7d3b7',1,'tzu::MVar::MVar()']]]
+  ['mdd_8',['MDD',['../classtzu_1_1MDD.html',1,'tzu']]],
+  ['microseconds_9',['MICROSECONDS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a98a5b3971201a65b35d420793d7148ea',1,'tzu']]],
+  ['milliseconds_10',['MILLISECONDS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54ab4fd5e5c06e72437a57379576df36936',1,'tzu']]],
+  ['minutes_11',['MINUTES',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54a7ffb9cea885bcba59e55574d54f819c2',1,'tzu']]],
+  ['months_12',['MONTHS',['../namespacetzu.html#a9f9313e5fad43ae11251296960a5ac54af632ac1a3f5ea93d8001efda8531eefa',1,'tzu']]],
+  ['mvar_13',['MVar',['../classtzu_1_1MVar.html',1,'tzu::MVar'],['../classtzu_1_1MVar.html#a9168a8fbd8a315659c2c13a44bb7d3b7',1,'tzu::MVar::MVar()']]]
 ];

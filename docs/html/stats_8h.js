@@ -1,8 +1,5 @@
 var stats_8h =
 [
-    [ "tzu::Trade", "structtzu_1_1Trade.html", "structtzu_1_1Trade" ],
-    [ "tzu::PerformanceMetrics", "structtzu_1_1PerformanceMetrics.html", "structtzu_1_1PerformanceMetrics" ],
-    [ "tzu::BuyAndHoldMetrics", "structtzu_1_1BuyAndHoldMetrics.html", "structtzu_1_1BuyAndHoldMetrics" ],
     [ "tzu::PortfolioStats", "classtzu_1_1PortfolioStats.html", "classtzu_1_1PortfolioStats" ],
     [ "tzu::compute_buy_and_hold_metrics", "namespacetzu.html#a1e49b0b2148832f45471cf42e26e5e6f", null ],
     [ "tzu::compute_max_drawdown", "namespacetzu.html#a931e3e213875204396e5c4184afdf865", null ],

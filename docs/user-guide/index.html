@@ -511,7 +511,9 @@ buy_and_hold_annual:0.6677 max_drawdown:0.5280 sharpe:0.3694
 1419984000,320.0,325.0,315.0,322.0,1000.0
 1419984060,322.0,328.0,321.0,326.0,1500.0
 </code></pre>
-<p>Timestamps are Unix timestamps (seconds since epoch).</p>
+<p>Timestamps are Unix timestamps, that can be seconds, milliseconds,
+microseconds, or nanoseconds. The library's user should manage a
+consistent timestamp unit across the data and strategy logic.</p>
 <h3 id="custom-data-parsers">Custom Data Parsers</h3>
 <p>To parse custom CSV formats, specialize the <code>CsvParseTraits</code> template:</p>
 <pre><code class="language-cpp">struct MyDataType {
