@@ -497,7 +497,9 @@ timestamp,open,high,low,close,volume
 1419984060,322.0,328.0,321.0,326.0,1500.0
 ```
 
-Timestamps are Unix timestamps (seconds since epoch).
+Timestamps are Unix timestamps, that can be seconds, milliseconds,
+microseconds, or nanoseconds. The library's user should manage a
+consistent timestamp unit across the data and strategy logic.
 
 ### Custom Data Parsers
 

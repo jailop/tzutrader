@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <vector>
-#include "streamers.h"
-#include "defs.h"
+#include "tzu/streamers.h"
+#include "tzu/defs.h"
 
 using namespace tzu;
 

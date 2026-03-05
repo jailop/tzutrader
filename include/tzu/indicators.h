@@ -258,6 +258,34 @@ public:
     }
 };
 
+/**
+ * Maximum Drawdown (MDD)
+ *
+ * Calculates the maximum drawdown, which is the largest percentage drop
+ * from a peak to a trough in the value of an investment. Returns 0.0
+ * until at least one value has been added. Once values are added, it
+ * updates the peak value and calculates the current drawdown as the
+ * proportion drop from the peak. If the current drawdown is greater than
+ * the previously recorded maximum drawdown, it updates the maximum
+ * drawdown value. The MDD is expressed as a negative value.
+ */
+class MDD: public Indicator<MDD, double, double> {
+    double data = 0.0;
+    double peak = 0.0;
+public:
+    double get() const noexcept { return data; }
+    double update(double value) {
+        if (value > peak)
+            peak = value;
+        if (peak > 0.0) {
+            double curr = (value - peak) / peak;
+            if (curr < data)
+                data = curr;
+        }
+        return data;
+    }
+};
+
 } // namespace tzu
 
 #endif // INDICATORS_H

@@ -149,7 +149,79 @@ enum class DataType {
     SINGLE_VALUE,
 };
 
+/**
+ * Represents a trading position, which includes the timestamp of the position,
+ * the quantity of the asset held, and the price at which the position was
+ * opened. This struct can be used to track open positions in a trading strategy.
+ */
+struct Position {
+    int64_t timestamp;
+    double quantity;
+    double price;
+    Position(int64_t ts = 0, double q = 0.0, double p = 0.0)
+        : timestamp(ts), quantity(q), price(p) {}
+};
+
+/**
+ * Trade record for tracking individual trades.
+ */
+struct Trade {
+    int64_t open_time;
+    int64_t close_time;
+    double open_price;
+    double close_price;
+    double quantity;
+    double profit;
+    bool closed;
+    
+    Trade() = default;
+    Trade(int64_t ot =0 , int64_t ct = 0, double op = 0.0, double cp = 0.0,
+            double q = 0.0, double p = 0.0, bool c = false) :
+        open_time(ot), close_time(ct), open_price(op), close_price(cp),
+        quantity(q), profit(p), closed(c) {}
+};
+
+/**
+ * Portfolio performance metrics computed from equity curve and trade history.
+ */
+struct PerformanceMetrics {
+    double total_return = 0.0;
+    double annual_return = 0.0;
+    double max_drawdown = 0.0;
+    double sharpe_ratio = 0.0;
+    double years = 0.0;
+    bool has_annual_return = false;
+};
+
+/**
+ * Buy-and-hold benchmark metrics for comparison.
+ */
+struct BuyAndHoldMetrics {
+    double quantity = 0.0;
+    double cash_left = 0.0;
+    double final_value = 0.0;
+    double total_return = 0.0;
+    double annual_return = 0.0;
+    bool has_annual_return = false;
+    bool valid = false;
+};
+
+enum class TimeInterval {
+    NANOSECONDS,
+    MICROSECONDS,
+    MILLISECONDS,
+    SECONDS,
+    MINUTES,
+    HOURS,
+    DAYS,
+    WEEKS,
+    MONTHS,
+    YEARS
+};
+
+
 } // namespace tzu
+
 
 /**
  * Overload the output stream operator for the `Signal` struct to enable
@@ -166,18 +238,5 @@ inline std::ostream& operator<<(std::ostream& os, const tzu::Signal& signal) {
        << " volume: " << signal.volume << ")";
     return os;
 }
-
-/**
- * Represents a trading position, which includes the timestamp of the position,
- * the quantity of the asset held, and the price at which the position was
- * opened. This struct can be used to track open positions in a trading strategy.
- */
-struct Position {
-    int64_t timestamp;
-    double quantity;
-    double price;
-    Position(int64_t ts = 0, double q = 0.0, double p = 0.0)
-        : timestamp(ts), quantity(q), price(p) {}
-};
 
 #endif // DEFS_H

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "indicators.h"
+#include "tzu/indicators.h"
 #include <cmath>
 
 using namespace tzu;

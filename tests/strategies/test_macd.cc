@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <vector>
-#include "streamers.h"
-#include "strategies.h"
-#include "defs.h"
+#include "tzu/streamers.h"
+#include "tzu/strategies.h"
+#include "tzu/defs.h"
 
 // Use Csv<SingleValue> directly for iteration
 
